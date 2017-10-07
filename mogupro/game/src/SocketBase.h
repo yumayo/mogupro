@@ -37,46 +37,83 @@ bool importInt(unsigned int& value, char* buffer, int& offset, int totalSize)
 	return true;
 }
 
-bool exportChar(char* value, char* buffer, int& offset, int totalSize, size_t valueSize)
+bool exportShort(short& value, char* buffer, int& offset, int totalSize)
+{
+	if (totalSize < int(offset + sizeof(short)))
+		return false;
+	if (buffer == NULL)return false;
+	short c = htons(value);
+	memcpy(buffer + offset, &c, sizeof(short));
+	offset += sizeof(short);
+	return true;
+}
+
+bool importShort(short& value, char* buffer, int& offset, int totalSize)
+{
+	if (totalSize < int(offset + sizeof(short)))
+		return false;
+	short c;
+	memcpy(&c, buffer + offset, sizeof(short));
+	value = ntohs(c);
+	offset += sizeof(short);
+	return true;
+}
+
+bool exportChar(char& value, char* buffer, int& offset, int totalSize)
+{
+	if (totalSize < int(offset + sizeof(char)))
+		return false;
+	if (buffer == NULL)return false;
+	memcpy(buffer + offset, &value, sizeof(char));
+	offset += sizeof(char);
+	return true;
+}
+
+bool importStr(char& value, char* buffer, int& offset, int totalSize)
+{
+	if (totalSize < int(offset + sizeof(char)))
+		return false;
+	memcpy(&value, buffer + offset, sizeof(char));
+	offset += sizeof(char);
+	return true;
+}
+
+bool exportStr(char* value, char* buffer, int& offset, int totalSize, size_t valueSize)
 {
 	if (totalSize < int(offset + sizeof(valueSize)))
 		return false;
 	if (buffer == NULL)return false;
-	unsigned int c = htonl((*(int *)value));
-	memcpy(buffer + offset, &c, sizeof(valueSize));
+	memcpy(buffer + offset, value, sizeof(valueSize));
 	offset += sizeof(valueSize);
 	return true;
 }
 
-bool importChar(char* value, char* buffer, int& offset, int totalSize, size_t valueSize)
+bool importStr(char* value, char* buffer, int& offset, int totalSize, size_t valueSize)
 {
 	if (totalSize < int(offset + sizeof(valueSize)))
 		return false;
-	float c;
-	memcpy(&c, buffer + offset, sizeof(valueSize));
-	value =(char*)ntohl(c);
+	memcpy(value, buffer + offset, sizeof(valueSize));
 	offset += sizeof(valueSize);
 	return true;
 }
 
+//!@ LookMe : Float‚É‘Î‚·‚éhtonl,ntohl‚Í‚Å‚«‚È‚¢‚Ì‚Å‚Ç‚¤‚·‚é‚©
 bool exportFloat(float& value, char* buffer, int& offset, int totalSize)
 {
 	if (totalSize < int(offset + sizeof(float)))
 		return false;
 	if (buffer == NULL)return false;
-	unsigned int c = htonl(value);
-	memcpy(buffer + offset, &c, sizeof(float));
+	memcpy(buffer + offset, &value, sizeof(float));
 	offset += sizeof(float);
 	return true;
 }
 
-bool importIFloat(float& value, char* buffer, int& offset, int totalSize)
+bool importFloat(float& value, char* buffer, int& offset, int totalSize)
 {
 	if (totalSize < int(offset + sizeof(float)))
 		return false;
 	float c;
-	memcpy(&c, buffer + offset, sizeof(float));
-	value = ntohl(c);
+	memcpy(&value, buffer + offset, sizeof(float));
 	offset += sizeof(float);
 	return true;
 }
