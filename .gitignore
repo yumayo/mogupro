@@ -1,9 +1,6 @@
-# 実際のプロジェクト
+﻿# 実際のプロジェクト
 mogupro/game/vc2017/*
 !mogupro/game/vc2017/*.rc
-!mogupro/game/vc2017/*.sln
-!mogupro/game/vc2017/*.vcxproj
-!mogupro/game/vc2017/*.vcxproj.filters
 
 # cinderのライブラリを除く
 # 別途でダウンロードしたzipを解凍してフォルダに入れてください。
