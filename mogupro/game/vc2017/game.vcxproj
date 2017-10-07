@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -195,11 +195,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\librarys\cinder\proj\vc2017\cinder.vcxproj">
-      <Project>{92b5be70-dcaa-40e4-92d8-cc2b95aa28be}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
