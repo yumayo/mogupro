@@ -8,11 +8,9 @@ class cSocketBase
 {
 public:
 	//!@ LookMe : Œp³æ‚Å“à•”ˆ—‚ğ‘‚¢‚Ä‚­‚¾‚³‚¢
-	virtual void import() = 0;
-	virtual void export() = 0;
-
+	virtual void allImport() = 0;
+	virtual void allExport() = 0;
 	char* buff;
-	int offset;
 };
 
 bool exportInt(unsigned int& value, char* buffer, int& offset, int totalSize)
