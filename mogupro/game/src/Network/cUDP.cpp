@@ -1,19 +1,15 @@
-#include <Network/cUDPManager.h>
+#include <Network/cUDP.h>
 #include <Utility/cScopedMutex.h>
 #include <boost/lexical_cast.hpp>
 using udp = boost::asio::ip::udp;
 namespace Network
 {
 cUDP::cUDP( )
-    : cUDP( 0 )
-{
-}
-cUDP::cUDP( int port )
     : mUdpSocket( mIoService )
 {
     mRemoteBuffer.fill( 0 );
 }
-void cUDP::write( std::string ipaddress, int port, char const * sendData, size_t sendDataByteNumber )
+void cUDP::write( std::string ipaddress, int port, size_t sendDataByteNumber, char const * sendData )
 {
     try
     {
@@ -24,9 +20,11 @@ void cUDP::write( std::string ipaddress, int port, char const * sendData, size_t
         mUdpSocket.send_to( boost::asio::buffer( sendData, sendDataByteNumber ),
                             resolver.resolve( query )->endpoint( ) );
     }
-    catch ( boost::system::error_code& error )
+    catch ( boost::system::error_code& e )
     {
-        // 送れませんでした。
+        // 送信できない時に呼ばれます。
+        // ネットワークデバイスが向こうになっているときや、
+        // ネットワークにつながっていないときに呼ばれます。
     }
 }
 void cUDP::close( )
@@ -45,8 +43,17 @@ void cUDP::open( int port )
     mIsPause = false;
     if ( !mUdpSocket.is_open( ) )
     {
-        mUdpSocket.open( udp::v4( ) );
-        mUdpSocket.bind( udp::endpoint( udp::v4( ), port ) );
+        boost::system::error_code e;
+        mUdpSocket.open( udp::v4( ), e );
+        if ( e )
+        {
+            // openできなかった時
+        }
+        mUdpSocket.bind( udp::endpoint( udp::v4( ), port ), e );
+        if ( e )
+        {
+            // bindできなかった時
+        }
     }
     mUpdateIoService = std::thread( [ this ]
     {
@@ -58,6 +65,24 @@ void cUDP::open( int port )
         }
     } );
 }
+void cUDP::clearRemoteBuffer( )
+{
+    Utility::cScopedMutex m( mMutex );
+    mRemoteBuffers.clear( );
+    mRemoteBuffers.shrink_to_fit( );
+}
+bool cUDP::emptyRemoteBuffer( )
+{
+    Utility::cScopedMutex m( mMutex );
+    return mRemoteBuffers.empty( );
+}
+cPacketRaw&& cUDP::popRemoteBuffer( )
+{
+    Utility::cScopedMutex m( mMutex );
+    auto front = mRemoteBuffers.front( );
+    mRemoteBuffers.pop_front( );
+    return std::move( front );
+}
 void cUDP::receive( )
 {
     mUdpSocket.async_receive_from( boost::asio::buffer( mRemoteBuffer ),
@@ -66,12 +91,15 @@ void cUDP::receive( )
     {
         if ( e )
         {
-            int a = 0;
+            // 受信できなかった時に呼ばれます。
+            // ※パケットロスとかの判断はここでは出来ません。
+            // というかここが呼ばれたところを見たことがないです。
         }
         else
         {
             Utility::cScopedMutex m( mMutex );
-            mReceiveBuffers[mRemoteEndpoint].emplace_back( mRemoteBuffer );
+            mRemoteEndpoints.emplace_back( mRemoteEndpoint );
+            mRemoteBuffers.emplace_back( bytes_transferred, mRemoteBuffer );
             std::fill_n( mRemoteBuffer.begin( ), bytes_transferred, 0 );
         }
     } );
