@@ -36,8 +36,6 @@ void cUDPManager::onReceive( cPacketRaw const & raw )
     switch ( packetId )
     {
     // P=====BEGIN=====P
-    case Network::Packet::PacketId::INVALID_NUMBER:
-        break;
     case Network::Packet::PacketId::EVE_STRING:
     {
         Packet::Event::cEveString data;
@@ -46,11 +44,26 @@ void cUDPManager::onReceive( cPacketRaw const & raw )
         break;
     }
     case Network::Packet::PacketId::EVE_GET_JEM:
+    {
+        Packet::Event::cEveGetJem data;
+        data.onReceive( raw );
+        cEventManager::getInstance( )->ungetEveGetJem( data );
         break;
+    }
     case Network::Packet::PacketId::EVE_PLAYER_ROB_JEM:
+    {
+        Packet::Event::cEvePlayerRobJem data;
+        data.onReceive( raw );
+        cEventManager::getInstance( )->ungetEvePlayerRobJem( data );
         break;
+    }
     case Network::Packet::PacketId::EVE_PLAYER_DEATH:
+    {
+        Packet::Event::cEvePlayerDeath data;
+        data.onReceive( raw );
+        cEventManager::getInstance( )->ungetEvePlayerDeath( data );
         break;
+    }
     case Network::Packet::PacketId::REQ_STRING:
     {
         Packet::Request::cReqString data;
@@ -59,21 +72,61 @@ void cUDPManager::onReceive( cPacketRaw const & raw )
         break;
     }
     case Network::Packet::PacketId::REQ_PLAYER:
+    {
+        Packet::Request::cReqPlayer data;
+        data.onReceive( raw );
+        cRequestManager::getInstance( )->ungetReqPlayer( data );
         break;
+    }
     case Network::Packet::PacketId::REQ_GET_JEM_SEED:
+    {
+        Packet::Request::cReqGetJemSeed data;
+        data.onReceive( raw );
+        cRequestManager::getInstance( )->ungetReqGetJemSeed( data );
         break;
+    }
     case Network::Packet::PacketId::REQ_GET_JEM_POINT:
+    {
+        Packet::Request::cReqGetJemPoint data;
+        data.onReceive( raw );
+        cRequestManager::getInstance( )->ungetReqGetJemPoint( data );
         break;
+    }
     case Network::Packet::PacketId::REQ_CHECK_GET_JEM:
+    {
+        Packet::Request::cReqCheckGetJem data;
+        data.onReceive( raw );
+        cRequestManager::getInstance( )->ungetReqCheckGetJem( data );
         break;
+    }
     case Network::Packet::PacketId::REQ_CHECK_PLAYER_ROB_JEM:
+    {
+        Packet::Request::cReqCheckPlayerRobJem data;
+        data.onReceive( raw );
+        cRequestManager::getInstance( )->ungetReqCheckPlayerRobJem( data );
         break;
+    }
     case Network::Packet::PacketId::REQ_CHECK_BRAKE_BLOCKS:
+    {
+        Packet::Request::cReqCheckBrakeBlocks data;
+        data.onReceive( raw );
+        cRequestManager::getInstance( )->ungetReqCheckBrakeBlocks( data );
         break;
+    }
     case Network::Packet::PacketId::REQ_CHECK_SET_QUARRY:
+    {
+        Packet::Request::cReqCheckSetQuarry data;
+        data.onReceive( raw );
+        cRequestManager::getInstance( )->ungetReqCheckSetQuarry( data );
         break;
+    }
     case Network::Packet::PacketId::REQ_CHECK_PLAYER_DEATH:
+    {
+        Packet::Request::cReqCheckPlayerDeath data;
+        data.onReceive( raw );
+        cRequestManager::getInstance( )->ungetReqCheckPlayerDeath( data );
         break;
+    }
     case Network::Packet::PacketId::RES_STRING:
     {
         Packet::Response::cResString data;
@@ -82,21 +135,61 @@ void cUDPManager::onReceive( cPacketRaw const & raw )
         break;
     }
     case Network::Packet::PacketId::RES_PLAYER:
+    {
+        Packet::Response::cResPlayer data;
+        data.onReceive( raw );
+        cResponseManager::getInstance( )->ungetResPlayer( data );
         break;
+    }
     case Network::Packet::PacketId::RES_GET_JEM_SEED:
+    {
+        Packet::Response::cResGetJemSeed data;
+        data.onReceive( raw );
+        cResponseManager::getInstance( )->ungetResGetJemSeed( data );
         break;
+    }
     case Network::Packet::PacketId::RES_GET_JEM_POINT:
+    {
+        Packet::Response::cResGetJemPoint data;
+        data.onReceive( raw );
+        cResponseManager::getInstance( )->ungetResGetJemPoint( data );
         break;
+    }
     case Network::Packet::PacketId::RES_CHECK_GET_JEM:
+    {
+        Packet::Response::cResCheckGetJem data;
+        data.onReceive( raw );
+        cResponseManager::getInstance( )->ungetResCheckGetJem( data );
         break;
+    }
     case Network::Packet::PacketId::RES_CHECK_PLAYER_ROB_JEM:
+    {
+        Packet::Response::cResCheckPlayerRobJem data;
+        data.onReceive( raw );
+        cResponseManager::getInstance( )->ungetResCheckPlayerRobJem( data );
         break;
+    }
     case Network::Packet::PacketId::RES_CHECK_BRAKE_BLOCKS:
+    {
+        Packet::Response::cResCheckBrakeBlocks data;
+        data.onReceive( raw );
+        cResponseManager::getInstance( )->ungetResCheckBrakeBlocks( data );
         break;
+    }
     case Network::Packet::PacketId::RES_CHECK_SET_QUARRY:
+    {
+        Packet::Response::cResCheckSetQuarry data;
+        data.onReceive( raw );
+        cResponseManager::getInstance( )->ungetResCheckSetQuarry( data );
         break;
+    }
     case Network::Packet::PacketId::RES_CHECK_PLAYER_DEATH:
+    {
+        Packet::Response::cResCheckPlayerDeath data;
+        data.onReceive( raw );
+        cResponseManager::getInstance( )->ungetResCheckPlayerDeath( data );
         break;
+    }
     default:
         break;
     // P=====END=====P
