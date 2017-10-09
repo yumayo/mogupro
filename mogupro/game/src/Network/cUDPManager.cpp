@@ -35,6 +35,7 @@ void cUDPManager::onReceive( cPacketRaw const & raw )
 
     switch ( packetId )
     {
+    // P=====BEGIN=====P
     case Network::Packet::PacketId::INVALID_NUMBER:
         break;
     case Network::Packet::PacketId::EVE_STRING:
@@ -98,6 +99,7 @@ void cUDPManager::onReceive( cPacketRaw const & raw )
         break;
     default:
         break;
+    // P=====END=====P
     }
 }
 }
