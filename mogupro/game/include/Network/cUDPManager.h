@@ -8,6 +8,7 @@ namespace Network
 class cUDPManager
 {
 public:
+    virtual ~cUDPManager( ) { }
     template <class Ty, Packet::PacketId packetId>
     void send( std::string ipadress, int port, Packet::cPacketBase<Ty, packetId>* packetBase )
     {
@@ -25,7 +26,7 @@ public:
     void open( );
     void open( int port );
 public:
-    void update( );
+    virtual void update( );
 private:
     void onReceive( cPacketRaw const & raw );
 protected:

@@ -23,6 +23,7 @@ template <class Ty, PacketId packetId>
 class cPacketBase
 {
 public:
+    virtual ~cPacketBase( ) {}
     void onReceive( cPacketRaw const& raw )
     {
         ubyte2 const& packetByte = std::get<0>( raw );
