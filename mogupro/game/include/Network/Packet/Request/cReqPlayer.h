@@ -7,7 +7,6 @@ namespace Packet
 {
 namespace Request
 {
-#pragma pack(1)
 class cReqPlayer : public cPacketBase<cReqPlayer, PacketId::REQ_PLAYER>
 {
 public:
@@ -21,7 +20,6 @@ public:
     float yDir;
     float zDir;
 };
-#pragma pack()
 }
 }
 }

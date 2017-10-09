@@ -7,7 +7,6 @@ namespace Packet
 {
 namespace Response
 {
-#pragma pack(1)
 class cResCheckGetJem : public cPacketBase<cResCheckGetJem, PacketId::RES_CHECK_GET_JEM>
 {
 public:
@@ -15,7 +14,6 @@ public:
     void packetImport( ubyte2 size, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
 };
-#pragma pack()
 }
 }
 }

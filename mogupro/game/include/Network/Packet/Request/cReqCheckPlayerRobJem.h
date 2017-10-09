@@ -7,7 +7,6 @@ namespace Packet
 {
 namespace Request
 {
-#pragma pack(1)
 class cReqCheckPlayerRobJem : public cPacketBase<cReqCheckPlayerRobJem, PacketId::REQ_CHECK_PLAYER_ROB_JEM>
 {
 public:
@@ -15,7 +14,6 @@ public:
     void packetImport( ubyte2 size, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
 };
-#pragma pack()
 }
 }
 }

@@ -7,7 +7,6 @@ namespace Packet
 {
 namespace Event
 {
-#pragma pack(1)
 class cEveGetJem : public cPacketBase<cEveGetJem, PacketId::EVE_GET_JEM>
 {
 public:
@@ -21,7 +20,6 @@ public:
     // フィールドにあるどのジェムなのか。
     ubyte2 mGemId;
 };
-#pragma pack()
 }
 }
 }

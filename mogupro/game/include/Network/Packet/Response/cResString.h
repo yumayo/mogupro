@@ -7,7 +7,6 @@ namespace Packet
 {
 namespace Response
 {
-#pragma pack(1)
 class cResString : public cPacketBase<cResString, PacketId::RES_STRING>
 {
 public:
@@ -17,7 +16,6 @@ public:
     ubyte2 packetExport( char* const data ) override;
     std::string str;
 };
-#pragma pack()
 }
 }
 }
