@@ -5,21 +5,19 @@ namespace Network
 {
 namespace Packet
 {
-namespace Request
+namespace Event
 {
 #pragma pack(1)
-class cReqPlayer : public cPacketBase<cReqPlayer, PacketId::REQ_PLAYER>
+class cEvePlayerRobJem : public cPacketBase<cEvePlayerRobJem, PacketId::EVE_PLAYER_ROB_JEM>
 {
 public:
-    cReqPlayer( );
+    cEvePlayerRobJem( );
+    cEvePlayerRobJem( std::string const& playerName );
     void packetImport( ubyte2 size, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-    float xPos;
-    float yPos;
-    float zPos;
-    float xDir;
-    float yDir;
-    float zDir;
+    // íDÇ¡ÇΩëäéËÇÃñºëOÅB
+    // ÇªÇÃÇ§ÇøIDÇ∆Ç©Ç…Ç»ÇËÇªÇ§ÅB
+    std::string mPlayerName;
 };
 #pragma pack()
 }

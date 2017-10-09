@@ -5,21 +5,15 @@ namespace Network
 {
 namespace Packet
 {
-namespace Request
+namespace Response
 {
 #pragma pack(1)
-class cReqPlayer : public cPacketBase<cReqPlayer, PacketId::REQ_PLAYER>
+class cResCheckGetJem : public cPacketBase<cResCheckGetJem, PacketId::RES_CHECK_GET_JEM>
 {
 public:
-    cReqPlayer( );
+    cResCheckGetJem( );
     void packetImport( ubyte2 size, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-    float xPos;
-    float yPos;
-    float zPos;
-    float xDir;
-    float yDir;
-    float zDir;
 };
 #pragma pack()
 }

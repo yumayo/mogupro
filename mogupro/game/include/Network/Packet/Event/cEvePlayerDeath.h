@@ -5,21 +5,18 @@ namespace Network
 {
 namespace Packet
 {
-namespace Request
+namespace Event
 {
 #pragma pack(1)
-class cReqPlayer : public cPacketBase<cReqPlayer, PacketId::REQ_PLAYER>
+class cEvePlayerDeath : public cPacketBase<cEvePlayerDeath, PacketId::EVE_PLAYER_DEATH>
 {
 public:
-    cReqPlayer( );
+    cEvePlayerDeath( );
+    cEvePlayerDeath( std::string const& playerName );
     void packetImport( ubyte2 size, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-    float xPos;
-    float yPos;
-    float zPos;
-    float xDir;
-    float yDir;
-    float zDir;
+    // ì|ÇµÇΩëäéËÇÃñºëOÅB
+    std::string mPlayerName;
 };
 #pragma pack()
 }

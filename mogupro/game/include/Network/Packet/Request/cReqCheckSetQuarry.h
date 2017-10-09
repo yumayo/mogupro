@@ -8,18 +8,12 @@ namespace Packet
 namespace Request
 {
 #pragma pack(1)
-class cReqPlayer : public cPacketBase<cReqPlayer, PacketId::REQ_PLAYER>
+class cReqCheckSetQuarry : public cPacketBase<cReqCheckSetQuarry, PacketId::REQ_CHECK_SET_QUARRY>
 {
 public:
-    cReqPlayer( );
+    cReqCheckSetQuarry( );
     void packetImport( ubyte2 size, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-    float xPos;
-    float yPos;
-    float zPos;
-    float xDir;
-    float yDir;
-    float zDir;
 };
 #pragma pack()
 }
