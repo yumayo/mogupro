@@ -190,9 +190,9 @@ void cUDPManager::onReceive( cPacketRaw const & raw )
         cResponseManager::getInstance( )->ungetResCheckPlayerDeath( data );
         break;
     }
+    // P=====END=====P
     default:
         break;
-    // P=====END=====P
     }
 }
 }
