@@ -7,7 +7,6 @@ namespace Packet
 {
 namespace Event
 {
-#pragma pack(1)
 class cEveString : public cPacketBase<cEveString, PacketId::EVE_STRING>
 {
 public:
@@ -17,7 +16,6 @@ public:
     ubyte2 packetExport( char* const data ) override;
     std::string str;
 };
-#pragma pack()
 }
 }
 }

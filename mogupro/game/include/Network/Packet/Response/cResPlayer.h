@@ -7,7 +7,6 @@ namespace Packet
 {
 namespace Response
 {
-#pragma pack(1)
 class cResPlayer : public cPacketBase<cResPlayer, PacketId::RES_PLAYER>
 {
 public:
@@ -23,7 +22,6 @@ public:
     float yDir;
     float zDir;
 };
-#pragma pack()
 }
 }
 }

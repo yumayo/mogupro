@@ -7,7 +7,6 @@ namespace Packet
 {
 namespace Event
 {
-#pragma pack(1)
 class cEvePlayerDeath : public cPacketBase<cEvePlayerDeath, PacketId::EVE_PLAYER_DEATH>
 {
 public:
@@ -18,7 +17,6 @@ public:
     // “|‚µ‚½‘Šè‚Ì–¼‘OB
     std::string mPlayerName;
 };
-#pragma pack()
 }
 }
 }

@@ -7,7 +7,6 @@ namespace Packet
 {
 namespace Event
 {
-#pragma pack(1)
 class cEvePlayerRobJem : public cPacketBase<cEvePlayerRobJem, PacketId::EVE_PLAYER_ROB_JEM>
 {
 public:
@@ -19,7 +18,6 @@ public:
     // ÇªÇÃÇ§ÇøIDÇ∆Ç©Ç…Ç»ÇËÇªÇ§ÅB
     std::string mPlayerName;
 };
-#pragma pack()
 }
 }
 }
