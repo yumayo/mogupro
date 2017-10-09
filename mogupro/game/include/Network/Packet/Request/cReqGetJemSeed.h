@@ -8,18 +8,12 @@ namespace Packet
 namespace Request
 {
 #pragma pack(1)
-class cReqPlayer : public cPacketBase<cReqPlayer, PacketId::REQ_PLAYER>
+class cReqGetJemSeed : public cPacketBase<cReqGetJemSeed, PacketId::REQ_GET_JEM_SEED>
 {
 public:
-    cReqPlayer( );
+    cReqGetJemSeed( );
     void packetImport( ubyte2 size, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-    float xPos;
-    float yPos;
-    float zPos;
-    float xDir;
-    float yDir;
-    float zDir;
 };
 #pragma pack()
 }

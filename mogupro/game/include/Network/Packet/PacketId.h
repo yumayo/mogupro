@@ -4,7 +4,7 @@ namespace Network
 {
 namespace Packet
 {
-enum class PacketId : ubyte2
+enum class PacketId : ubyte1
 {
     // 初期化用です。
     // 0で埋めているので、間違って呼ばれないように保険を掛けておきます。
@@ -19,8 +19,12 @@ enum class PacketId : ubyte2
     EVE_STRING,
     // 他のプレイヤーや掘削機がフィールドのジェムを採ったと通知されました。
     EVE_GET_JEM,
-    // 他のプレイヤーからジェムを奪ったと通知されました。
+    // 他のプレイヤーに奪われたと通知されました。
+    // ※この瞬間にプレイヤーはステータスを変えてください。
     EVE_PLAYER_ROB_JEM,
+    // 他のプレイヤーに倒されたと通知されました。
+    // ※この瞬間にプレイヤーはステータスを変えてください。
+    EVE_PLAYER_DEATH,
 
     //=========================================================//
     //                        Request                          //
@@ -37,16 +41,19 @@ enum class PacketId : ubyte2
     REQ_GET_JEM_POINT,
     // ジェムを取得したことを知らせます。プレイヤーと掘削機の両方、このパケットを使ってください。
     // ※このタイミングでは取得できません。サーバーからのレスポンスを待ってください。
-    REQ_GET_JEM,
+    REQ_CHECK_GET_JEM,
     // プレイヤーが他のプレイヤーのジェムを奪ったことを通知します。
     // ※このタイミングでは奪取できません。サーバーからのレスポンスを待ってください。
-    REQ_PLAYER_ROB_JEM,
+    REQ_CHECK_PLAYER_ROB_JEM,
     // ブロックを破壊したと知らせます。
     // ※このタイミングでは破壊できません。サーバーからのレスポンスを待ってください。
-    REQ_BREKE_BLOCKS,
+    REQ_CHECK_BRAKE_BLOCKS,
     // 掘削機を設置したと知らせます。
     // ※このタイミングでは設置できません。サーバーからのレスポンスを待ってください。
-    REQ_SET_QUARRY,
+    REQ_CHECK_SET_QUARRY,
+    // 他のプレイヤーを倒した情報をサーバーに送る。
+    // ※このタイミングでは倒せません。サーバーからのレスポンスを待ってください。
+    REQ_CHECK_PLAYER_DEATH,
 
     //=========================================================//
     //                        Response                         //
@@ -55,20 +62,22 @@ enum class PacketId : ubyte2
 
     // <std::string>を送ります。
     RES_STRING,
-    // 他のプレイヤーの位置情報を渡します。
+    // 他のプレイヤーの情報を渡します。
     RES_PLAYER,
     // ワールドを生成するためのシード値を渡します。
     RES_GET_JEM_SEED,
     // プレイヤーが持っているジェムの数を渡します。
     RES_GET_JEM_POINT,
-    // ジェムの取得が成功したか失敗したかについて通知します。
-    RES_GET_JEM,
-    // ジェムの奪取が成功したか失敗したかについて通知します。
-    RES_PLAYER_ROB_JEM,
-    // ブロック破壊が成功したか失敗したかについて通知します。
-    RES_BREKE_BLOCKS,
-    // 掘削機の設置が成功したか失敗したかについて通知します。
-    RES_SET_QUARRY,
+    // ジェムの取得に成功したか失敗したか、について通知します。
+    RES_CHECK_GET_JEM,
+    // ジェムの奪取に成功したか失敗したか、について通知します。
+    RES_CHECK_PLAYER_ROB_JEM,
+    // ブロック破壊に成功したか失敗したか、について通知します。
+    RES_CHECK_BRAKE_BLOCKS,
+    // 掘削機の設置に成功したか失敗したか、について通知します。
+    RES_CHECK_SET_QUARRY,
+    // 他のプレイヤーのキルに成功したか失敗したか、について通知します。
+    RES_CHECK_PLAYER_DEATH,
 };
 }
 }

@@ -8,14 +8,18 @@ namespace Packet
 namespace Event
 {
 #pragma pack(1)
-class cEveString : public cPacketBase<cEveString, PacketId::EVE_STRING>
+class cEveGetJem : public cPacketBase<cEveGetJem, PacketId::EVE_GET_JEM>
 {
 public:
-    cEveString( );
-    cEveString( std::string const& str );
+    cEveGetJem( );
+    cEveGetJem( ubyte2 gemId );
     void packetImport( ubyte2 size, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-    std::string str;
+    // 採った相手の名前。
+    // ※掘削機にも名前を付けておくのか、あとで話し合わないと！
+    std::string mTargetName;
+    // フィールドにあるどのジェムなのか。
+    ubyte2 mGemId;
 };
 #pragma pack()
 }

@@ -35,6 +35,8 @@ void cUDPManager::onReceive( cPacketRaw const & raw )
 
     switch ( packetId )
     {
+    case Network::Packet::PacketId::INVALID_NUMBER:
+        break;
     case Network::Packet::PacketId::EVE_STRING:
     {
         Packet::Event::cEveString data;
@@ -45,6 +47,8 @@ void cUDPManager::onReceive( cPacketRaw const & raw )
     case Network::Packet::PacketId::EVE_GET_JEM:
         break;
     case Network::Packet::PacketId::EVE_PLAYER_ROB_JEM:
+        break;
+    case Network::Packet::PacketId::EVE_PLAYER_DEATH:
         break;
     case Network::Packet::PacketId::REQ_STRING:
     {
@@ -59,13 +63,15 @@ void cUDPManager::onReceive( cPacketRaw const & raw )
         break;
     case Network::Packet::PacketId::REQ_GET_JEM_POINT:
         break;
-    case Network::Packet::PacketId::REQ_GET_JEM:
+    case Network::Packet::PacketId::REQ_CHECK_GET_JEM:
         break;
-    case Network::Packet::PacketId::REQ_PLAYER_ROB_JEM:
+    case Network::Packet::PacketId::REQ_CHECK_PLAYER_ROB_JEM:
         break;
-    case Network::Packet::PacketId::REQ_BREKE_BLOCKS:
+    case Network::Packet::PacketId::REQ_CHECK_BRAKE_BLOCKS:
         break;
-    case Network::Packet::PacketId::REQ_SET_QUARRY:
+    case Network::Packet::PacketId::REQ_CHECK_SET_QUARRY:
+        break;
+    case Network::Packet::PacketId::REQ_CHECK_PLAYER_DEATH:
         break;
     case Network::Packet::PacketId::RES_STRING:
     {
@@ -80,13 +86,15 @@ void cUDPManager::onReceive( cPacketRaw const & raw )
         break;
     case Network::Packet::PacketId::RES_GET_JEM_POINT:
         break;
-    case Network::Packet::PacketId::RES_GET_JEM:
+    case Network::Packet::PacketId::RES_CHECK_GET_JEM:
         break;
-    case Network::Packet::PacketId::RES_PLAYER_ROB_JEM:
+    case Network::Packet::PacketId::RES_CHECK_PLAYER_ROB_JEM:
         break;
-    case Network::Packet::PacketId::RES_BREKE_BLOCKS:
+    case Network::Packet::PacketId::RES_CHECK_BRAKE_BLOCKS:
         break;
-    case Network::Packet::PacketId::RES_SET_QUARRY:
+    case Network::Packet::PacketId::RES_CHECK_SET_QUARRY:
+        break;
+    case Network::Packet::PacketId::RES_CHECK_PLAYER_DEATH:
         break;
     default:
         break;
