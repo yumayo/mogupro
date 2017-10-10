@@ -1,10 +1,6 @@
 #pragma once
-#include "cinder/app/App.h"
-#include "cinder/Camera.h"
-#include <cinder/imageIo.h>
-#include <cinder/gl/Texture.h> 
-#include <cinder/gl/gl.h>
-#include <random>
+#include <cinder/app/App.h>
+#include <cinder/Camera.h>
 #define CAMERA ProductionCamera::get()
 
 namespace camera_ {
@@ -43,8 +39,8 @@ private:
 
 	//カメラの
 
-	//画面を暗くしたり明るくしたるする用の画像
-	ci::gl::TextureRef fade_tex;
+	////画面を暗くしたり明るくしたるする用の画像
+	//ci::gl::TextureRef fade_tex;
 
 	//慣性つきカメラ移動
 	void MovingCamera();

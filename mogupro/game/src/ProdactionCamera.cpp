@@ -1,6 +1,6 @@
 #include <ProdactionCamera.h>
-
-
+#include <random>
+#include <cinder/gl/gl.h>
 void ProductionCamera::shakeCamera(const float & scatter, const float & seconds)
 {
 	this->scatter = scatter;
@@ -9,7 +9,7 @@ void ProductionCamera::shakeCamera(const float & scatter, const float & seconds)
 
 void ProductionCamera::setup() {
 	camera.setAspectRatio(ci::app::getWindowAspectRatio());
-	camera.lookAt(ci::vec3((*reference_pos)->x, (*reference_pos)->y, (*reference_pos)->z), ci::vec3(0), ci::vec3(0, -1, 0));
+	camera.lookAt(ci::vec3((*reference_pos)->x, (*reference_pos)->y, (*reference_pos)->z), ci::vec3(0), ci::vec3(0, 1, 0));
 	camera.setFarClip(10000);
 }
 
@@ -43,8 +43,6 @@ void ProductionCamera::update(const float& delta_time) {
 	looking_point.y = camera_far * sin(camera_angle.y);
 
 	MovingCamera();
-
-	
 
 	camera.lookAt(pos + looking_point, pos + ci::vec3(my_scatter.x, my_scatter.y,0));
 }
