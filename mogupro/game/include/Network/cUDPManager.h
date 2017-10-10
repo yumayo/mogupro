@@ -5,19 +5,16 @@
 #include <Network/Packet/PacketId.h>
 namespace Network
 {
-class cUDPManager
+class cUDPManager : public Utility::cSingletonAble<cUDPManager>
 {
 public:
-    virtual ~cUDPManager( ) { }
     template <class Ty, Packet::PacketId packetId>
-    void send( std::string ipadress, int port, Packet::cPacketBase<Ty, packetId>* packetBase )
+    void send( cNetworkHandle const& networkHandle, Packet::cPacketBase<Ty, packetId>* packetBase )
     {
         if ( packetBase == nullptr ) return;
 
-        auto&& packetRaw = packetBase->createPacket( );
-        ubyte2& byte = std::get<0>( packetRaw );
-        cBuffer& data = std::get<1>( packetRaw );
-        socket.write( ipadress, port, byte, data.data( ) );
+        auto&& raw = packetBase->createPacket( );
+        sendDataBufferAdd( networkHandle, raw );
 
         delete packetBase;
         packetBase = nullptr;
@@ -26,10 +23,12 @@ public:
     void open( );
     void open( int port );
 public:
-    virtual void update( );
+    void update( );
 private:
-    void onReceive( cPacketRaw const & raw );
+    void onReceive( cPacketChunk const & packetChunk );
+    void sendDataBufferAdd( cNetworkHandle const& networkHandle, cPacketBuffer const& packetBuffer );
 protected:
-    cUDP socket;
+    std::map<cNetworkHandle, std::vector<char>> mSendDataBuffer;
+    cUDP mSocket;
 };
 }

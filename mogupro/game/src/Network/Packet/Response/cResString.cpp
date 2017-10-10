@@ -14,9 +14,9 @@ cResString::cResString( std::string str )
     : str( str )
 {
 }
-void cResString::packetImport( ubyte2 size, char const* const data )
+void cResString::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
-    str = data;
+    str = std::string( data, transferredBytes );
 }
 ubyte2 cResString::packetExport( char* const data )
 {

@@ -15,7 +15,7 @@ cEvePlayerRobJem::cEvePlayerRobJem( std::string const & playerName )
 {
 
 }
-void cEvePlayerRobJem::packetImport( ubyte2 size, char const* const data )
+void cEvePlayerRobJem::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
     mPlayerName = data;
 }

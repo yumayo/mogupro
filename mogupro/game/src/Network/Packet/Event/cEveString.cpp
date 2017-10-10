@@ -14,9 +14,9 @@ cEveString::cEveString( std::string const & str )
     : str( str )
 {
 }
-void cEveString::packetImport( ubyte2 size, char const* const data )
+void cEveString::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
-    str = data;
+    str = std::string( data, transferredBytes );
 }
 ubyte2 cEveString::packetExport( char* const data )
 {

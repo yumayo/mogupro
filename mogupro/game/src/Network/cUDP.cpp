@@ -9,14 +9,14 @@ cUDP::cUDP( )
 {
     mRemoteBuffer.fill( 0 );
 }
-void cUDP::write( std::string ipaddress, int port, size_t sendDataByteNumber, char const * sendData )
+void cUDP::write( cNetworkHandle const& networkHandle, size_t sendDataByteNumber, char const * sendData )
 {
     try
     {
         udp::resolver resolver( mIoService );
         udp::resolver::query query( udp::v4( ),
-                                    ipaddress,
-                                    boost::lexical_cast<std::string>( port ) );
+                                    networkHandle.ipAddress,
+                                    boost::lexical_cast<std::string>( networkHandle.port ) );
         mUdpSocket.send_to( boost::asio::buffer( sendData, sendDataByteNumber ),
                             resolver.resolve( query )->endpoint( ) );
     }
@@ -65,29 +65,29 @@ void cUDP::open( int port )
         }
     } );
 }
-void cUDP::clearRemoteBuffer( )
+void cUDP::clearChunk( )
 {
     Utility::cScopedMutex m( mMutex );
-    mRemoteBuffers.clear( );
-    mRemoteBuffers.shrink_to_fit( );
+    mChacheEndpoints.clear( );
+    mChacheEndpoints.shrink_to_fit( );
 }
-bool cUDP::emptyRemoteBuffer( )
+bool cUDP::emptyChunk( )
 {
     Utility::cScopedMutex m( mMutex );
-    return mRemoteBuffers.empty( );
+    return mChacheEndpoints.empty( );
 }
-cPacketRaw&& cUDP::popRemoteBuffer( )
+cPacketChunk&& cUDP::popChunk( )
 {
     Utility::cScopedMutex m( mMutex );
-    auto front = mRemoteBuffers.front( );
-    mRemoteBuffers.pop_front( );
+    auto front = mChacheEndpoints.front( );
+    mChacheEndpoints.pop_front( );
     return std::move( front );
 }
 void cUDP::receive( )
 {
     mUdpSocket.async_receive_from( boost::asio::buffer( mRemoteBuffer ),
                                    mRemoteEndpoint,
-                                   [ this ] ( const boost::system::error_code& e, size_t bytes_transferred )
+                                   [ this ] ( const boost::system::error_code& e, size_t transferredBytes )
     {
         if ( e )
         {
@@ -98,9 +98,8 @@ void cUDP::receive( )
         else
         {
             Utility::cScopedMutex m( mMutex );
-            mRemoteEndpoints.emplace_back( mRemoteEndpoint );
-            mRemoteBuffers.emplace_back( bytes_transferred, mRemoteBuffer );
-            std::fill_n( mRemoteBuffer.begin( ), bytes_transferred, 0 );
+            mChacheEndpoints.emplace_back( mRemoteEndpoint.address( ).to_string( ), mRemoteEndpoint.port( ), transferredBytes, mRemoteBuffer );
+            std::fill_n( mRemoteBuffer.begin( ), transferredBytes, 0 );
         }
     } );
 }

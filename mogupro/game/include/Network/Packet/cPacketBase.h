@@ -24,23 +24,20 @@ class cPacketBase
 {
 public:
     virtual ~cPacketBase( ) {}
-    void onReceive( cPacketRaw const& raw )
+    void onReceive( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const packet )
     {
-        ubyte2 const& packetByte = std::get<0>( raw );
-        cBuffer const& buffer = std::get<1>( raw );
-
         // 先にヘッダーを読み込む。
         // 子供に破壊されたら最も後もないので。
-        memcpy( &mHeader, buffer.data( ), sizeof( PacketHeader ) );
+        memcpy( &mHeader, packet, sizeof( PacketHeader ) );
 
         // 次に子供にやってもらう。
-        packetImport( packetByte - sizeof( PacketHeader ), buffer.data( ) + sizeof( PacketHeader ) );
+        packetImport( networkHandle, transferredBytes - sizeof( PacketHeader ), packet + sizeof( PacketHeader ) );
     }
-    cPacketRaw&& createPacket( )
+    cPacketBuffer&& createPacket( )
     {
-        cPacketRaw raw;
-        ubyte2& packetByte = std::get<0>( raw );
-        cBuffer& buffer = std::get<1>( raw );
+        cPacketBuffer packetBuffer;
+        ubyte2& packetByte = packetBuffer.transferredBytes;
+        cBuffer& buffer = packetBuffer.buffer;
 
         // 子供のパケットを先に詰めてもらう。
         // 子供にヘッダーパケットを壊されて謎のエラーが出ても嫌なので。
@@ -58,7 +55,7 @@ public:
         // これは65535分のいくつ使ったのかという情報がないと送る時にわからなくなるから。
         packetByte = header.mPacketByte;
 
-        return std::move( raw );
+        return std::move( packetBuffer );
     }
     //!@ LookMe : 継承先で受信したパケットをもとに構成し直してください。
     // ヘッダーデータは含まれません。
@@ -66,7 +63,7 @@ public:
     // ※この関数が呼ばれた後すぐに受信パケットが削除されます。
     // ポインタを保存とかわけのわからんことをしないように。
     // ちゃんとコピーを取ってください。
-    virtual void packetImport( ubyte2 packetByte, char const* const packet ) = 0;
+    virtual void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) = 0;
     //!@ LookMe : 継承先で送信するパケットを構成してください。
     // ヘッダーデータは含まなくて大丈夫です。
     // 返り値は継承先の送りたいパケットサイズ。

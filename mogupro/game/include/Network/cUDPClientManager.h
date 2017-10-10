@@ -3,7 +3,7 @@
 #include <Network/cUDPManager.h>
 namespace Network
 {
-class cUDPClientManager : public Utility::cSingletonAble<cUDPClientManager>, public cUDPManager
+class cUDPClientManager : public Utility::cSingletonAble<cUDPClientManager>
 {
 };
 }
