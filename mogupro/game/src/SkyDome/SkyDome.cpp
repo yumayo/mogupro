@@ -1,0 +1,35 @@
+#include <SkyDome/SkyDome.h>
+#include <Utility/TextureManager.h>
+#include <ProdactionCamera.h>
+void SkyDome::setup()
+{
+	//画像のバインド
+	TEX.set("sky_dome","SkyDome/Skydome151004y.jpg");
+
+	size = ci::vec3(5000, 5000, 5000);
+	
+	//画像を貼れる状態にする
+	//カリングが適用されなかったのでLambertはなし
+	auto shader = ci::gl::ShaderDef().texture();
+	mGlsl = ci::gl::getStockShader(shader);
+	//頂点数５０のスフィア生成
+	auto sphere = ci::geom::Sphere().subdivisions(50);
+	mSphere = ci::gl::Batch::create(sphere, mGlsl);
+
+}
+
+void SkyDome::draw()
+{
+	
+	//画像をバインド
+	TEX.get("sky_dome")->bind();
+	ci::gl::pushModelView();
+	ci::gl::translate(CAMERA.getPos());
+	ci::gl::scale(size);
+	mSphere->draw();
+	ci::gl::popModelView();
+
+	TEX.get("sky_dome")->unbind();
+
+
+}
