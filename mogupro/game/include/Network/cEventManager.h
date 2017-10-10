@@ -10,7 +10,7 @@ class cEventManager : public Utility::cSingletonAble<cEventManager>
 public:
     Packet::Event::cEveString getEveString( );
     void ungetEveString( Packet::Event::cEveString const& data );
-private:
+public:
     std::stack<Packet::Event::cEveString> mEveString;
 public:
     Packet::Event::cEveGetJem getEveGetJem( );

@@ -9,7 +9,7 @@ cReqCheckPlayerRobJem::cReqCheckPlayerRobJem( )
 {
 
 }
-void cReqCheckPlayerRobJem::packetImport( ubyte2 size, char const* const data )
+void cReqCheckPlayerRobJem::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
 
 }

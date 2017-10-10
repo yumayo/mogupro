@@ -14,17 +14,17 @@ class cUDP
 {
 public:
     cUDP( );
-    void write( std::string ipaddress, int port, size_t sendDataByteNumber, char const * sendData );
+    void write( cNetworkHandle const& networkHandle, size_t sendDataByteNumber, char const * const sendData );
     void close( );
     void open( );
     void open( int port );
     // socketにあるデータを全て削除します。
-    void clearRemoteBuffer( );
+    void clearChunk( );
     // socketにデータがあるかどうか。
-    bool emptyRemoteBuffer( );
+    bool emptyChunk( );
     // 古いデータから返します。
     // その時に一緒にそのデータは削除されます。
-    cPacketRaw&& popRemoteBuffer( );
+    cPacketChunk&& popChunk( );
 private:
     void receive( );
 private:
@@ -43,9 +43,7 @@ private:
     // 物理層で65536以上は送れない事になっているのでいっぱいになることはありません。
     cBuffer mRemoteBuffer;
     
-    // 受信してきた相手のipaddressやportを溜めておきます。
-    std::deque<boost::asio::ip::udp::endpoint> mRemoteEndpoints;
-    // 受信データを溜めておきます。
-    std::deque<cPacketRaw> mRemoteBuffers;
+    // 送られてきたデータや、送って来た相手の情報を保存しておきます。
+    std::deque<cPacketChunk> mChacheEndpoints;
 };
 }

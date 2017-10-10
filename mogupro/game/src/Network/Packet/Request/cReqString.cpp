@@ -14,9 +14,9 @@ cReqString::cReqString( std::string str )
     : str( str )
 {
 }
-void cReqString::packetImport( ubyte2 size, char const* const data )
+void cReqString::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
-    str = data;
+    str = std::string( data, transferredBytes );
 }
 ubyte2 cReqString::packetExport( char* const data )
 {

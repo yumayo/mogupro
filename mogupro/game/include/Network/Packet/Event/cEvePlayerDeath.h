@@ -12,7 +12,7 @@ class cEvePlayerDeath : public cPacketBase<cEvePlayerDeath, PacketId::EVE_PLAYER
 public:
     cEvePlayerDeath( );
     cEvePlayerDeath( std::string const& playerName );
-    void packetImport( ubyte2 size, char const* const data ) override;
+    void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
     // “|‚µ‚½‘ŠŽè‚Ì–¼‘OB
     std::string mPlayerName;

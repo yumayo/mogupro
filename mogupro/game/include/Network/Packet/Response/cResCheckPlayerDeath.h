@@ -11,7 +11,7 @@ class cResCheckPlayerDeath : public cPacketBase<cResCheckPlayerDeath, PacketId::
 {
 public:
     cResCheckPlayerDeath( );
-    void packetImport( ubyte2 size, char const* const data ) override;
+    void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
 };
 }

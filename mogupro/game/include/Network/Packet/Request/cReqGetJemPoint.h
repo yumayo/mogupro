@@ -11,7 +11,7 @@ class cReqGetJemPoint : public cPacketBase<cReqGetJemPoint, PacketId::REQ_GET_JE
 {
 public:
     cReqGetJemPoint( );
-    void packetImport( ubyte2 size, char const* const data ) override;
+    void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
 };
 }
