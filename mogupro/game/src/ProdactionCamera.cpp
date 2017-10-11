@@ -1,6 +1,7 @@
 #include <ProdactionCamera.h>
 #include <random>
 #include <cinder/gl/gl.h>
+
 void ProductionCamera::shakeCamera(const float & scatter, const float & seconds)
 {
 	this->scatter = scatter;

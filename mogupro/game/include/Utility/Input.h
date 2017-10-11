@@ -3,23 +3,29 @@
 #include <iostream>
 #include <unordered_map>
 #include <set>
-#include "cinder/app/App.h"
-#define ENV InputAll::get()
+#include <cinder/app/App.h>
+#include <Utility/cSingletonAble.h>
+#include <Windows.h>
+#define ENV InputAll::getInstance()
 
-class InputAll
+
+class InputAll : public Utility::cSingletonAble<InputAll>
 {
 private:
 	//キーボード
 	std::unordered_map<std::string, int> serch;
 	std::unordered_map<int, int> keys;
-	
-	//マウス
 	std::set<int> press;
 	std::set<int> push;
 	std::set<int> pull;
+
+	//マウス
+	ci::vec2 mouse_pos;
+	ci::vec2 inc_pos;
 	bool mouse_left_press;
 	bool mouse_right_press;
 	bool cursor_captured;
+	POINT last_cursor_pos;
 
 	//ゲームパッド
 	std::set<int> padpush;
@@ -28,13 +34,11 @@ private:
 	std::map<int, float> pad_stick_axis_value;
 	void padAxisSetup();
 
+	bool mouse_active;
+
 public:
 	InputAll();
-	static InputAll& get() {
-		static InputAll in;
-		return in;
-	}
-
+	
 	// ゲームパッド
 	void padSetup();
 	void padUpdate();
@@ -81,10 +85,14 @@ public:
 	void keyDown(const ci::app::KeyEvent& event);
 	void keyUp(const ci::app::KeyEvent& event);
 
-
+	//マウス
+	void mouseMove(const ci::app::MouseEvent& event);
+	void mouseDrag(const ci::app::MouseEvent& event);
 	void mouseDown(const ci::app::MouseEvent& event);
 	void mouseUp(const ci::app::MouseEvent& event);
-
+	void setMouseControl(const bool& flag) {
+		mouse_active = flag;
+	}
 
 	bool pressKey(const int& pressed_key);
 	bool pushKey(const int& pressed_key);

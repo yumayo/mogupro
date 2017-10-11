@@ -1,7 +1,8 @@
 #pragma once
 #include <cinder/app/App.h>
 #include <cinder/Camera.h>
-#define CAMERA ProductionCamera::get()
+#include <Utility/cSingletonAble.h>
+#define CAMERA ProductionCamera::getInstance()
 
 namespace camera_ {
 	enum WINDOW_SIZE {
@@ -12,7 +13,7 @@ namespace camera_ {
 	};
 }
 
-class ProductionCamera {
+class ProductionCamera : public Utility::cSingletonAble<ProductionCamera>{
 private:
 	ci::CameraPersp camera;
 	ci::vec3 pos;
@@ -67,15 +68,12 @@ public:
 	~ProductionCamera() {
 		
 	}
-	static ProductionCamera& get() {
-		static ProductionCamera in;
-		return in;
-	}
-
+	
 	const ci::CameraPersp& getCamera() {
 		return camera;
 	}
 
+	
 	void setCameraAngle(const ci::vec2& angle) {
 		camera_angle += angle;
 		camera_angle.y = std::min(float(M_PI / 2) - 0.01f,
@@ -86,9 +84,9 @@ public:
 		return ci::vec3(pos.x,pos.y,pos.z);
 	}
 	
-	void followingCamera(ci::vec3* pos,const float& far) {
+	void followingCamera(ci::vec3* pos,const float& camera_farZ) {
 		reference_pos = std::make_shared<ci::vec3*>(pos);
-		camera_far = far;
+		this->camera_far = camera_farZ;
 	}
 	
 	//ÉJÉÅÉâÇóhÇÁÇ∑ä÷êî
