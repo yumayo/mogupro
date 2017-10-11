@@ -24,7 +24,7 @@ void SkyDome::draw()
 	//‰æ‘œ‚ðƒoƒCƒ“ƒh
 	TEX.get("sky_dome")->bind();
 	ci::gl::pushModelView();
-	ci::gl::translate(CAMERA.getPos());
+	ci::gl::translate(CAMERA->getPos());
 	ci::gl::scale(size);
 	mSphere->draw();
 	ci::gl::popModelView();
