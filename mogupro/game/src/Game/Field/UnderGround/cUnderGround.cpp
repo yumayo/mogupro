@@ -16,7 +16,7 @@ cUnderGround::~cUnderGround()
 }
 void cUnderGround::setup()
 {
-    int num = 16;
+    int num = 4;
     float offset = 0.3f;
     float scale = 1;
 
