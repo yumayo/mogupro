@@ -89,7 +89,7 @@ void cUnderGround::draw()
         {
             for (size_t x = 0; x < blocks[z][y].size(); x++)
             {
-                blocks[z][y][x].drawMesh();
+                blocks[z][y][x].draw();
             }
         }
     }
@@ -97,9 +97,17 @@ void cUnderGround::draw()
 void cUnderGround::setupTestCube()
 {
 }
-void cUnderGround::blockBreak(ci::ivec3 block_num)
+void cUnderGround::blockBreak(ci::vec3 position, int range)
 {
-    blocks[block_num.z][block_num.y][block_num.x].toBreak();
+    int x = position.x / scale;
+    int y = position.y / scale;
+    int z = position.z / scale;
+
+    if (z < 0 || z > blocks.size() - 1)return;
+    if (y < 0 || y > blocks[z].size() - 1)return;
+    if (x < 0 || x > blocks[z][y].size() - 1)return;
+
+    blocks[z][y][x].toBreak();
 }
 }
 }

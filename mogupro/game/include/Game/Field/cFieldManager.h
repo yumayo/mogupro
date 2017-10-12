@@ -18,8 +18,7 @@ public:
     void update(const int delta_time);
     void draw();
 
-    void blockBreak(ci::ivec3 block_num);
-    void blockBreak(int x, int y, int z);
+    void blockBreak(ci::vec3 position, int range);
 
 private:
     UnderGround::cUnderGround mUnderGround;

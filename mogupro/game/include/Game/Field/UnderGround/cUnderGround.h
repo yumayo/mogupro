@@ -20,10 +20,17 @@ public:
 
     void setupTestCube();
 
-    void blockBreak(ci::ivec3 block_num);
+    // position : target position
+    // range    : break range
+    void blockBreak(ci::vec3 position, int range);
 
 private:
     std::vector<std::vector<std::vector<cBlock>>> blocks;
+
+private:
+    int num;
+    float offset;
+    float scale;
 };
 }
 }

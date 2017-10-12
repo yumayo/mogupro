@@ -22,13 +22,9 @@ void cFieldManager::draw()
 {
     mUnderGround.draw();
 }
-void cFieldManager::blockBreak(ci::ivec3 block_num)
+void cFieldManager::blockBreak(ci::vec3 position, int range)
 {
-    mUnderGround.blockBreak(block_num);
-}
-void cFieldManager::blockBreak(int x, int y, int z)
-{
-    mUnderGround.blockBreak(ci::ivec3(x, y, z));
+    mUnderGround.blockBreak(position, range);
 }
 }
 }
