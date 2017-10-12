@@ -1,5 +1,7 @@
 #include <Utility/Input.h>
 #include <cinder/app/App.h>
+#include <ProdactionCamera.h>
+
 extern "C"
 {
 #include <Utility/Gamepad.h>
@@ -35,7 +37,41 @@ void InputAll::padAxisSetup()
 
 InputAll::InputAll()
 {
+	cursor_captured = false;
+	mouse_active = false;
 }
+
+void mouseCursolFixed(const ci::app::MouseEvent& event, ci::vec2& inc_pos,
+	ci::vec2& mouse_pos, bool& cursor_captured, POINT& last_cursor_pos) {
+
+	
+
+	if (cursor_captured) {
+		POINT pt;
+
+		GetCursorPos(&pt);
+		POINT delta;
+		delta.x = pt.x - last_cursor_pos.x;
+		delta.y = pt.y - last_cursor_pos.y;
+
+		if (delta.x != 0 && delta.y != 0) {
+			SetCursorPos(last_cursor_pos.x, last_cursor_pos.y);
+			ProductionCamera::getInstance()->setCameraAngle(ci::vec2(-delta.x, delta.y) * 0.005f);
+		}
+
+
+	}
+	else {
+
+		SetCursorPos(ci::app::getWindowPos().x + (ci::app::getWindowSize().x / 2),
+			ci::app::getWindowPos().y + (ci::app::getWindowSize().y / 2));
+		GetCursorPos(&last_cursor_pos);
+		mouse_pos.x = last_cursor_pos.x;
+		mouse_pos.y = last_cursor_pos.y;
+		cursor_captured = true;
+	}
+}
+
 void InputAll::padSetup()
 {
 	Gamepad_deviceAttachFunc(onDeviceAttached, (void *)0x1);
@@ -140,6 +176,18 @@ void InputAll::keyUp(const ci::app::KeyEvent& event)
 }
 
 
+void InputAll::mouseMove(const ci::app::MouseEvent & event)
+{
+	if (!mouse_active) return;
+	mouseCursolFixed(event, inc_pos, mouse_pos, cursor_captured, last_cursor_pos);
+}
+
+void InputAll::mouseDrag(const ci::app::MouseEvent & event)
+{
+	if (!mouse_active) return;
+	mouseCursolFixed(event, inc_pos, mouse_pos, cursor_captured, last_cursor_pos);
+}
+
 void InputAll::mouseDown(const ci::app::MouseEvent& event)
 {
 	if (event.isLeft())
@@ -218,8 +266,8 @@ void onButtonDown(struct Gamepad_device * device, unsigned int buttonID, double 
 	{
 		//console() << "Button " << buttonID << " down on device " << device->deviceID << " at " << timestamp << " with context " << context << std::endl;
 
-		ENV.setPadPush(buttonID);
-		ENV.setPadPress(buttonID);
+		ENV->setPadPush(buttonID);
+		ENV->setPadPress(buttonID);
 	}
 }
 
@@ -229,8 +277,8 @@ void onButtonUp(struct Gamepad_device * device, unsigned int buttonID, double ti
 	{
 		//console() << "Button " << buttonID << " up on device " << device->deviceID << " at " << timestamp << " with context " << context << std::endl;
 
-		ENV.setPadPull(buttonID);
-		ENV.erasePadPress(buttonID);
+		ENV->setPadPull(buttonID);
+		ENV->erasePadPress(buttonID);
 	}
 }
 
@@ -239,7 +287,7 @@ void onAxisMoved(struct Gamepad_device * device, unsigned int axisID, float valu
 	if (verbose && (value < 0.2f || value > 0.2)) // reduce the output noise by making a dead zone
 	{
 		ci::app::console() << "Axis " << axisID << " moved from " << lastValue << " to " << value << " on device " << device->deviceID << " at " << timestamp << " with context " << context << std::endl;
-		ENV.setPadAxis(axisID, value);
+		ENV->setPadAxis(axisID, value);
 	}
 }
 

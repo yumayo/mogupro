@@ -13,6 +13,10 @@ public:
     cResCheckBrakeBlocks( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
+	int xPos;
+	int yPos;
+	int zPos;
+
 };
 }
 }
