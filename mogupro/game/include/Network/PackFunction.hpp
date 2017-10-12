@@ -1,7 +1,7 @@
 #pragma once
 #include <winsock2.h>
 
-static bool exportInt(unsigned int& value, char* buffer, int& offset, int totalSize)
+static bool exportUInt(unsigned int& value, char* const buffer, int& offset, int totalSize)
 {
 	if (totalSize < int(offset + sizeof(unsigned int)))
 		return false;
@@ -12,7 +12,7 @@ static bool exportInt(unsigned int& value, char* buffer, int& offset, int totalS
 	return true;
 }
 
-static bool importInt(unsigned int& value, char* buffer, int& offset, int totalSize)
+static bool importUInt(unsigned int& value, const char* const buffer, int& offset, int totalSize)
 {
 	if (totalSize < int(offset + sizeof(unsigned int)))
 		return false;
@@ -23,7 +23,7 @@ static bool importInt(unsigned int& value, char* buffer, int& offset, int totalS
 	return true;
 }
 
-static bool exportShort(short& value, char* buffer, int& offset, int totalSize)
+static bool exportShort(short& value, char* const buffer, int& offset, int totalSize)
 {
 	if (totalSize < int(offset + sizeof(short)))
 		return false;
@@ -34,7 +34,7 @@ static bool exportShort(short& value, char* buffer, int& offset, int totalSize)
 	return true;
 }
 
-static bool importShort(short& value, char* buffer, int& offset, int totalSize)
+static bool importShort(short& value, const char* const buffer, int& offset, int totalSize)
 {
 	if (totalSize < int(offset + sizeof(short)))
 		return false;
@@ -45,7 +45,7 @@ static bool importShort(short& value, char* buffer, int& offset, int totalSize)
 	return true;
 }
 
-static bool exportChar(char& value, char* buffer, int& offset, int totalSize)
+static bool exportChar(char& value, char* const buffer, int& offset, int totalSize)
 {
 	if (totalSize < int(offset + sizeof(char)))
 		return false;
@@ -55,7 +55,7 @@ static bool exportChar(char& value, char* buffer, int& offset, int totalSize)
 	return true;
 }
 
-static bool importStr(char& value, char* buffer, int& offset, int totalSize)
+static bool importStr(char& value, const char* const buffer, int& offset, int totalSize)
 {
 	if (totalSize < int(offset + sizeof(char)))
 		return false;
@@ -64,7 +64,7 @@ static bool importStr(char& value, char* buffer, int& offset, int totalSize)
 	return true;
 }
 
-static bool exportStr(char* value, char* buffer, int& offset, int totalSize, size_t valueSize)
+static bool exportStr(char* value, char* const buffer, int& offset, int totalSize, size_t valueSize)
 {
 	if (totalSize < int(offset + sizeof(valueSize)))
 		return false;
@@ -74,7 +74,7 @@ static bool exportStr(char* value, char* buffer, int& offset, int totalSize, siz
 	return true;
 }
 
-static bool importStr(char* value, char* buffer, int& offset, int totalSize, size_t valueSize)
+static bool importStr(char* value, const char* const buffer, int& offset, int totalSize, size_t valueSize)
 {
 	if (totalSize < int(offset + sizeof(valueSize)))
 		return false;
@@ -98,7 +98,6 @@ static bool importFloat(float& value, const char* const buffer, int& offset, int
 {
 	if (totalSize < int(offset + sizeof(float)))
 		return false;
-	float c;
 	memcpy(&value, buffer + offset, sizeof(float));
 	offset += sizeof(float);
 	return true;
