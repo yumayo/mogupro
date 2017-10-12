@@ -33,9 +33,8 @@ public:
         // 次に子供にやってもらう。
         packetImport( networkHandle, transferredBytes - sizeof( PacketHeader ), packet + sizeof( PacketHeader ) );
     }
-    cPacketBuffer&& createPacket( )
+    void createPacket( cPacketBuffer& packetBuffer )
     {
-        cPacketBuffer packetBuffer;
         ubyte2& packetByte = packetBuffer.transferredBytes;
         cBuffer& buffer = packetBuffer.buffer;
 
@@ -54,8 +53,6 @@ public:
         // 最後にrawデータのサイズを持たせる。
         // これは65535分のいくつ使ったのかという情報がないと送る時にわからなくなるから。
         packetByte = header.mPacketByte;
-
-        return std::move( packetBuffer );
     }
     //!@ LookMe : 継承先で受信したパケットをもとに構成し直してください。
     // ヘッダーデータは含まれません。

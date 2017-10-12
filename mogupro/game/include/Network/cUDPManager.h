@@ -13,8 +13,10 @@ public:
     {
         if ( packetBase == nullptr ) return;
 
-        auto&& raw = packetBase->createPacket( );
-        sendDataBufferAdd( networkHandle, raw );
+        cPacketBuffer packetBuffer;
+        packetBase->createPacket( packetBuffer );
+
+        sendDataBufferAdd( networkHandle, packetBuffer );
 
         delete packetBase;
         packetBase = nullptr;
