@@ -143,4 +143,4 @@ void gameApp::draw()
 	ENV->flashInput();
 }
 
-CINDER_APP(gameApp, RendererGl)
+CINDER_APP( gameApp, RendererGl, []( App::AppBase::Settings* s ) { s->setWindowSize( 1600, 900 ); } )
