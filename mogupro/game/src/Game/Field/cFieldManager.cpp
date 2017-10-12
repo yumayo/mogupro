@@ -14,17 +14,19 @@ void cFieldManager::setup()
 {
     mUnderGround.setup();
 }
-void cFieldManager::update(const int delta_time)
+void cFieldManager::update( const int delta_time )
 {
     mUnderGround.update();
 }
 void cFieldManager::draw()
 {
+    ci::gl::enableFaceCulling( true);
     mUnderGround.draw();
+    ci::gl::enableFaceCulling( false );
 }
-void cFieldManager::blockBreak(ci::vec3 position, int range)
+void cFieldManager::blockBreak( ci::vec3 position, float  radius )
 {
-    mUnderGround.blockBreak(position, range);
+    mUnderGround.blockBreak( position, radius );
 }
 }
 }

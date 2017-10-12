@@ -18,11 +18,12 @@ public:
     void update();
     void draw();
 
-    void setupTestCube();
+public:
 
-    // position : target position
-    // range    : break range
-    void blockBreak(ci::vec3 position, int range);
+    void blockBreak( ci::vec3 position, float radius );
+    bool isOutOfRange( ci::ivec3 cell_num );
+
+private:
 
 private:
     std::vector<std::vector<std::vector<cBlock>>> blocks;
