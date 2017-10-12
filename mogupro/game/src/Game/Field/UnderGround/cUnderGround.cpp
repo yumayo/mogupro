@@ -97,6 +97,10 @@ void cUnderGround::draw()
 void cUnderGround::setupTestCube()
 {
 }
+void cUnderGround::blockBreak(ci::ivec3 block_num)
+{
+    blocks[block_num.z][block_num.y][block_num.x].toBreak();
+}
 }
 }
 }
