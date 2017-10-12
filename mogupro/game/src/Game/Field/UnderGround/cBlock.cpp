@@ -14,31 +14,26 @@ vec3 vertex0[] = {
     vec3(-0.50000,  0.50000,  0.50000),
     vec3(0.50000,  0.50000,  0.50000),
     vec3(0.50000, -0.50000,  0.50000), };
-
 vec3 vertex1[] = {
     vec3(0.50000, -0.50000, -0.50000),
     vec3(0.50000,  0.50000, -0.50000),
     vec3(-0.50000,  0.50000, -0.50000),
     vec3(-0.50000, -0.50000, -0.50000), };
-
 vec3 vertex2[] = {
     vec3(-0.50000, -0.50000, -0.50000),
     vec3(-0.50000,  0.50000, -0.50000),
     vec3(-0.50000,  0.50000,  0.50000),
     vec3(-0.50000, -0.50000,  0.50000), };
-
 vec3 vertex3[] = {
     vec3(0.50000, -0.50000,  0.50000),
     vec3(0.50000,  0.50000,  0.50000),
     vec3(0.50000,  0.50000, -0.50000),
     vec3(0.50000, -0.50000, -0.50000), };
-
 vec3 vertex4[] = {
     vec3(-0.50000,  0.50000,  0.50000),
     vec3(-0.50000,  0.50000, -0.50000),
     vec3(0.50000,  0.50000, -0.50000),
     vec3(0.50000,  0.50000,  0.50000), };
-
 vec3 vertex5[] = {
     vec3(-0.50000, -0.50000, -0.50000),
     vec3(-0.50000, -0.50000,  0.50000),
@@ -131,10 +126,13 @@ void cBlock::setupDrawSide(std::vector<int>* draw_side)
     mUv = getUv(draw_side->size());
 
     // ÉÅÉbÉVÉÖÇçÏÇÈ
-    for (size_t i = 0; i < mVertices.size(); i++)
-        mMesh.appendTriangle(mVertices[i].x, mVertices[i].y, mVertices[i].z);
-    mMesh.appendIndices(&mIndices[0], mIndices.size());
-    mMesh.appendTexCoords0(&mUv[0], mUv.size());
+    if (mVertices.size() > 0)
+        for (size_t i = 0; i < mVertices.size(); i++)
+            mMesh.appendTriangle(mVertices[i].x, mVertices[i].y, mVertices[i].z);
+    if (mIndices.size() > 0)
+        mMesh.appendIndices(&mIndices[0], mIndices.size());
+    if (mUv.size() > 0)
+        mMesh.appendTexCoords0(&mUv[0], mUv.size());
     mVboMesh = gl::VboMesh::create(mMesh);
 }
 void cBlock::toBreak()

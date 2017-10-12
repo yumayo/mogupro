@@ -16,9 +16,8 @@ public:
     float xPos;
     float yPos;
     float zPos;
-    float xDir;
-    float yDir;
-    float zDir;
+    float shitaX;
+    float shitaY;
 };
 }
 }
