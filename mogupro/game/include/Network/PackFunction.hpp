@@ -1,18 +1,6 @@
 #pragma once
 #include <winsock2.h>
 
-//!@ file   cSocketBase
-//!@ brief  Socket‚ÌŠî”Õ‚Å‚·
-//!@ note   Œp³‚ğ•K‚¸s‚Á‚Ä‰º‚³‚¢
-class cSocketBase
-{
-public:
-	//!@ LookMe : Œp³æ‚Å“à•”ˆ—‚ğ‘‚¢‚Ä‚­‚¾‚³‚¢
-	virtual void allImport() = 0;
-	virtual void allExport() = 0;
-	char* buff;
-};
-
 bool exportInt(unsigned int& value, char* buffer, int& offset, int totalSize)
 {
 	if (totalSize < int(offset + sizeof(unsigned int)))

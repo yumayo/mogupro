@@ -20,6 +20,8 @@ public:
 
     void setupTestCube();
 
+    void blockBreak(ci::ivec3 block_num);
+
 private:
     std::vector<std::vector<std::vector<cBlock>>> blocks;
 };
