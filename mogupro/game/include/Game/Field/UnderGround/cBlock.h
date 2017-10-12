@@ -20,6 +20,8 @@ public:
     void drawMesh();
     void setupDrawSide(std::vector<int>* draw_side);
 
+    void toBreak();
+
     bool mIsActive;
 
 private:

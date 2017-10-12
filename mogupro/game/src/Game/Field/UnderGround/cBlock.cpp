@@ -48,28 +48,30 @@ vec3 vertex5[] = {
 
 std::vector<uint32_t> getIndices(int side_size)
 {
-    std::vector<GLuint> indices;
+    std::vector<GLuint> indices = std::vector<GLuint>(side_size * 6);
+    int c = 0;
     for (size_t i = 0; i < side_size * 4; i += 4)
     {
-        indices.push_back(i);
-        indices.push_back(i + 2);
-        indices.push_back(i + 1);
-        indices.push_back(i + 2);
-        indices.push_back(i);
-        indices.push_back(i + 3);
+        indices[c++] = i;
+        indices[c++] = i + 2;
+        indices[c++] = i + 1;
+        indices[c++] = i + 2;
+        indices[c++] = i;
+        indices[c++] = i + 3;
     }
     return indices;
 }
 
 std::vector<vec2> getUv(int side_num)
 {
-    std::vector<vec2> uv;
+    std::vector<vec2> uv = std::vector<vec2>(side_num * 4);
+    int c = 0;
     for (size_t i = 0; i < side_num; i++)
     {
-        uv.push_back(vec2(0.00000, 1.00000));
-        uv.push_back(vec2(0.00000, 0.00000));
-        uv.push_back(vec2(1.00000, 0.00000));
-        uv.push_back(vec2(1.00000, 1.00000));
+        uv[c++] = vec2(0.00000, 1.00000);
+        uv[c++] = vec2(0.00000, 0.00000);
+        uv[c++] = vec2(1.00000, 0.00000);
+        uv[c++] = vec2(1.00000, 1.00000);
     }
     return uv;
 }
@@ -134,6 +136,9 @@ void cBlock::setupDrawSide(std::vector<int>* draw_side)
     mMesh.appendIndices(&mIndices[0], mIndices.size());
     mMesh.appendTexCoords0(&mUv[0], mUv.size());
     mVboMesh = gl::VboMesh::create(mMesh);
+}
+void cBlock::toBreak()
+{
 }
 }
 }
