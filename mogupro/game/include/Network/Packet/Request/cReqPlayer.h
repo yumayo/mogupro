@@ -16,8 +16,8 @@ public:
     float xPos;
     float yPos;
     float zPos;
-    float shitaX;
-    float shitaY;
+    float thetaX;
+    float thetaY;
 };
 }
 }
