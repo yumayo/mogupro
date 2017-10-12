@@ -20,15 +20,16 @@ public:
 
 public:
 
-    void blockBreak( ci::vec3 position, float radius );
-    bool isOutOfRange( ci::ivec3 cell_num );
+    bool blockBreak( const ci::vec3& position, const float& radius );
+    bool isOutOfRange( const ci::ivec3& cell_num );
 
 private:
 
-private:
-    std::vector<std::vector<std::vector<cBlock>>> blocks;
+    bool blockDigged( const  ci::ivec3& cell_num );
 
 private:
+
+    std::vector<std::vector<std::vector<std::shared_ptr<cBlock>>>> blocks;
     int num;
     float offset;
     float scale;

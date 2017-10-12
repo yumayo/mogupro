@@ -12,13 +12,14 @@ class cBlock
 {
 public:
 
-    cBlock(const ci::vec3 position, const float scale);
+    cBlock( const ci::vec3 position, const float scale );
     ~cBlock();
 
     void update();
     void draw();
     void drawMesh();
-    void setupDrawSide(std::vector<int>* draw_side);
+    void setupDrawSide( const std::vector<int>& draw_side );
+    void clear();
 
     void toBreak();
 
@@ -31,7 +32,7 @@ private:
     std::vector<ci::vec3> mVertices;
     std::vector<uint32_t> mIndices;
     std::vector<ci::vec2> mUv;
-    ci::TriMesh mMesh;
+    ci::TriMeshRef mMesh;
     ci::gl::VboMeshRef mVboMesh;
 };
 }
