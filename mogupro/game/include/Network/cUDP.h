@@ -24,7 +24,7 @@ public:
     bool emptyChunk( );
     // 古いデータから返します。
     // その時に一緒にそのデータは削除されます。
-    cPacketChunk&& popChunk( );
+    cPacketChunk popChunk( );
 private:
     void receive( );
 private:
