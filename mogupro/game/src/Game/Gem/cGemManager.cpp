@@ -4,44 +4,55 @@ namespace Game
 {
 	namespace Gem
 	{
-		void cGemManager::SetUp(vec3 postion, vec3 center, vec3 randomRange, int gemMaxNum, unsigned long seed)
+		void cGemManager::setUp(vec3 position, vec3 randomRange, float mapChipSize, int gemMaxNum, unsigned long seed)
 		{
-			mPosition = postion;
+			mPosition = position;
 			mRandomRange = randomRange;
+			mMapChipSize = mapChipSize;
 			mGemMaxNum = gemMaxNum;
-			Create();
+			for (int i = 0; i < 2; i++)
+			{
+				mTeamGems[i].insert(map<GemType, int>::value_type(GemType::Dia, 0));
+				mTeamGems[i].insert(map<GemType, int>::value_type(GemType::Gold, 0));
+				mTeamGems[i].insert(map<GemType, int>::value_type(GemType::Silver, 0));
+				mTeamGems[i].insert(map<GemType, int>::value_type(GemType::Iron, 0));
+			}
+			create();
 		}
 
-		void cGemManager::Draw()
+		void cGemManager::draw()
 		{
+			gl::pushMatrices();
 			for each (auto g in mGems)
 			{
-				g.Draw();
+				g.draw();
 			}
 			gl::color(Color(1, 1, 1));
+			gl::popMatrices();
 		};
 
-		void cGemManager::Update()
+		void cGemManager::update()
 		{
 
 		};
 
-		void cGemManager::Create()
+		void cGemManager::create()
 		{
-			mGems.push_back(cGem(vec3(0, 0, 0), vec3(1, 1, 1), Color(1, 0, 0), Game::Gem::GemType::Dia));
-			for (size_t i = 0; i < mGemMaxNum; i++)
+			for (size_t i = 0; i < mGemMaxNum; i += 2)
 			{
+				//DeBug:本来はサーバーからもらってくる
 				std::random_device seed_gen;
 				std::mt19937 engine(seed_gen());
 				unsigned long seed = engine();
 				randSeed(seed);
-				float x = randInt(0, mRandomRange.x);
-				float y = randInt(0, mRandomRange.y);
-				float z = randInt(0, mRandomRange.z);
 
+				float x = randInt(0, mRandomRange.x-1);
+				float y = randInt(0, mRandomRange.y-1);
+				float z = randInt(0, mRandomRange.z-1);
 				Game::Gem::GemType type = Game::Gem::GemType(randInt(0, Game::Gem::GemType::Iron));
 
-				//色分け
+				//テクスチャーの張替え
+				//TexManager::geInstance()->loadTexture("~/~/gem"+type);W
 				Color color = Color(0, 0, 0);
 				switch (type)
 				{
@@ -61,9 +72,41 @@ namespace Game
 					break;
 				}
 
-				mGems.push_back(cGem(vec3(x, y, z) + mCenter, vec3(1, 1, 1), color, type));
-				mGems.push_back(cGem(vec3(-(x + 1), y, mRandomRange.z - z - 1) + mCenter, vec3(1, 1, 1), color, type));
+				mGems.push_back(cGem(i, (vec3(x, y, z) * mMapChipSize) +mPosition, vec3(mMapChipSize), color, type));
+				mGems.push_back(cGem(i+1, mPosition + vec3(mRandomRange.x - x +mRandomRange.x-1 , y, mRandomRange.z-z-1) * mMapChipSize,vec3(mMapChipSize),color,type));
 			}
 		};
-	}
+
+		
+		void cGemManager::gemCountUp(int team,int it)
+		{
+			//指定の宝石があるか
+			bool isNothing = true;
+			for each(auto g in mGems)
+				if (g.getId() == it) isNothing = false;
+			if (isNothing) return;
+
+			//削除
+			gemDelete(it);
+
+			console() << "チーム" << team << GemType(it) << "をゲット" << endl;
+			//DeBug:
+			for (int i = 0; i < 2; i++)
+			{
+				mTeamGems[i].at(mGems.at(it).getType())++;
+				console() << "チームは" << i << endl;
+				for each (auto t in mTeamGems[i])
+				{
+					console() << t.first << "が" << t.second << endl;
+				}
+			}
+
+		}
+		
+		void cGemManager::gemDelete(int it)
+		{
+			mGems.erase(mGems.begin() + it);
+		}
+
+}
 }
