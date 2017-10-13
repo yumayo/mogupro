@@ -15,7 +15,7 @@ private:
 public:
     Packet::Response::cResPlayer getResPlayer( );
     void ungetResPlayer( Packet::Response::cResPlayer const& data );
-private:
+public:
     std::stack<Packet::Response::cResPlayer> mResPlayer;
 public:
     Packet::Response::cResGetJemSeed getResGetJemSeed( );

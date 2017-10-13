@@ -15,10 +15,12 @@ public:
     ~cFieldManager();
 
     void setup();
-    void update(const int delta_time);
+    void update( const int delta_time );
     void draw();
 
-    void blockBreak(ci::vec3 position, int range);
+    // position : ˆÊ’u
+    // radius    : ‹…‚Ì”¼Œa
+    void blockBreak( ci::vec3 position, float radius );
 
 private:
     UnderGround::cUnderGround mUnderGround;
