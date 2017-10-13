@@ -1,5 +1,4 @@
 #include <Game/Field/UnderGround/cUnderGround.h>
-#include "cinder/Timeline.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -18,8 +17,8 @@ cUnderGround::~cUnderGround()
 }
 void cUnderGround::setup()
 {
-    num = 4;
-    offset = 0.5f;
+    num = 8;
+    offset = 0.0f;
     scale = 0.5f;
 
     for (int z = 0; z < num; z++)
@@ -50,12 +49,10 @@ void cUnderGround::setup()
                     draw_side.push_back( 0 );
                 if (z == 0)
                     draw_side.push_back( 1 );
-
                 if (x == num - 1)
                     draw_side.push_back( 2 );
                 if (x == 0)
                     draw_side.push_back( 3 );
-
                 if (y == num - 1)
                     draw_side.push_back( 4 );
                 if (y == 0)
@@ -65,7 +62,12 @@ void cUnderGround::setup()
                 if (mIndices.size() > 0)
                     max = *std::max_element( mIndices.begin(), mIndices.end() ) + 1;
                 block->setupDrawSide( draw_side, max );
+
+                // vertices, indices, uvs, normals@‚ð‡‚í‚¹‚é
+                std::copy( block->mVertices.begin(), block->mVertices.end(), std::back_inserter( mVertices ) );
                 std::copy( block->mIndices.begin(), block->mIndices.end(), std::back_inserter( mIndices ) );
+                std::copy( block->mUv.begin(), block->mUv.end(), std::back_inserter( mUv ) );
+                std::copy( block->mNormals.begin(), block->mNormals.end(), std::back_inserter( mNormals ) );
 
                 temp.emplace_back( std::move( block ) );
             }
@@ -77,8 +79,8 @@ void cUnderGround::setup()
     }
 
 
-    blocks[3][0][0]->mIsActive = false;
-    blockDigged( ivec3( 0, 0, 3 ) );
+    //blocks[3][0][0]->mIsActive = false;
+    //blockDigged( ivec3( 0, 0, 3 ) );
 
     //blocks[4][num - 1][4]->mIsActive = false;
     //blockDigged( ivec3( 4, num - 1, 4 ) );
@@ -154,25 +156,6 @@ bool cUnderGround::blockDigged( const ci::ivec3& c )
 }
 bool cUnderGround::blockVertexBlend()
 {
-    for (size_t z = 0; z < blocks.size(); z++)
-    {
-        for (size_t y = 0; y < blocks[z].size(); y++)
-        {
-            for (size_t x = 0; x < blocks[z][y].size(); x++)
-            {
-                auto b = blocks[z][y][x];
-                if (b->mVertices.size() > 0)
-                    std::copy( b->mVertices.begin(), b->mVertices.end(), std::back_inserter( mVertices ) );
-                //if (b->mIndices.size() > 0)
-                    //std::copy( b->mIndices.begin(), b->mIndices.end(), std::back_inserter( mIndices ) );
-                if (b->mUv.size() > 0)
-                    std::copy( b->mUv.begin(), b->mUv.end(), std::back_inserter( mUv ) );
-                if (b->mNormals.size() > 0)
-                    std::copy( b->mNormals.begin(), b->mNormals.end(), std::back_inserter( mNormals ) );
-            }
-        }
-    }
-
     mMesh = ci::TriMesh::create();
     if (mVertices.size() > 0)
         mMesh->appendPositions( &mVertices[0], mVertices.size() );
@@ -180,7 +163,7 @@ bool cUnderGround::blockVertexBlend()
         mMesh->appendIndices( &mIndices[0], mIndices.size() );
     if (mUv.size() > 0)
         mMesh->appendTexCoords0( &mUv[0], mUv.size() );
-    if(mNormals.size() > 0)
+    if (mNormals.size() > 0)
         mMesh->appendNormals( &mNormals[0], mNormals.size() );
     return true;
 }

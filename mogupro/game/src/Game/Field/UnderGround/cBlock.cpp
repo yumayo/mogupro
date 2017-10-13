@@ -115,14 +115,6 @@ GLfloat cube_vtx[] = {
     -0.5f,  0.5f, -0.5f,
     0.5f,  0.5f, -0.5f,
 
-    // 左
-    -0.5f, -0.5f,  0.5f,
-    -0.5f,  0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
-    -0.5f, -0.5f,  0.5f,
-    -0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f, -0.5f,
-
     // 右
     0.5f,  0.5f,  0.5f,
     0.5f, -0.5f, -0.5f,
@@ -130,6 +122,14 @@ GLfloat cube_vtx[] = {
     0.5f,  0.5f,  0.5f,
     0.5f, -0.5f,  0.5f,
     0.5f, -0.5f, -0.5f,
+
+    // 左
+    -0.5f, -0.5f,  0.5f,
+    -0.5f,  0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
+    -0.5f, -0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f, -0.5f,
 
     // 上
     -0.5f, 0.5f, -0.5f,
@@ -166,14 +166,6 @@ GLfloat cube_normal[] = {
     0.0f, 0.0f, -1.0f,
     0.0f, 0.0f, -1.0f,
 
-    // 左
-    -1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
-
     // 右
     1.0f, 0.0f, 0.0f,
     1.0f, 0.0f, 0.0f,
@@ -181,6 +173,14 @@ GLfloat cube_normal[] = {
     1.0f, 0.0f, 0.0f,
     1.0f, 0.0f, 0.0f,
     1.0f, 0.0f, 0.0f,
+
+    // 左
+    -1.0f, 0.0f, 0.0f,
+    -1.0f, 0.0f, 0.0f,
+    -1.0f, 0.0f, 0.0f,
+    -1.0f, 0.0f, 0.0f,
+    -1.0f, 0.0f, 0.0f,
+    -1.0f, 0.0f, 0.0f,
 
     // 上
     0.0f, 1.0f, 0.0f,
@@ -312,6 +312,9 @@ void cBlock::drawMesh()
 }
 void cBlock::setupDrawSide( const std::vector<int>& draw_side, const  int& offset_index )
 {
+    if (draw_side.size() <= 0)
+        return;
+
     //for (size_t i = 0; i < draw_side.size(); i++)
     //{
     //    // 頂点
@@ -327,9 +330,15 @@ void cBlock::setupDrawSide( const std::vector<int>& draw_side, const  int& offse
     //mIndices = getIndices( draw_side.size(), offset_index );
     mUv = getUv( draw_side.size() );
 
+
     // DrawElements用のデータを作成
     for (int i = 0; i < 36; ++i)
     {
+        int side_num = i / 6;
+        if (!std::any_of( draw_side.begin(), draw_side.end(),
+                         [&]( int n ) { return side_num == n; } ))
+            continue;
+
         float x = cube_vtx[i * 3 + 0] + mPosition.x;
         float y = cube_vtx[i * 3 + 1] + mPosition.y;
         float z = cube_vtx[i * 3 + 2] + mPosition.z;
@@ -355,17 +364,16 @@ void cBlock::setupDrawSide( const std::vector<int>& draw_side, const  int& offse
         }
     }
 
-
     // メッシュを作る
-    mMesh = ci::TriMesh::create();
-    if (mVertices.size() > 0)
-        mMesh->appendPositions( &mVertices[0], mVertices.size() );
-    if (mIndices.size() > 0)
-        mMesh->appendIndices( &mIndices[0], mIndices.size() );
-    if (mUv.size() > 0)
-        mMesh->appendTexCoords0( &mUv[0], mUv.size() );
-    if (mNormals.size() > 0)
-        mMesh->appendNormals( &mNormals[0], mNormals.size() );
+    //mMesh = ci::TriMesh::create();
+    //if (mVertices.size() > 0)
+    //    mMesh->appendPositions( &mVertices[0], mVertices.size() );
+    //if (mIndices.size() > 0)
+    //    mMesh->appendIndices( &mIndices[0], mIndices.size() );
+    //if (mUv.size() > 0)
+    //    mMesh->appendTexCoords0( &mUv[0], mUv.size() );
+    //if (mNormals.size() > 0)
+    //    mMesh->appendNormals( &mNormals[0], mNormals.size() );
 
     // VBOの実装はもうちょい先
     //mVboMesh = gl::VboMesh::create( mMesh );

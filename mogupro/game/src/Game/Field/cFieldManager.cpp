@@ -1,4 +1,5 @@
-#include <Game\Field\cFieldManager.h>
+#include <Game/Field/cFieldManager.h>
+#include <cinder/gl/gl.h>
 namespace Game
 {
 namespace Field
@@ -20,7 +21,10 @@ void cFieldManager::update( const float delta_time )
 }
 void cFieldManager::draw()
 {
-    ci::gl::enableFaceCulling( true);
+    ci::gl::enableFaceCulling( true );
+    auto lambert = ci::gl::ShaderDef().lambert();
+    auto shader = ci::gl::getStockShader( lambert );
+    shader->bind();
     mUnderGround.draw();
     ci::gl::enableFaceCulling( false );
 }
