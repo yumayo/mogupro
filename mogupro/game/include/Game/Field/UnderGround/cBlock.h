@@ -18,20 +18,22 @@ public:
     void update();
     void draw();
     void drawMesh();
-    void setupDrawSide( const std::vector<int>& draw_side );
+
+    void setupDrawSide( const std::vector<int>& draw_side, const  int& offset_index = 0 );
     void clear();
 
     void toBreak();
 
     bool mIsActive;
 
-private:
+public:
     ci::vec3 mPosition;
     float mScale;
 
     std::vector<ci::vec3> mVertices;
     std::vector<uint32_t> mIndices;
     std::vector<ci::vec2> mUv;
+    std::vector<ci::vec3> mNormals;
     ci::TriMeshRef mMesh;
     ci::gl::VboMeshRef mVboMesh;
 };

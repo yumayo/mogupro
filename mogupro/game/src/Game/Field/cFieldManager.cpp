@@ -14,7 +14,7 @@ void cFieldManager::setup()
 {
     mUnderGround.setup();
 }
-void cFieldManager::update( const int delta_time )
+void cFieldManager::update( const float delta_time )
 {
     mUnderGround.update();
 }
