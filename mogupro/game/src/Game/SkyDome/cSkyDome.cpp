@@ -1,7 +1,8 @@
-#include <SkyDome/SkyDome.h>
+#include <Game/SkyDome/cSkyDome.h>
 #include <Utility/TextureManager.h>
-#include <ProdactionCamera.h>
-void SkyDome::setup()
+#include <Game/Camera/cProdactionCamera.h>
+
+void Game::SkyDome::cSkyDome::setup()
 {
 	//画像のバインド
 	TEX.set("sky_dome","SkyDome/Skydome151004y.jpg");
@@ -18,7 +19,7 @@ void SkyDome::setup()
 
 }
 
-void SkyDome::draw()
+void Game::SkyDome::cSkyDome::draw()
 {
 	
 	//画像をバインド

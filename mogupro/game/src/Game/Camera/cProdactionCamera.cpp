@@ -1,27 +1,27 @@
-#include <ProdactionCamera.h>
+#include <Game/Camera/cProdactionCamera.h>
 #include <random>
 #include <cinder/gl/gl.h>
 
-void ProductionCamera::shakeCamera(const float & scatter, const float & seconds)
+void Game::Camera::cProductionCamera::shakeCamera(const float & scatter, const float & seconds)
 {
 	this->scatter = scatter;
 	this->seconds = seconds;
 }
 
-void ProductionCamera::setup() {
+void Game::Camera::cProductionCamera::setup() {
 	camera.setAspectRatio(ci::app::getWindowAspectRatio());
 	camera.lookAt(ci::vec3((*reference_pos)->x, (*reference_pos)->y, (*reference_pos)->z), ci::vec3(0), ci::vec3(0, 1, 0));
 	camera.setFarClip(10000);
 }
 
 //慣性つきカメラ移動
-void ProductionCamera::MovingCamera()
+void Game::Camera::cProductionCamera::MovingCamera()
 {
 	buf_pos = ci::vec3((*reference_pos)->x, (*reference_pos)->y, (*reference_pos)->z) - pos;
 	buf_pos *= 0.3f;
 	pos += buf_pos;
 }
-void ProductionCamera::ScatterCamera()
+void Game::Camera::cProductionCamera::ScatterCamera()
 {
 	if (seconds < 0)return;
 	std::random_device rd;
@@ -33,7 +33,7 @@ void ProductionCamera::ScatterCamera()
 	my_scatter = ci::vec2(buf_x, buf_y);
 
 }
-void ProductionCamera::update(const float& delta_time) {
+void Game::Camera::cProductionCamera::update(const float& delta_time) {
 	//ブレるカメラの秒数をデルタタイムで引く
 	seconds -= delta_time;
 
@@ -48,7 +48,7 @@ void ProductionCamera::update(const float& delta_time) {
 	camera.lookAt(pos + looking_point, pos + ci::vec3(my_scatter.x, my_scatter.y,0));
 }
 
-void ProductionCamera::draw()
+void Game::Camera::cProductionCamera::draw()
 {
 	ci::gl::pushModelMatrix();
 	//ci::gl::translate(ci::vec3(pos.x - camera_::TEXTURE_WIDTH /2, pos.x - camera_::TEXTURE_HEIGHT / 2,camera_z + 1500));
