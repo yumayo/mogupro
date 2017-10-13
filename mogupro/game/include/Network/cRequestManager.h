@@ -15,7 +15,6 @@ private:
 public:
     Packet::Request::cReqPlayer getReqPlayer( );
     void ungetReqPlayer( Packet::Request::cReqPlayer const& data );
-private:
     std::stack<Packet::Request::cReqPlayer> mReqPlayer;
 public:
     Packet::Request::cReqGetJemSeed getReqGetJemSeed( );

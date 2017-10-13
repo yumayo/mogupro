@@ -76,12 +76,12 @@ bool cUDP::emptyChunk( )
     Utility::cScopedMutex m( mMutex );
     return mChacheEndpoints.empty( );
 }
-cPacketChunk&& cUDP::popChunk( )
+cPacketChunk cUDP::popChunk( )
 {
     Utility::cScopedMutex m( mMutex );
     auto front = mChacheEndpoints.front( );
     mChacheEndpoints.pop_front( );
-    return std::move( front );
+    return front;
 }
 void cUDP::receive( )
 {

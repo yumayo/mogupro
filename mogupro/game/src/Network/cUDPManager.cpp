@@ -21,7 +21,7 @@ void cUDPManager::update( )
 {
     while ( !mSocket.emptyChunk( ) )
     {
-        auto&& chunk = mSocket.popChunk( );
+        auto chunk = mSocket.popChunk( );
         onReceive( chunk );
     }
 
