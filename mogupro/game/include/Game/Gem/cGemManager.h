@@ -3,6 +3,7 @@
 #include "cGem.h"
 #include "../include/Utility/cSingletonAble.h"
 #include <vector>
+#define GemManager Game::Gem::cGemManager::getInstance()
 
 using namespace std;
 
@@ -18,13 +19,14 @@ namespace Game
 			//randomRange   ランダムの生成範囲
 			//ｍGemMaxNuｍ  gemの生成数
 			//seed          シード値
-			void SetUp(vec3 center, vec3 randomRange, int mGemMaxNum, unsigned long seed);
+			void SetUp(vec3 postion,vec3 center, vec3 randomRange, int mGemMaxNum, unsigned long seed);
 			void Draw();
 			void Update();
 			void Create();
 			vector<cGem> GetGems() { return mGems; }
 		private:
 			vector<cGem> mGems;
+			vec3 mPosition;
 			vec3 mCenter;
 			vec3 mRandomRange;
 			int mGemMaxNum;

@@ -4,10 +4,12 @@ namespace Game
 {
 	namespace Gem
 	{
-		void cGemManager::SetUp(vec3 center, vec3 randomRange, int gemMaxNum, unsigned long seed)
+		void cGemManager::SetUp(vec3 postion, vec3 center, vec3 randomRange, int gemMaxNum, unsigned long seed)
 		{
+			mPosition = postion;
 			mRandomRange = randomRange;
 			mGemMaxNum = gemMaxNum;
+			Create();
 		}
 
 		void cGemManager::Draw()
@@ -16,6 +18,7 @@ namespace Game
 			{
 				g.Draw();
 			}
+			gl::color(Color(1, 1, 1));
 		};
 
 		void cGemManager::Update()
