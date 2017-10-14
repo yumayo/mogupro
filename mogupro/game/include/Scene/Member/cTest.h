@@ -8,6 +8,7 @@ public:
 	void shutDown();
 	void update();
 	void draw();
+	void draw2D();
 	void resize();
 private:
 	std::thread th;
@@ -24,6 +25,7 @@ public:
 	void shutDown();
 	void update();
 	void draw();
+	void draw2D();
 	void resize();
 private:
 

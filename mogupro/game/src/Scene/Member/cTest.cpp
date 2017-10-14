@@ -52,6 +52,11 @@ void cTest::draw()
 
 }
 
+void cTest::draw2D()
+{
+
+}
+
 void cTest::resize()
 {
 
@@ -74,6 +79,11 @@ void cTest2::update()
 }
 
 void cTest2::draw()
+{
+
+}
+
+void cTest2::draw2D()
 {
 
 }
