@@ -1,5 +1,4 @@
 #include <Game/Field/UnderGround/cUnderGround.h>
-#include "cinder/Timeline.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -19,8 +18,8 @@ cUnderGround::~cUnderGround()
 void cUnderGround::setup()
 {
     num = 8;
-    offset = 0.5f;
-    scale = 0.5;
+    offset = 0.0f;
+    scale = 0.5f;
 
     for (int z = 0; z < num; z++)
     {
@@ -36,13 +35,39 @@ void cUnderGround::setup()
                 std::shared_ptr<cBlock> block = std::make_shared<cBlock>( position, scale );
 
                 // とりあえず端っこ以外の描画を切る
-                bool is_active = false;
-                if (z == num - 1 || z == 0 ||
-                     y == num - 1 || y == 0 ||
-                     x == num - 1 || x == 0)
-                    is_active = true;
+                //bool is_active = false;
+                //if (z == num - 1 || z == 0 ||
+                //     y == num - 1 || y == 0 ||
+                //     x == num - 1 || x == 0)
+                //    is_active = true;
 
                 block->mIsActive = true;
+
+                // メッシュを生成する方向を決める
+                std::vector<int> draw_side;
+                if (z == num - 1)
+                    draw_side.push_back( 0 );
+                if (z == 0)
+                    draw_side.push_back( 1 );
+                if (x == num - 1)
+                    draw_side.push_back( 2 );
+                if (x == 0)
+                    draw_side.push_back( 3 );
+                if (y == num - 1)
+                    draw_side.push_back( 4 );
+                if (y == 0)
+                    draw_side.push_back( 5 );
+
+                int max = 0;
+                if (mIndices.size() > 0)
+                    max = *std::max_element( mIndices.begin(), mIndices.end() ) + 1;
+                block->setupDrawSide( draw_side, max );
+
+                // vertices, indices, uvs, normals　を合わせる
+                std::copy( block->mVertices.begin(), block->mVertices.end(), std::back_inserter( mVertices ) );
+                std::copy( block->mIndices.begin(), block->mIndices.end(), std::back_inserter( mIndices ) );
+                std::copy( block->mUv.begin(), block->mUv.end(), std::back_inserter( mUv ) );
+                std::copy( block->mNormals.begin(), block->mNormals.end(), std::back_inserter( mNormals ) );
 
                 temp.emplace_back( std::move( block ) );
             }
@@ -53,41 +78,17 @@ void cUnderGround::setup()
         temps.clear();
     }
 
-    for (size_t z = 0; z < blocks.size(); z++)
-    {
-        for (size_t y = 0; y < blocks[z].size(); y++)
-        {
-            for (size_t x = 0; x < blocks[z][y].size(); x++)
-            {
-                std::vector<int> draw_side;
-                if (z == blocks.size() - 1)
-                    draw_side.push_back( 0 );
-                if (z == 0)
-                    draw_side.push_back( 1 );
 
-                if (x == blocks[z][y].size() - 1)
-                    draw_side.push_back( 2 );
-                if (x == 0)
-                    draw_side.push_back( 3 );
+    //blocks[3][0][0]->mIsActive = false;
+    //blockDigged( ivec3( 0, 0, 3 ) );
 
-                if (y == blocks[z].size() - 1)
-                    draw_side.push_back( 4 );
-                if (y == 0)
-                    draw_side.push_back( 5 );
+    //blocks[4][num - 1][4]->mIsActive = false;
+    //blockDigged( ivec3( 4, num - 1, 4 ) );
 
-                blocks[z][y][x]->setupDrawSide( draw_side );
-            }
-        }
-    }
+    //blocks[num - 1][4][4]->mIsActive = false;
+    //blockDigged( ivec3( 4, 4, num - 1 ) );
 
-    blocks[3][0][0]->mIsActive = false;
-    blockDigged( ivec3( 0, 0, 3 ) );
-
-    blocks[4][num - 1][4]->mIsActive = false;
-    blockDigged( ivec3( 4, num - 1, 4 ) );
-
-    blocks[num - 1][4][4]->mIsActive = false;
-    blockDigged( ivec3( 4, 4, num - 1 ) );
+    blockVertexBlend();
 }
 void cUnderGround::update()
 {
@@ -96,10 +97,12 @@ void cUnderGround::draw()
 {
     auto start = std::chrono::system_clock::now();
 
-    for (size_t z = 0; z < blocks.size(); z++)
+    /*for (size_t z = 0; z < blocks.size(); z++)
         for (size_t y = 0; y < blocks[z].size(); y++)
             for (size_t x = 0; x < blocks[z][y].size(); x++)
-                blocks[z][y][x]->drawMesh();
+                blocks[z][y][x]->drawMesh();*/
+
+    gl::draw( *mMesh );
 
     auto end = std::chrono::system_clock::now();
     auto dur = end - start;
@@ -108,9 +111,9 @@ void cUnderGround::draw()
 }
 bool cUnderGround::isOutOfRange( const ci::ivec3& c )
 {
-    return  c.z < 0 || c.z > blocks.size() - 1 ||
-        c.y < 0 || c.y > blocks[c.z].size() - 1 ||
-        c.x < 0 || c.x > blocks[c.z][c.y].size() - 1;
+    return  (size_t) c.z < 0 || (size_t) c.z > blocks.size() - 1 ||
+        (size_t) c.y < 0 || (size_t) c.y > blocks[c.z].size() - 1 ||
+        (size_t) c.x < 0 || (size_t) c.x > blocks[c.z][c.y].size() - 1;
 }
 bool cUnderGround::blockDigged( const ci::ivec3& c )
 {
@@ -148,8 +151,20 @@ bool cUnderGround::blockDigged( const ci::ivec3& c )
         }
         b->clear();
         b->setupDrawSide( side );
-
     }
+    return true;
+}
+bool cUnderGround::blockVertexBlend()
+{
+    mMesh = ci::TriMesh::create();
+    if (mVertices.size() > 0)
+        mMesh->appendPositions( &mVertices[0], mVertices.size() );
+    if (mIndices.size() > 0)
+        mMesh->appendIndices( &mIndices[0], mIndices.size() );
+    if (mUv.size() > 0)
+        mMesh->appendTexCoords0( &mUv[0], mUv.size() );
+    if (mNormals.size() > 0)
+        mMesh->appendNormals( &mNormals[0], mNormals.size() );
     return true;
 }
 bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
@@ -161,7 +176,7 @@ bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
     blocks[p.z][p.y][p.x]->toBreak();
     blockDigged( p );
 
-    auto r = ivec3( radius / scale );
+    auto r = ivec3( int( radius / scale ) );
     auto s = p - r;
     auto e = p + r;
 

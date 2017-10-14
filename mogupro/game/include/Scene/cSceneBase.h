@@ -14,16 +14,15 @@ public:
 	virtual void setup() = 0;
 	//Sceneの終了時のメモリ削除とか
 	virtual void shutDown() = 0;
+
 	virtual void update() = 0;
-	//3D描画
+	
 	virtual void draw() = 0;
-	//いるかわからんから一応
-	virtual void draw2D() = 0;
 	//サイズ変更時に呼びたいとき
 	virtual void resize() = 0;
-
+	//!@ Look Me : Scene切り替え時にtrueにしてください
+	//もしもScene切り替え時のバグ出たらようで準備してます
 	bool isEnd() { return mIsEnd; }
-
 protected:
 
 	bool mIsEnd;

@@ -4,42 +4,74 @@ namespace Game
 {
 	namespace Gem
 	{
-		void cGemManager::SetUp(vec3 center, vec3 randomRange, int gemMaxNum, unsigned long seed)
+		void cGemManager::setUp(vec3 position, vec3 randomRange, float mapChipSize,float gemScale, int gemMaxNum, unsigned long seed)
 		{
+			mPosition = position;
 			mRandomRange = randomRange;
+			mMapChipSize = mapChipSize;
+			mGemScale = gemScale;
 			mGemMaxNum = gemMaxNum;
+			for (int i = 0; i < 2; i++)
+			{
+				mTeamGems[i].insert(map<GemType, int>::value_type(GemType::Dia, 0));
+				mTeamGems[i].insert(map<GemType, int>::value_type(GemType::Gold, 0));
+				mTeamGems[i].insert(map<GemType, int>::value_type(GemType::Silver, 0));
+				mTeamGems[i].insert(map<GemType, int>::value_type(GemType::Iron, 0));
+			}
+
+
+			create();
+			gl::enableDepthWrite();
+			gl::enableDepthRead();
+			gl::enable(GL_CULL_FACE);
+
 		}
 
-		void cGemManager::Draw()
+		void cGemManager::draw()
 		{
+			//mGemBuffer.bindFramebuffer();
+			
+			gl::pushModelView();
 			for each (auto g in mGems)
 			{
-				g.Draw();
+				g.draw();
 			}
+			gl::color(Color(1, 1, 1));
+			gl::pushModelView();
+			//gl::Fbo::unbindFramebuffer();
+			//mGemBuffer.unbindFramebuffer();
+
+
+			//gl::enable(GL_TEXTURE_2D);
+			//gl::color(Color(1, 1, 1));
+			//mGemBuffer.bindTexture();
+			//gl::drawSolidRect(Rectf(vec2(0, 0), vec2(10, 10)));
+			//mGemBuffer.unbindTexture();
 		};
 
-		void cGemManager::Update()
+		void cGemManager::update()
 		{
 
 		};
 
-		void cGemManager::Create()
+		void cGemManager::create()
 		{
-			mGems.push_back(cGem(vec3(0, 0, 0), vec3(1, 1, 1), Color(1, 0, 0), Game::Gem::GemType::Dia));
-			for (size_t i = 0; i < mGemMaxNum; i++)
+			for (size_t i = 0; i < mGemMaxNum; i += 2)
 			{
+				//DeBug:本来はサーバーからもらってくる
 				std::random_device seed_gen;
 				std::mt19937 engine(seed_gen());
 				unsigned long seed = engine();
 				randSeed(seed);
-				float x = randInt(0, mRandomRange.x);
-				float y = randInt(0, mRandomRange.y);
-				float z = randInt(0, mRandomRange.z);
 
+				float x = randInt(0, mRandomRange.x-1);
+				float y = randInt(0, mRandomRange.y-1);
+				float z = randInt(0, mRandomRange.z-1);
 				Game::Gem::GemType type = Game::Gem::GemType(randInt(0, Game::Gem::GemType::Iron));
 
-				//色分け
-				Color color = Color(0, 0, 0);
+				//テクスチャーの張替え
+				//TexManager::geInstance()->loadTexture("~/~/gem"+type);W
+				Color color = Color(1,1,1);
 				switch (type)
 				{
 				case Game::Gem::GemType::Dia:
@@ -58,9 +90,41 @@ namespace Game
 					break;
 				}
 
-				mGems.push_back(cGem(vec3(x, y, z) + mCenter, vec3(1, 1, 1), color, type));
-				mGems.push_back(cGem(vec3(-(x + 1), y, mRandomRange.z - z - 1) + mCenter, vec3(1, 1, 1), color, type));
+				mGems.push_back(cGem(i, (vec3(x, y, z) * mMapChipSize) +mPosition, vec3(mGemScale), color, type));
+				mGems.push_back(cGem(i+1, mPosition + vec3(mRandomRange.x - x +mRandomRange.x-1 , y, mRandomRange.z-z-1) * mMapChipSize,vec3(mGemScale),color,type));
 			}
 		};
-	}
+
+		
+		void cGemManager::gemCountUp(int team,int it)
+		{
+			//指定の宝石があるか
+			bool isNothing = true;
+			for each(auto g in mGems)
+				if (g.getId() == it) isNothing = false;
+			if (isNothing) return;
+
+			//削除
+			gemDelete(it);
+
+			//DeBug:
+			console() << "チーム" << team << GemType(it) << "を取得" << endl;
+			for (int i = 0; i < 2; i++)
+			{
+				mTeamGems[i].at(mGems.at(it).getType())++;
+				console() << "チームは" << i << endl;
+				for each (auto t in mTeamGems[i])
+				{
+					console() << t.first << "が" << t.second << endl;
+				}
+			}
+
+		}
+		
+		void cGemManager::gemDelete(int it)
+		{
+			mGems.erase(mGems.begin() + it);
+		}
+
+}
 }
