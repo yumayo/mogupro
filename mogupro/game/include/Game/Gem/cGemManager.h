@@ -1,9 +1,11 @@
 #pragma once
 #include "cinder/Rand.h"
+#include "cinder/gl/Fbo.h"
 #include "cGem.h"
 #include "../include/Utility/cSingletonAble.h"
 #include <vector>
 #include <map>
+
 #define GemManager Game::Gem::cGemManager::getInstance()
 
 using namespace std;
@@ -24,7 +26,7 @@ namespace Game
 			// mapChipSize        マップチップ一マスの大きさ
 			// gemMaxNum          gemの生成数
 			// seed               シード値(現在は入力しても変動なし)
-			void setUp(vec3 position, vec3 randomRange, float mapChipSize, int gemMaxNum, unsigned long seed);
+			void setUp(vec3 position, vec3 randomRange, float mapChipSize, float gemScale, int gemMaxNum, unsigned long seed);
 			void draw();
 			void update();
 
@@ -42,7 +44,9 @@ namespace Game
 			vec3 mPosition;
 			vec3 mRandomRange;
 			float mMapChipSize;
+			float mGemScale;
 			int mGemMaxNum;
+			//gl::Fbo mGemBuffer;
 			unsigned long mSeed;
 		};
 	}

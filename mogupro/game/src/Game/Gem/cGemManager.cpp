@@ -4,11 +4,12 @@ namespace Game
 {
 	namespace Gem
 	{
-		void cGemManager::setUp(vec3 position, vec3 randomRange, float mapChipSize, int gemMaxNum, unsigned long seed)
+		void cGemManager::setUp(vec3 position, vec3 randomRange, float mapChipSize,float gemScale, int gemMaxNum, unsigned long seed)
 		{
 			mPosition = position;
 			mRandomRange = randomRange;
 			mMapChipSize = mapChipSize;
+			mGemScale = gemScale;
 			mGemMaxNum = gemMaxNum;
 			for (int i = 0; i < 2; i++)
 			{
@@ -17,18 +18,35 @@ namespace Game
 				mTeamGems[i].insert(map<GemType, int>::value_type(GemType::Silver, 0));
 				mTeamGems[i].insert(map<GemType, int>::value_type(GemType::Iron, 0));
 			}
+
+
 			create();
+			gl::enableDepthWrite();
+			gl::enableDepthRead();
+			gl::enable(GL_CULL_FACE);
+
 		}
 
 		void cGemManager::draw()
 		{
-			gl::pushMatrices();
+			//mGemBuffer.bindFramebuffer();
+			
+			gl::pushModelView();
 			for each (auto g in mGems)
 			{
 				g.draw();
 			}
 			gl::color(Color(1, 1, 1));
-			gl::popMatrices();
+			gl::pushModelView();
+			//gl::Fbo::unbindFramebuffer();
+			//mGemBuffer.unbindFramebuffer();
+
+
+			//gl::enable(GL_TEXTURE_2D);
+			//gl::color(Color(1, 1, 1));
+			//mGemBuffer.bindTexture();
+			//gl::drawSolidRect(Rectf(vec2(0, 0), vec2(10, 10)));
+			//mGemBuffer.unbindTexture();
 		};
 
 		void cGemManager::update()
@@ -53,7 +71,7 @@ namespace Game
 
 				//テクスチャーの張替え
 				//TexManager::geInstance()->loadTexture("~/~/gem"+type);W
-				Color color = Color(0, 0, 0);
+				Color color = Color(1,1,1);
 				switch (type)
 				{
 				case Game::Gem::GemType::Dia:
@@ -72,8 +90,8 @@ namespace Game
 					break;
 				}
 
-				mGems.push_back(cGem(i, (vec3(x, y, z) * mMapChipSize) +mPosition, vec3(mMapChipSize), color, type));
-				mGems.push_back(cGem(i+1, mPosition + vec3(mRandomRange.x - x +mRandomRange.x-1 , y, mRandomRange.z-z-1) * mMapChipSize,vec3(mMapChipSize),color,type));
+				mGems.push_back(cGem(i, (vec3(x, y, z) * mMapChipSize) +mPosition, vec3(mGemScale), color, type));
+				mGems.push_back(cGem(i+1, mPosition + vec3(mRandomRange.x - x +mRandomRange.x-1 , y, mRandomRange.z-z-1) * mMapChipSize,vec3(mGemScale),color,type));
 			}
 		};
 
@@ -89,8 +107,8 @@ namespace Game
 			//削除
 			gemDelete(it);
 
-			console() << "チーム" << team << GemType(it) << "をゲット" << endl;
 			//DeBug:
+			console() << "チーム" << team << GemType(it) << "を取得" << endl;
 			for (int i = 0; i < 2; i++)
 			{
 				mTeamGems[i].at(mGems.at(it).getType())++;
