@@ -1,12 +1,12 @@
 #include <Game/Player/cPlayer.h>
-#include <Game/Player/cPlayerManager.h>
+#include <Game/cPlayerManager.h>
 #include <Utility/cInput.h>
 #include <Game/ProductionCamera/cProdactionCamera.h>
 
 
 
 
-void Game::Player::cPlayerManager::playerInstance()
+void Game::cPlayerManager::playerInstance()
 {
 	//人数(通信で代入)
 	int player_number = 2;
@@ -22,18 +22,18 @@ void Game::Player::cPlayerManager::playerInstance()
 	for (int i = 0; i < player_number; i++) {
 		//通信で代入
 		if (active_user_number == 0) {
-			player.push_back(std::make_shared<Game::Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, true));
+			player.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, true));
 			//アクティブユーザに代入
 			active_player = player[i];
 		}
 		else {
-			player.push_back(std::make_shared<Game::Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, false));
+			player.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, false));
 		}
 
 	}
 }
 
-void Game::Player::cPlayerManager::playerMove()
+void Game::cPlayerManager::playerMove()
 {
 	//カメラのマウス操作ON　OFF
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_ESCAPE)) {
@@ -89,7 +89,7 @@ void Game::Player::cPlayerManager::playerMove()
 		CAMERA->setCameraAngle(ci::vec2(-0.05f, 0));
 }
 
-void Game::Player::cPlayerManager::setup()
+void Game::cPlayerManager::setup()
 {
 	playerInstance();
 	//ポジションの参照とカメラのズームを設定
@@ -99,7 +99,7 @@ void Game::Player::cPlayerManager::setup()
 	}
 }
 
-void Game::Player::cPlayerManager::update(const float& delta_time)
+void Game::cPlayerManager::update(const float& delta_time)
 {
 	playerMove();
 	for (auto it : player) {
@@ -107,7 +107,7 @@ void Game::Player::cPlayerManager::update(const float& delta_time)
 	}
 }
 
-void Game::Player::cPlayerManager::draw()
+void Game::cPlayerManager::draw()
 {
 	for (auto it : player) {
 		it->draw();

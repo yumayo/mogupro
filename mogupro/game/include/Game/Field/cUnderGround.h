@@ -1,11 +1,9 @@
 #pragma once
-#include <Game/Field/UnderGround/cBlock.h>
+#include <Game/Field/cBlock.h>
 
 namespace Game
 {
 namespace Field
-{
-namespace UnderGround
 {
 class cUnderGround
 {
@@ -24,10 +22,11 @@ public:
     bool isOutOfRange( const ci::ivec3& cell_num );
 
 private:
-
     bool blockDigged( const  ci::ivec3& cell_num );
-    bool blockVertexBlend();
 
+    void blockVertexBlend( std::shared_ptr<cBlock> b, bool is_side_create = true );
+    bool createMesh();
+    void blockClear();
 private:
 
     std::vector<std::vector<std::vector<std::shared_ptr<cBlock>>>> blocks;
@@ -43,7 +42,6 @@ private:
     ci::gl::VboMeshRef mVboMesh;
 
 };
-}
 }
 }
 
