@@ -26,6 +26,7 @@ public:
 private:
 
     bool blockDigged( const  ci::ivec3& cell_num );
+    bool blockVertexBlend();
 
 private:
 
@@ -33,6 +34,14 @@ private:
     int num;
     float offset;
     float scale;
+
+    std::vector<ci::vec3> mVertices;
+    std::vector<uint32_t> mIndices;
+    std::vector<ci::vec2> mUv;
+    std::vector<ci::vec3> mNormals;
+    ci::TriMeshRef mMesh;
+    ci::gl::VboMeshRef mVboMesh;
+
 };
 }
 }
