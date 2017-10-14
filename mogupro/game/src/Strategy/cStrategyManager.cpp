@@ -50,5 +50,21 @@ void cStrategyManager::deleteObject()
 	}
 }
 
+bool cStrategyManager::isAABB(const ci::AxisAlignedBox & a, const ci::AxisAlignedBox & b)
+{
+		const ci::vec3& a_min = a.getMin();
+		const ci::vec3& a_max = a.getMax();
+		const ci::vec3& b_min = b.getMin();
+		const ci::vec3& b_max = b.getMax();
+
+		// XYZの各軸ごとに領域が重なっているかを調べる
+		if (a_max.x < b_min.x || a_min.x > b_max.x) return false;
+		if (a_max.y < b_min.y || a_min.y > b_max.y) return false;
+		if (a_max.z < b_min.z || a_min.z > b_max.z) return false;
+
+		// 全てが重なっている→２つのAABBは交差
+		return true;
+}
+
 ;
 }

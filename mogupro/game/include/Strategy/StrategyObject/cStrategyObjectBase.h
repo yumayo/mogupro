@@ -1,10 +1,10 @@
 #pragma once
-#include"ObjectBase.h"
+#include"Game\cObjectBase.h"
 namespace Strategy
 {
 namespace StrategyObject
 {
-class cStrategyObjectBase : public ObjectBase
+class cStrategyObjectBase : public Game::cObjectBase
 {
 public:
     cStrategyObjectBase( );
