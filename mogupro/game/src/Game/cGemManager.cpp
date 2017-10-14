@@ -15,8 +15,8 @@ void cGemManager::setUp( vec3 position, vec3 randomRange, float mapChipSize, flo
     {
         mTeamGems[i].insert( map<GemType, int>::value_type( GemType::Dia, 0 ) );
         mTeamGems[i].insert( map<GemType, int>::value_type( GemType::Gold, 0 ) );
-        mTeamGems[i].insert( map<GemType, int>::value_type( GemType::Silver, 0 ) );
         mTeamGems[i].insert( map<GemType, int>::value_type( GemType::Iron, 0 ) );
+        mTeamGems[i].insert( map<GemType, int>::value_type( GemType::Coal, 0 ) );
     }
     gl::Fbo::Format format;
     mGemBuffer = gl::Fbo::create( getWindowWidth(), getWindowHeight(), format.depthTexture() );
@@ -79,7 +79,7 @@ void cGemManager::create()
             case Game::Gem::GemType::Gold:
                 color = Color( 1, 1, 0 );
                 break;
-            case Game::Gem::GemType::Silver:
+            case Game::Gem::GemType::Coal:
                 color = Color( 0, 0, 1 );
                 break;
             case Game::Gem::GemType::Iron:

@@ -13,8 +13,8 @@ namespace Game
 		{
 			Dia,
 			Gold,
-			Silver,
-			Iron
+			Iron,
+			Coal,
 		};
 
 		class cGem
