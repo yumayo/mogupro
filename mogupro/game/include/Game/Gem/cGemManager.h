@@ -46,7 +46,7 @@ namespace Game
 			float mMapChipSize;
 			float mGemScale;
 			int mGemMaxNum;
-			//gl::Fbo mGemBuffer;
+			gl::FboRef mGemBuffer;
 			unsigned long mSeed;
 		};
 	}

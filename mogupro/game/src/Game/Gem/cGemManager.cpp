@@ -18,7 +18,8 @@ namespace Game
 				mTeamGems[i].insert(map<GemType, int>::value_type(GemType::Silver, 0));
 				mTeamGems[i].insert(map<GemType, int>::value_type(GemType::Iron, 0));
 			}
-
+			gl::Fbo::Format format;
+			mGemBuffer = gl::Fbo::create(getWindowWidth(), getWindowHeight(), format.depthTexture());
 
 			create();
 			gl::enableDepthWrite();
@@ -29,8 +30,9 @@ namespace Game
 
 		void cGemManager::draw()
 		{
-			//mGemBuffer.bindFramebuffer();
-			
+			//gl::ScopedFramebuffer fbScp(mGemBuffer);
+			//gl::ScopedViewport scpVp(ivec2(0), mGemBuffer->getSize());
+			gl::enable(GL_TEXTURE_2D);
 			gl::pushModelView();
 			for each (auto g in mGems)
 			{
@@ -38,15 +40,12 @@ namespace Game
 			}
 			gl::color(Color(1, 1, 1));
 			gl::pushModelView();
-			//gl::Fbo::unbindFramebuffer();
-			//mGemBuffer.unbindFramebuffer();
 
 
-			//gl::enable(GL_TEXTURE_2D);
+			//mGemBuffer->bindTexture();
 			//gl::color(Color(1, 1, 1));
-			//mGemBuffer.bindTexture();
-			//gl::drawSolidRect(Rectf(vec2(0, 0), vec2(10, 10)));
-			//mGemBuffer.unbindTexture();
+			//gl::draw(mGemBuffer->getColorTexture(), Rectf(0, 0, 10, 10));
+			//mGemBuffer->unbindTexture();
 		};
 
 		void cGemManager::update()
@@ -101,14 +100,14 @@ namespace Game
 			//指定の宝石があるか
 			bool isNothing = true;
 			for each(auto g in mGems)
-				if (g.getId() == it) isNothing = false;
+				if (g.getId() == mGems[it].getId()) isNothing = false;
 			if (isNothing) return;
 
 			//削除
 			gemDelete(it);
 
 			//DeBug:
-			console() << "チーム" << team << GemType(it) << "を取得" << endl;
+			console() << "チーム" << team << "が"<< GemType(it) << "を取得" << endl;
 			for (int i = 0; i < 2; i++)
 			{
 				mTeamGems[i].at(mGems.at(it).getType())++;
