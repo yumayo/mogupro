@@ -51,17 +51,17 @@ public:
     virtual void render( ) {}
 public:
     // ˆÈ‰º‚ÌŠÖ”‚Åƒm[ƒhŠÔ‚ğ‰ñ‚µ‚Ü‚·B
-    bool _mouse_began( cinder::app::MouseEvent event );
-    bool _mouse_moved( cinder::app::MouseEvent event );
-    bool _mouse_ended( cinder::app::MouseEvent event );
-    bool _touch_began( cinder::app::TouchEvent::Touch event );
-    bool _touch_moved( cinder::app::TouchEvent::Touch event );
-    bool _touch_ended( cinder::app::TouchEvent::Touch event );
-    void _touches_began( cinder::app::TouchEvent event );
-    void _touches_moved( cinder::app::TouchEvent event );
-    void _touches_ended( cinder::app::TouchEvent event );
-    void _key_down( cinder::app::KeyEvent event );
-    void _key_up( cinder::app::KeyEvent event );
+    bool root_mouse_began( cinder::app::MouseEvent event );
+    bool root_mouse_moved( cinder::app::MouseEvent event );
+    bool root_mouse_ended( cinder::app::MouseEvent event );
+    bool root_touch_began( cinder::app::TouchEvent::Touch event );
+    bool root_touch_moved( cinder::app::TouchEvent::Touch event );
+    bool root_touch_ended( cinder::app::TouchEvent::Touch event );
+    void root_touches_began( cinder::app::TouchEvent event );
+    void root_touches_moved( cinder::app::TouchEvent event );
+    void root_touches_ended( cinder::app::TouchEvent event );
+    void root_key_down( cinder::app::KeyEvent event );
+    void root_key_up( cinder::app::KeyEvent event );
 public:
     // camera‚âshader‚È‚Çq‹Ÿ‚É‚à‰e‹¿‚ğ—^‚¦‚½‚¢‚±‚Æ‚ğ‚µ‚½‚¢ê‡‚ÍŒp³‚µ‚Ä’Ç‰Á‚Ì‹@”\‚ğ‚Â‚¯‚Ä‚­‚¾‚³‚¢B
     virtual void _update( float delta );
