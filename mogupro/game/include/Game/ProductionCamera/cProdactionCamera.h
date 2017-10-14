@@ -2,9 +2,9 @@
 #include <cinder/app/App.h>
 #include <cinder/Camera.h>
 #include <Utility/cSingletonAble.h>
-#define CAMERA Game::Camera::cProductionCamera::getInstance()
+#define CAMERA Game::ProductionCamera::cProductionCamera::getInstance()
 namespace Game {
-	namespace Camera {
+	namespace ProductionCamera {
 		enum WINDOW_SIZE {
 			WIDTH = 640,
 			HEIGHT = 960,

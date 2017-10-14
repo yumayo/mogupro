@@ -1,6 +1,6 @@
 #include <Game/SkyDome/cSkyDome.h>
 #include <Utility/TextureManager.h>
-#include <Game/Camera/cProdactionCamera.h>
+#include <Game/ProductionCamera/cProdactionCamera.h>
 
 void Game::SkyDome::cSkyDome::setup()
 {
@@ -29,7 +29,6 @@ void Game::SkyDome::cSkyDome::draw()
 	ci::gl::scale(size);
 	mSphere->draw();
 	ci::gl::popModelView();
-
 	TEX.get("sky_dome")->unbind();
 
 

@@ -3,20 +3,27 @@
 namespace Game {
 	class cObjectBase {
 	public:
-		cObjectBase() {
-			mPos = ci::vec2(0);
+		cObjectBase(){}
+		cObjectBase(const ci::vec3& pos) {
+			mPos = pos;
 		}
 		virtual void setup() = 0;
 		virtual void update(const float& delta_time) = 0;
 		virtual void draw() = 0;
-		ci::vec2 getPos() {
+		ci::vec3 getPos() {
 			return mPos;
 		}
-		ci::vec2& getReferencePos() {
+		ci::vec3& getReferencePos() {
 			return mPos;
+		}
+		void setPos(const ci::vec3 pos) {
+			mPos = pos;
+		}
+		bool isActive() {
+			return mIsActive;
 		}
 	protected:
-		ci::vec2 mPos;
+		ci::vec3 mPos;
 		bool mIsActive;
 	};
 }

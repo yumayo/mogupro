@@ -1,10 +1,10 @@
-#include <Utility/Input.h>
+#include <Utility/cInput.h>
 #include <cinder/app/App.h>
-#include <Game/Camera/cProdactionCamera.h>
+#include <Game/ProductionCamera/cProdactionCamera.h>
 
 extern "C"
 {
-#include <Utility/Gamepad.h>
+#include <Utility/sGamepad.h>
 }
 
 #pragma comment(lib,"winmm.lib")
@@ -56,7 +56,7 @@ void mouseCursolFixed(const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 
 		if (delta.x != 0 && delta.y != 0) {
 			SetCursorPos(last_cursor_pos.x, last_cursor_pos.y);
-			Game::Camera::cProductionCamera::getInstance()->setCameraAngle(ci::vec2(-delta.x, delta.y) * 0.005f);
+			CAMERA->setCameraAngle(ci::vec2(-delta.x, delta.y) * 0.005f);
 		}
 
 
