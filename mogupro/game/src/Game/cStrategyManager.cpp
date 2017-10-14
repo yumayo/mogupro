@@ -1,12 +1,12 @@
-#include<Strategy/cStrategyManager.h>
-#include <Utility/Input.h>
-#include"Strategy\StrategyObject\cDrill.h"
-#include"Strategy\StrategyObject\cStrategyObjectBase.h"
+#include<Game/cStrategyManager.h>
+#include <Utility/cInput.h>
+#include"Game/Strategy/cDrill.h"
+#include"Game/Strategy/cStrategyObjectBase.h"
 #include"cinder\Rand.h"
 using namespace ci;
 using namespace ci::app;
 
-namespace Strategy
+namespace Game
 {
 cStrategyManager::cStrategyManager( )
 {
@@ -33,7 +33,7 @@ void cStrategyManager::update()
 	}
 	deleteObject();
 	if (ENV->pushKey(KeyEvent::KEY_p)) {
-		strategyobjects.push_back(std::make_shared<Strategy::StrategyObject::cDrill>(vec3(randInt(0,10), 10, randInt(0, 10)), vec3(1, 1, 1)));
+		strategyobjects.push_back(std::make_shared<Game::Strategy::cDrill>(vec3(randInt(0,10), 10, randInt(0, 10)), vec3(1, 1, 1)));
 	}
 }
 

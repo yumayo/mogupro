@@ -1,8 +1,6 @@
-#include <Game/Field/cFieldManager.h>
+#include <Game/cFieldManager.h>
 #include <cinder/gl/gl.h>
 namespace Game
-{
-namespace Field
 {
 cFieldManager::cFieldManager()
 {
@@ -31,6 +29,5 @@ void cFieldManager::draw()
 void cFieldManager::blockBreak( ci::vec3 position, float  radius )
 {
     mUnderGround.blockBreak( position, radius );
-}
 }
 }

@@ -1,8 +1,6 @@
 #include <Scene/Member/cTest.h>
 #include <cinder/app/AppBase.h>
-#include <Utility/Input.h>
 #include <Scene/cSceneManager.h>
-#include <Utility/Input.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;

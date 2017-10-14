@@ -1,13 +1,11 @@
 #pragma once
 #include <cinder/app/App.h>
 #include <Utility/cSingletonAble.h>
-#include <Game/Field/UnderGround/cUnderGround.h>
+#include <Game/Field/cUnderGround.h>
 
 namespace Game
 {
-namespace Field
-{
-class cFieldManager : public Utility::cSingletonAble<cFieldManager>
+class cFieldManager : public ::Utility::cSingletonAble<cFieldManager>
 {
 public:
 
@@ -23,9 +21,8 @@ public:
     void blockBreak( ci::vec3 position, float radius );
 
 private:
-    UnderGround::cUnderGround mUnderGround;
+    Field::cUnderGround mUnderGround;
 };
-}
 }
 
 
