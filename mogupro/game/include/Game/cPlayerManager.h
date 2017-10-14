@@ -2,7 +2,9 @@
 #include <Utility/cSingletonAble.h>
 namespace Game
 {
-class cPlayer;
+	namespace Player {
+		class cPlayer;
+	}
 class cPlayerManager : public ::Utility::cSingletonAble<cPlayerManager>
 {
 private:

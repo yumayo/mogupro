@@ -24,7 +24,6 @@ void Game::Player::cPlayer::setup()
 void Game::Player::cPlayer::update(const float & delta_time)
 {
 
-
 }
 
 void Game::Player::cPlayer::draw()

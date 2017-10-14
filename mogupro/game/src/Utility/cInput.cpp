@@ -1,6 +1,6 @@
 #include <Utility/cInput.h>
 #include <cinder/app/App.h>
-#include <Game/ProductionCamera/cProdactionCamera.h>
+#include <Game/cCameraManager.h>
 
 extern "C"
 {
@@ -56,7 +56,7 @@ void mouseCursolFixed(const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 
 		if (delta.x != 0 && delta.y != 0) {
 			SetCursorPos(last_cursor_pos.x, last_cursor_pos.y);
-			CAMERA->setCameraAngle(ci::vec2(-delta.x, delta.y) * 0.005f);
+			CAMERA->setCameraAngle(ci::vec2(-delta.x, -delta.y) * 0.005f);
 		}
 
 
