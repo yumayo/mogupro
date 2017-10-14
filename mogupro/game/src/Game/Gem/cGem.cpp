@@ -4,20 +4,22 @@ namespace Game
 {
 	namespace Gem
 	{
-		void cGem::SetUp(vec3 postion_, vec3 size_, Color color_, GemType type)
+		void cGem::setUp(vec3 positin, vec3 scale, Color color, GemType type)
 		{
-			mPosition = postion_;
-			mSize = size_;
-			mColor = color_;
+			mPosition = positin;
+			mScale = scale;
+			mColor = color;
 		}
 
-		void cGem::Draw()
+		void cGem::draw()
 		{
+			//tex.binde();
 			gl::color(mColor);
-			gl::drawCube(mPosition, mSize);
+			gl::drawCube(mPosition, mScale);
+			//tex.bind
 		}
 
-		void cGem::Update()
+		void cGem::update()
 		{
 
 		}
