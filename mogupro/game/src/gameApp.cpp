@@ -6,6 +6,9 @@
 #include <Utility/Input.h>
 #include <SkyDome/SkyDome.h>
 #include <Game/Field/cFieldManager.h>
+#include"Strategy\cStrategyManager.h"
+#include <Game/Gem/cGemManager.h>
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -34,9 +37,14 @@ void gameApp::setup()
 	size = vec3(2);
 	skydome.setup();
 	Game::Field::cFieldManager::getInstance()->setup();
+	//Game::Gem::cGemManager::getInstance()->SetUp(vec3(5, 5, 5), vec3(10, 10, 10), 10, 0);
+	//Game::Gem::cGemManager::getInstance()->Create();
 	CAMERA->followingCamera(&pos, 30);
 	CAMERA->setup();
 	ENV->padSetup();
+
+	Strategy::cStrategyManager::getInstance()->setup();
+
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 }
@@ -76,6 +84,7 @@ void gameApp::update()
 	delta_time = std::abs(delta_time - timeline().getCurrentTime());
 	CAMERA->update(delta_time);
 	Game::Field::cFieldManager::getInstance()->update(delta_time);
+
 	delta_time = timeline().getCurrentTime();
 	ENV->padUpdate();
 	ENV->padProcessEvent();
@@ -123,7 +132,7 @@ void gameApp::update()
 	if (ENV->pressKey(KeyEvent::KEY_LEFT))
 		CAMERA->setCameraAngle(ci::vec2(-0.05f, 0));
 
-
+	Strategy::cStrategyManager::getInstance()->update();
 }
 
 void gameApp::draw()
@@ -133,13 +142,14 @@ void gameApp::draw()
 
 	gl::setMatrices(CAMERA->getCamera());
 	Game::Field::cFieldManager::getInstance()->draw();
+	//Game::Gem::cGemManager::getInstance()->Draw();
 	/*auto lambert = gl::ShaderDef().lambert();
 	auto shader = gl::getStockShader(lambert);
 	shader->bind();*/
 	gl::drawCube(pos, size);
-
+	Strategy::cStrategyManager::getInstance()->draw();
 	skydome.draw();
-
+	
 	ENV->flashInput();
 }
 
