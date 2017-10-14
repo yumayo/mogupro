@@ -25,7 +25,7 @@ void onAxisMoved(struct Gamepad_device * device, unsigned int axisID, float valu
 void onDeviceAttached(struct Gamepad_device * device, void * context);
 void onDeviceRemoved(struct Gamepad_device * device, void * context);
 
-void Game::Utility::cInputAll::padAxisSetup()
+void Utility::cInputAll::padAxisSetup()
 {
 	pad_stick_axis_value.insert(std::make_pair(STICK_LEFT_HORIZONTAL, 0.0f));
 	pad_stick_axis_value.insert(std::make_pair(STICK_LEFT_VERTICAL, 0.0f));
@@ -35,7 +35,7 @@ void Game::Utility::cInputAll::padAxisSetup()
 	pad_stick_axis_value.insert(std::make_pair(CROSS_VERTICAL, 0.0f));
 }
 
-Game::Utility::cInputAll::cInputAll()
+Utility::cInputAll::cInputAll()
 {
 	cursor_captured = false;
 	mouse_active = false;
@@ -72,7 +72,7 @@ void mouseCursolFixed(const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 	}
 }
 
-void Game::Utility::cInputAll::padSetup()
+void Utility::cInputAll::padSetup()
 {
 	Gamepad_deviceAttachFunc(onDeviceAttached, (void *)0x1);
 	Gamepad_deviceRemoveFunc(onDeviceRemoved, (void *)0x2);
@@ -83,7 +83,7 @@ void Game::Utility::cInputAll::padSetup()
 	padAxisSetup();
 }
 
-void Game::Utility::cInputAll::padUpdate()
+void Utility::cInputAll::padUpdate()
 {
 	static unsigned int iterationsToNextPoll = POLL_ITERATION_INTERVAL;
 
@@ -95,33 +95,33 @@ void Game::Utility::cInputAll::padUpdate()
 }
 
 
-void Game::Utility::cInputAll::padProcessEvent()
+void Utility::cInputAll::padProcessEvent()
 {
 	Gamepad_processEvents();
 }
 
-void Game::Utility::cInputAll::setPadPush(const int & num)
+void Utility::cInputAll::setPadPush(const int & num)
 {
 	if (padpress.find(num) == padpress.end())
 		padpush.emplace(num);
 }
 
-void Game::Utility::cInputAll::setPadPress(const int & num)
+void Utility::cInputAll::setPadPress(const int & num)
 {
 	padpress.emplace(num);
 }
 
-void Game::Utility::cInputAll::setPadPull(const int & num)
+void Utility::cInputAll::setPadPull(const int & num)
 {
 	padpull.emplace(num);
 }
 
-void Game::Utility::cInputAll::erasePadPress(const int & num)
+void Utility::cInputAll::erasePadPress(const int & num)
 {
 	padpress.erase(padpress.find(num));
 }
 
-bool Game::Utility::cInputAll::isPadPush(const int & num)
+bool Utility::cInputAll::isPadPush(const int & num)
 {
 	if (padpush.find(num) == padpush.end())
 		return false;
@@ -129,14 +129,14 @@ bool Game::Utility::cInputAll::isPadPush(const int & num)
 	return true;
 }
 
-bool Game::Utility::cInputAll::isPadPress(const int & num)
+bool Utility::cInputAll::isPadPress(const int & num)
 {
 	if (padpress.find(num) == padpress.end())
 		return false;
 	return true;
 }
 
-bool Game::Utility::cInputAll::isPadPull(const int & num)
+bool Utility::cInputAll::isPadPull(const int & num)
 {
 	if (padpull.find(num) == padpull.end())
 		return false;
@@ -144,7 +144,7 @@ bool Game::Utility::cInputAll::isPadPull(const int & num)
 	return true;
 }
 
-void Game::Utility::cInputAll::setPadAxis(const int & num, const float & value_)
+void Utility::cInputAll::setPadAxis(const int & num, const float & value_)
 {
 	pad_stick_axis_value.find(num)->second = value_;
 }
@@ -153,7 +153,7 @@ void Game::Utility::cInputAll::setPadAxis(const int & num, const float & value_)
 //０で左スティックの左右（ｘ）
 //１で左スティックの上下（ｙ）※注意　上下が逆
 //２、３が右スティック
-float Game::Utility::cInputAll::getPadAxis(const int & pad_num)
+float Utility::cInputAll::getPadAxis(const int & pad_num)
 {
 	if (pad_stick_axis_value.find(pad_num) == pad_stick_axis_value.cend())
 		return 0.0f;
@@ -165,30 +165,30 @@ float Game::Utility::cInputAll::getPadAxis(const int & pad_num)
 	return pad_stick_axis_value.find(pad_num)->second;
 }
 
-void Game::Utility::cInputAll::keyDown(const ci::app::KeyEvent& event) {
+void Utility::cInputAll::keyDown(const ci::app::KeyEvent& event) {
 	press.insert(event.getCode());
 	push.insert(event.getCode());
 }
-void Game::Utility::cInputAll::keyUp(const ci::app::KeyEvent& event)
+void Utility::cInputAll::keyUp(const ci::app::KeyEvent& event)
 {
 	pull.insert(event.getCode());
 	press.erase(press.find(event.getCode()));
 }
 
 
-void Game::Utility::cInputAll::mouseMove(const ci::app::MouseEvent & event)
+void Utility::cInputAll::mouseMove(const ci::app::MouseEvent & event)
 {
 	if (!mouse_active) return;
 	mouseCursolFixed(event, inc_pos, mouse_pos, cursor_captured, last_cursor_pos);
 }
 
-void Game::Utility::cInputAll::mouseDrag(const ci::app::MouseEvent & event)
+void Utility::cInputAll::mouseDrag(const ci::app::MouseEvent & event)
 {
 	if (!mouse_active) return;
 	mouseCursolFixed(event, inc_pos, mouse_pos, cursor_captured, last_cursor_pos);
 }
 
-void Game::Utility::cInputAll::mouseDown(const ci::app::MouseEvent& event)
+void Utility::cInputAll::mouseDown(const ci::app::MouseEvent& event)
 {
 	if (event.isLeft())
 	{
@@ -207,7 +207,7 @@ void Game::Utility::cInputAll::mouseDown(const ci::app::MouseEvent& event)
 	}
 }
 
-void Game::Utility::cInputAll::mouseUp(const ci::app::MouseEvent& event)
+void Utility::cInputAll::mouseUp(const ci::app::MouseEvent& event)
 {
 	if (event.isLeft())
 	{
@@ -226,14 +226,14 @@ void Game::Utility::cInputAll::mouseUp(const ci::app::MouseEvent& event)
 	}
 }
 
-bool Game::Utility::cInputAll::pressKey(const int& pressed_key) {
+bool Utility::cInputAll::pressKey(const int& pressed_key) {
 	if (press.find(pressed_key) != press.end()) {
 		return true;
 	}
 	return false;
 }
 
-bool Game::Utility::cInputAll::pushKey(const int & pressed_key)
+bool Utility::cInputAll::pushKey(const int & pressed_key)
 {
 	if (push.find(pressed_key) == push.end())
 		return false;
@@ -241,7 +241,7 @@ bool Game::Utility::cInputAll::pushKey(const int & pressed_key)
 	return true;
 }
 
-bool Game::Utility::cInputAll::pullKey(const int & pressed_key)
+bool Utility::cInputAll::pullKey(const int & pressed_key)
 {
 	if (pull.find(pressed_key) == pull.end())
 		return false;
@@ -249,7 +249,7 @@ bool Game::Utility::cInputAll::pullKey(const int & pressed_key)
 	return true;
 }
 
-void Game::Utility::cInputAll::flashInput()
+void Utility::cInputAll::flashInput()
 {
 	push.clear();
 	pull.clear();

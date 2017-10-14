@@ -1,4 +1,4 @@
-#include <Game/Field/UnderGround/cBlock.h>
+#include <Game/Field/cBlock.h>
 #include <cinder/gl/gl.h>
 
 using namespace ci;
@@ -7,8 +7,6 @@ using namespace ci::app;
 namespace Game
 {
 namespace Field
-{
-namespace UnderGround
 {
 static vec3 vertex0[] = {
     vec3( -0.5f,  0.5f, 0.5f ),
@@ -257,24 +255,19 @@ vec3* getNormals( int side_num )
     return new vec3();
 }
 
-int getIndex( float x, float y, float z, float nx, float ny, float nz,
-              const std::vector<vec3>& vtx,
-              const std::vector<vec3>& normal )
+int getIndex( const vec3 & vtx, const vec3 & normal,
+              const std::vector<vec3>& vertices,
+              const std::vector<vec3>& normals )
 {
-    for (int i = 0; i < (vtx.size()); ++i)
+    for (int i = 0; i < (vertices.size()); ++i)
     {
-        if (vtx[i].x == x
-             && vtx[i].y == y
-             && vtx[i].z == z
-             && normal[i].x == nx
-             && normal[i].y == ny
-             && normal[i].z == nz)
+        if (vertices[i] == vtx
+             && normals[i] == normal)
         {
-            // 全部一致した!!
+            // 全部一致
             return i;
         }
     }
-
     return -1;
 }
 
@@ -310,9 +303,9 @@ void cBlock::drawMesh()
     gl::draw( *mMesh );
     gl::popModelView();
 }
-void cBlock::setupDrawSide( const std::vector<int>& draw_side, const  int& offset_index )
+void cBlock::createSide( const  int& offset_index )
 {
-    if (draw_side.size() <= 0)
+    if (mDrawSide.size() <= 0)
         return;
 
     //for (size_t i = 0; i < draw_side.size(); i++)
@@ -321,32 +314,31 @@ void cBlock::setupDrawSide( const std::vector<int>& draw_side, const  int& offse
     //    vec3* temp = getVertices( draw_side[i] );
     //    for (int k = 0; k < 6; k++)
     //        mVertices.emplace_back( mPosition + temp[k] );
-
     //    // 法線
     //    temp = getNormals( draw_side[i] );
     //    for (int k = 0; k < 6; k++)
     //        mNormals.emplace_back( temp[k] );
     //}
     //mIndices = getIndices( draw_side.size(), offset_index );
-    mUv = getUv( draw_side.size() );
 
+    mUv = getUv( mDrawSide.size() );
 
     // DrawElements用のデータを作成
     for (int i = 0; i < 36; ++i)
     {
         int side_num = i / 6;
-        if (!std::any_of( draw_side.begin(), draw_side.end(),
-                         [&]( int n ) { return side_num == n; } ))
+        if (!std::any_of( mDrawSide.begin(), mDrawSide.end(),
+                          [&]( int n ) { return side_num == n; } ))
             continue;
 
-        float x = cube_vtx[i * 3 + 0] + mPosition.x;
-        float y = cube_vtx[i * 3 + 1] + mPosition.y;
-        float z = cube_vtx[i * 3 + 2] + mPosition.z;
-        float nx = cube_normal[i * 3 + 0];
-        float ny = cube_normal[i * 3 + 1];
-        float nz = cube_normal[i * 3 + 2];
+        vec3 vertex = vec3( cube_vtx[i * 3 + 0],
+                            cube_vtx[i * 3 + 1],
+                            cube_vtx[i * 3 + 2] ) + mPosition;
+        vec3 normal = vec3( cube_normal[i * 3 + 0],
+                            cube_normal[i * 3 + 1],
+                            cube_normal[i * 3 + 2] );
 
-        int id = getIndex( x, y, z, nx, ny, nz,
+        int id = getIndex( vertex, normal,
                            mVertices, mNormals );
 
         if (id < 0)
@@ -354,12 +346,12 @@ void cBlock::setupDrawSide( const std::vector<int>& draw_side, const  int& offse
             // 同じ座標と法線を持つ頂点は見つからず
             mIndices.emplace_back( mVertices.size() + offset_index );
 
-            mVertices.emplace_back( vec3( x, y, z ) );
-            mNormals.emplace_back( vec3( nx, ny, nz ) );
+            mVertices.emplace_back( vertex );
+            mNormals.emplace_back( normal );
         }
         else
         {
-            // 見つかった!!
+            // 見つかった
             mIndices.emplace_back( id + offset_index );
         }
     }
@@ -374,23 +366,19 @@ void cBlock::setupDrawSide( const std::vector<int>& draw_side, const  int& offse
     //    mMesh->appendTexCoords0( &mUv[0], mUv.size() );
     //if (mNormals.size() > 0)
     //    mMesh->appendNormals( &mNormals[0], mNormals.size() );
-
-    // VBOの実装はもうちょい先
-    //mVboMesh = gl::VboMesh::create( mMesh );
 }
 void cBlock::clear()
 {
     mVertices.clear();
     mIndices.clear();
     mUv.clear();
-    mMesh->clear();
-    mMesh.reset();
-    mVboMesh.reset();
+    mDrawSide.clear();
+    //mMesh->clear();
 }
 void cBlock::toBreak()
 {
     mIsActive = false;
-}
+    clear();
 }
 }
 }

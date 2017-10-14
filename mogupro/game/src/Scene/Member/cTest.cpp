@@ -1,14 +1,30 @@
 #include <Scene/Member/cTest.h>
 #include <cinder/app/AppBase.h>
-#include <Utility/Input.h>
 #include <Scene/cSceneManager.h>
-#include <Utility/Input.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 void cTest::setup()
 {
 
+	th = std::thread(
+		[this]
+	{
+		while (c < 100)
+		{
+
+			for (int i = 0; i < 10000000; ++i)
+			{
+
+			}
+			++ c;
+		}
+
+		isEndThread = true;
+	}
+	);
+
+	
 }
 
 void cTest::shutDown()
@@ -19,15 +35,22 @@ void cTest::shutDown()
 void cTest::update()
 {
 
-	console() << "update" << std::endl;
+	console() << "Count : " << c << std::endl;
 
-	if (ENV->pushKey(KeyEvent::KEY_RETURN))
+	//if (isEndThread)
 	{
-		cSceneManager::getInstance()->shift(new cTest2());
+		th.join();
 	}
+	console() << "AAAAAAA" << std::endl;
+	
 }
 
 void cTest::draw()
+{
+
+}
+
+void cTest::draw2D()
 {
 
 }
@@ -54,6 +77,11 @@ void cTest2::update()
 }
 
 void cTest2::draw()
+{
+
+}
+
+void cTest2::draw2D()
 {
 
 }

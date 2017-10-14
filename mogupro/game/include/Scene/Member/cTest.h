@@ -1,6 +1,6 @@
 #pragma once
 #include "../cSceneBase.h"
-
+#include <thread>
 class cTest : public cSceneBase
 {
 public:
@@ -8,8 +8,13 @@ public:
 	void shutDown();
 	void update();
 	void draw();
+	void draw2D();
 	void resize();
 private:
+	std::thread th;
+public:
+	int c = 0;
+	bool isEndThread = false;
 
 };
 
@@ -20,6 +25,7 @@ public:
 	void shutDown();
 	void update();
 	void draw();
+	void draw2D();
 	void resize();
 private:
 

@@ -6,8 +6,6 @@ namespace Game
 {
 namespace Field
 {
-namespace UnderGround
-{
 class cBlock
 {
 public:
@@ -19,12 +17,13 @@ public:
     void draw();
     void drawMesh();
 
-    void setupDrawSide( const std::vector<int>& draw_side, const  int& offset_index = 0 );
+    void createSide( const  int& offset_index = 0 );
     void clear();
 
     void toBreak();
 
     bool mIsActive;
+    std::vector<int> mDrawSide;
 
 public:
     ci::vec3 mPosition;
@@ -35,11 +34,6 @@ public:
     std::vector<ci::vec2> mUv;
     std::vector<ci::vec3> mNormals;
     ci::TriMeshRef mMesh;
-    ci::gl::VboMeshRef mVboMesh;
 };
 }
 }
-}
-
-
-
