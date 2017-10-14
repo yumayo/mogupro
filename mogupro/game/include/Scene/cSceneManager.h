@@ -17,10 +17,10 @@ class cSceneManager : public Utility::cSingletonAble<cSceneManager>
 public:
 	cSceneManager() = default;
 
-	template<class T>
-	void change(T* scene)
+	template<class scene,class... T>
+	void change(T...args)
 	{
-		mSceneBase = std::make_shared<T>(*scene);
+		mSceneBase = std::make_shared<scene>(args...);
 	};
 
 	cSceneBase& now()
@@ -28,11 +28,11 @@ public:
 		return *mSceneBase;
 	};
 
-	template<class T>
-	void shift(T* scene)
+	template<class scene, class... T>
+	void shift(T...args)
 	{
 		mSceneBase->shutDown();
-		change(scene);
+		change(args...);
 		mSceneBase->setup();
 	}
 private:
