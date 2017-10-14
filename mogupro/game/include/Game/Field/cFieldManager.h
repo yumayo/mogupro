@@ -15,7 +15,7 @@ public:
     ~cFieldManager();
 
     void setup();
-    void update( const int delta_time );
+    void update( const float delta_time );
     void draw();
 
     // position : ˆÊ’u
