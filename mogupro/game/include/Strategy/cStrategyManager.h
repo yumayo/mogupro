@@ -1,7 +1,8 @@
 #pragma once
 #include"Utility\cSingletonAble.h"
-#include"ObjectBase.h"
+#include"Game\cObjectBase.h"
 #include"Strategy\StrategyObject\cStrategyObjectBase.h"
+#include"cinder\AxisAlignedBox.h"
 #include<list>
 
 namespace Strategy
@@ -16,6 +17,7 @@ public:
 	void update();
 	template<class T>
 	void CreateStrategyObject(T _object);
+	bool isAABB(const ci::AxisAlignedBox & a, const ci::AxisAlignedBox & b);
 private:
 	std::list<std::shared_ptr<Strategy::StrategyObject::cStrategyObjectBase>>strategyobjects;
 	void deleteObject();

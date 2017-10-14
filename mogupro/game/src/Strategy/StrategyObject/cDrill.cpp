@@ -1,6 +1,8 @@
 #include<Strategy/StrategyObject/cDrill.h>
 #include "cinder/gl/gl.h"
 #include"Game\Field/cFieldManager.h"
+#include"Strategy\cStrategyManager.h"
+#include"Game\Gem\cGemManager.h"
 using namespace ci;
 using namespace ci::app;
 namespace Strategy
@@ -56,7 +58,7 @@ void cDrill::update(const float & delta_time)
 {
 	y_rotate++;
 	move();
-	Game::Field::cFieldManager::getInstance()->blockBreak(pos, scale.z);
+	//Game::Field::cFieldManager::getInstance()->blockBreak(pos, scale.z);
 
 	//if ((beginpos.y - pos.y) >= (float(drillslopes.size())*scale.y)) {
 	//	createDrills();
@@ -70,6 +72,23 @@ void cDrill::update(const float & delta_time)
 	for (int i = 0; i < drillslopes.size(); i++) {
 		drillslopes[i].pos -= vec3(0, drillspeed, 0);
 	}
+
+	AxisAlignedBox drill_aabb(pos- vec3(float(scale.x)/2.f, float(scale.y) / 2.f, float(scale.z) / 2.f),
+		pos + vec3(float(scale.x) / 2.f, float(scale.y) / 2.f, float(scale.z) / 2.f));
+
+	int n = GemManager->getGems().size();
+	for (int i = 0; i < GemManager->getGems().size(); i++) {
+		vec3 gempos = GemManager->getGems()[i].getPos();
+		vec3 gemscale = GemManager->getGems()[i].getScale();
+
+		AxisAlignedBox gem_aabb(gempos - vec3(float(gemscale.x) / 2.f, float(gemscale.y) / 2.f, float(gemscale.z) / 2.f),
+			gempos + vec3(float(gemscale.x) / 2.f, float(gemscale.y) / 2.f, float(gemscale.z) / 2.f));
+		if (STRM->isAABB(drill_aabb, gem_aabb)) {
+			GemManager->gemCountUp(0, i);
+		}
+		
+	}
+	
 
 }
 void cDrill::setup()
