@@ -2,7 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Timeline.h"
-#include <Game/ProductionCamera/cProdactionCamera.h>
+#include <Game/cCameraManager.h>
 #include <Utility/cInput.h>
 #include <Game/SkyDome/cSkyDome.h>
 #include <Game/cFieldManager.h>
@@ -143,8 +143,7 @@ void gameApp::draw()
 {
     gl::clear( Color( 0, 0, 0 ) );
 
-
-    gl::setMatrices( CAMERA->getCamera() );
+    CAMERA->bind3D( );
     Game::cFieldManager::getInstance()->draw();
     //Game::Gem::cGemManager::getInstance()->Draw();
     /*auto lambert = gl::ShaderDef().lambert();
@@ -153,6 +152,11 @@ void gameApp::draw()
     gl::drawCube( pos, size );
     Game::cStrategyManager::getInstance()->draw();
     skydome.draw();
+    CAMERA->unBind3D( );
+
+    CAMERA->bind2D( );
+    // nothing
+    CAMERA->unBind2D( );
 
     ENV->flashInput();
 }

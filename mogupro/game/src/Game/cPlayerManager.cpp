@@ -1,7 +1,7 @@
 #include <Game/Player/cPlayer.h>
 #include <Game/cPlayerManager.h>
 #include <Utility/cInput.h>
-#include <Game/ProductionCamera/cProdactionCamera.h>
+#include <Game/cCameraManager.h>
 
 
 
@@ -52,27 +52,28 @@ void Game::cPlayerManager::playerMove()
 	CAMERA->setCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_w)) {
-		active_player->move(ci::vec3(0, 0, active_player->getSpeed()));
+		active_player->move(ci::vec3(active_player->getSpeed()*sin(CAMERA->getCameraAngle().x), 0.0f, active_player->getSpeed() * cos(CAMERA->getCameraAngle().x)));
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_s)) {
-		active_player->move(ci::vec3(0, 0, -active_player->getSpeed()));
+		active_player->move(ci::vec3(-active_player->getSpeed()*sin(CAMERA->getCameraAngle().x), 0.0f, -active_player->getSpeed()*cos(CAMERA->getCameraAngle().x)));
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_d)) {
-		active_player->move(ci::vec3(active_player->getSpeed(), 0, 0));
+		active_player->move(ci::vec3(-active_player->getSpeed()*cos(CAMERA->getCameraAngle().x), 0, active_player->getSpeed()*sin(CAMERA->getCameraAngle().x)));
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_a)) {
-		active_player->move(ci::vec3(-active_player->getSpeed(), 0, 0));
+		active_player->move(ci::vec3(+active_player->getSpeed()*cos(CAMERA->getCameraAngle().x), 0, -active_player->getSpeed()*sin(CAMERA->getCameraAngle().x)));
 	}
+		
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_q)) {
 		active_player->move(ci::vec3(0, -active_player->getSpeed(), 0));
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_e)) {
-		active_player->move(ci::vec3(0, -active_player->getSpeed(), 0));
+		active_player->move(ci::vec3(0, active_player->getSpeed(), 0));
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_UP)) {
@@ -83,10 +84,11 @@ void Game::cPlayerManager::playerMove()
 		CAMERA->setCameraAngle(ci::vec2(0, -0.05f));
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_RIGHT))
-		CAMERA->setCameraAngle(ci::vec2(0.05f, 0));
+		CAMERA->setCameraAngle(ci::vec2(-0.05f, 0));
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_LEFT))
-		CAMERA->setCameraAngle(ci::vec2(-0.05f, 0));
+		CAMERA->setCameraAngle(ci::vec2(0.05f, 0));
+
 }
 
 void Game::cPlayerManager::setup()
