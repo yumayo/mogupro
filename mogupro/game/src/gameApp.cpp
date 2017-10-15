@@ -143,16 +143,21 @@ void gameApp::draw()
 {
     gl::clear( Color( 0, 0, 0 ) );
 
-
-    gl::setMatrices( CAMERA->getCamera() );
-    Game::cFieldManager::getInstance()->draw();
+    CAMERA->bind3D( );
+    Game::cFieldManager::getInstance( )->draw( );
     //Game::Gem::cGemManager::getInstance()->Draw();
     /*auto lambert = gl::ShaderDef().lambert();
     auto shader = gl::getStockShader(lambert);
     shader->bind();*/
     gl::drawCube( pos, size );
-    Game::cStrategyManager::getInstance()->draw();
-    skydome.draw();
+    Game::cStrategyManager::getInstance( )->draw( );
+    skydome.draw( );
+    CAMERA->unBind3D( );
+
+    CAMERA->bind2D( );
+    // nothing
+    CAMERA->unBind2D( );
+
 
     ENV->flashInput();
 }
