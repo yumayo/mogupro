@@ -2,9 +2,9 @@
 #include <cinder/app/App.h>
 #include <cinder/Camera.h>
 #include <Utility/cSingletonAble.h>
-#define CAMERA Game::ProductionCamera::cProductionCamera::getInstance()
+#define CAMERA Game::CameraManager::cCameraManager::getInstance()
 namespace Game {
-	namespace ProductionCamera {
+	namespace CameraManager {
 		enum WINDOW_SIZE {
 			WIDTH = 640,
 			HEIGHT = 960,
@@ -13,9 +13,10 @@ namespace Game {
 		};
 
 
-		class cProductionCamera : public ::Utility::cSingletonAble<cProductionCamera> {
+		class cCameraManager : public ::Utility::cSingletonAble<cCameraManager> {
 		private:
 			ci::CameraPersp camera;
+			ci::CameraOrtho camera_2d;
 			ci::vec3 pos;
 			//ääÇÁÇ©Ç…ñ⁄ìIç¿ïWÇ…í«è]Ç∑ÇÈÇΩÇﬂÇÃbuf
 			ci::vec3 buf_pos;
@@ -55,7 +56,7 @@ namespace Game {
 			ci::vec4 fade_out;
 
 
-			cProductionCamera() {
+			cCameraManager() {
 				scatter = 0;
 				pos = ci::vec3(0);
 				buf_pos = ci::vec3(0);
@@ -65,7 +66,7 @@ namespace Game {
 				my_scatter = ci::vec2(0);
 				camera_far = 5;
 			}
-			~cProductionCamera() {
+			~cCameraManager() {
 
 			}
 
@@ -83,6 +84,9 @@ namespace Game {
 			ci::vec3 getPos() {
 				return ci::vec3(pos.x, pos.y, pos.z);
 			}
+			ci::vec2 getCameraAngle() {
+				return camera_angle;
+			}
 
 			void followingCamera(ci::vec3* pos, const float& camera_farZ) {
 				reference_pos = std::make_shared<ci::vec3*>(pos);
@@ -94,7 +98,10 @@ namespace Game {
 			void shakeCamera(const float& scatter, const float& seconds);
 			void setup();
 			void update(const float& delta_time);
-			void draw();
+			void bind3D();
+			void unBind3D();
+			void bind2D();
+			void unBind2D();
 		};
 	}
 }
