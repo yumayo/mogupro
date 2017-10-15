@@ -26,7 +26,7 @@ node::~node( )
         }
     }
 }
-bool node::root_mouse_began( cinder::app::MouseEvent event )
+bool node::entry_mouse_began( cinder::app::MouseEvent event )
 {
     if ( !_block_schedule_event )
     {
@@ -36,7 +36,7 @@ bool node::root_mouse_began( cinder::app::MouseEvent event )
             try
             {
                 // 子供がモーダルオブジェクトだった場合
-                if ( _children[_riterator]->root_mouse_began( event ) )
+                if ( _children[_riterator]->entry_mouse_began( event ) )
                 {
                     return true;
                 }
@@ -57,7 +57,7 @@ bool node::root_mouse_began( cinder::app::MouseEvent event )
     }
     return false;
 }
-bool node::root_mouse_moved( cinder::app::MouseEvent event )
+bool node::entry_mouse_moved( cinder::app::MouseEvent event )
 {
     if ( !_block_schedule_event )
     {
@@ -66,7 +66,7 @@ bool node::root_mouse_moved( cinder::app::MouseEvent event )
         {
             try
             {
-                if ( _children[_riterator]->root_mouse_moved( event ) )
+                if ( _children[_riterator]->entry_mouse_moved( event ) )
                 {
                     return true;
                 }
@@ -87,7 +87,7 @@ bool node::root_mouse_moved( cinder::app::MouseEvent event )
     }
     return false;
 }
-bool node::root_mouse_ended( cinder::app::MouseEvent event )
+bool node::entry_mouse_ended( cinder::app::MouseEvent event )
 {
     if ( !_block_schedule_event )
     {
@@ -96,7 +96,7 @@ bool node::root_mouse_ended( cinder::app::MouseEvent event )
         {
             try
             {
-                if ( _children[_riterator]->root_mouse_ended( event ) )
+                if ( _children[_riterator]->entry_mouse_ended( event ) )
                 {
                     return true;
                 }
@@ -118,7 +118,7 @@ bool node::root_mouse_ended( cinder::app::MouseEvent event )
     }
     return false;
 }
-bool node::root_touch_began( cinder::app::TouchEvent::Touch event )
+bool node::entry_touch_began( cinder::app::TouchEvent::Touch event )
 {
     if ( !_block_schedule_event )
     {
@@ -128,7 +128,7 @@ bool node::root_touch_began( cinder::app::TouchEvent::Touch event )
             try
             {
                 // 子供がモーダルオブジェクトだった場合
-                if ( _children[_riterator]->root_touch_began( event ) )
+                if ( _children[_riterator]->entry_touch_began( event ) )
                 {
                     return true;
                 }
@@ -149,7 +149,7 @@ bool node::root_touch_began( cinder::app::TouchEvent::Touch event )
     }
     return false;
 }
-bool node::root_touch_moved( cinder::app::TouchEvent::Touch event )
+bool node::entry_touch_moved( cinder::app::TouchEvent::Touch event )
 {
     if ( !_block_schedule_event )
     {
@@ -158,7 +158,7 @@ bool node::root_touch_moved( cinder::app::TouchEvent::Touch event )
         {
             try
             {
-                if ( _children[_riterator]->root_touch_moved( event ) )
+                if ( _children[_riterator]->entry_touch_moved( event ) )
                 {
                     return true;
                 }
@@ -179,7 +179,7 @@ bool node::root_touch_moved( cinder::app::TouchEvent::Touch event )
     }
     return false;
 }
-bool node::root_touch_ended( cinder::app::TouchEvent::Touch event )
+bool node::entry_touch_ended( cinder::app::TouchEvent::Touch event )
 {
     if ( !_block_schedule_event )
     {
@@ -188,7 +188,7 @@ bool node::root_touch_ended( cinder::app::TouchEvent::Touch event )
         {
             try
             {
-                if ( _children[_riterator]->root_touch_ended( event ) )
+                if ( _children[_riterator]->entry_touch_ended( event ) )
                 {
                     return true;
                 }
@@ -210,7 +210,7 @@ bool node::root_touch_ended( cinder::app::TouchEvent::Touch event )
     }
     return false;
 }
-void node::root_touches_began( cinder::app::TouchEvent event )
+void node::entry_touches_began( cinder::app::TouchEvent event )
 {
     if ( !_block_schedule_event )
     {
@@ -219,7 +219,7 @@ void node::root_touches_began( cinder::app::TouchEvent event )
         {
             try
             {
-                _children[_riterator]->root_touches_began( event );
+                _children[_riterator]->entry_touches_began( event );
             }
             catch ( exception_node_remove_self const& e )
             {
@@ -232,7 +232,7 @@ void node::root_touches_began( cinder::app::TouchEvent event )
         touches_began( event );
     }
 }
-void node::root_touches_moved( cinder::app::TouchEvent event )
+void node::entry_touches_moved( cinder::app::TouchEvent event )
 {
     if ( !_block_schedule_event )
     {
@@ -241,7 +241,7 @@ void node::root_touches_moved( cinder::app::TouchEvent event )
         {
             try
             {
-                _children[_riterator]->root_touches_moved( event );
+                _children[_riterator]->entry_touches_moved( event );
             }
             catch ( exception_node_remove_self const& e )
             {
@@ -254,7 +254,7 @@ void node::root_touches_moved( cinder::app::TouchEvent event )
         touches_moved( event );
     }
 }
-void node::root_touches_ended( cinder::app::TouchEvent event )
+void node::entry_touches_ended( cinder::app::TouchEvent event )
 {
     if ( !_block_schedule_event )
     {
@@ -263,7 +263,7 @@ void node::root_touches_ended( cinder::app::TouchEvent event )
         {
             try
             {
-                _children[_riterator]->root_touches_ended( event );
+                _children[_riterator]->entry_touches_ended( event );
             }
             catch ( exception_node_remove_self const& e )
             {
@@ -276,7 +276,7 @@ void node::root_touches_ended( cinder::app::TouchEvent event )
         touches_ended( event );
     }
 }
-void node::root_key_down( cinder::app::KeyEvent event )
+void node::entry_key_down( cinder::app::KeyEvent event )
 {
     if ( !_block_schedule_event )
     {
@@ -285,7 +285,7 @@ void node::root_key_down( cinder::app::KeyEvent event )
         {
             try
             {
-                _children[_riterator]->root_key_down( event );
+                _children[_riterator]->entry_key_down( event );
             }
             catch ( exception_node_remove_self const& e )
             {
@@ -298,14 +298,14 @@ void node::root_key_down( cinder::app::KeyEvent event )
         key_down( event );
     }
 }
-void node::root_key_up( cinder::app::KeyEvent event )
+void node::entry_key_up( cinder::app::KeyEvent event )
 {
     if ( !_block_schedule_event )
     {
         scoped_iteration_decrement scp_decrement( *this );
         for ( _riterator = (int)_children.size( ) - 1; _riterator >= 0; --_riterator )
         {
-            _children[_riterator]->root_key_up( event );
+            _children[_riterator]->entry_key_up( event );
         }
     }
 
@@ -314,7 +314,7 @@ void node::root_key_up( cinder::app::KeyEvent event )
         key_up( event );
     }
 }
-void node::_update( float delta )
+void node::entry_update( float delta )
 {
     if ( !_block_schedule_update )
     {
@@ -323,7 +323,7 @@ void node::_update( float delta )
         {
             try
             {
-                _children[_iterator]->_update( delta );
+                _children[_iterator]->entry_update( delta );
             }
             catch ( exception_node_remove_self const& e )
             {
@@ -334,7 +334,7 @@ void node::_update( float delta )
     _action_manager.update( delta );
     if ( _schedule_update ) update( delta );
 }
-void node::_render( cinder::mat4 m )
+void node::entry_render( cinder::mat4 m )
 {
     if ( _block_visible ) return;
     m = translate( m, get_position_3d( ) );
@@ -350,7 +350,7 @@ void node::_render( cinder::mat4 m )
     {
         try
         {
-            _children[_iterator]->_render( m );
+            _children[_iterator]->entry_render( m );
         }
         catch ( exception_node_remove_self const& e )
         {

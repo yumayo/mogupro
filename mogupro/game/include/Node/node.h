@@ -49,23 +49,21 @@ public:
     virtual void key_up( cinder::app::KeyEvent event ) {}
     virtual void update( float delta ) {}
     virtual void render( ) {}
-public:
-    // ˆÈ‰º‚ÌŠÖ”‚Åƒm[ƒhŠÔ‚ğ‰ñ‚µ‚Ü‚·B
-    bool root_mouse_began( cinder::app::MouseEvent event );
-    bool root_mouse_moved( cinder::app::MouseEvent event );
-    bool root_mouse_ended( cinder::app::MouseEvent event );
-    bool root_touch_began( cinder::app::TouchEvent::Touch event );
-    bool root_touch_moved( cinder::app::TouchEvent::Touch event );
-    bool root_touch_ended( cinder::app::TouchEvent::Touch event );
-    void root_touches_began( cinder::app::TouchEvent event );
-    void root_touches_moved( cinder::app::TouchEvent event );
-    void root_touches_ended( cinder::app::TouchEvent event );
-    void root_key_down( cinder::app::KeyEvent event );
-    void root_key_up( cinder::app::KeyEvent event );
-public:
-    // camera‚âshader‚È‚Çq‹Ÿ‚É‚à‰e‹¿‚ğ—^‚¦‚½‚¢‚±‚Æ‚ğ‚µ‚½‚¢ê‡‚ÍŒp³‚µ‚Ä’Ç‰Á‚Ì‹@”\‚ğ‚Â‚¯‚Ä‚­‚¾‚³‚¢B
-    virtual void _update( float delta );
-    virtual void _render( cinder::mat4 model_view_matrix );
+public:// ˆÈ‰º‚ÌŠÖ”‚Åƒm[ƒhŠÔ‚ğ‰ñ‚µ‚Ü‚·B
+    bool entry_mouse_began( cinder::app::MouseEvent event );
+    bool entry_mouse_moved( cinder::app::MouseEvent event );
+    bool entry_mouse_ended( cinder::app::MouseEvent event );
+    bool entry_touch_began( cinder::app::TouchEvent::Touch event );
+    bool entry_touch_moved( cinder::app::TouchEvent::Touch event );
+    bool entry_touch_ended( cinder::app::TouchEvent::Touch event );
+    void entry_touches_began( cinder::app::TouchEvent event );
+    void entry_touches_moved( cinder::app::TouchEvent event );
+    void entry_touches_ended( cinder::app::TouchEvent event );
+    void entry_key_down( cinder::app::KeyEvent event );
+    void entry_key_up( cinder::app::KeyEvent event );
+public:// camera‚âshader‚È‚Çq‹Ÿ‚É‚à‰e‹¿‚ğ—^‚¦‚½‚¢‚±‚Æ‚ğ‚µ‚½‚¢ê‡‚ÍŒp³‚µ‚Ä’Ç‰Á‚Ì‹@”\‚ğ‚Â‚¯‚Ä‚­‚¾‚³‚¢B
+    virtual void entry_update( float delta );
+    virtual void entry_render( cinder::mat4 model_view_matrix );
 protected:
     bool init( );
 protected:
