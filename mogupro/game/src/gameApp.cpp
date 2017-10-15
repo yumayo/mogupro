@@ -2,7 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Timeline.h"
-#include <Game/ProductionCamera/cProdactionCamera.h>
+#include <Game/cCameraManager.h>
 #include <Utility/cInput.h>
 #include <Game/SkyDome/cSkyDome.h>
 #include <Game/cFieldManager.h>
