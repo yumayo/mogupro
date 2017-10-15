@@ -1,10 +1,20 @@
-#include<Utility/cString.h>
+#include <Utility/cString.h>
 #include <sstream>
 #include <iomanip>
+#include <codecvt>
+#include <cstdlib>
+#include <iostream>
 #include <random>
+#include <locale>
 #include <direct.h>
+#include <system_error>
+#include <winstring.h>
 #include <shlwapi.h>
 #pragma comment(lib, "shlwapi.lib")
+#include <Utility/cRecursionUsableMutex.h>
+#include <Utility/cScopedMutex.h>
+#include <cinder/app/App.h>
+#include <cinder/DataTarget.h>
 namespace Utility
 {
 void cString::replace( std::string * src, std::string const & prev, std::string const & write )
@@ -65,50 +75,137 @@ std::string cString::createUniqueIdentifier( )
     for ( int i = 0; i < 24 / 4; ++i ) uniqueIdentifier += toHex( rd( ) );
     return uniqueIdentifier;
 }
-inline std::wstring cString::multi_to_wide_winapi( std::string const & src )
+static const int max_string_length = 65536;
+static cRecursionUsableMutex gloval_app_console_mutex;
+std::string cString::format( char const * str, ... )
 {
-    auto const dest_size = ::MultiByteToWideChar( CP_ACP, 0U, src.data( ), -1, nullptr, 0U );
+    cScopedMutex console( gloval_app_console_mutex );
+
+    static char buf[max_string_length];
+    va_list args;
+    va_start( args, str );
+    vsnprintf( buf, max_string_length, str, args );
+    va_end( args );
+
+    return buf;
+}
+void cString::log( char const * str, ... )
+{
+    cScopedMutex console( gloval_app_console_mutex );
+
+    static char buf[max_string_length];
+    va_list args;
+    va_start( args, str );
+    vsnprintf( buf, max_string_length, str, args );
+    va_end( args );
+
+    cinder::app::console( ) << buf << std::endl;
+}
+bool cString::directoryExists( std::string fullPathWithDirectoryName )
+{
+    return PathIsDirectory( utf8ToWide( fullPathWithDirectoryName ).c_str( ) );
+}
+bool cString::fileExists( std::string fullPathWithFileName )
+{
+    return PathFileExists( utf8ToWide( fullPathWithFileName ).c_str( ) );
+}
+bool cString::makeDirectory( std::string fullPathWithDirectoryName )
+{
+    return CreateDirectory( utf8ToWide( fullPathWithDirectoryName ).c_str( ), nullptr );
+}
+void cString::saveData( size_t writeByteSize, char const * str, std::string const & appDataUnderPathAndFileName )
+{
+    auto const writablePath = getWritablePath( );
+    auto directorys = getDirectoryNameWindows( appDataUnderPathAndFileName );
+    auto splited = split( directorys, '\\' );
+    for ( auto& o : splited )
+    {
+        if ( !directoryExists( writablePath + o ) )
+        {
+            if ( makeDirectory( writablePath + o ) )
+            {
+                throw std::runtime_error( writablePath + o + ": フォルダを作成できませんでした。" );
+            }
+        }
+    }
+    auto dataRef = cinder::writeFile( writablePath + appDataUnderPathAndFileName );
+    if ( !dataRef )
+    {
+        throw std::runtime_error( writablePath + appDataUnderPathAndFileName + ": ファイルを作成できませんでした。" );
+    }
+    dataRef->getStream( )->writeData( str, writeByteSize );
+}
+void cString::saveData( std::string const & data, std::string const & appDataUnderPathAndFileName )
+{
+    saveData( data.size( ), data.c_str( ), appDataUnderPathAndFileName );
+}
+void cString::saveData( Json::Value const & root, std::string const & appDataUnderPathAndFileName )
+{
+    Json::FastWriter writer;
+    auto data = writer.write( root );
+    saveData( data.size( ), data.c_str( ), appDataUnderPathAndFileName );
+}
+std::string cString::getWritablePath( )
+{
+    auto writablePath = std::string( getenv( "APPDATA" ) ) + "\\mogupro\\";
+    if ( !makeDirectory( writablePath ) )
+    {
+        throw std::runtime_error( writablePath + ": フォルダを作成できませんでした。" );
+    }
+    return writablePath;
+}
+std::string cString::getAssetPath( )
+{
+    return cinder::app::getAssetDirectories( ).front( ).string( ) + "\\";
+}
+std::string cString::loadString( std::string const & relativePath )
+{
+    return static_cast<char*>( cinder::app::loadAsset( relativePath )->getBuffer( )->getData( ) );
+}
+std::wstring cString::multiToWide( std::string const & src )
+{
+    auto const dest_size = ::MultiByteToWideChar( CP_ACP, 0, src.data( ), -1, nullptr, 0 );
     std::vector<wchar_t> dest( dest_size, L'\0' );
-    if ( ::MultiByteToWideChar( CP_ACP, 0U, src.data( ), -1, dest.data( ), dest.size( ) ) == 0 ) {
+    if ( ::MultiByteToWideChar( CP_ACP, 0, src.data( ), -1, dest.data( ), dest.size( ) ) == 0 ) {
         throw std::system_error { static_cast<int>( ::GetLastError( ) ), std::system_category( ) };
     }
     return std::wstring( dest.begin( ), dest.end( ) );
 }
-inline std::string cString::wide_to_multi_winapi( std::wstring const & src )
+std::string cString::wideToMulti( std::wstring const & src )
 {
-    auto const dest_size = ::WideCharToMultiByte( CP_ACP, 0U, src.data( ), -1, nullptr, 0, nullptr, nullptr );
+    auto const dest_size = ::WideCharToMultiByte( CP_ACP, 0, src.data( ), -1, nullptr, 0, nullptr, nullptr );
     std::vector<char> dest( dest_size, '\0' );
-    if ( ::WideCharToMultiByte( CP_ACP, 0U, src.data( ), -1, dest.data( ), dest.size( ), nullptr, nullptr ) == 0 ) {
+    if ( ::WideCharToMultiByte( CP_ACP, 0, src.data( ), -1, dest.data( ), dest.size( ), nullptr, nullptr ) == 0 ) {
         throw std::system_error { static_cast<int>( ::GetLastError( ) ), std::system_category( ) };
     }
     return std::string( dest.begin( ), dest.end( ) );
 }
-inline std::string cString::wide_to_utf8_winapi( std::wstring const & src )
+std::string cString::wideToUtf8( std::wstring const & src )
 {
-    auto const dest_size = ::WideCharToMultiByte( CP_UTF8, 0U, src.data( ), -1, nullptr, 0, nullptr, nullptr );
+    auto const dest_size = ::WideCharToMultiByte( CP_UTF8, 0, src.data( ), -1, nullptr, 0, nullptr, nullptr );
     std::vector<char> dest( dest_size, '\0' );
-    if ( ::WideCharToMultiByte( CP_UTF8, 0U, src.data( ), -1, dest.data( ), dest.size( ), nullptr, nullptr ) == 0 ) {
+    if ( ::WideCharToMultiByte( CP_UTF8, 0, src.data( ), -1, dest.data( ), dest.size( ), nullptr, nullptr ) == 0 ) {
         throw std::system_error { static_cast<int>( ::GetLastError( ) ), std::system_category( ) };
     }
     return std::string( dest.begin( ), dest.end( ) );
 }
-inline std::wstring cString::utf8_to_wide_winapi( std::string const & src )
+std::wstring cString::utf8ToWide( std::string const & src )
 {
-    auto const dest_size = ::MultiByteToWideChar( CP_UTF8, 0U, src.data( ), -1, nullptr, 0U );
+    auto const dest_size = ::MultiByteToWideChar( CP_UTF8, 0, src.data( ), -1, nullptr, 0 );
     std::vector<wchar_t> dest( dest_size, L'\0' );
-    if ( ::MultiByteToWideChar( CP_UTF8, 0U, src.data( ), -1, dest.data( ), dest.size( ) ) == 0 ) {
+    if ( ::MultiByteToWideChar( CP_UTF8, 0, src.data( ), -1, dest.data( ), dest.size( ) ) == 0 ) {
         throw std::system_error { static_cast<int>( ::GetLastError( ) ), std::system_category( ) };
     }
     return std::wstring( dest.begin( ), dest.end( ) );
 }
-inline std::string cString::multi_to_utf8_winapi( std::string const & src )
+std::string cString::multiToUtf8( std::string const & src )
 {
-    auto const wide = multi_to_wide_winapi( src );
-    return wide_to_utf8_winapi( wide );
+    auto const wide = multiToWide( src );
+    return wideToUtf8( wide );
 }
-inline std::string cString::utf8_to_multi_winapi( std::string const & src )
+std::string cString::utf8ToMulti( std::string const & src )
 {
-    auto const wide = utf8_to_wide_winapi( src );
-    return wide_to_multi_winapi( wide );
+    auto const wide = utf8ToWide( src );
+    return wideToMulti( wide );
 }
 }
