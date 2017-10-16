@@ -1,6 +1,6 @@
 #include <Game/SkyDome/cSkyDome.h>
 #include <Resource/TextureManager.h>
-#include <Game/cCameraManager.h>
+#include <Camera/cCameraManager.h>
 
 void Game::SkyDome::cSkyDome::setup()
 {
