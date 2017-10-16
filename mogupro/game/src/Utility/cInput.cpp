@@ -1,6 +1,6 @@
 #include <Utility/cInput.h>
 #include <cinder/app/App.h>
-#include <Game/cCameraManager.h>
+#include <Camera/cCameraManager.h>
 
 extern "C"
 {

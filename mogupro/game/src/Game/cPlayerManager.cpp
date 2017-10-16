@@ -1,7 +1,7 @@
 #include <Game/Player/cPlayer.h>
 #include <Game/cPlayerManager.h>
 #include <Utility/cInput.h>
-#include <Game/cCameraManager.h>
+#include <Camera/cCameraManager.h>
 
 
 
