@@ -1,4 +1,17 @@
+#include <cinder/app/App.h>
+#include <cinder/app/RendererGl.h>
+#include <cinder/gl/gl.h>
+#include <cinder/Timeline.h>
+#include <Utility/cInput.h>
 #include <Scene/Member/cGameMain.h>
+#include <Game/cFieldManager.h>
+#include <Game/cStrategyManager.h>
+#include <Camera/cCameraManager.h>
+#include <Game/cGemManager.h>
+#include <Collision/cCollisionManager.h>
+using namespace ci;
+using namespace ci::app;
+using namespace std;
 namespace Scene
 {
 namespace Member
@@ -16,6 +29,8 @@ void cGameMain::setup( )
     //Game::Gem::cGemManager::getInstance()->Create();
 
     Game::cStrategyManager::getInstance( )->setup( );
+
+    Collision::cCollisionManager::getInstance( )->setup( );
 
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
@@ -63,6 +78,7 @@ void cGameMain::update(float deltaTime)
         CAMERA->setCameraAngle( ci::vec2( -0.05f, 0 ) );
 
     Game::cStrategyManager::getInstance( )->update(deltaTime);
+    Collision::cCollisionManager::getInstance( )->update( );
 }
 
 void cGameMain::draw( )
@@ -74,6 +90,7 @@ void cGameMain::draw( )
     shader->bind();*/
     gl::drawCube( pos, size );
     Game::cStrategyManager::getInstance( )->draw( );
+    Collision::cCollisionManager::getInstance( )->draw( );
     skydome.draw( );
 }
 
