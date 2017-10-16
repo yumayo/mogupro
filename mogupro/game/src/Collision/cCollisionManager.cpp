@@ -2,7 +2,6 @@
 #include <cinder/gl/gl.h>
 #include <Collision/Collision.h>
 #include <Utility/cString.h>
-#include <chrono>
 using namespace cinder;
 namespace Collision
 {
@@ -14,7 +13,8 @@ cCollisionManager::~cCollisionManager( )
 }
 void cCollisionManager::add( cColliderBase& collider )
 {
-    auto&& aabb = std::move( collider.createAABB( collider.mPosition ) );
+    std::vector<std::set<cColliderBase*>*> leafs;
+    auto&& aabb = std::move( collider.createAABB( collider.getPosition( ) ) );
     auto&& minMax = std::move( fitWorldSpaceMinMax( aabb ) );
     ivec3 min = std::get<0>( minMax );
     ivec3 max = std::get<1>( minMax );
@@ -26,28 +26,18 @@ void cCollisionManager::add( cColliderBase& collider )
         {
             for ( int z = min.z; z <= max.z; ++z )
             {
-                mWorld[x][y][z].insert( &collider );
+                leafs.emplace_back( &mWorld[x][y][z] );
+                leafs.back( )->insert( &collider );
             }
         }
     }
+    collider.setLeafs( std::move( leafs ) );
 }
 void cCollisionManager::remove( cColliderBase& collider )
 {
-    auto&& aabb = std::move( collider.createAABB( collider.mPosition ) );
-    auto&& minMax = std::move( fitWorldSpaceMinMax( aabb ) );
-    ivec3 min = std::get<0>( minMax );
-    ivec3 max = std::get<1>( minMax );
-    min = clamp( min, ivec3( 0 ), ivec3( WORLD_X - 1, WORLD_Y - 1, WORLD_Z - 1 ) );
-    max = clamp( max, ivec3( 0 ), ivec3( WORLD_X - 1, WORLD_Y - 1, WORLD_Z - 1 ) );
-    for ( int x = min.x; x <= max.x; ++x )
+    for ( auto& leaf : collider.getLeafs( ) )
     {
-        for ( int y = min.y; y <= max.y; ++y )
-        {
-            for ( int z = min.z; z <= max.z; ++z )
-            {
-                mWorld[x][y][z].erase( &collider );
-            }
-        }
+        leaf->erase( &collider );
     }
 }
 void cCollisionManager::add( cRigidBody& rigidBody )
@@ -57,6 +47,21 @@ void cCollisionManager::add( cRigidBody& rigidBody )
 void cCollisionManager::remove( cRigidBody & rigidBody )
 {
     mRigidBodys.erase( &rigidBody );
+}
+void cCollisionManager::setup( )
+{
+    mStaticBlock = std::make_shared<cStaticBlockSimple>( cinder::vec3( 10, 2, 10 ), cinder::vec3( 22, 4, 22 ) );
+    mFallBlocks.reserve( 32 );
+    for ( int x = 0; x < 2; ++x )
+    {
+        for ( int y = 0; y < 2; ++y )
+        {
+            for ( int z = 0; z < 2; ++z )
+            {
+                mFallBlocks.emplace_back( vec3( x * 2, 10 + y * 4, z * 2 ) );
+            }
+        }
+    }
 }
 void cCollisionManager::update( )
 {
@@ -88,11 +93,21 @@ void cCollisionManager::update( )
 }
 void cCollisionManager::draw( )
 {
+    for ( auto& b : mFallBlocks ) b.draw( );
+    mStaticBlock->draw( );
 }
 bool cCollisionManager::isRange( int x, int y, int z )
 {
     return 0 <= x && 0 <= y && 0 <= z &&
         x < WORLD_X && y < WORLD_Y && z < WORLD_Z;
+}
+void cCollisionManager::broadphase( )
+{
+
+}
+void cCollisionManager::narophase( )
+{
+
 }
 std::tuple<cinder::ivec3, cinder::ivec3> cCollisionManager::fitWorldSpaceMinMax( cinder::AxisAlignedBox const& aabb )
 {

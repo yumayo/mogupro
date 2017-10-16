@@ -5,6 +5,7 @@
 #include "Scene/cSceneManager.h"
 #include "Scene/Member/cGameMain.h"
 #include <Camera/cCameraManager.h>
+#include <Utility/cInput.h>
 
 using namespace ci;
 using namespace ci::app;
