@@ -35,6 +35,8 @@ namespace Game
 			GemType getType() { return mType; }
 			ci::Color getColor() { return mColor; }
 
+			void setPos(ci::vec3 pos) { mPosition = pos; }
+
 		private:
 
 			int mId;
