@@ -2,9 +2,6 @@
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 
-using namespace ci;
-using namespace ci::app;
-
 namespace Game
 {
 	namespace Gem
@@ -13,8 +10,8 @@ namespace Game
 		{
 			Dia,
 			Gold,
-			Silver,
-			Iron
+			Iron,
+			Coal,
 		};
 
 		class cGem
@@ -25,26 +22,26 @@ namespace Game
 			// scale       大きさ
 			// color       カラー（ここは本来Texture）
 			// type        Gemの種類(これ入れたらtexture引数にいらないかも)
-			cGem(int id,vec3 postion, vec3 scale, Color color, GemType type) : mId(id),mPosition(postion), mScale(scale), mColor(color), mType(type) {};
+			cGem(int id,ci::vec3 postion, ci::vec3 scale, ci::Color color, GemType type) : mId(id),mPosition(postion), mScale(scale), mColor(color), mType(type) {};
 			~cGem() {};
 
-			void setUp(vec3 postion, vec3 scale, Color color, GemType type);
+			void setUp(ci::vec3 postion, ci::vec3 scale, ci::Color color, GemType type);
 			void draw();
 			void update();
 
 			int getId() { return mId; }
-			vec3 getPos() { return mPosition; }
-			vec3 getScale() { return mScale; }
+			ci::vec3 getPos() { return mPosition; }
+			ci::vec3 getScale() { return mScale; }
 			GemType getType() { return mType; }
-			Color getColor() { return mColor; }
+			ci::Color getColor() { return mColor; }
 
 		private:
 
 			int mId;
-			vec3 mPosition;
-			vec3 mScale;
-			vec3 mRotation;
-			Color mColor;
+			ci::vec3 mPosition;
+			ci::vec3 mScale;
+			ci::vec3 mRotation;
+			ci::Color mColor;
 			GemType mType;
 			int mMoney;
 		};
