@@ -4,7 +4,7 @@ namespace Game
 {
 	namespace Gem
 	{
-		void cGem::setUp(vec3 positin, vec3 scale, Color color, GemType type)
+		void cGem::setUp(ci::vec3 positin, ci::vec3 scale, ci::Color color, GemType type)
 		{
 			mPosition = positin;
 			mScale = scale;
@@ -14,8 +14,8 @@ namespace Game
 		void cGem::draw()
 		{
 			//tex.binde();
-			gl::color(mColor);
-			gl::drawCube(mPosition, mScale);
+			ci::gl::color(mColor);
+			ci::gl::drawCube(mPosition, mScale);
 			//tex.bind
 		}
 
