@@ -23,14 +23,18 @@ namespace Game
 		ci::gl::enableDepthWrite();
 		ci::gl::enableDepthRead();
 		ci::gl::enable(GL_CULL_FACE);
-
 	}
 
 	void cGemManager::draw()
 	{
+		//DEBUG
+		ci::gl::drawCube(ci::vec3(mGemScale * mRandomRange.x, 0, 0) + mPosition, ci::vec3(mGemScale * mRandomRange.x * 2, mGemScale, mGemScale));
+		ci::gl::drawCube(ci::vec3(0, (mGemScale / 2) * mRandomRange.y, 0) + mPosition, ci::vec3(mGemScale, mGemScale * mRandomRange.y, mGemScale));
+		ci::gl::drawCube(ci::vec3(0, 0, (mGemScale / 2) * mRandomRange.z) + mPosition, ci::vec3(mGemScale, mGemScale, mGemScale * mRandomRange.z));
+
 		//gl::ScopedFramebuffer fbScp(mGemBuffer);
 		//gl::ScopedViewport scpVp(ivec2(0), mGemBuffer->getSize());
-		//ci::gl::enable(GL_TEXTURE_2D);
+		//ci::gl::enable(GL_TEXTURE_2D)
 		ci::gl::pushModelView();
 		for each (auto g in mGems)
 		{
@@ -53,7 +57,8 @@ namespace Game
 
 	void cGemManager::create()
 	{
-		for (size_t i = 0; i < mGemMaxNum; i += 2)
+
+		for (size_t i = 1; i < mGemMaxNum; i += 2)
 		{
 			//DeBug:本来はサーバーからもらってくる
 			std::random_device seed_gen;
@@ -66,6 +71,7 @@ namespace Game
 			float z = ci::randInt(0, mRandomRange.z - 1);
 			Game::Gem::GemType type = Game::Gem::GemType(ci::randInt(0, Game::Gem::GemType::Iron));
 
+			
 			//テクスチャーの張替え
 			//TexManager::geInstance()->loadTexture("~/~/gem"+type);W
 			ci::Color color = ci::Color(1, 1, 1);
