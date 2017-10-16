@@ -3,12 +3,12 @@
 namespace Collision
 {
 cStaticBlockSimple::cStaticBlockSimple( cinder::vec3 pos, cinder::vec3 size )
-    : mCollider( std::make_shared<Collision::cAABBCollider>( pos, size ) )
+    : mCollider( pos, size )
 {
 
 }
 void cStaticBlockSimple::draw( )
 {
-    cinder::gl::drawColorCube( mCollider->getPosition( ), mCollider->getSize( ) );
+    cinder::gl::drawColorCube( mCollider.getPosition( ), mCollider.getSize( ) );
 }
 }

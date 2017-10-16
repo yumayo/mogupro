@@ -3,13 +3,13 @@
 namespace Collision
 {
 cFallBlockSimple::cFallBlockSimple( cinder::vec3 pos )
-    : mCollider( std::make_shared<Collision::cAABBCollider>( pos, cinder::vec3( 0.8F ) ) )
-    , mRigidbody( std::make_shared<Collision::cRigidBody>( *mCollider ) )
+    : mCollider( pos, cinder::vec3( 0.8F ) )
+    , mRigidbody( mCollider )
 {
 
 }
 void cFallBlockSimple::draw( )
 {
-    cinder::gl::drawColorCube( mCollider->getPosition( ), mCollider->getSize( ) );
+    cinder::gl::drawColorCube( mCollider.getPosition( ), mCollider.getSize( ) );
 }
 }

@@ -6,19 +6,7 @@ using namespace cinder;
 namespace Collision
 {
 cCollisionManager::cCollisionManager( )
-    : mStaticBlock( cinder::vec3( 10, 2, 10 ), cinder::vec3( 22, 4, 22 ) )
 {
-    mFallBlocks.reserve( 16 );
-    for ( int x = 0; x < 3; ++x )
-    {
-        for ( int y = 0; y < 3; ++y )
-        {
-            for ( int z = 0; z < 3; ++z )
-            {
-                mFallBlocks.emplace_back( vec3( x, 30 + y * 4, z ) );
-            }
-        }
-    }
 }
 cCollisionManager::~cCollisionManager( )
 {
@@ -60,6 +48,21 @@ void cCollisionManager::remove( cRigidBody & rigidBody )
 {
     mRigidBodys.erase( &rigidBody );
 }
+void cCollisionManager::setup( )
+{
+    mStaticBlock = std::make_shared<cStaticBlockSimple>( cinder::vec3( 10, 2, 10 ), cinder::vec3( 22, 4, 22 ) );
+    mFallBlocks.reserve( 32 );
+    for ( int x = 0; x < 2; ++x )
+    {
+        for ( int y = 0; y < 2; ++y )
+        {
+            for ( int z = 0; z < 2; ++z )
+            {
+                mFallBlocks.emplace_back( vec3( x * 2, 10 + y * 4, z * 2 ) );
+            }
+        }
+    }
+}
 void cCollisionManager::update( )
 {
     for ( auto& rigidBody : mRigidBodys )
@@ -91,7 +94,7 @@ void cCollisionManager::update( )
 void cCollisionManager::draw( )
 {
     for ( auto& b : mFallBlocks ) b.draw( );
-    mStaticBlock.draw( );
+    mStaticBlock->draw( );
 }
 bool cCollisionManager::isRange( int x, int y, int z )
 {

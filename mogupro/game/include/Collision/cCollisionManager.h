@@ -13,6 +13,7 @@
 #include <Utility/cScopedMutex.h>
 #include <Collision/cFallBlockSimple.h>
 #include <Collision/cStaticBlockSimple.h>
+#include <Utility/cUserPointer.hpp>
 namespace Collision
 {
 class cCollisionManager : public Utility::cSingletonAble<cCollisionManager>
@@ -24,6 +25,7 @@ public:
     void remove( cColliderBase& collider );
     void add( cRigidBody& rigidBody );
     void remove( cRigidBody& rigidBody );
+    void setup( );
     void update( );
     void draw( );
     static constexpr size_t WORLD_X = 160;
@@ -38,6 +40,6 @@ private:
     std::set<cRigidBody*> mRigidBodys;
 private:
     std::vector<cFallBlockSimple> mFallBlocks;
-    cStaticBlockSimple mStaticBlock;
+    Utility::hardptr<cStaticBlockSimple> mStaticBlock;
 };
 }
