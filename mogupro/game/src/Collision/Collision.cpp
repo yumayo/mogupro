@@ -10,7 +10,7 @@ bool hitCubeToCube( cinder::vec3 * const result, cinder::vec3 aPos, cinder::vec3
     auto direction = aPos - aPrevPos;
     Ray ray( aPrevPos, direction );
 
-    AxisAlignedBox boundingBox( -aSize * 0.5F + bSize * 0.5F, aSize * 0.5F + bSize * 0.5F );
+    AxisAlignedBox boundingBox( -aSize * 0.5F + bSize * 0.5F, aSize * ( 1.0F - 0.5F ) + bSize * ( 1.0F - 0.5F ) );
     boundingBox.transform( translate( mat4( ), bPos ) );
 
     float min = 0.0F, max = 0.0F;
@@ -25,8 +25,8 @@ bool hitCubeToCube( cinder::vec3 * const result, cinder::vec3 aPos, cinder::vec3
 bool hitCubeToCube( cColliderBase * aCollider, cRigidBody * aRigidBody, cColliderBase * bCollider )
 {
     if ( aCollider == bCollider ) return false;
-    if ( aCollider->mType == cColliderBase::Type::AABB &&
-         bCollider->mType == cColliderBase::Type::AABB )
+    if ( aCollider->getType( ) == cColliderBase::Type::AABB &&
+         bCollider->getType( ) == cColliderBase::Type::AABB )
     {
         return hitCubeToCube( dynamic_cast<cAABBCollider*>( aCollider ), aRigidBody,
                               dynamic_cast<cAABBCollider*>( bCollider ) );
@@ -35,20 +35,19 @@ bool hitCubeToCube( cColliderBase * aCollider, cRigidBody * aRigidBody, cCollide
 }
 bool hitCubeToCube( cAABBCollider * aAABB, cRigidBody * aRigidBody, cAABBCollider * bAABB )
 {
-    auto aPrevPos = aAABB->mPosition - aRigidBody->mSpeed;
-    auto direction = aAABB->mPosition - aPrevPos;
+    auto aPrevPos = aAABB->getPosition( ) - aRigidBody->getSpeed( );
+    auto direction = aAABB->getPosition( ) - aPrevPos;
     Ray ray( aPrevPos, direction );
 
-    AxisAlignedBox boundingBox( -aAABB->mSize * aAABB->mAnchor + -bAABB->mSize * bAABB->mAnchor,
-                                aAABB->mSize * aAABB->mAnchor + bAABB->mSize * bAABB->mAnchor );
-    boundingBox.transform( translate( mat4( ), bAABB->mPosition ) );
+    AxisAlignedBox boundingBox( -aAABB->getSize( ) * aAABB->getAnchor( ) + -bAABB->getSize( ) * bAABB->getAnchor( ),
+                                aAABB->getSize( ) * ( 1.0F - aAABB->getAnchor( ) ) + bAABB->getSize( ) * ( 1.0F - bAABB->getAnchor( ) ) );
+    boundingBox.transform( translate( mat4( ), bAABB->getPosition( ) ) );
 
     float min = 0.0F, max = 0.0F;
     int isHit = boundingBox.intersect( ray, &min, &max );
     if ( isHit != 0 )
     {
-        aAABB->mPosition = ray.calcPosition( min );
-        aRigidBody->mSpeed *= 0.1F;
+        aAABB->calc( aRigidBody, ray.calcPosition( min ) );
     }
     return isHit;
 }
