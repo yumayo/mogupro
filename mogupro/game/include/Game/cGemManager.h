@@ -8,6 +8,7 @@
 
 #define GemManager Game::cGemManager::getInstance()
 
+
 namespace Game
 {
 class cGemManager : public Utility::cSingletonAble<cGemManager>
@@ -21,27 +22,28 @@ public:
     // mapChipSize        マップチップ一マスの大きさ
     // gemMaxNum          gemの生成数
     // seed               シード値(現在は入力しても変動なし)
-    void setUp( ci::vec3 position, ci::vec3 randomRange, float mapChipSize, float gemScale, int gemMaxNum, unsigned long seed );
+    void setUp(ci::vec3 position, ci::vec3 randomRange, float mapChipSize, float gemScale, int gemMaxNum, unsigned long seed );
     void draw();
     void update();
 
     void create();
     // team     0がfirst,1がsecond
-    void gemCountUp( int team, int it );
+    void gemCountUp( int team, Gem::GemType type);
     void gemDelete( int it );
-
+	void gemReset(Gem::cGem gem);
     std::vector<Gem::cGem> getGems() { return mGems; }
 
 private:
 
     std::vector<Gem::cGem> mGems;
     std::map<Gem::GemType, int> mTeamGems[2];
-    vec3 mPosition;
-    vec3 mRandomRange;
+    ci::vec3 mPosition;
+    ci::vec3 mRandomRange;
     float mMapChipSize;
     float mGemScale;
     int mGemMaxNum;
-    gl::FboRef mGemBuffer;
+    ci::gl::FboRef mGemBuffer;
     unsigned long mSeed;
 };
+
 }

@@ -9,7 +9,7 @@
 #include <Game/SkyDome/cSkyDome.h>
 #include <Game/cFieldManager.h>
 #include <Game/cStrategyManager.h>
-#include <Game/Gem/cGemManager.h>
+#include <Game/cGemManager.h>
 
 using namespace ci;
 using namespace ci::app;
