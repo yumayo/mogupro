@@ -1,6 +1,4 @@
-#include "Game/Gem/cGemManager.h"
-
-using namespace Game::Gem;
+#include "Game/cGemManager.h"
 
 namespace Game
 {
@@ -13,10 +11,10 @@ namespace Game
 		mGemMaxNum = gemMaxNum;
 		for (int i = 0; i < 2; i++)
 		{
-			mTeamGems[i].insert(std::map<GemType, int>::value_type(GemType::Dia, 0));
-			mTeamGems[i].insert(std::map<GemType, int>::value_type(GemType::Gold, 0));
-			mTeamGems[i].insert(std::map<GemType, int>::value_type(GemType::Iron, 0));
-			mTeamGems[i].insert(std::map<GemType, int>::value_type(GemType::Coal, 0));
+			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Dia, 0));
+			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Gold, 0));
+			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Iron, 0));
+			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Coal, 0));
 		}
 		ci::gl::Fbo::Format format;
 		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth(), ci::app::getWindowHeight(), format.depthTexture());
@@ -32,7 +30,7 @@ namespace Game
 	{
 		//gl::ScopedFramebuffer fbScp(mGemBuffer);
 		//gl::ScopedViewport scpVp(ivec2(0), mGemBuffer->getSize());
-		ci::gl::enable(GL_TEXTURE_2D);
+		//ci::gl::enable(GL_TEXTURE_2D);
 		ci::gl::pushModelView();
 		for each (auto g in mGems)
 		{
@@ -43,8 +41,8 @@ namespace Game
 
 
 		//mGemBuffer->bindTexture();
-		//gl::color(Color(1, 1, 1));
-		//gl::draw(mGemBuffer->getColorTexture(), Rectf(0, 0, 10, 10));
+		//ci::gl::color(ci::Color(1, 1, 1));
+		//ci::gl::draw(mGemBuffer->getColorTexture(), ci::Rectf(0, 0, 10, 10));
 		//mGemBuffer->unbindTexture();
 	};
 
@@ -89,8 +87,8 @@ namespace Game
 				break;
 			}
 
-			mGems.push_back(cGem(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type));
-			mGems.push_back(cGem(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type));
+			mGems.push_back(Gem::cGem(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type));
+			mGems.push_back(Gem::cGem(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type));
 		}
 	};
 
@@ -113,7 +111,7 @@ namespace Game
 
 	void cGemManager::gemDelete(int id)
 	{
-		std::vector<cGem>::iterator iterator = mGems.begin();
+		std::vector<Gem::cGem>::iterator iterator = mGems.begin();
 		//éwíËÇÃïÛêŒÇ™Ç†ÇÈÇ©
 		for (int i = 0; i < mGems.size(); i++)
 		{
@@ -124,7 +122,7 @@ namespace Game
 		mGems.erase(iterator);
 	}
 
-	void cGemManager::gemReset(cGem gem)
+	void cGemManager::gemReset(Gem::cGem gem)
 	{
 		mGems.push_back(gem);
 	}
