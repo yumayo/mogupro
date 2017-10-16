@@ -18,8 +18,8 @@ void cUnderGround::setup()
 {
     TEX.set( "dirt", "dirt.jpg" );
 
-    num = 32;
-    height = 4;
+    num = 16;
+    height = 1;
     offset = 0.0f;
     scale = 1.0f;
     uint count = 0;
