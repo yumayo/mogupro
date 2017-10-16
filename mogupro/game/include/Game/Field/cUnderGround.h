@@ -24,17 +24,18 @@ public:
 private:
     bool blockDigged( const  ci::ivec3& cell_num );
 
-    void blockMeshBlend( std::shared_ptr<cBlock> b, bool is_side_create = true );
+    void blockMeshBlend( std::shared_ptr<cBlock> b );
+    void blockMeshErase( std::shared_ptr<cBlock> b );
     bool createMesh();
     void blockClear();
-    void updateVboMesh();
 private:
 
     std::vector<std::vector<std::vector<std::shared_ptr<cBlock>>>> blocks;
-    int num;
-    int height;
-    float offset;
-    float scale;
+    int mNum;
+    int mHeight;
+    float mIntervalOffset;
+    float mScale;
+    ci::vec3 mOffset;
 
     std::vector<ci::vec3> mVertices;
     std::vector<uint> mIndices;

@@ -227,12 +227,13 @@ int getIndex( const vec3 & vtx, const vec3 & normal,
     return -1;
 }
 
-cBlock::cBlock( const ci::vec3& position, const float& scale, const uint& num )
+cBlock::cBlock( const ci::vec3& position, const float& scale, const uint& num ) :
+    mPosition( position ),
+    mScale( scale ),
+    mIsActive( true ),
+    mNum( num ),
+    mCollider( mPosition, vec3( scale ), vec3( 0.5f ) )
 {
-    mPosition = position;
-    mScale = scale;
-    mIsActive = true;
-    mNum = num;
 }
 cBlock::~cBlock()
 {
@@ -250,23 +251,34 @@ void cBlock::draw()
     gl::popModelView();
 
 }
-void cBlock::createSide( const  int& offset_index )
+void cBlock::createSide( std::vector<ci::vec3>& vertices,
+                         std::vector<uint>& indices,
+                         std::vector<ci::vec2>& uvs,
+                         std::vector<ci::vec3>& normals )
 {
     if (mIsActive == false)
         return;
     if (mDrawSide.size() <= 0)
         return;
 
-    mUv = getUv( mDrawSide.size() );
+    // UV
+    auto uv = getUv( mDrawSide.size() );
+    for (size_t i = uvs.size(); i < uvs.size() + uv.size(); i++)
+        mUvNum.emplace_back( i );
+    std::copy( uv.begin(), uv.end(), std::back_inserter( uvs ) );
+
+    // Indicesの最大値を求める
+    uint offset = 0;
+    if (indices.size() > 0)
+        offset = *std::max_element( indices.begin(), indices.end() ) + 1;
 
     // DrawElements用のデータを作成
+    std::vector<ci::vec3> temp_vertices;
+    std::vector<uint> temp_indices;
+    std::vector<ci::vec3> temp_normals;
+
     for (int i = 0; i < 36; ++i)
     {
-        int side_num = i / 6;
-        if (!std::any_of( mDrawSide.begin(), mDrawSide.end(),
-                          [&]( int n ) { return side_num == n; } ))
-            continue;
-
         vec3 vertex = vec3( cube_vtx[i * 3 + 0],
                             cube_vtx[i * 3 + 1],
                             cube_vtx[i * 3 + 2] ) + mPosition;
@@ -275,30 +287,34 @@ void cBlock::createSide( const  int& offset_index )
                             cube_normal[i * 3 + 2] );
 
         int id = getIndex( vertex, normal,
-                           mVertices, mNormals );
+                           temp_vertices, temp_normals );
+
+        mIndicesNum.emplace_back( indices.size() + i );
 
         if (id < 0)
         {
             // 同じ座標と法線を持つ頂点は見つからず
-            mIndices.emplace_back( mVertices.size() + offset_index );
+            temp_indices.emplace_back( temp_vertices.size() + offset );
 
-            mVertices.emplace_back( vertex );
-            mNormals.emplace_back( normal );
+            mVerticesNum.emplace_back( temp_vertices.size() );
+            temp_vertices.emplace_back( vertex );
+
+            mNormalsNum.emplace_back( normal.size() );
+            temp_normals.emplace_back( normal );
         }
         else
         {
             // 見つかった
-            mIndices.emplace_back( id + offset_index );
+            temp_indices.emplace_back( id + offset );
         }
     }
+
+    std::copy( temp_vertices.begin(), temp_vertices.end(), std::back_inserter( vertices ) );
+    std::copy( temp_indices.begin(), temp_indices.end(), std::back_inserter( indices ) );
+    std::copy( temp_normals.begin(), temp_normals.end(), std::back_inserter( normals ) );
 }
 void cBlock::clear()
 {
-    mVertices.clear();
-    mIndices.clear();
-    mUv.clear();
-    mNormals.clear();
-    mDrawSide.clear();
 }
 void cBlock::toBreak()
 {
