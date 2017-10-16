@@ -62,7 +62,7 @@ void cGameMain::update(float deltaTime)
     if ( ENV->pressKey( KeyEvent::KEY_LEFT ) )
         CAMERA->setCameraAngle( ci::vec2( -0.05f, 0 ) );
 
-    Game::cStrategyManager::getInstance( )->update( );
+    Game::cStrategyManager::getInstance( )->update(deltaTime);
 }
 
 void cGameMain::draw( )
