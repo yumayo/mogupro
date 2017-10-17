@@ -16,43 +16,52 @@ namespace Game
 			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Iron, 0));
 			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Coal, 0));
 		}
-		ci::gl::Fbo::Format format;
-		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth(), ci::app::getWindowHeight(), format.depthTexture());
-
 		create();
+
+		ci::gl::Fbo::Format format;
+		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth(), ci::app::getWindowHeight() , format.colorTexture());
+
 		ci::gl::enableDepthWrite();
 		ci::gl::enableDepthRead();
-		ci::gl::enable(GL_CULL_FACE);
+		//ci::gl::enable(GL_CULL_FACE);
 	}
 
 	void cGemManager::draw()
 	{
-		//DEBUG
-		ci::gl::drawCube(ci::vec3(mGemScale * mRandomRange.x, 0, 0) + mPosition, ci::vec3(mGemScale * mRandomRange.x * 2, mGemScale, mGemScale));
-		ci::gl::drawCube(ci::vec3(0, (mGemScale / 2) * mRandomRange.y, 0) + mPosition, ci::vec3(mGemScale, mGemScale * mRandomRange.y, mGemScale));
-		ci::gl::drawCube(ci::vec3(0, 0, (mGemScale / 2) * mRandomRange.z) + mPosition, ci::vec3(mGemScale, mGemScale, mGemScale * mRandomRange.z));
 
-		//gl::ScopedFramebuffer fbScp(mGemBuffer);
-		//gl::ScopedViewport scpVp(ivec2(0), mGemBuffer->getSize());
-		//ci::gl::enable(GL_TEXTURE_2D)
-		ci::gl::pushModelView();
 		for each (auto g in mGems)
 		{
 			g.draw();
 		}
-		ci::gl::color(ci::Color(1, 1, 1));
-		ci::gl::pushModelView();
 
+		ci::gl::color(ci::Color(1, 1, 1));
 
 		//mGemBuffer->bindTexture();
-		//ci::gl::color(ci::Color(1, 1, 1));
-		//ci::gl::draw(mGemBuffer->getColorTexture(), ci::Rectf(0, 0, 10, 10));
+
+		//{
+		//	ci::gl::ScopedGlslProg shaderScp(ci::gl::getStockShader(ci::gl::ShaderDef().texture()));
+		//}
+		////ci::gl::clear(ci::Color(0, 0, 0));
+		////ci::gl::setMatricesWindow(ci::app::toPixels(ci::app::getWindowSize()));
+		//ci::gl::draw(mGemBuffer->getColorTexture(), ci::Rectf(0, 0, 20, 20));
+		//ci::gl::draw(mGemBuffer->getDepthTexture(), ci::Rectf(20, 0, 40, 20));
 		//mGemBuffer->unbindTexture();
 	};
 
 	void cGemManager::update()
 	{
+		//ci::gl::ScopedFramebuffer fbScp(mGemBuffer);
+		//ci::gl::clear(ci::Color(1,1,1));
+		//ci::gl::ScopedViewport scpVp2(ci::ivec2(0), mGemBuffer->getSize());
 
+
+		//ci::gl::setMatrices(CAMERA->getCamera());
+		////ci::gl::ScopedGlslProg shaderScp(ci::gl::getStockShader(ci::gl::ShaderDef().color()));
+		//for each (auto g in mGems)
+		//{
+		//	g.draw();
+		//}
+		//ci::gl::color(ci::Color(1, 1, 1));
 	};
 
 	void cGemManager::create()
@@ -118,12 +127,18 @@ namespace Game
 	void cGemManager::gemDelete(int id)
 	{
 		std::vector<Gem::cGem>::iterator iterator = mGems.begin();
+		bool isNothig = true;
 		//w’è‚Ì•óÎ‚ª‚ ‚é‚©
 		for (int i = 0; i < mGems.size(); i++)
 		{
-			if (mGems[i].getId() == id) break;
+			if (mGems[i].getId() == id)
+			{
+				isNothig = false;
+				break;
+			}
 			iterator++;
 		}
+		if (isNothig) return;
 
 		mGems.erase(iterator);
 	}

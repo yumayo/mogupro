@@ -46,6 +46,7 @@ namespace Game
 			ci::Color mColor;
 			GemType mType;
 			int mMoney;
+			float mSinrotate;
 		};
 	}
 }
