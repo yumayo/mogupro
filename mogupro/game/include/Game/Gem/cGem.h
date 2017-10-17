@@ -31,12 +31,14 @@ namespace Game
 
 			int getId() { return mId; }
 			ci::vec3 getPos() { return mPosition; }
+			ci::vec3 getPutPos() { return mPutPosition; }
 			ci::vec3 getScale() { return mScale; }
 			GemType getType() { return mType; }
 			ci::Color getColor() { return mColor; }
 			float getSinRotate() { return mSinrotate; }
 
 			void setPos(ci::vec3 pos) { mPosition = pos; }
+			void setPutPos(ci::vec3 pos) { mPutPosition = pos; }
 			void setSinRotate(float rotate) { mSinrotate = rotate; }
 
 
@@ -44,6 +46,7 @@ namespace Game
 
 			int mId;
 			ci::vec3 mPosition;
+			ci::vec3 mPutPosition;
 			ci::vec3 mScale;
 			ci::vec3 mRotation;
 			ci::Color mColor;

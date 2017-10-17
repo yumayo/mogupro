@@ -23,6 +23,7 @@ namespace Game
 
 		ci::gl::enableDepthWrite();
 		ci::gl::enableDepthRead();
+		//ci::gl::enableAlphaBlending();
 		//ci::gl::enable(GL_CULL_FACE);
 	}
 
@@ -33,41 +34,39 @@ namespace Game
 		{
 			g.draw();
 		}
-
 		ci::gl::color(ci::Color(1, 1, 1));
 
-		//mGemBuffer->bindTexture();
-
-		//{
-		//	ci::gl::ScopedGlslProg shaderScp(ci::gl::getStockShader(ci::gl::ShaderDef().texture()));
-		//}
-		////ci::gl::clear(ci::Color(0, 0, 0));
-		////ci::gl::setMatricesWindow(ci::app::toPixels(ci::app::getWindowSize()));
-		//ci::gl::draw(mGemBuffer->getColorTexture(), ci::Rectf(0, 0, 20, 20));
-		//ci::gl::draw(mGemBuffer->getDepthTexture(), ci::Rectf(20, 0, 40, 20));
-		//mGemBuffer->unbindTexture();
+		mGemBuffer->bindTexture();
+		{
+			ci::gl::ScopedGlslProg shaderScp(ci::gl::getStockShader(ci::gl::ShaderDef().texture()));
+		}
+		//ci::gl::clear(ci::Color(0, 0, 0));
+		//ci::gl::setMatricesWindow(ci::app::toPixels(ci::app::getWindowSize()));
+		ci::gl::draw(mGemBuffer->getColorTexture(), ci::Rectf(0, 0, 20, 20));
+		ci::gl::draw(mGemBuffer->getDepthTexture(), ci::Rectf(20, 0, 40, 20));
+		mGemBuffer->unbindTexture();
 	};
 
 	void cGemManager::update()
 	{
-		//ci::gl::ScopedFramebuffer fbScp(mGemBuffer);
-		//ci::gl::clear(ci::Color(1,1,1));
-		//ci::gl::ScopedViewport scpVp2(ci::ivec2(0), mGemBuffer->getSize());
+		ci::gl::ScopedFramebuffer fbScp(mGemBuffer);
+		ci::gl::clear(ci::ColorA(1,1,1,1));
+		ci::gl::ScopedViewport scpVp2(ci::ivec2(0), mGemBuffer->getSize());
 
 
-		//ci::gl::setMatrices(CAMERA->getCamera());
-		////ci::gl::ScopedGlslProg shaderScp(ci::gl::getStockShader(ci::gl::ShaderDef().color()));
-		//for each (auto g in mGems)
-		//{
-		//	g.draw();
-		//}
-		//ci::gl::color(ci::Color(1, 1, 1));
+		ci::gl::setMatrices(CAMERA->getCamera());
+		//ci::gl::ScopedGlslProg shaderScp(ci::gl::getStockShader(ci::gl::ShaderDef().color()));
+		for each (auto g in mGems)
+		{
+			g.draw();
+		}
+		ci::gl::color(ci::Color(1, 1, 1));
 	};
 
 	void cGemManager::create()
 	{
 
-		for (size_t i = 1; i < mGemMaxNum; i += 2)
+		for (int i = 0; i < mGemMaxNum; i += 2)
 		{
 			//DeBug:本来はサーバーからもらってくる
 			std::random_device seed_gen;
