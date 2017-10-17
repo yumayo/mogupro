@@ -60,7 +60,7 @@ void cGameMain::update(float deltaTime)
     count++;
     if ( count % 10 == 0 )
     {
-        auto size = Game::cFieldManager::getInstance( )->getBlockNum( );
+        auto size = Game::cFieldManager::getInstance( )->getBlockMaxCell( );
         int x = randInt( 0, size.x );
         int y = randInt( 0, size.y );
         int z = randInt( 0, size.z );
