@@ -1,6 +1,8 @@
 #include <Game/Field/cUnderGround.h>
 #include <Resource/TextureManager.h>
 #include <Utility/cTimeMeasurement.h>
+#include <Network/cUDPManager.h>
+#include <Network/cRequestManager.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -131,6 +133,12 @@ bool cUnderGround::blockDigged( const ci::ivec3& c )
         return false;
 
     blockMeshErase( b );
+
+    using namespace Network;
+    using namespace Network::Packet;
+    Network::cUDPManager::getInstance()->
+        send( cNetworkHandle( "126.77.126.180", 25565 ),
+              new Request::cReqCheckBreakBlocks( c ) );
     return true;
 }
 void cUnderGround::blockAllClear()
