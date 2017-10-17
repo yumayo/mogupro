@@ -3,6 +3,8 @@
 #include "cinder/gl/Fbo.h"
 #include "Game/Gem/cGem.h"
 #include "Utility/cSingletonAble.h"
+#include "cinder/app/RendererGl.h"
+#include "CameraManager\cCameraManager.h"
 #include <vector>
 #include <map>
 
@@ -20,6 +22,7 @@ public:
     // position           中心座標(基準値)   x,y,z全て+方向にマップチップで生成します。
     // randomRange        ランダムの生成範囲(片方陣地のマップサイズ)
     // mapChipSize        マップチップ一マスの大きさ
+	// gemScale           ジェム一個の大きさ
     // gemMaxNum          gemの生成数
     // seed               シード値(現在は入力しても変動なし)
     void setUp(ci::vec3 position, ci::vec3 randomRange, float mapChipSize, float gemScale, int gemMaxNum, unsigned long seed );
