@@ -127,7 +127,7 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
         {
             Packet::Request::cReqCheckBreakBlocks data;
             data.onReceive( networkHandle, bufferSize, bufferData );
-            cRequestManager::getInstance( )->ungetReqCheckBrakeBlocks( data );
+            cRequestManager::getInstance( )->ungetReqCheckBreakBlocks( data );
             break;
         }
         case Network::Packet::PacketId::REQ_CHECK_SET_QUARRY:
