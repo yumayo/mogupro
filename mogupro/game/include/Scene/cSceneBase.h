@@ -15,7 +15,7 @@ public:
 	//Scene‚ÌI—¹‚Ìƒƒ‚ƒŠíœ‚Æ‚©
 	virtual void shutDown() = 0;
 
-	virtual void update() = 0;
+	virtual void update(float deltaTime) = 0;
 	
 	virtual void draw() = 0;
 

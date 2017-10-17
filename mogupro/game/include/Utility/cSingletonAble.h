@@ -5,7 +5,10 @@ template<class Ty>
 class cSingletonAble
 {
 public:
-    virtual ~cSingletonAble( ) {}
+    virtual ~cSingletonAble( )
+    {
+        removeInstance( );
+    }
     static Ty* getInstance( )
     {
         if ( !mInstance )

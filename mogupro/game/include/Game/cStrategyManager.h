@@ -14,7 +14,7 @@ public:
     ~cStrategyManager();
     void setup();
     void draw();
-    void update();
+    void update(const float& deltatime = 0);
     template<class T>
     void CreateStrategyObject( T _object );
     bool isAABB( const ci::AxisAlignedBox & a, const ci::AxisAlignedBox & b );

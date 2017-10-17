@@ -2,12 +2,10 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Timeline.h"
-#include <Game/ProductionCamera/cProdactionCamera.h>
+#include "Scene/cSceneManager.h"
+#include "Scene/Member/cGameMain.h"
+#include <Camera/cCameraManager.h>
 #include <Utility/cInput.h>
-#include <Game/SkyDome/cSkyDome.h>
-#include <Game/cFieldManager.h>
-#include <Game/cStrategyManager.h>
-#include <Game/Gem/cGemManager.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -17,9 +15,6 @@ class gameApp : public App
 {
 private:
     float delta_time;
-    ci::vec3 pos;
-    ci::vec3 size;
-    Game::SkyDome::cSkyDome skydome;
 public:
     void setup() override;
     void mouseDown( MouseEvent event ) override;
@@ -34,20 +29,8 @@ public:
 
 void gameApp::setup()
 {
-    pos = vec3( 0 );
-    size = vec3( 2 );
-    skydome.setup();
-    Game::cFieldManager::getInstance()->setup();
-    //Game::Gem::cGemManager::getInstance()->SetUp(vec3(5, 5, 5), vec3(10, 10, 10), 10, 0);
-    //Game::Gem::cGemManager::getInstance()->Create();
-    CAMERA->followingCamera( &pos, 30 );
-    CAMERA->setup();
-    ENV->padSetup();
-
-    Game::cStrategyManager::getInstance()->setup();
-
-    gl::enableDepthRead();
-    gl::enableDepthWrite();
+    cSceneManager::getInstance( )->change<Scene::Member::cGameMain>();
+    cSceneManager::getInstance( )->now( ).setup( );
 }
 
 void gameApp::mouseDown( MouseEvent event )
@@ -82,77 +65,22 @@ void gameApp::mouseDrag( MouseEvent event )
 
 void gameApp::update()
 {
-    delta_time = std::abs( delta_time - timeline().getCurrentTime() );
+    delta_time = std::abs( delta_time - timeline( ).getCurrentTime( ) );
     CAMERA->update( delta_time );
-    Game::cFieldManager::getInstance()->update( delta_time );
-
-    delta_time = timeline().getCurrentTime();
-    ENV->padUpdate();
-    ENV->padProcessEvent();
-
-    //カメラのマウス操作ON　OFF
-    if (ENV->pushKey( KeyEvent::KEY_ESCAPE ))
-    {
-        ENV->setMouseControl( true );
-    }
-    if (ENV->pushKey( KeyEvent::KEY_1 ))
-    {
-        ENV->setMouseControl( false );
-    }
-
-    if (ENV->isPadPush( ENV->BUTTON_1 ))
-    {
-        CAMERA->shakeCamera( 0.1f, 0.1f );
-    }
-    CAMERA->setCameraAngle( ci::vec2( ENV->getPadAxis( 2 )*(-0.05f), ENV->getPadAxis( 3 )*(-0.05f) ) );
-
-    if (ENV->pressKey( KeyEvent::KEY_w ))
-        pos.z++;
-
-    if (ENV->pressKey( KeyEvent::KEY_s ))
-        pos.z--;
-
-    if (ENV->pressKey( KeyEvent::KEY_d ))
-        pos.x--;
-
-    if (ENV->pressKey( KeyEvent::KEY_a ))
-        pos.x++;
-
-    if (ENV->pressKey( KeyEvent::KEY_q ))
-        pos.y--;
-
-    if (ENV->pressKey( KeyEvent::KEY_e ))
-        pos.y++;
-
-    if (ENV->pressKey( KeyEvent::KEY_UP ))
-        CAMERA->setCameraAngle( ci::vec2( 0, 0.05f ) );
-
-    if (ENV->pressKey( KeyEvent::KEY_DOWN ))
-        CAMERA->setCameraAngle( ci::vec2( 0, -0.05f ) );
-
-    if (ENV->pressKey( KeyEvent::KEY_RIGHT ))
-        CAMERA->setCameraAngle( ci::vec2( 0.05f, 0 ) );
-
-    if (ENV->pressKey( KeyEvent::KEY_LEFT ))
-        CAMERA->setCameraAngle( ci::vec2( -0.05f, 0 ) );
-
-    Game::cStrategyManager::getInstance()->update();
+    cSceneManager::getInstance( )->now( ).update(delta_time);
 }
 
 void gameApp::draw()
 {
     gl::clear( Color( 0, 0, 0 ) );
 
+    CAMERA->bind3D( );
+    cSceneManager::getInstance( )->now( ).draw( );
+    CAMERA->unBind3D( );
 
-    gl::setMatrices( CAMERA->getCamera() );
-    Game::cFieldManager::getInstance()->draw();
-    //Game::Gem::cGemManager::getInstance()->Draw();
-    /*auto lambert = gl::ShaderDef().lambert();
-    auto shader = gl::getStockShader(lambert);
-    shader->bind();*/
-    gl::drawCube( pos, size );
-    Game::cStrategyManager::getInstance()->draw();
-    skydome.draw();
+    CAMERA->bind2D( );
+    cSceneManager::getInstance( )->now( ).draw2D( );
+    CAMERA->unBind2D( );
 
     ENV->flashInput();
 }

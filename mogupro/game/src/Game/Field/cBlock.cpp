@@ -8,94 +8,7 @@ namespace Game
 {
 namespace Field
 {
-static vec3 vertex0[] = {
-    vec3( -0.5f,  0.5f, 0.5f ),
-    vec3( 0.5f, -0.5f, 0.5f ),
-    vec3( 0.5f,  0.5f, 0.5f ),
-    vec3( -0.5f,  0.5f, 0.5f ),
-    vec3( -0.5f, -0.5f, 0.5f ),
-    vec3( 0.5f, -0.5f, 0.5f ), };
-static vec3 vertex1[] = {
-    vec3( -0.5f, -0.5f, -0.5f ),
-    vec3( 0.5f,  0.5f, -0.5f ),
-    vec3( 0.5f, -0.5f, -0.5f ),
-    vec3( -0.5f, -0.5f, -0.5f ),
-    vec3( -0.5f,  0.5f, -0.5f ),
-    vec3( 0.5f,  0.5f, -0.5f ), };
-static vec3 vertex2[] = {
-    vec3( -0.5f, -0.5f,  0.5f ),
-    vec3( -0.5f,  0.5f, -0.5f ),
-    vec3( -0.5f, -0.5f, -0.5f ),
-    vec3( -0.5f, -0.5f,  0.5f ),
-    vec3( -0.5f,  0.5f,  0.5f ),
-    vec3( -0.5f,  0.5f, -0.5f ), };
-static vec3 vertex3[] = {
-    vec3( 0.5f,  0.5f,  0.5f ),
-    vec3( 0.5f, -0.5f, -0.5f ),
-    vec3( 0.5f,  0.5f, -0.5f ),
-    vec3( 0.5f,  0.5f,  0.5f ),
-    vec3( 0.5f, -0.5f,  0.5f ),
-    vec3( 0.5f, -0.5f, -0.5f ), };
-static vec3 vertex4[] = {
-    vec3( -0.5f, 0.5f, -0.5f ),
-    vec3( 0.5f, 0.5f,  0.5f ),
-    vec3( 0.5f, 0.5f, -0.5f ),
-    vec3( -0.5f, 0.5f, -0.5f ),
-    vec3( -0.5f, 0.5f,  0.5f ),
-    vec3( 0.5f, 0.5f,  0.5f ), };
-static vec3 vertex5[] = {
-    vec3( -0.5f, -0.5f,  0.5f ),
-    vec3( 0.5f, -0.5f, -0.5f ),
-    vec3( 0.5f, -0.5f,  0.5f ),
-    vec3( -0.5f, -0.5f,  0.5f ),
-    vec3( -0.5f, -0.5f, -0.5f ),
-    vec3( 0.5f, -0.5f, -0.5f ), };
-
-static vec3 normal0[] = {
-    vec3( 0.0f, 0.0f, 1.0f ),
-    vec3( 0.0f, 0.0f, 1.0f ),
-    vec3( 0.0f, 0.0f, 1.0f ),
-    vec3( 0.0f, 0.0f, 1.0f ),
-    vec3( 0.0f, 0.0f, 1.0f ),
-    vec3( 0.0f, 0.0f, 1.0f ), };
-static vec3 normal1[] = {
-    vec3( 0.0f, 0.0f, -1.0f ),
-    vec3( 0.0f, 0.0f, -1.0f ),
-    vec3( 0.0f, 0.0f, -1.0f ),
-    vec3( 0.0f, 0.0f, -1.0f ),
-    vec3( 0.0f, 0.0f, -1.0f ),
-    vec3( 0.0f, 0.0f, -1.0f ), };
-static vec3 normal2[] = {
-    vec3( -1.0f, 0.0f, 0.0f ),
-    vec3( -1.0f, 0.0f, 0.0f ),
-    vec3( -1.0f, 0.0f, 0.0f ),
-    vec3( -1.0f, 0.0f, 0.0f ),
-    vec3( -1.0f, 0.0f, 0.0f ),
-    vec3( -1.0f, 0.0f, 0.0f ), };
-static vec3 normal3[] = {
-    vec3( 1.0f, 0.0f, 0.0f ),
-    vec3( 1.0f, 0.0f, 0.0f ),
-    vec3( 1.0f, 0.0f, 0.0f ),
-    vec3( 1.0f, 0.0f, 0.0f ),
-    vec3( 1.0f, 0.0f, 0.0f ),
-    vec3( 1.0f, 0.0f, 0.0f ), };
-static vec3 normal4[] = {
-    vec3( 0.0f, 1.0f, 0.0f ),
-    vec3( 0.0f, 1.0f, 0.0f ),
-    vec3( 0.0f, 1.0f, 0.0f ),
-    vec3( 0.0f, 1.0f, 0.0f ),
-    vec3( 0.0f, 1.0f, 0.0f ),
-    vec3( 0.0f, 1.0f, 0.0f ), };
-static vec3 normal5[] = {
-    vec3( 0.0f, -1.0f, 0.0f ),
-    vec3( 0.0f, -1.0f, 0.0f ),
-    vec3( 0.0f, -1.0f, 0.0f ),
-    vec3( 0.0f, -1.0f, 0.0f ),
-    vec3( 0.0f, -1.0f, 0.0f ),
-    vec3( 0.0f, -1.0f, 0.0f ), };
-
-
-GLfloat cube_vtx[] = {
+static GLfloat cube_vtx[] = {
     // 前
     //  x,     y,    z,
     -0.5f,  0.5f, 0.5f,
@@ -146,7 +59,7 @@ GLfloat cube_vtx[] = {
     0.5f, -0.5f, -0.5f,
 };
 
-GLfloat cube_normal[] = {
+static GLfloat cube_normal[] = {
     // 前
     // x,    y,    z,
     0.0f, 0.0f, 1.0f,
@@ -197,69 +110,26 @@ GLfloat cube_normal[] = {
     0.0f, -1.0f, 0.0f,
 };
 
-std::vector<uint32_t> getIndices( int side_size, int offset = 0 )
-{
-    std::vector<GLuint> indices = std::vector<GLuint>( side_size * 6 );
-    int c = 0;
-    for (int i = 0; i < side_size * 4; i += 4)
-    {
-        indices[c++] = i + offset;
-        indices[c++] = i + 2 + offset;
-        indices[c++] = i + 1 + offset;
-        indices[c++] = i + 2 + offset;
-        indices[c++] = i + offset;
-        indices[c++] = i + 3 + offset;
-    }
-    return indices;
-}
-
 std::vector<vec2> getUv( int side_num )
 {
-    std::vector<vec2> uv = std::vector<vec2>( side_num * 4 );
-    int c = 0;
+    std::vector<vec2> uv = {
+        vec2( 0.0 ,1.0 ),
+        vec2( 1.0 ,0.0 ),
+        vec2( 0.0 ,0.0 ),
+        vec2( 1.0 ,1.0 ), };
+
+    std::vector<vec2> uvs;
     for (int i = 0; i < side_num; i++)
-    {
-        uv[c++] = vec2( 0.00000, 1.00000 );
-        uv[c++] = vec2( 0.00000, 0.00000 );
-        uv[c++] = vec2( 1.00000, 0.00000 );
-        uv[c++] = vec2( 1.00000, 1.00000 );
-    }
-    return uv;
-}
+        std::copy( uv.begin(), uv.end(), std::back_inserter( uvs ) );
 
-vec3* getVertices( int side_num )
-{
-    switch (side_num)
-    {
-        case 0: return vertex0;
-        case 1: return vertex1;
-        case 2: return vertex3;
-        case 3: return vertex2;
-        case 4: return vertex4;
-        case 5: return vertex5;
-    }
-    return new vec3();
-}
-
-vec3* getNormals( int side_num )
-{
-    switch (side_num)
-    {
-        case 0: return normal0;
-        case 1: return normal1;
-        case 2: return normal3;
-        case 3: return normal2;
-        case 4: return normal4;
-        case 5: return normal5;
-    }
-    return new vec3();
+    return uvs;
 }
 
 int getIndex( const vec3 & vtx, const vec3 & normal,
               const std::vector<vec3>& vertices,
               const std::vector<vec3>& normals )
 {
-    for (int i = 0; i < (vertices.size()); ++i)
+    for (uint i = 0; i < (vertices.size()); ++i)
     {
         if (vertices[i] == vtx
              && normals[i] == normal)
@@ -271,11 +141,13 @@ int getIndex( const vec3 & vtx, const vec3 & normal,
     return -1;
 }
 
-cBlock::cBlock( const ci::vec3 position, const float scale )
+cBlock::cBlock( const ci::vec3& position, const float& scale, const uint& num ) :
+    mPosition( position ),
+    mScale( scale ),
+    mIsActive( true ),
+    mNum( num ),
+    mCollider( mPosition, vec3( scale ), vec3( 0.5f ) )
 {
-    mPosition = position;
-    mScale = scale;
-    mIsActive = true;
 }
 cBlock::~cBlock()
 {
@@ -292,45 +164,34 @@ void cBlock::draw()
     gl::drawCube( vec3( 0 ), vec3( 1 ) );
     gl::popModelView();
 }
-void cBlock::drawMesh()
+void cBlock::createSide( std::vector<ci::vec3>& vertices,
+                         std::vector<uint>& indices,
+                         std::vector<ci::vec2>& uvs,
+                         std::vector<ci::vec3>& normals )
 {
-    if (mIsActive == false) return;
-    if (mVertices.size() == 0)return;
-    gl::pushModelView();
-    gl::translate( mPosition );
-    gl::scale( vec3( mScale ) );
-    //gl::draw( mVboMesh );
-    gl::draw( *mMesh );
-    gl::popModelView();
-}
-void cBlock::createSide( const  int& offset_index )
-{
+    if (mIsActive == false)
+        return;
     if (mDrawSide.size() <= 0)
         return;
 
-    //for (size_t i = 0; i < draw_side.size(); i++)
-    //{
-    //    // 頂点
-    //    vec3* temp = getVertices( draw_side[i] );
-    //    for (int k = 0; k < 6; k++)
-    //        mVertices.emplace_back( mPosition + temp[k] );
-    //    // 法線
-    //    temp = getNormals( draw_side[i] );
-    //    for (int k = 0; k < 6; k++)
-    //        mNormals.emplace_back( temp[k] );
-    //}
-    //mIndices = getIndices( draw_side.size(), offset_index );
+    // UV
+    auto uv = getUv( mDrawSide.size() );
+    for (size_t i = uvs.size(); i < uvs.size() + uv.size(); i++)
+        mUvNum.emplace_back( i );
+    std::copy( uv.begin(), uv.end(), std::back_inserter( uvs ) );
 
-    mUv = getUv( mDrawSide.size() );
+    // Indicesの最大値を求める
+    uint offset = 0;
+    if (indices.size() > 0)
+        offset = *std::max_element( indices.begin(), indices.end() ) + 1;
 
     // DrawElements用のデータを作成
+    std::vector<ci::vec3> temp_vertices;
+    std::vector<uint> temp_indices;
+    std::vector<ci::vec3> temp_normals;
+
     for (int i = 0; i < 36; ++i)
     {
-        int side_num = i / 6;
-        if (!std::any_of( mDrawSide.begin(), mDrawSide.end(),
-                          [&]( int n ) { return side_num == n; } ))
-            continue;
-
         vec3 vertex = vec3( cube_vtx[i * 3 + 0],
                             cube_vtx[i * 3 + 1],
                             cube_vtx[i * 3 + 2] ) + mPosition;
@@ -339,41 +200,34 @@ void cBlock::createSide( const  int& offset_index )
                             cube_normal[i * 3 + 2] );
 
         int id = getIndex( vertex, normal,
-                           mVertices, mNormals );
+                           temp_vertices, temp_normals );
+
+        mIndicesNum.emplace_back( indices.size() + i );
 
         if (id < 0)
         {
             // 同じ座標と法線を持つ頂点は見つからず
-            mIndices.emplace_back( mVertices.size() + offset_index );
+            temp_indices.emplace_back( temp_vertices.size() + offset );
 
-            mVertices.emplace_back( vertex );
-            mNormals.emplace_back( normal );
+            mVerticesNum.emplace_back( temp_vertices.size() );
+            temp_vertices.emplace_back( vertex );
+
+            mNormalsNum.emplace_back( normal.size() );
+            temp_normals.emplace_back( normal );
         }
         else
         {
             // 見つかった
-            mIndices.emplace_back( id + offset_index );
+            temp_indices.emplace_back( id + offset );
         }
     }
 
-    // メッシュを作る
-    //mMesh = ci::TriMesh::create();
-    //if (mVertices.size() > 0)
-    //    mMesh->appendPositions( &mVertices[0], mVertices.size() );
-    //if (mIndices.size() > 0)
-    //    mMesh->appendIndices( &mIndices[0], mIndices.size() );
-    //if (mUv.size() > 0)
-    //    mMesh->appendTexCoords0( &mUv[0], mUv.size() );
-    //if (mNormals.size() > 0)
-    //    mMesh->appendNormals( &mNormals[0], mNormals.size() );
+    std::copy( temp_vertices.begin(), temp_vertices.end(), std::back_inserter( vertices ) );
+    std::copy( temp_indices.begin(), temp_indices.end(), std::back_inserter( indices ) );
+    std::copy( temp_normals.begin(), temp_normals.end(), std::back_inserter( normals ) );
 }
 void cBlock::clear()
 {
-    mVertices.clear();
-    mIndices.clear();
-    mUv.clear();
-    mDrawSide.clear();
-    //mMesh->clear();
 }
 void cBlock::toBreak()
 {
