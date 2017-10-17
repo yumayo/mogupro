@@ -8,94 +8,7 @@ namespace Game
 {
 namespace Field
 {
-static vec3 vertex0[] = {
-    vec3( -0.5f,  0.5f, 0.5f ),
-    vec3( 0.5f, -0.5f, 0.5f ),
-    vec3( 0.5f,  0.5f, 0.5f ),
-    vec3( -0.5f,  0.5f, 0.5f ),
-    vec3( -0.5f, -0.5f, 0.5f ),
-    vec3( 0.5f, -0.5f, 0.5f ), };
-static vec3 vertex1[] = {
-    vec3( -0.5f, -0.5f, -0.5f ),
-    vec3( 0.5f,  0.5f, -0.5f ),
-    vec3( 0.5f, -0.5f, -0.5f ),
-    vec3( -0.5f, -0.5f, -0.5f ),
-    vec3( -0.5f,  0.5f, -0.5f ),
-    vec3( 0.5f,  0.5f, -0.5f ), };
-static vec3 vertex2[] = {
-    vec3( -0.5f, -0.5f,  0.5f ),
-    vec3( -0.5f,  0.5f, -0.5f ),
-    vec3( -0.5f, -0.5f, -0.5f ),
-    vec3( -0.5f, -0.5f,  0.5f ),
-    vec3( -0.5f,  0.5f,  0.5f ),
-    vec3( -0.5f,  0.5f, -0.5f ), };
-static vec3 vertex3[] = {
-    vec3( 0.5f,  0.5f,  0.5f ),
-    vec3( 0.5f, -0.5f, -0.5f ),
-    vec3( 0.5f,  0.5f, -0.5f ),
-    vec3( 0.5f,  0.5f,  0.5f ),
-    vec3( 0.5f, -0.5f,  0.5f ),
-    vec3( 0.5f, -0.5f, -0.5f ), };
-static vec3 vertex4[] = {
-    vec3( -0.5f, 0.5f, -0.5f ),
-    vec3( 0.5f, 0.5f,  0.5f ),
-    vec3( 0.5f, 0.5f, -0.5f ),
-    vec3( -0.5f, 0.5f, -0.5f ),
-    vec3( -0.5f, 0.5f,  0.5f ),
-    vec3( 0.5f, 0.5f,  0.5f ), };
-static vec3 vertex5[] = {
-    vec3( -0.5f, -0.5f,  0.5f ),
-    vec3( 0.5f, -0.5f, -0.5f ),
-    vec3( 0.5f, -0.5f,  0.5f ),
-    vec3( -0.5f, -0.5f,  0.5f ),
-    vec3( -0.5f, -0.5f, -0.5f ),
-    vec3( 0.5f, -0.5f, -0.5f ), };
-
-static vec3 normal0[] = {
-    vec3( 0.0f, 0.0f, 1.0f ),
-    vec3( 0.0f, 0.0f, 1.0f ),
-    vec3( 0.0f, 0.0f, 1.0f ),
-    vec3( 0.0f, 0.0f, 1.0f ),
-    vec3( 0.0f, 0.0f, 1.0f ),
-    vec3( 0.0f, 0.0f, 1.0f ), };
-static vec3 normal1[] = {
-    vec3( 0.0f, 0.0f, -1.0f ),
-    vec3( 0.0f, 0.0f, -1.0f ),
-    vec3( 0.0f, 0.0f, -1.0f ),
-    vec3( 0.0f, 0.0f, -1.0f ),
-    vec3( 0.0f, 0.0f, -1.0f ),
-    vec3( 0.0f, 0.0f, -1.0f ), };
-static vec3 normal2[] = {
-    vec3( -1.0f, 0.0f, 0.0f ),
-    vec3( -1.0f, 0.0f, 0.0f ),
-    vec3( -1.0f, 0.0f, 0.0f ),
-    vec3( -1.0f, 0.0f, 0.0f ),
-    vec3( -1.0f, 0.0f, 0.0f ),
-    vec3( -1.0f, 0.0f, 0.0f ), };
-static vec3 normal3[] = {
-    vec3( 1.0f, 0.0f, 0.0f ),
-    vec3( 1.0f, 0.0f, 0.0f ),
-    vec3( 1.0f, 0.0f, 0.0f ),
-    vec3( 1.0f, 0.0f, 0.0f ),
-    vec3( 1.0f, 0.0f, 0.0f ),
-    vec3( 1.0f, 0.0f, 0.0f ), };
-static vec3 normal4[] = {
-    vec3( 0.0f, 1.0f, 0.0f ),
-    vec3( 0.0f, 1.0f, 0.0f ),
-    vec3( 0.0f, 1.0f, 0.0f ),
-    vec3( 0.0f, 1.0f, 0.0f ),
-    vec3( 0.0f, 1.0f, 0.0f ),
-    vec3( 0.0f, 1.0f, 0.0f ), };
-static vec3 normal5[] = {
-    vec3( 0.0f, -1.0f, 0.0f ),
-    vec3( 0.0f, -1.0f, 0.0f ),
-    vec3( 0.0f, -1.0f, 0.0f ),
-    vec3( 0.0f, -1.0f, 0.0f ),
-    vec3( 0.0f, -1.0f, 0.0f ),
-    vec3( 0.0f, -1.0f, 0.0f ), };
-
-
-GLfloat cube_vtx[] = {
+static GLfloat cube_vtx[] = {
     // ‘O
     //  x,     y,    z,
     -0.5f,  0.5f, 0.5f,
@@ -146,7 +59,7 @@ GLfloat cube_vtx[] = {
     0.5f, -0.5f, -0.5f,
 };
 
-GLfloat cube_normal[] = {
+static GLfloat cube_normal[] = {
     // ‘O
     // x,    y,    z,
     0.0f, 0.0f, 1.0f,
@@ -199,16 +112,17 @@ GLfloat cube_normal[] = {
 
 std::vector<vec2> getUv( int side_num )
 {
-    std::vector<vec2> uv = std::vector<vec2>( side_num * 4 );
-    int c = 0;
+    std::vector<vec2> uv = {
+        vec2( 0.0 ,1.0 ),
+        vec2( 1.0 ,0.0 ),
+        vec2( 0.0 ,0.0 ),
+        vec2( 1.0 ,1.0 ), };
+
+    std::vector<vec2> uvs;
     for (int i = 0; i < side_num; i++)
-    {
-        uv[c++] = vec2( 0.00000, 1.00000 );
-        uv[c++] = vec2( 1.00000, 0.00000 );
-        uv[c++] = vec2( 0.00000, 0.00000 );
-        uv[c++] = vec2( 1.00000, 1.00000 );
-    }
-    return uv;
+        std::copy( uv.begin(), uv.end(), std::back_inserter( uvs ) );
+
+    return uvs;
 }
 
 int getIndex( const vec3 & vtx, const vec3 & normal,
@@ -249,7 +163,6 @@ void cBlock::draw()
     gl::scale( vec3( mScale ) );
     gl::drawCube( vec3( 0 ), vec3( 1 ) );
     gl::popModelView();
-
 }
 void cBlock::createSide( std::vector<ci::vec3>& vertices,
                          std::vector<uint>& indices,

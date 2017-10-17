@@ -17,22 +17,23 @@ public:
     void update();
     void draw();
 
+public: // Method
+
     void createSide( std::vector<ci::vec3>& vertices,
                      std::vector<uint>& indices,
                      std::vector<ci::vec2>& uvs,
                      std::vector<ci::vec3>& normals );
     void clear();
-
     void toBreak();
 
-    bool mIsActive;
-    std::vector<int> mDrawSide;
-    uint mNum;
-    Collision::cAABBCollider mCollider;
+public: // Member
 
-public:
     ci::vec3 mPosition;
     float mScale;
+    bool mIsActive;
+    uint mNum;
+    Collision::cAABBCollider mCollider;
+    std::vector<int> mDrawSide;
 
     std::vector<uint> mVerticesNum;
     std::vector<uint> mIndicesNum;

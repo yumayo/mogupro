@@ -19,40 +19,12 @@ void cUnderGround::setup()
 {
     TEX.set( "dirt", "dirt.jpg" );
 
-    mNum = 32;
-    mHeight = 8;
+    mNum = 16;
+    mHeight = 4;
     mIntervalOffset = 0.0f;
     mScale = 1.0f;
     mOffset = vec3( mScale / 2 );
-
-    uint count = 0;
-    for (int z = 0; z < mNum; z++)
-    {
-        std::vector<std::vector<std::shared_ptr<cBlock>>> temps;
-        for (int y = 0; y < mHeight; y++)
-        {
-            std::vector<std::shared_ptr<cBlock>> temp;
-            for (int x = 0; x < mNum; x++)
-            {
-                auto position = vec3( x * mScale + x * mIntervalOffset,
-                                      y * -mScale + y * mIntervalOffset,
-                                      z * mScale + z * mIntervalOffset ) + mOffset;
-                std::shared_ptr<cBlock> block = std::make_shared<cBlock>( position, mScale, count );
-
-                block->mDrawSide = { 0,1,2,3,4,5 };
-                blockMeshBlend( block );
-
-                temp.emplace_back( std::move( block ) );
-            }
-            temps.emplace_back( std::move( temp ) );
-            temp.clear();
-        }
-        blocks.emplace_back( std::move( temps ) );
-        temps.clear();
-    }
-
-
-    createMesh();
+    createUnderGround();
 }
 void cUnderGround::update()
 {
@@ -82,87 +54,43 @@ void cUnderGround::draw()
 
     gl::draw( mVboMesh );
 }
-bool cUnderGround::isOutOfRange( const ci::ivec3& c )
+bool cUnderGround::createUnderGround()
 {
-    return  (uint) c.z < 0 || (uint) c.z > blocks.size() - 1 ||
-        (uint) c.y < 0 || (uint) c.y > blocks[c.z].size() - 1 ||
-        (uint) c.x < 0 || (uint) c.x > blocks[c.z][c.y].size() - 1;
-}
-bool cUnderGround::blockDigged( const ci::ivec3& c )
-{
-    if (isOutOfRange( c ))
-        return false;
-
-    auto b = blocks[c.z][c.y][c.x];
-    if (b->mIsActive == false)
-        return false;
+    uint count = 0;
 
     cTimeMeasurement::getInstance()->make();
-    blockMeshErase( b );
-
-    //ivec3 dir[] = {
-    //    ivec3( 0, 0, 1 ),
-    //    ivec3( 0, 0,-1 ) ,
-    //    ivec3( 1, 0, 0 ) ,
-    //    ivec3( -1, 0, 0 ) ,
-    //    ivec3( 0, 1, 0 ) ,
-    //    ivec3( 0,-1, 0 ) };
-
-    //std::vector<ivec3> change_block;
-    // 消したブロックの周囲6マスのブロックのメッシュを作り直す
-    //for (int i = 0; i < 6; i++)
-    //{
-    //    auto cell = c + dir[i];
-    //    if (isOutOfRange( cell ))
-    //        continue;
-
-    //    // ブロックが存在していなかったらはじく
-    //    auto b = blocks[cell.z][cell.y][cell.x];
-    //    if (b->mIsActive == false)
-    //        continue;
-
-    //    std::vector<int> side;
-    //    for (int k = 0; k < 6; k++)
-    //    {
-    //        auto search_cell = cell + dir[k];
-    //        if (isOutOfRange( search_cell ))
-    //            side.push_back( k );
-    //        else if (blocks[search_cell.z][search_cell.y][search_cell.x]->mIsActive == false)
-    //            side.push_back( k );
-    //    }
-
-    //    b->clear();
-    //    b->mDrawSide = side;
-    //    // メッシュに変更があったブロックを登録
-    //    change_block.push_back( cell );
-    //}
-
-    //createMesh();
-    cTimeMeasurement::getInstance()->make();
-    console() << "msec : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
-    return true;
-}
-void cUnderGround::blockMeshBlend( std::shared_ptr<cBlock> b )
-{
-    b->createSide( mVertices, mIndices, mUv, mNormals );
-}
-void cUnderGround::blockMeshErase( std::shared_ptr<cBlock> b )
-{
-    uint indices[] = {
-        0,0,0,0,0,0 ,
-        0,0,0,0,0,0 ,
-        0,0,0,0,0,0 ,
-        0,0,0,0,0,0 ,
-        0,0,0,0,0,0 ,
-        0,0,0,0,0,0 , };
-    for (size_t i = 0; i < b->mIndicesNum.size(); i++)
+    for (int z = 0; z < mNum; z++)
     {
-        auto k = b->mIndicesNum[i];
-        mIndices[k] = 0;
-    }
-    auto vbo = mVboMesh->getIndexVbo();
-    vbo->bufferSubData( b->mIndicesNum[0] * 4, b->mIndicesNum.size() * 4, &indices[0] );
+        std::vector<std::vector<std::shared_ptr<cBlock>>> temps;
+        for (int y = 0; y < mHeight; y++)
+        {
+            std::vector<std::shared_ptr<cBlock>> temp;
+            for (int x = 0; x < mNum; x++)
+            {
+                auto position = vec3( x * mScale + x * mIntervalOffset,
+                                      y * -mScale + y * mIntervalOffset,
+                                      z * mScale + z * mIntervalOffset ) + mOffset;
+                std::shared_ptr<cBlock> block = std::make_shared<cBlock>( position, mScale, count );
 
+                block->mDrawSide = { 0,1,2,3,4,5 };
+                blockMeshBlend( block );
+
+                temp.emplace_back( std::move( block ) );
+            }
+            temps.emplace_back( std::move( temp ) );
+            temp.clear();
+        }
+        blocks.emplace_back( std::move( temps ) );
+        temps.clear();
+    }
+    cTimeMeasurement::getInstance()->make();
+
+    console() << std::endl << std::endl;
+    console() << "Field create time : " << cTimeMeasurement::getInstance()->deltaTime() << " sec" << std::endl;
+    console() << std::endl << std::endl;
+
+    createMesh();
+    return false;
 }
 bool cUnderGround::createMesh()
 {
@@ -178,23 +106,55 @@ bool cUnderGround::createMesh()
     mVboMesh = gl::VboMesh::create( *mMesh );
     return true;
 }
-void cUnderGround::blockClear()
+void cUnderGround::blockMeshBlend( std::shared_ptr<cBlock> b )
+{
+    b->createSide( mVertices, mIndices, mUv, mNormals );
+}
+void cUnderGround::blockMeshErase( std::shared_ptr<cBlock> b )
+{
+    auto indices = std::vector<uint>( b->mIndicesNum.size() * 4 );
+    for (size_t i = 0; i < b->mIndicesNum.size(); i++)
+    {
+        auto k = b->mIndicesNum[i];
+        mIndices[k] = 0;
+    }
+    auto vbo = mVboMesh->getIndexVbo();
+    // VboRefの中でIndicesが4倍されるので、変更箇所を4倍する
+    vbo->bufferSubData( b->mIndicesNum[0] * 4, b->mIndicesNum.size() * 4, &indices[0] );
+}
+bool cUnderGround::blockDigged( const ci::ivec3& c )
+{
+    if (isOutOfRange( c ))
+        return false;
+
+    auto b = blocks[c.z][c.y][c.x];
+    if (b->mIsActive == false)
+        return false;
+
+    blockMeshErase( b );
+    return true;
+}
+void cUnderGround::blockAllClear()
 {
     mVertices.clear();
     mIndices.clear();
     mUv.clear();
     mNormals.clear();
 }
+ci::ivec3 cUnderGround::getCellNumFromPosition( const ci::vec3 & position )
+{
+    return ivec3( (position + mOffset) / mScale ) * ivec3( 1, -1, 1 );
+}
 bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 {
-    auto p = ivec3( (position + mOffset) / mScale ) * ivec3( 1, -1, 1 );
+    auto c = getCellNumFromPosition( position );
 
-    if (isOutOfRange( p ))
+    if (isOutOfRange( c ))
         return false;
 
     auto r = ivec3( int( radius / mScale ) );
-    auto s = p - r;
-    auto e = p + r;
+    auto s = c - r;
+    auto e = c + r;
 
     for (int z = s.z; z < e.z; z++)
         for (int y = s.y; y < e.y; y++)
@@ -206,6 +166,18 @@ bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
                     blocks[z][y][x]->toBreak();
             }
     return true;
+}
+bool cUnderGround::isOutOfRange( const ci::ivec3& c )
+{
+    return  (uint) c.z < 0 || (uint) c.z > blocks.size() - 1 ||
+        (uint) c.y < 0 || (uint) c.y > blocks[c.z].size() - 1 ||
+        (uint) c.x < 0 || (uint) c.x > blocks[c.z][c.y].size() - 1;
+}
+ci::vec3 cUnderGround::getBlockCenterTopPosition( const ci::vec3 & target_position )
+{
+    auto c = getCellNumFromPosition( target_position );
+    auto b = blocks[c.z][c.y][c.x];
+    return b->mPosition + vec3( 0, b->mScale / 2, 0 );
 }
 }
 }
