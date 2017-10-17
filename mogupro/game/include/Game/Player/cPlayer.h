@@ -1,16 +1,27 @@
 #pragma once
 #include <Game/cObjectBase.h>
-#include "cinder/gl/gl.h"
+#include <cinder/gl/gl.h>
+#include <Collision/cAABBCollider.h>
+#include <Collision/cRigidBody.h>
 namespace Game {
 	namespace Player {
 		class cPlayer : public Game::cObjectBase {
 		private:
 			ci::vec3 size;
 			ci::vec3 center_angle;
+			ci::ColorA8u color;
+			//‘¬“x
 			float speed;
+			//‰½P‚©
 			int player_id;
 			//‘€ì‚·‚éƒvƒŒƒCƒ„[‚©‚Ç‚¤‚©
 			bool active_user;
+			//Œ@í’†
+			bool drilling;
+
+			//“–‚½‚è”»’è“o˜^
+			Collision::cAABBCollider mCollider;
+			Collision::cRigidBody mRigidbody;
 
 			//‰æ‘œ
 			ci::gl::TextureRef texture;
@@ -22,6 +33,10 @@ namespace Game {
 		public:
 			cPlayer(const ci::vec3& pos, const ci::vec3& center_angle, const int& id, const bool& is_active_user);
 			
+			ci::vec3 getSize() {
+				return size;
+			}
+
 			float getSpeed() {
 				return speed;
 			}
@@ -29,8 +44,21 @@ namespace Game {
 			int getPlayerId() {
 				return player_id;
 			}
+			
+			//Œ@í’†‚È‚çtrue‚ğ“ü‚ê‚é
+			void Drilling(const bool& flag) {
+				drilling = flag;
+			}
+			//Œ@í’†‚©‚Ç‚¤‚©‚ğ•Ô‚·
+			bool isDrilling() {
+				return drilling;
+			}
 
 			void move(const ci::vec3& pos) {
+				//ˆÚ“®•ûŒü‚ğnormalize
+				
+				ci::app::console() << atan2f(mPos.x - pos.x, mPos.z - pos.z)  << std::endl;
+				
 				mPos += pos;
 			}
 

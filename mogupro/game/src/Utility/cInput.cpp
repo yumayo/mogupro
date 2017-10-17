@@ -1,6 +1,6 @@
 #include <Utility/cInput.h>
 #include <cinder/app/App.h>
-#include <Camera/cCameraManager.h>
+#include <CameraManager/cCameraManager.h>
 
 extern "C"
 {
@@ -45,7 +45,6 @@ void mouseCursolFixed(const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 	ci::vec2& mouse_pos, bool& cursor_captured, POINT& last_cursor_pos) {
 
 	
-
 	if (cursor_captured) {
 		POINT pt;
 

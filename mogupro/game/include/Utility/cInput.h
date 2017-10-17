@@ -27,6 +27,7 @@ private:
     bool mouse_right_press;
     bool cursor_captured;
     POINT last_cursor_pos;
+	bool mouse_active;
 
     //ゲームパッド
     std::set<int> padpush;
@@ -35,7 +36,6 @@ private:
     std::map<int, float> pad_stick_axis_value;
     void padAxisSetup();
 
-    bool mouse_active;
 
 public:
     cInputAll();

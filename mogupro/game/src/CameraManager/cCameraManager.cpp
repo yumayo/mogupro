@@ -1,8 +1,8 @@
-#include <Camera/cCameraManager.h>
+#include <CameraManager/cCameraManager.h>
 #include <random>
 #include <cinder/gl/gl.h>
 #include <Utility/cInput.h>
-namespace Camera
+namespace CameraManager
 {
 void cCameraManager::shakeCamera( const float & scatter, const float & seconds )
 {
@@ -21,7 +21,7 @@ void cCameraManager::setup( ) {
 void cCameraManager::MovingCamera( )
 {
     buf_pos = ci::vec3( ( *reference_pos )->x, ( *reference_pos )->y, ( *reference_pos )->z ) - pos;
-    buf_pos *= 0.3f;
+    buf_pos *= 0.8f;
     pos += buf_pos;
 }
 void cCameraManager::ScatterCamera( )
@@ -48,24 +48,10 @@ void cCameraManager::update( const float& delta_time ) {
 
     MovingCamera( );
 
-    camera.lookAt( pos - looking_point, pos + ci::vec3( my_scatter.x, my_scatter.y, 0 ) );
+	looking_position = pos - looking_point;
 
+    camera.lookAt(looking_position, pos + ci::vec3( my_scatter.x, my_scatter.y, 0 ) );
 
-    //カメラのマウス操作ON　OFF
-    if ( ENV->pushKey( cinder::app::KeyEvent::KEY_ESCAPE ) )
-    {
-        ENV->setMouseControl( true );
-    }
-    if ( ENV->pushKey( cinder::app::KeyEvent::KEY_1 ) )
-    {
-        ENV->setMouseControl( false );
-    }
-
-    if ( ENV->isPadPush( ENV->BUTTON_1 ) )
-    {
-        CAMERA->shakeCamera( 0.1f, 0.1f );
-    }
-    CAMERA->setCameraAngle( ci::vec2( ENV->getPadAxis( 2 )*( -0.05f ), ENV->getPadAxis( 3 )*( -0.05f ) ) );
 }
 
 void cCameraManager::bind3D( )

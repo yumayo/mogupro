@@ -2,8 +2,8 @@
 #include <cinder/app/App.h>
 #include <cinder/Camera.h>
 #include <Utility/cSingletonAble.h>
-#define CAMERA ::Camera::cCameraManager::getInstance()
-namespace Camera
+#define CAMERA ::CameraManager::cCameraManager::getInstance()
+namespace CameraManager
 {
 enum WINDOW_SIZE {
     WIDTH = 640,
@@ -24,6 +24,9 @@ private:
 
     //目標と対照的なカメラの位置
     ci::vec3 looking_point;
+
+	//カメラの向いている位置
+	ci::vec3 looking_position;
 
     //カメラの向いている角度
     ci::vec2 camera_angle;
@@ -63,6 +66,7 @@ public:
         camera_angle = ci::vec2( 0 );
         looking_point = ci::vec3( 0 );
         my_scatter = ci::vec2( 0 );
+		looking_position = ci::vec3(0);
         camera_far = 5;
     }
     ~cCameraManager( ) {
@@ -86,6 +90,11 @@ public:
     ci::vec2 getCameraAngle( ) {
         return camera_angle;
     }
+
+	//カメラの向いている向きをノーマライズして返す
+	ci::vec3 getCameraLook() {
+		return ci::vec3(looking_point.x/10, looking_point.y / 10, looking_point.z / 10);
+	}
 
     void followingCamera( ci::vec3* pos, const float& camera_farZ ) {
         reference_pos = std::make_shared<ci::vec3*>( pos );
