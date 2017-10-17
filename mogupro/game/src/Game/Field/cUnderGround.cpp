@@ -19,8 +19,7 @@ void cUnderGround::setup()
 {
     TEX.set( "dirt", "dirt.jpg" );
 
-    mNum = 16;
-    mHeight = 4;
+    mBlockNum = ivec3( 16, 4, 16 );
     mIntervalOffset = 0.0f;
     mScale = 1.0f;
     mOffset = vec3( mScale / 2 );
@@ -59,13 +58,13 @@ bool cUnderGround::createUnderGround()
     uint count = 0;
 
     cTimeMeasurement::getInstance()->make();
-    for (int z = 0; z < mNum; z++)
+    for (int z = 0; z < mBlockNum.z; z++)
     {
         std::vector<std::vector<std::shared_ptr<cBlock>>> temps;
-        for (int y = 0; y < mHeight; y++)
+        for (int y = 0; y < mBlockNum.y; y++)
         {
             std::vector<std::shared_ptr<cBlock>> temp;
-            for (int x = 0; x < mNum; x++)
+            for (int x = 0; x < mBlockNum.x; x++)
             {
                 auto position = vec3( x * mScale + x * mIntervalOffset,
                                       y * -mScale + y * mIntervalOffset,
@@ -94,7 +93,7 @@ bool cUnderGround::createUnderGround()
 }
 bool cUnderGround::createMesh()
 {
-    auto mMesh = ci::TriMesh::create();
+    mMesh = ci::TriMesh::create();
     if (mVertices.size() > 0)
         mMesh->appendPositions( &mVertices[0], mVertices.size() );
     if (mIndices.size() > 0)
@@ -178,6 +177,10 @@ ci::vec3 cUnderGround::getBlockCenterTopPosition( const ci::vec3 & target_positi
     auto c = getCellNumFromPosition( target_position );
     auto b = blocks[c.z][c.y][c.x];
     return b->mPosition + vec3( 0, b->mScale / 2, 0 );
+}
+ci::ivec3 cUnderGround::getBlockNum()
+{
+    return mBlockNum;
 }
 }
 }

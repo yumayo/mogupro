@@ -31,6 +31,9 @@ public: //Player, Strategy ‚ªg‚¤ŠÖ”
     // position : ‘ÎÛ‚ÌˆÊ’u
     ci::vec3 getBlockCenterTopPosition( const ci::vec3& target_position );
 
+
+    ci::ivec3 getBlockNum();
+
 private: // Member
     Field::cUnderGround mUnderGround;
 };
