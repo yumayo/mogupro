@@ -38,6 +38,10 @@ bool cFieldManager::blockBreak( const ci::vec3& position, const float& radius )
 {
     return mUnderGround.blockBreak( position, radius );
 }
+bool cFieldManager::blockBreak( const ci::ivec3 & cell_num, const float & radius )
+{
+    return mUnderGround.blockBreak( cell_num, radius );
+}
 bool cFieldManager::isOutOfRange( const ci::ivec3 & cell_num )
 {
     return mUnderGround.isOutOfRange( cell_num );
@@ -46,8 +50,8 @@ ci::vec3 cFieldManager::getBlockCenterTopPosition( const ci::vec3 & target_posit
 {
     return mUnderGround.getBlockCenterTopPosition( target_position );
 }
-ci::ivec3 cFieldManager::getBlockNum()
+ci::ivec3 cFieldManager::getBlockMaxCell()
 {
-    return mUnderGround.getBlockNum();
+    return mUnderGround.getBlockMaxCell();
 }
 }
