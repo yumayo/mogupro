@@ -34,9 +34,12 @@ namespace Game
 			ci::vec3 getScale() { return mScale; }
 			GemType getType() { return mType; }
 			ci::Color getColor() { return mColor; }
+			float getSinRotate() { return mSinrotate; }
 
-			void setPos(ci::vec3 pos) { mPosition = pos; };
-			float mSinrotate;
+			void setPos(ci::vec3 pos) { mPosition = pos; }
+			void setSinRotate(float rotate) { mSinrotate = rotate; }
+
+
 		private:
 
 			int mId;
@@ -46,6 +49,7 @@ namespace Game
 			ci::Color mColor;
 			GemType mType;
 			int mMoney;
+			float mSinrotate;
 		};
 	}
 }
