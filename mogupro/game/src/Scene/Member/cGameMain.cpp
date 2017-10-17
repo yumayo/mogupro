@@ -55,21 +55,6 @@ void cGameMain::update(float deltaTime)
     Game::cStrategyManager::getInstance( )->update(deltaTime);
     Collision::cCollisionManager::getInstance( )->update( );
     Network::cUDPManager::getInstance( )->update( );
-
-    static int count = 0;
-    count++;
-    if ( count % 10 == 0 )
-    {
-        auto size = Game::cFieldManager::getInstance( )->getBlockMaxCell( );
-        int x = randInt( 0, size.x );
-        int y = randInt( 0, size.y );
-        int z = randInt( 0, size.z );
-        using namespace Network;
-        using namespace Network::Packet;
-        Network::cUDPManager::getInstance( )->
-            send( cNetworkHandle( "126.77.126.180", 25565 ),
-                  new Request::cReqCheckBreakBlocks( vec3( x, y, z ) ) );
-    }
 }
 
 void cGameMain::draw( )
