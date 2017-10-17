@@ -46,4 +46,8 @@ ci::vec3 cFieldManager::getBlockCenterTopPosition( const ci::vec3 & target_posit
 {
     return mUnderGround.getBlockCenterTopPosition( target_position );
 }
+ci::ivec3 cFieldManager::getBlockNum()
+{
+    return mUnderGround.getBlockNum();
+}
 }
