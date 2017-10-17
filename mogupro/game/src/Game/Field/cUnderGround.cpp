@@ -134,11 +134,11 @@ bool cUnderGround::blockDigged( const ci::ivec3& c )
 
     blockMeshErase( b );
 
-    using namespace Network;
-    using namespace Network::Packet;
-    Network::cUDPManager::getInstance()->
-        send( cNetworkHandle( "126.77.126.180", 25565 ),
-              new Request::cReqCheckBreakBlocks( c ) );
+    //using namespace Network;
+    //using namespace Network::Packet;
+    //Network::cUDPManager::getInstance()->
+    //    send( cNetworkHandle( "126.77.126.180", 25565 ),
+    //          new Request::cReqCheckBreakBlocks( c ) );
     return true;
 }
 void cUnderGround::blockAllClear()
