@@ -7,7 +7,7 @@ namespace Packet
 {
 namespace Response
 {
-class cResCheckBrakeBlocks : public cPacketBase<cResCheckBrakeBlocks, PacketId::RES_CHECK_BRAKE_BLOCKS>
+class cResCheckBrakeBlocks : public cPacketBase<cResCheckBrakeBlocks, PacketId::RES_CHECK_BREAK_BLOCKS>
 {
 public:
     cResCheckBrakeBlocks( );

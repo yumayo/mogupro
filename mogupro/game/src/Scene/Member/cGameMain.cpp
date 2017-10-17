@@ -10,6 +10,8 @@
 #include <Game/cPlayerManager.h>
 #include <Game/cGemManager.h>
 #include <Collision/cCollisionManager.h>
+#include <Network/cUDPManager.h>
+#include <Network/Packet.hpp>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -32,6 +34,7 @@ void cGameMain::setup( )
     Game::cStrategyManager::getInstance( )->setup( );
 	Game::cPlayerManager::getInstance()->setup();
     Collision::cCollisionManager::getInstance( )->setup( );
+    Network::cUDPManager::getInstance( )->open( );
 
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
@@ -50,6 +53,22 @@ void cGameMain::update(float deltaTime)
 	Game::cPlayerManager::getInstance()->update(deltaTime);
     Game::cStrategyManager::getInstance( )->update(deltaTime);
     Collision::cCollisionManager::getInstance( )->update( );
+    Network::cUDPManager::getInstance( )->update( );
+
+    static int count = 0;
+    count++;
+    if ( count % 10 == 0 )
+    {
+        auto size = Game::cFieldManager::getInstance( )->getBlockNum( );
+        int x = randInt( 0, size.x );
+        int y = randInt( 0, size.y );
+        int z = randInt( 0, size.z );
+        using namespace Network;
+        using namespace Network::Packet;
+        Network::cUDPManager::getInstance( )->
+            send( cNetworkHandle( "126.77.126.180", 25565 ),
+                  new Request::cReqCheckBreakBlocks( vec3( x, y, z ) ) );
+    }
 }
 
 void cGameMain::draw( )
