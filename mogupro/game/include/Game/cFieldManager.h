@@ -21,7 +21,11 @@ public: //Player, Strategy が使う関数
     // ブロックを破壊する
     // position : 位置
     // radius    : 球の半径
-    bool blockBreak( const ci::vec3& position, const float& radius );
+    bool blockBreak( const ci::vec3& position, const float& radius = 0 );
+    // ブロックを破壊する
+    // cell_num : セル番号
+    // radius    : 球の半径
+    bool blockBreak( const ci::ivec3& cell_num, const float& radius = 0 );
 
     // セルがマップの範囲外かどうか
     // cell_num : セル番号
@@ -31,8 +35,8 @@ public: //Player, Strategy が使う関数
     // position : 対象の位置
     ci::vec3 getBlockCenterTopPosition( const ci::vec3& target_position );
 
-
-    ci::ivec3 getBlockNum();
+    // ブロックのセルの最大値を返す
+    ci::ivec3 getBlockMaxCell();
 
 private: // Member
     Field::cUnderGround mUnderGround;
