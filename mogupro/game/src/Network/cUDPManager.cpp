@@ -125,7 +125,7 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
         }
         case Network::Packet::PacketId::REQ_CHECK_BRAKE_BLOCKS:
         {
-            Packet::Request::cReqCheckBrakeBlocks data;
+            Packet::Request::cReqCheckBreakBlocks data;
             data.onReceive( networkHandle, bufferSize, bufferData );
             cRequestManager::getInstance( )->ungetReqCheckBrakeBlocks( data );
             break;
@@ -186,7 +186,7 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             cResponseManager::getInstance( )->ungetResCheckPlayerRobJem( data );
             break;
         }
-        case Network::Packet::PacketId::RES_CHECK_BRAKE_BLOCKS:
+        case Network::Packet::PacketId::RES_CHECK_BREAK_BLOCKS:
         {
             Packet::Response::cResCheckBrakeBlocks data;
             data.onReceive( networkHandle, bufferSize, bufferData );

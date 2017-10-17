@@ -62,13 +62,13 @@ void cRequestManager::ungetReqCheckPlayerRobJem( Packet::Request::cReqCheckPlaye
 {
     mReqCheckPlayerRobJem.push( data );
 }
-Packet::Request::cReqCheckBrakeBlocks cRequestManager::getReqCheckBrakeBlocks( )
+Packet::Request::cReqCheckBreakBlocks cRequestManager::getReqCheckBrakeBlocks( )
 {
     auto top = mReqCheckBrakeBlocks.top( );
     mReqCheckBrakeBlocks.pop( );
     return std::move( top );
 }
-void cRequestManager::ungetReqCheckBrakeBlocks( Packet::Request::cReqCheckBrakeBlocks const & data )
+void cRequestManager::ungetReqCheckBrakeBlocks( Packet::Request::cReqCheckBreakBlocks const & data )
 {
     mReqCheckBrakeBlocks.push( data );
 }

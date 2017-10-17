@@ -1,6 +1,29 @@
 #pragma once
 #include <winsock2.h>
 
+
+static bool exportInt( int& value, char* const buffer, int& offset, int totalSize )
+{
+    if ( totalSize < int( offset + sizeof( int ) ) )
+        return false;
+    if ( buffer == NULL )return false;
+    int c = htonl( value );
+    memcpy( buffer + offset, &c, sizeof( int ) );
+    offset += sizeof( int );
+    return true;
+}
+
+static bool importInt( int& value, const char* const buffer, int& offset, int totalSize )
+{
+    if ( totalSize < int( offset + sizeof( int ) ) )
+        return false;
+    int c;
+    memcpy( &c, buffer + offset, sizeof( int ) );
+    value = ntohl( c );
+    offset += sizeof( int );
+    return true;
+}
+
 static bool exportUInt(unsigned int& value, char* const buffer, int& offset, int totalSize)
 {
 	if (totalSize < int(offset + sizeof(unsigned int)))

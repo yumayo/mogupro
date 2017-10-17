@@ -73,7 +73,7 @@ enum class PacketId : ubyte1
     // ジェムの奪取に成功したか失敗したか、について通知します。
     RES_CHECK_PLAYER_ROB_JEM,
     // ブロック破壊に成功したか失敗したか、について通知します。
-    RES_CHECK_BRAKE_BLOCKS,
+    RES_CHECK_BREAK_BLOCKS,
     // 掘削機の設置に成功したか失敗したか、について通知します。
     RES_CHECK_SET_QUARRY,
     // 他のプレイヤーのキルに成功したか失敗したか、について通知します。
