@@ -4,7 +4,7 @@
 #include "cinder/Timeline.h"
 #include "Scene/cSceneManager.h"
 #include "Scene/Member/cGameMain.h"
-#include <Camera/cCameraManager.h>
+#include <CameraManager/cCameraManager.h>
 #include <Utility/cInput.h>
 #include <Utility/cTimeMeasurement.h>
 
@@ -36,6 +36,7 @@ void gameApp::setup( )
 
 void gameApp::mouseDown( MouseEvent event )
 {
+	ENV->mouseDown(event);
     CAMERA->shakeCamera( 0.1f, 0.1f );
 }
 
