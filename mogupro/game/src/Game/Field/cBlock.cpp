@@ -1,6 +1,5 @@
 #include <Game/Field/cBlock.h>
 #include <cinder/gl/gl.h>
-#include <Network/cUDPManager.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -234,6 +233,7 @@ void cBlock::toBreak()
 {
     mIsActive = false;
     clear();
+
 }
 }
 }
