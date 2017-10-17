@@ -12,6 +12,7 @@
 #include <Collision/cCollisionManager.h>
 #include <Network/cUDPManager.h>
 #include <Network/Packet.hpp>
+#include <Network/cRequestManager.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -76,7 +77,6 @@ void cGameMain::draw( )
 	Game::cPlayerManager::getInstance()->draw();
     Game::cFieldManager::getInstance( )->draw( );
     Game::cStrategyManager::getInstance( )->draw( );
-    Collision::cCollisionManager::getInstance( )->draw( );
     skydome.draw( );
 }
 

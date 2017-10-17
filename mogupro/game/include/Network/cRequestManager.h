@@ -37,10 +37,10 @@ public:
 private:
     std::stack<Packet::Request::cReqCheckPlayerRobJem> mReqCheckPlayerRobJem;
 public:
-    Packet::Request::cReqCheckBreakBlocks getReqCheckBrakeBlocks( );
-    void ungetReqCheckBrakeBlocks( Packet::Request::cReqCheckBreakBlocks const& data );
-private:
-    std::stack<Packet::Request::cReqCheckBreakBlocks> mReqCheckBrakeBlocks;
+    Packet::Request::cReqCheckBreakBlocks getReqCheckBreakBlocks( );
+    void ungetReqCheckBreakBlocks( Packet::Request::cReqCheckBreakBlocks const& data );
+public:
+    std::stack<Packet::Request::cReqCheckBreakBlocks> mReqCheckBreakBlocks;
 public:
     Packet::Request::cReqCheckSetQuarry getReqCheckSetQuarry( );
     void ungetReqCheckSetQuarry( Packet::Request::cReqCheckSetQuarry const& data );
