@@ -5,6 +5,8 @@
 #include "Utility/cSingletonAble.h"
 #include "cinder/app/RendererGl.h"
 #include "CameraManager\cCameraManager.h"
+#include <cinder/gl/Texture.h>
+#include <cinder/ImageIo.h>
 #include <vector>
 #include <map>
 
