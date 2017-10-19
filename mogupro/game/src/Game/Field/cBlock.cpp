@@ -233,6 +233,7 @@ void cBlock::toBreak()
 {
     mIsActive = false;
     clear();
+
 }
 }
 }

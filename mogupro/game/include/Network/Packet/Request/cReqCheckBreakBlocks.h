@@ -1,21 +1,21 @@
 #pragma once
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
+#include <cinder/Vector.h>
 namespace Network
 {
 namespace Packet
 {
 namespace Request
 {
-class cReqCheckBrakeBlocks : public cPacketBase<cReqCheckBrakeBlocks, PacketId::REQ_CHECK_BRAKE_BLOCKS>
+class cReqCheckBreakBlocks : public cPacketBase<cReqCheckBreakBlocks, PacketId::REQ_CHECK_BRAKE_BLOCKS>
 {
 public:
-    cReqCheckBrakeBlocks( );
+    cReqCheckBreakBlocks( );
+    cReqCheckBreakBlocks( cinder::ivec3 cellNum );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-	int xPos;
-	int yPos;
-	int zPos;
+    cinder::ivec3 mCellNum;
 };
 }
 }

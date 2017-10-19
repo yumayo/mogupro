@@ -21,7 +21,9 @@ public: // Player,StrategyÇ™égÇ§ä÷êî
 
     bool isOutOfRange( const ci::ivec3& cell_num );
     bool blockBreak( const ci::vec3& position, const float& radius );
+    bool blockBreak( const ci::ivec3& cell_num, const float& radius );
     ci::vec3 getBlockCenterTopPosition( const ci::vec3& target_position );
+    ci::ivec3 getBlockMaxCell();
 
 private: // Method
 
@@ -37,8 +39,7 @@ private: // Method
 private: // Member
 
     std::vector<std::vector<std::vector<std::shared_ptr<cBlock>>>> blocks;
-    int mNum;
-    int mHeight;
+    ci::ivec3 mBlockMaxCell;
     float mIntervalOffset;
     float mScale;
     ci::vec3 mOffset;

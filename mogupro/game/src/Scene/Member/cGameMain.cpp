@@ -10,6 +10,9 @@
 #include <Game/cPlayerManager.h>
 #include <Game/cGemManager.h>
 #include <Collision/cCollisionManager.h>
+#include <Network/cUDPManager.h>
+#include <Network/Packet.hpp>
+#include <Network/cRequestManager.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -32,6 +35,7 @@ void cGameMain::setup( )
     Game::cStrategyManager::getInstance( )->setup( );
 	Game::cPlayerManager::getInstance()->setup();
     Collision::cCollisionManager::getInstance( )->setup( );
+    Network::cUDPManager::getInstance( )->open( );
 
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
@@ -50,6 +54,7 @@ void cGameMain::update(float deltaTime)
 	Game::cPlayerManager::getInstance()->update(deltaTime);
     Game::cStrategyManager::getInstance( )->update(deltaTime);
     Collision::cCollisionManager::getInstance( )->update( );
+    Network::cUDPManager::getInstance( )->update( );
 }
 
 void cGameMain::draw( )
@@ -57,7 +62,6 @@ void cGameMain::draw( )
 	Game::cPlayerManager::getInstance()->draw();
     Game::cFieldManager::getInstance( )->draw( );
     Game::cStrategyManager::getInstance( )->draw( );
-    Collision::cCollisionManager::getInstance( )->draw( );
     skydome.draw( );
 }
 

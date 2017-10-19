@@ -1,6 +1,8 @@
 #include <Game/Field/cUnderGround.h>
 #include <Resource/TextureManager.h>
 #include <Utility/cTimeMeasurement.h>
+#include <Network/cUDPManager.h>
+#include <Network/cRequestManager.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -19,8 +21,7 @@ void cUnderGround::setup()
 {
     TEX.set( "dirt", "dirt.jpg" );
 
-    mNum = 16;
-    mHeight = 4;
+    mBlockMaxCell = ivec3( 16, 4, 16 );
     mIntervalOffset = 0.0f;
     mScale = 1.0f;
     mOffset = vec3( mScale / 2 );
@@ -59,13 +60,13 @@ bool cUnderGround::createUnderGround()
     uint count = 0;
 
     cTimeMeasurement::getInstance()->make();
-    for (int z = 0; z < mNum; z++)
+    for (int z = 0; z < mBlockMaxCell.z; z++)
     {
         std::vector<std::vector<std::shared_ptr<cBlock>>> temps;
-        for (int y = 0; y < mHeight; y++)
+        for (int y = 0; y < mBlockMaxCell.y; y++)
         {
             std::vector<std::shared_ptr<cBlock>> temp;
-            for (int x = 0; x < mNum; x++)
+            for (int x = 0; x < mBlockMaxCell.x; x++)
             {
                 auto position = vec3( x * mScale + x * mIntervalOffset,
                                       y * -mScale + y * mIntervalOffset,
@@ -94,7 +95,7 @@ bool cUnderGround::createUnderGround()
 }
 bool cUnderGround::createMesh()
 {
-    auto mMesh = ci::TriMesh::create();
+    mMesh = ci::TriMesh::create();
     if (mVertices.size() > 0)
         mMesh->appendPositions( &mVertices[0], mVertices.size() );
     if (mIndices.size() > 0)
@@ -132,6 +133,12 @@ bool cUnderGround::blockDigged( const ci::ivec3& c )
         return false;
 
     blockMeshErase( b );
+
+    //using namespace Network;
+    //using namespace Network::Packet;
+    //Network::cUDPManager::getInstance()->
+    //    send( cNetworkHandle( "126.77.126.180", 25565 ),
+    //          new Request::cReqCheckBreakBlocks( c ) );
     return true;
 }
 void cUnderGround::blockAllClear()
@@ -167,6 +174,15 @@ bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
             }
     return true;
 }
+bool cUnderGround::blockBreak( const ci::ivec3 & cell_num, const float & radius )
+{
+    auto c = cell_num;
+    if (isOutOfRange( cell_num ))
+        return false;
+    if (blockDigged( ivec3( c.x, c.y, c.z ) ))
+        blocks[c.z][c.y][c.x]->toBreak();
+    return true;
+}
 bool cUnderGround::isOutOfRange( const ci::ivec3& c )
 {
     return  (uint) c.z < 0 || (uint) c.z > blocks.size() - 1 ||
@@ -178,6 +194,10 @@ ci::vec3 cUnderGround::getBlockCenterTopPosition( const ci::vec3 & target_positi
     auto c = getCellNumFromPosition( target_position );
     auto b = blocks[c.z][c.y][c.x];
     return b->mPosition + vec3( 0, b->mScale / 2, 0 );
+}
+ci::ivec3 cUnderGround::getBlockMaxCell()
+{
+    return mBlockMaxCell;
 }
 }
 }
