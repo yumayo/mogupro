@@ -81,13 +81,13 @@ namespace Member
 				auto resMakeRoom = cResponseManager::getInstance()->mResInRoom.top();
 				if (resMakeRoom.mFlag = false)
 				{
-					mWaitClassState == ClassState::NOT;
+					mWaitClassState = ClassState::NOT;
 					mCanSend = true;
 					cResponseManager::getInstance()->mResInRoom.pop();
 					continue;
 				}
 
-				mWaitClassState == ClassState::NOT;
+				mWaitClassState = ClassState::NOT;
 				mCanSend = true;
 				mClassState = ClassState::CLIENT;
 				cResponseManager::getInstance()->mResInRoom.pop();
@@ -103,13 +103,13 @@ namespace Member
 				auto resMakeRoom = cResponseManager::getInstance()->mResMakeRoom.top();
 				if (resMakeRoom.mFlag = false)
 				{
-					mWaitClassState == ClassState::NOT;
+					mWaitClassState = ClassState::NOT;
 					mCanSend = true;
 					cResponseManager::getInstance()->mResMakeRoom.pop();
 					continue;
 				}
 
-				mWaitClassState == ClassState::NOT;
+				mWaitClassState = ClassState::NOT;
 				mCanSend = true;
 				mClassState = ClassState::MASTER;
 				cResponseManager::getInstance()->mResMakeRoom.pop();
