@@ -15,12 +15,12 @@ cChunk calcChunk( const ci::ivec3& chunk_size,
                   const uint& count,
                   const float& block_scale = 1 );
 
-uint multiplyIvec3( ci::ivec3 t ) { return t.x * t.y * t.z; }
+inline uint multiplyIvec3( const ci::ivec3& t ) { return t.x * t.y * t.z; }
 
 template<typename T>
 inline T getVectorMaxElement( const std::vector<T>& target )
 {
-    return *std::max_element( target.begin(), target.end() );
+    return *std::max_element( target.cbegin(), target.cend() );
 }
 
 std::vector<ci::vec2> getUv( int side_num );
