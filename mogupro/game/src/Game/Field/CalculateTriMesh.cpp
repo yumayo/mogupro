@@ -1,4 +1,4 @@
-#include <Game/Field/cCalculateTriMesh.h>
+#include <Game/Field/CalculateTriMesh.h>
 #include <Game/Field/cChunk.h>
 using namespace ci;
 namespace Game
