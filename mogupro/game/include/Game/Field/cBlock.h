@@ -11,6 +11,7 @@ class cBlock
 {
 public:
 
+    cBlock();
     cBlock( const ci::vec3& position, const float& scale, const uint& num );
     ~cBlock();
 
@@ -19,10 +20,7 @@ public:
 
 public: // Method
 
-    void createSide( std::vector<ci::vec3>& vertices,
-                     std::vector<uint>& indices,
-                     std::vector<ci::vec2>& uvs,
-                     std::vector<ci::vec3>& normals );
+    void calcMeshIndexData( uint num );
     void clear();
     void toBreak();
 
@@ -39,6 +37,14 @@ public: // Member
     std::vector<uint> mIndicesNum;
     std::vector<uint> mUvNum;
     std::vector<uint> mNormalsNum;
+
+public: // Const
+
+    static const uint cube_indices_size = 24;
+    static const uint cube_indices_index_size = 36;
+    static const uint cube_vertices_index_size = 24;
+    static const uint cube_normals_index_size = 24;
+    static const uint cube_uvs_index_size = 24;
 
 };
 }
