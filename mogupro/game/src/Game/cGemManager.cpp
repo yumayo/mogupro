@@ -18,47 +18,52 @@ namespace Game
 		}
 		create();
 
+		auto con = ci::gl::context();
+	    //cinder::ColorAf coloraf = con->getCurrentColor();
 		ci::gl::Fbo::Format format;
-		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth(), ci::app::getWindowHeight() , format.colorTexture());
-
+		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth(), ci::app::getWindowHeight(), true);
 		ci::gl::enableDepthWrite();
 		ci::gl::enableDepthRead();
-		//ci::gl::enableAlphaBlending();
+		ci::gl::enableAlphaBlending();
 		//ci::gl::enable(GL_CULL_FACE);
 	}
 
 	void cGemManager::draw()
 	{
 
-		for each (auto g in mGems)
+		for each (auto g in mGemsptr)
 		{
-			g.draw();
+			g->draw();
 		}
 		ci::gl::color(ci::Color(1, 1, 1));
-
+		
+		auto rect = ci::Rectf(0, 0, 20, 20);
+		ci::gl::Texture2dRef tex;
 		mGemBuffer->bindTexture();
-		{
-			ci::gl::ScopedGlslProg shaderScp(ci::gl::getStockShader(ci::gl::ShaderDef().texture()));
-		}
-		//ci::gl::clear(ci::Color(0, 0, 0));
-		//ci::gl::setMatricesWindow(ci::app::toPixels(ci::app::getWindowSize()));
-		ci::gl::draw(mGemBuffer->getColorTexture(), ci::Rectf(0, 0, 20, 20));
+		tex = mGemBuffer->getTexture2d(GL_COLOR_ATTACHMENT0);
+		
+		ci::gl::GlslProgRef glsl = ci::gl::getStockShader(ci::gl::ShaderDef().uniformBasedPosAndTexCoord().texture());
+		ci::gl::ScopedGlslProg shaderScp(glsl);
+
+		ci::gl::draw(mGemBuffer->getColorTexture(), rect);
 		ci::gl::draw(mGemBuffer->getDepthTexture(), ci::Rectf(20, 0, 40, 20));
 		mGemBuffer->unbindTexture();
+	
 	};
 
 	void cGemManager::update()
 	{
 		ci::gl::ScopedFramebuffer fbScp(mGemBuffer);
-		ci::gl::clear(ci::ColorA(1,1,1,1));
+		ci::gl::clear(ci::ColorA(1,1,1,0));
 		ci::gl::ScopedViewport scpVp2(ci::ivec2(0), mGemBuffer->getSize());
 
 
 		ci::gl::setMatrices(CAMERA->getCamera());
-		//ci::gl::ScopedGlslProg shaderScp(ci::gl::getStockShader(ci::gl::ShaderDef().color()));
-		for each (auto g in mGems)
+		ci::gl::ScopedGlslProg shaderScp(ci::gl::getStockShader(ci::gl::ShaderDef().color()));
+
+		for each (auto g in mGemsptr)
 		{
-			g.draw();
+			g->draw();
 		}
 		ci::gl::color(ci::Color(1, 1, 1));
 	};
@@ -74,9 +79,9 @@ namespace Game
 			unsigned long seed = engine();
 			ci::randSeed(seed);
 
-			float x = ci::randInt(0, mRandomRange.x - 1);
-			float y = ci::randInt(0, mRandomRange.y - 1);
-			float z = ci::randInt(0, mRandomRange.z - 1);
+			int x = ci::randInt(0, mRandomRange.x - 1);
+			int y = ci::randInt(0, mRandomRange.y - 1);
+			int z = ci::randInt(0, mRandomRange.z - 1);
 			Game::Gem::GemType type = Game::Gem::GemType(ci::randInt(0, Game::Gem::GemType::Iron));
 
 			
@@ -101,8 +106,8 @@ namespace Game
 				break;
 			}
 
-			mGems.push_back(Gem::cGem(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type));
-			mGems.push_back(Gem::cGem(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type));
+			mGemsptr.push_back(std::make_shared<Gem::cGem>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type));
+			mGemsptr.push_back(std::make_shared<Gem::cGem>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type));
 		}
 	};
 
@@ -114,7 +119,7 @@ namespace Game
 		ci::app::console() << "チーム" << team << "が" << type << "を取得" << std::endl;
 		for (int i = 0; i < 2; i++)
 		{
-			mTeamGems[i].at(mGems.at(type).getType())++;
+			mTeamGems[i].at(mGemsptr.at(type)->getType())++;
 			ci::app::console() << "チームは" << i << std::endl;
 			for each (auto t in mTeamGems[i])
 			{
@@ -125,12 +130,12 @@ namespace Game
 
 	void cGemManager::gemDelete(int id)
 	{
-		std::vector<Gem::cGem>::iterator iterator = mGems.begin();
+		std::vector<std::shared_ptr<Gem::cGem>>::iterator iterator = mGemsptr.begin();
 		bool isNothig = true;
 		//指定の宝石があるか
-		for (int i = 0; i < mGems.size(); i++)
+		for (int i = 0; i < mGemsptr.size(); i++)
 		{
-			if (mGems[i].getId() == id)
+			if (mGemsptr[i]->getId() == id)
 			{
 				isNothig = false;
 				break;
@@ -139,11 +144,6 @@ namespace Game
 		}
 		if (isNothig) return;
 
-		mGems.erase(iterator);
-	}
-
-	void cGemManager::gemReset(Gem::cGem gem)
-	{
-		mGems.push_back(gem);
+		mGemsptr.erase(iterator);
 	}
 }

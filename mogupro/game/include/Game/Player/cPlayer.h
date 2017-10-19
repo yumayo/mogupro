@@ -8,7 +8,6 @@ namespace Game {
 		class cPlayer : public Game::cObjectBase {
 		private:
 			ci::vec3 size;
-			ci::vec3 center_angle;
 			ci::ColorA8u color;
 			//速度
 			float speed;
@@ -18,6 +17,9 @@ namespace Game {
 			bool active_user;
 			//掘削中
 			bool drilling;
+
+			//プレイヤーの移動ベクトル保存
+			ci::vec3 velocity;
 
 			//当たり判定登録
 			Collision::cAABBCollider mCollider;
@@ -30,6 +32,8 @@ namespace Game {
 			//画像を貼るためのシェーダー
 			ci::gl::GlslProgRef mGlsl;
 
+			void playerRotation();
+			float angleDifference(const float & angle1, const float & angle2);
 		public:
 			cPlayer(const ci::vec3& pos, const ci::vec3& center_angle, const int& id, const bool& is_active_user);
 			
@@ -54,13 +58,7 @@ namespace Game {
 				return drilling;
 			}
 
-			void move(const ci::vec3& pos) {
-				//移動方向をnormalize
-				
-				ci::app::console() << atan2f(mPos.x - pos.x, mPos.z - pos.z)  << std::endl;
-				
-				mPos += pos;
-			}
+			void move(const ci::vec3& velocity);
 
 			void setup() override;
 			void update(const float& delta_time) override;
