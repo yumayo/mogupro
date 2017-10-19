@@ -1,6 +1,8 @@
 #pragma once
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
+#include "Node\node.h"
+#include "Node/action.hpp"
 
 namespace Game
 {
@@ -41,7 +43,8 @@ namespace Game
 			void setPutPos(ci::vec3 pos) { mPutPosition = pos; }
 			void setSinRotate(float rotate) { mSinrotate = rotate; }
 
-
+			hardptr<Node::node> root;
+			
 		private:
 
 			int mId;
