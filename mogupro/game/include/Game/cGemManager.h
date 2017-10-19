@@ -3,8 +3,11 @@
 #include "cinder/gl/Fbo.h"
 #include "Game/Gem/cGem.h"
 #include "Utility/cSingletonAble.h"
+#include "cinder\/Surface.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/Context.h"
 #include "CameraManager\cCameraManager.h"
+#include <memory>
 #include <cinder/gl/Texture.h>
 #include <cinder/ImageIo.h>
 #include <vector>
@@ -35,12 +38,11 @@ public:
     // team     0‚ªfirst,1‚ªsecond
     void gemCountUp( int team, Gem::GemType type);
     void gemDelete( int it );
-	void gemReset(Gem::cGem gem);
-    std::vector<Gem::cGem> getGems() { return mGems; }
+    std::vector<std::shared_ptr<Gem::cGem>> getGems() { return mGemsptr; }
 
 private:
-
-    std::vector<Gem::cGem> mGems;
+	
+	std::vector<std::shared_ptr<Gem::cGem>> mGemsptr;
     std::map<Gem::GemType, int> mTeamGems[2];
     ci::vec3 mPosition;
     ci::vec3 mRandomRange;
@@ -48,6 +50,8 @@ private:
     float mGemScale;
     int mGemMaxNum;
     ci::gl::FboRef mGemBuffer;
+	ci::gl::BatchRef mRect;
+	cinder::Surface surface;
     unsigned long mSeed;
 };
 
