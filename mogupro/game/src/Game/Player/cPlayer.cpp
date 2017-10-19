@@ -98,7 +98,6 @@ Game::Player::cPlayer::cPlayer(
 	velocity = ci::vec3(0);
 	drilling = false;
 	speed = 5.0f;
-	myQuat = glm::quat(0, ci::vec3(0, 1, 0));
 	player_id = id;
 	active_user = is_active_user;
 }
