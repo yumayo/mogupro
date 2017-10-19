@@ -3,7 +3,7 @@
 #include <Utility/cTimeMeasurement.h>
 #include <Network/cUDPManager.h>
 #include <Network/cRequestManager.h>
-#include <Game/Field/cCalculateTriMesh.h>
+#include <Game/Field/CalculateTriMesh.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -110,14 +110,12 @@ bool cUnderGround::createUnderGround()
 }
 bool cUnderGround::createMesh()
 {
-    cCalculateTriMesh calc_trimesh;
-
     uint count = 0;
     for ( uint z = 0; z < mChunkNum.z; z++ )
     {
         for ( uint x = 0; x < mChunkNum.x; x++ )
         {
-            cChunk chunk = calc_trimesh.calcChunk( mBlockMaxCell, ivec2( x, z ), count++, mScale );
+            cChunk chunk = calcChunk( mBlockMaxCell, ivec2( x, z ), count++, mScale );
 
             std::copy( chunk.mVertices.begin(), chunk.mVertices.end(), std::back_inserter( mVertices ) );
             std::copy( chunk.mIndices.begin(), chunk.mIndices.end(), std::back_inserter( mIndices ) );
