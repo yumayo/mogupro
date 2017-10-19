@@ -23,8 +23,6 @@ private:
     //É}ÉEÉX
     ci::vec2 mouse_pos;
     ci::vec2 inc_pos;
-    bool mouse_left_press;
-    bool mouse_right_press;
     bool cursor_captured;
     POINT last_cursor_pos;
 	bool mouse_active;
