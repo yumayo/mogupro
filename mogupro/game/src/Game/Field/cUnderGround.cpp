@@ -68,19 +68,19 @@ bool cUnderGround::createUnderGround()
             mBlockMaxCell.y, std::vector<std::shared_ptr<cBlock>>(
                 mBlockMaxCell.x * mChunkNum.x ) ) );
 
-    for ( uint cz = 0; cz < mChunkNum.z; cz++ )
+    for ( int cz = 0; cz < mChunkNum.z; cz++ )
     {
-        for ( uint cx = 0; cx < mChunkNum.x; cx++ )
+        for ( int cx = 0; cx < mChunkNum.x; cx++ )
         {
             uint sz = cz * mBlockMaxCell.z;
             uint sx = cx * mBlockMaxCell.x;
-            for ( uint z = sz; z < mBlockMaxCell.z * mChunkNum.z; z++ )
+            for ( int z = sz; z < mBlockMaxCell.z * mChunkNum.z; z++ )
             {
                 if ( z / mBlockMaxCell.z > sz / mBlockMaxCell.z )
                     break;
-                for ( uint y = 0; y < mBlockMaxCell.y; y++ )
+                for ( int y = 0; y < mBlockMaxCell.y; y++ )
                 {
-                    for ( uint x = sx; x < mBlockMaxCell.x * mChunkNum.x; x++ )
+                    for ( int x = sx; x < mBlockMaxCell.x * mChunkNum.x; x++ )
                     {
                         if ( x / mBlockMaxCell.x > sx / mBlockMaxCell.x )
                             break;
