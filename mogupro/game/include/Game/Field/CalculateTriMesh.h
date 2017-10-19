@@ -18,7 +18,7 @@ cChunk calcChunk( const ci::ivec3& chunk_size,
 uint multiplyIvec3( ci::ivec3 t ) { return t.x * t.y * t.z; }
 
 template<typename T>
-T getVectorMaxElement( const std::vector<T>& target )
+inline T getVectorMaxElement( const std::vector<T>& target )
 {
     return *std::max_element( target.begin(), target.end() );
 }
