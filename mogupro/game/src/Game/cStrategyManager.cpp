@@ -29,11 +29,13 @@ void cStrategyManager::draw()
 void cStrategyManager::update(const float & deltatime)
 {
 	for (auto& it : strategyobjects) {
-		it->update(deltatime);//////////////////////////‰¼
+		it->update(deltatime);
 	}
 	deleteObject();
 	if (ENV->pushKey(KeyEvent::KEY_p)) {
-		strategyobjects.push_back(std::make_shared<Game::Strategy::cDrill>(vec3(randInt(0, 10), 10, randInt(0, 10)), vec3(1, 1, 1), 0));
+
+		strategyobjects.push_back(std::make_shared<Game::Strategy::cDrill>(vec3(randInt(0, 10), 15, randInt(0, 10)), vec3(1, 1, 1), 0));
+
 	}
 }
 
