@@ -15,7 +15,7 @@ private:
 public:
     Packet::Response::cResPlayer getResPlayer( );
     void ungetResPlayer( Packet::Response::cResPlayer const& data );
-public:
+private:
     std::stack<Packet::Response::cResPlayer> mResPlayer;
 public:
     Packet::Response::cResGetJemSeed getResGetJemSeed( );
@@ -38,10 +38,10 @@ public:
 private:
     std::stack<Packet::Response::cResCheckPlayerRobJem> mResCheckPlayerRobJem;
 public:
-    Packet::Response::cResCheckBrakeBlocks getResCheckBrakeBlocks( );
-    void ungetResCheckBrakeBlocks( Packet::Response::cResCheckBrakeBlocks const& data );
+    Packet::Response::cResCheckBreakBlocks getResCheckBreakBlocks( );
+    void ungetResCheckBreakBlocks( Packet::Response::cResCheckBreakBlocks const& data );
 private:
-    std::stack<Packet::Response::cResCheckBrakeBlocks> mResCheckBrakeBlocks;
+    std::stack<Packet::Response::cResCheckBreakBlocks> mResCheckBreakBlocks;
 public:
     Packet::Response::cResCheckSetQuarry getResCheckSetQuarry( );
     void ungetResCheckSetQuarry( Packet::Response::cResCheckSetQuarry const& data );
@@ -52,6 +52,14 @@ public:
     void ungetResCheckPlayerDeath( Packet::Response::cResCheckPlayerDeath const& data );
 private:
     std::stack<Packet::Response::cResCheckPlayerDeath> mResCheckPlayerDeath;
+public:
+    Packet::Response::cResMakeRoom getResMakeRoom( );
+    void ungetResMakeRoom( Packet::Response::cResMakeRoom const& data );
+    std::stack<Packet::Response::cResMakeRoom> mResMakeRoom;
+public:
+    Packet::Response::cResInRoom getResInRoom( );
+    void ungetResInRoom( Packet::Response::cResInRoom const& data );
+    std::stack<Packet::Response::cResInRoom> mResInRoom;
     // P=====END=====P
 };
 }

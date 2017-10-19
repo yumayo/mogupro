@@ -8,7 +8,7 @@ namespace Packet
 {
 namespace Request
 {
-class cReqCheckBreakBlocks : public cPacketBase<cReqCheckBreakBlocks, PacketId::REQ_CHECK_BRAKE_BLOCKS>
+class cReqCheckBreakBlocks : public cPacketBase<cReqCheckBreakBlocks, PacketId::REQ_CHECK_BREAK_BLOCKS>
 {
 public:
     cReqCheckBreakBlocks( );
