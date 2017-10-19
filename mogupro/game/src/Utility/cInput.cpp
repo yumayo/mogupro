@@ -57,8 +57,6 @@ void mouseCursolFixed(const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 			SetCursorPos(last_cursor_pos.x, last_cursor_pos.y);
 			CAMERA->setCameraAngle(ci::vec2(-delta.x, -delta.y) * 0.005f);
 		}
-
-
 	}
 	else {
 
@@ -171,7 +169,7 @@ void Utility::cInputAll::keyDown(const ci::app::KeyEvent& event) {
 void Utility::cInputAll::keyUp(const ci::app::KeyEvent& event)
 {
 	pull.insert(event.getCode());
-	press.erase(press.find(event.getCode()));
+	press.erase(event.getCode());
 }
 
 
