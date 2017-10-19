@@ -15,6 +15,7 @@ private:
 public:
     Packet::Request::cReqPlayer getReqPlayer( );
     void ungetReqPlayer( Packet::Request::cReqPlayer const& data );
+private:
     std::stack<Packet::Request::cReqPlayer> mReqPlayer;
 public:
     Packet::Request::cReqGetJemSeed getReqGetJemSeed( );
@@ -39,7 +40,7 @@ private:
 public:
     Packet::Request::cReqCheckBreakBlocks getReqCheckBreakBlocks( );
     void ungetReqCheckBreakBlocks( Packet::Request::cReqCheckBreakBlocks const& data );
-public:
+private:
     std::stack<Packet::Request::cReqCheckBreakBlocks> mReqCheckBreakBlocks;
 public:
     Packet::Request::cReqCheckSetQuarry getReqCheckSetQuarry( );
@@ -51,6 +52,14 @@ public:
     void ungetReqCheckPlayerDeath( Packet::Request::cReqCheckPlayerDeath const& data );
 private:
     std::stack<Packet::Request::cReqCheckPlayerDeath> mReqCheckPlayerDeath;
+public:
+    Packet::Request::cReqMakeRoom getReqMakeRoom( );
+    void ungetReqMakeRoom( Packet::Request::cReqMakeRoom const& data );
+    std::stack<Packet::Request::cReqMakeRoom> mReqMakeRoom;
+public:
+    Packet::Request::cReqInRoom getReqInRoom( );
+	void ungetReqInRoom(Packet::Request::cReqInRoom const& data);
+    std::stack<Packet::Request::cReqInRoom> mReqInRoom;
     // P=====END=====P
 };
 }

@@ -92,5 +92,25 @@ void cRequestManager::ungetReqCheckPlayerDeath( Packet::Request::cReqCheckPlayer
 {
     mReqCheckPlayerDeath.push( data );
 }
+Packet::Request::cReqMakeRoom cRequestManager::getReqMakeRoom( )
+{
+    auto top = mReqMakeRoom.top( );
+    mReqMakeRoom.pop( );
+    return std::move( top );
+}
+void cRequestManager::ungetReqMakeRoom( Packet::Request::cReqMakeRoom const & data )
+{
+    mReqMakeRoom.push( data );
+}
+Packet::Request::cReqInRoom cRequestManager::getReqInRoom( )
+{
+    auto top = mReqInRoom.top( );
+    mReqInRoom.pop( );
+    return std::move( top );
+}
+void cRequestManager::ungetReqInRoom( Packet::Request::cReqInRoom const & data )
+{
+    mReqInRoom.push( data );
+}
 // P=====END=====P
 }

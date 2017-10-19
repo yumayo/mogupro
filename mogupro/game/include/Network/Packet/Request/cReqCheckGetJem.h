@@ -1,6 +1,7 @@
 #pragma once
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
+
 namespace Network
 {
 namespace Packet

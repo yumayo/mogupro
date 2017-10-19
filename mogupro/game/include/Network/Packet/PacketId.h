@@ -47,14 +47,17 @@ enum class PacketId : ubyte1
     REQ_CHECK_PLAYER_ROB_JEM,
     // ブロックを破壊したと知らせます。
     // ※このタイミングでは破壊できません。サーバーからのレスポンスを待ってください。
-    REQ_CHECK_BRAKE_BLOCKS,
+    REQ_CHECK_BREAK_BLOCKS,
     // 掘削機を設置したと知らせます。
     // ※このタイミングでは設置できません。サーバーからのレスポンスを待ってください。
     REQ_CHECK_SET_QUARRY,
     // 他のプレイヤーを倒した情報をサーバーに送る。
     // ※このタイミングでは倒せません。サーバーからのレスポンスを待ってください。
     REQ_CHECK_PLAYER_DEATH,
-
+	//Matching時にクライアントが部屋を作る申請
+	REQ_MAKE_ROOM,
+	//Matching時にクライアントが部屋に入る申請
+	REQ_IN_ROOM,
     //=========================================================//
     //                        Response                         //
     //=========================================================//
@@ -78,6 +81,10 @@ enum class PacketId : ubyte1
     RES_CHECK_SET_QUARRY,
     // 他のプレイヤーのキルに成功したか失敗したか、について通知します。
     RES_CHECK_PLAYER_DEATH,
+	//Matching時にクライアントが部屋を作る申請をうけ、作れたかどうか
+	RES_MAKE_ROOM,
+	//Matching時にクライアントが部屋に入る申請をうけ、入れたかどうか
+	RES_IN_ROOM,
 };
 }
 }
