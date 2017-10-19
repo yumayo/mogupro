@@ -21,12 +21,14 @@ public:
 private:
     std::list<std::shared_ptr<Strategy::cStrategyObjectBase>>strategyobjects;
     void deleteObject();
+	int id_counter = 0;
 };
 
 template<class T>
 inline void cStrategyManager::CreateStrategyObject( T _object )
 {
     strategyobjects.push_back( std::make_shared<T>( _object ) );
+	id_counter++;
 }
 
 }

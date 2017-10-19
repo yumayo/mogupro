@@ -28,17 +28,16 @@ cDrill::cDrill(const ci::vec3 _pos, const ci::vec3 _scale, const int _id)
 	slope = vec3(scale.x, 0, scale.z);
 	drillslope = 0.0f;
 	createDrills();//ƒeƒXƒg
-
 	root = Node::node::create();
 	root->set_schedule_update();
-	float a = 0;
+	float a = 0.0f;
 
-	root->run_action(float_to::create(2.0f, 1.0f, 10.0f, [this](float t)
+	/*root->run_action(sequence::create( float_to::create(2.0f, 0.0f, 10.0f, [this](float t)
 	{
 		auto p = root->get_position_3d();
 		p.y = t;
 		root->set_position_3d(p);
-	}));
+	}), call_func::create([] {GemManager->draw(); })));*/
 }
 cDrill::~cDrill()
 {
@@ -46,8 +45,10 @@ cDrill::~cDrill()
 }
 void cDrill::draw()
 {
-    drawCube( beginpos, machinescale, vec3( 0, 0, 0 ), ColorA( 0, 0, 1, 1 ) );
-    //drawCube(pos, scale, vec3(0,0, 0), ColorA(1, 0, 0));
+   
+	drawBasket();
+
+	drawCube(beginpos, machinescale, vec3(0, 0, 0), ColorA(0, 0, 1, 1));
 
     float drawrate = 0.8f;
     drawCube( beginpos + vec3( 0, -slope.y / 2.f, 0 ), vec3( scale.x*drawrate, std::max( slope.y - float( 1.f*scale.y ), 0.f ), scale.z*drawrate ), vec3( 0, y_rotate, 0 ), ColorA( 1, 0.5, 0.2, 1 ) );
@@ -91,21 +92,30 @@ void cDrill::update( const float & delta_time )
 	{
 	case Game::Strategy::cDrill::DRILLMOVE:
 		y_rotate++;
-		pos.y -= drillspeed;
+		pos.y -= drillspeed*delta_time;
 		Game::cFieldManager::getInstance()->blockBreak(pos, scale.z);
-		updateSlope(1.0f);
+		collisionFieldGems();
+		updateSlope(1.0f,delta_time);
 		break;
 	case Game::Strategy::cDrill::DRILLRETURN:
-		updateSlope(-1.0f);
-		pos.y += drillspeed;
+		y_rotate--;
+		updateSlope(-1.0f,delta_time);
+		pos.y += drillspeed*delta_time;;
 		break;
 	case Game::Strategy::cDrill::DRILLSTOP:
 		break;
 	default:
 		break;
 	}
+
+	state = changeState();
+
 	root->entry_update(delta_time);
 
+	vec3 p = root->get_position_3d();
+	
+
+	moveGetGem(delta_time);
 
 }
 void cDrill::setup()
@@ -119,6 +129,7 @@ bool cDrill::DeleteThis()
 
 void cDrill::setField(const ci::vec3 pos)
 {
+
 }
 
 void cDrill::drawCube( const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color )
@@ -138,22 +149,85 @@ void cDrill::collisionFieldGems()
 	AxisAlignedBox drill_aabb(pos - vec3(float(scale.x) / 2.f, float(scale.y) / 2.f, float(scale.z) / 2.f),
 		pos + vec3(float(scale.x) / 2.f, float(scale.y) / 2.f, float(scale.z) / 2.f));
 
-	int n = GemManager->getGems().size();
-	for (int i = 0; i <n; i++)
+	for (int i = 0; i <GemManager->getGems().size(); i++)
 	{
-		vec3 gempos = GemManager->getGems()[i].getPos();
-		vec3 gemscale = GemManager->getGems()[i].getScale();
+		vec3 gempos = GemManager->getGems()[i]->getPos();
+		vec3 gemscale = GemManager->getGems()[i]->getScale();
 
 		AxisAlignedBox gem_aabb(gempos - vec3(float(gemscale.x) / 2.f, float(gemscale.y) / 2.f, float(gemscale.z) / 2.f),
 			gempos + vec3(float(gemscale.x) / 2.f, float(gemscale.y) / 2.f, float(gemscale.z) / 2.f));
+
 		if (STRM->isAABB(drill_aabb, gem_aabb))
 		{
 			getgems.push_back(GemManager->getGems()[i]);
-			GemManager->gemDelete(i);//ID
+
+			int index = getgems.size() - 1;
+
+			getgems[index]->setSinRotate(atan2f(getgems[getgems.size() - 1]->getPos().z - pos.z, (getgems[getgems.size() - 1]->getPos().x - pos.x)));
+			getgems[index]->setPutPos(pos);
+
+			getgems[index]->root = Node::node::create();
+			getgems[index]->root->set_schedule_update();
+
+
+			getgems[index]->root->run_action(sequence::create(float_to::create(20.0f, getgems[getgems.size()-1]->getPos().y,
+				beginpos.y + (scale.y + 1.f), [this, index](float t)
+			{
+				auto p = getgems[index]->root->get_position_3d();
+				p.y = t;
+				getgems[index]->root->set_position_3d(p);
+			}), call_func::create([] {; })));
+
+
+
+		/*	eracenum.push_back(GemManager->getGems()[i].getId());
+			getgems.push_back(GemManager->getGems()[i]);
+			getgems[getgems.size() - 1].setSinRotate(atan2f(getgems[getgems.size() - 1].getPos().z-pos.z, (getgems[getgems.size() - 1].getPos().x - pos.x)));
+			getgems[getgems.size() - 1].setPutPos(pos);*/
 		}
 
 	}
+
+
 	//GemManager->gemCountUp(GemManager->getGems()[i]);
+}
+void cDrill::drawBasket()
+{
+	float backetsize = machinescale.z / 20.f;
+	ColorA pollcolor = ColorA(0.4,0.15,0.2);
+	ColorA baketcolor = ColorA(0.7,0.35,0.4);
+	float hulfscale = machinescale.x / 2.f;
+	float hulfbacketsize = backetsize / 2.f;
+
+	drawCube(beginpos + vec3(hulfscale, machinescale.y, 0), vec3(0,machinescale.y,backetsize), vec3(0, 0, 0), baketcolor);
+	drawCube(beginpos + vec3(-hulfscale, machinescale.y, 0), vec3(0, machinescale.y, backetsize), vec3(0, 0, 0), baketcolor);
+	drawCube(beginpos + vec3(0, machinescale.y, -hulfscale), vec3(backetsize, machinescale.y, 0), vec3(0, 0, 0), baketcolor);
+	drawCube(beginpos + vec3(0, machinescale.y, hulfscale), vec3(backetsize, machinescale.y, 0), vec3(0, 0, 0), baketcolor);
+
+	drawCube(beginpos + vec3(hulfscale, machinescale.y, 0), vec3(0, backetsize, machinescale.z), vec3(0, 0, 0), baketcolor);
+	drawCube(beginpos + vec3(-hulfscale, machinescale.y, 0), vec3(0, backetsize, machinescale.z), vec3(0, 0, 0), baketcolor);
+
+
+	drawCube(beginpos + vec3(-hulfscale, 1.5f*machinescale.y- hulfbacketsize, 0), vec3(0, backetsize, machinescale.z), vec3(0, 0, 0), baketcolor);
+	drawCube(beginpos + vec3(hulfscale, 1.5f*machinescale.y - hulfbacketsize, 0), vec3(0, backetsize, machinescale.z), vec3(0, 0, 0), baketcolor);
+
+	drawCube(beginpos + vec3(0, 1.5f*machinescale.y - hulfbacketsize,hulfscale), vec3(machinescale.z, backetsize, 0), vec3(0, 0, 0), baketcolor);
+	drawCube(beginpos + vec3(0, machinescale.y - hulfbacketsize, hulfscale), vec3(machinescale.z, backetsize, 0), vec3(0, 0, 0), baketcolor);
+	drawCube(beginpos + vec3(0, 1.5f*machinescale.y -hulfbacketsize, -hulfscale), vec3(machinescale.z, backetsize, 0), vec3(0, 0, 0), baketcolor);
+	drawCube(beginpos + vec3(0, machinescale.y -hulfbacketsize,-hulfscale), vec3(machinescale.z, backetsize, 0), vec3(0, 0, 0), baketcolor);
+
+
+
+	drawCube(beginpos + vec3(-hulfscale +hulfbacketsize, machinescale.y, -hulfscale + hulfbacketsize), vec3(backetsize, machinescale.y, backetsize), vec3(0, 0, 0), pollcolor);
+	drawCube(beginpos + vec3(-hulfscale + hulfbacketsize, machinescale.y, hulfscale - hulfbacketsize), vec3(backetsize, machinescale.y, backetsize), vec3(0, 0, 0), pollcolor);
+	drawCube(beginpos + vec3(hulfscale - hulfbacketsize, machinescale.y, hulfscale - hulfbacketsize), vec3(backetsize, machinescale.y, backetsize), vec3(0, 0, 0), pollcolor);
+	drawCube(beginpos + vec3(hulfscale - hulfbacketsize, machinescale.y, -hulfscale + hulfbacketsize), vec3(backetsize, machinescale.y, backetsize), vec3(0, 0, 0), pollcolor);
+
+
+
+
+	///drawCube(beginpos+vec3(0,machinescale.y,0), machinescale, vec3(0, 0, 0), ColorA(1, 0, 0, 1));
+
 }
 void cDrill::createDrills()
 {
@@ -165,35 +239,45 @@ void cDrill::createDrills()
     drillslopes.push_back( DrillSlope( drill ) );
 
 }
-void cDrill::move()
+void cDrill::move(float delttime)
 {
-    pos.y -= drillspeed;
+	pos.y -= drillspeed*delttime;
 }
-void cDrill::moveGetGem()
+
+void cDrill::moveGetGem(const float delttime)
 {
+	console() << "delta: " << delttime << std::endl;
 	for (int i = 0; i <getgems.size(); i++)
 	{
-		/*vec3 gempos = getgems[i].getPos();
-		vec3 gemscale = getgems[i].getScale();*/
+		getgems[i]->root->entry_update(delttime);
+		vec3 p = getgems[i]->root->get_position_3d();
 
-		 
+		float rotate_speed = delttime*6.f;
 
+		getgems[i]->setSinRotate(getgems[i]->getSinRotate() + rotate_speed);
 
+		getgems[i]->setPos(vec3(getgems[i]->getPutPos().x + ((scale.x / 2.f) + 0.5f)*cos(getgems[i]->getSinRotate()),
+			p.y,
+			getgems[i]->getPutPos().z + ((scale.z / 2.f) + 0.5f)*sin(getgems[i]->getSinRotate())));
+		if (!(getgems[i]->getPos().y >= beginpos.y + (scale.y + 1.f))) {
 
+		
+		}
 	}
+
 }
-void cDrill::updateSlope(const float direction)
+void cDrill::updateSlope(const float direction, float delttime)
 {
-	slope.y += drillspeed*direction;///////////
+	slope.y += drillspeed*direction*delttime;///////////
 
 	for (int i = 0; i < drillslopes.size(); i++)
 	{
-		drillslopes[i].rotate += i % 2 == 0 ? 5 : -5;
+		drillslopes[i].rotate += i % 2 == 0 ? 5.f*delttime : -5.f * delttime;
 	}
 
 	for (int i = 0; i < drillslopes.size(); i++)
 	{
-		drillslopes[i].pos -= vec3(0, direction*drillspeed, 0);
+		drillslopes[i].pos -= vec3(0, drillspeed*direction*delttime, 0);
 	}
 }
 

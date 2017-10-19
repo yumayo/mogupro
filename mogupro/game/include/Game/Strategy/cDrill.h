@@ -31,12 +31,13 @@ private:
     void drawCube( const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color );
 	void collisionFieldGems();
     std::vector<DrillSlope>drillslopes;
-	std::vector<Game::Gem::cGem>getgems;
+	std::vector<std::shared_ptr<Game::Gem::cGem>>getgems;
+	void drawBasket();
     void createDrills();
-    void move();
-	void moveGetGem();
-	void updateSlope(const float direction);
-    float drillspeed = 0.2f;
+    void move(float delttime);
+	void moveGetGem(const float delttime);
+	void updateSlope(const float direction,float delttime);
+    float drillspeed = 10.0f;
     float y_rotate = 0.0f;
 	void setting(const ci::vec3 beginpos);
     ci::vec3 beginpos;
