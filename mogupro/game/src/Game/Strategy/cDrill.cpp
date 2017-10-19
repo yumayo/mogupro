@@ -151,6 +151,7 @@ void cDrill::collisionFieldGems()
 
 	for (int i = 0; i <GemManager->getGems().size(); i++)
 	{
+		if (GemManager->getGems()[i]->getIsDrillhit())continue;
 		vec3 gempos = GemManager->getGems()[i]->getPos();
 		vec3 gemscale = GemManager->getGems()[i]->getScale();
 
@@ -163,21 +164,21 @@ void cDrill::collisionFieldGems()
 
 			int index = getgems.size() - 1;
 
-			getgems[index]->setSinRotate(atan2f(getgems[getgems.size() - 1]->getPos().z - pos.z, (getgems[getgems.size() - 1]->getPos().x - pos.x)));
+			getgems[index]->setSinRotate(atan2f(getgems[index]->getPos().z - pos.z, (getgems[index]->getPos().x - pos.x)));
 			getgems[index]->setPutPos(pos);
 
 			getgems[index]->root = Node::node::create();
 			getgems[index]->root->set_schedule_update();
 
 
-			getgems[index]->root->run_action(sequence::create(float_to::create(20.0f, getgems[getgems.size()-1]->getPos().y,
+			getgems[index]->root->run_action(sequence::create(float_to::create((beginpos.y- getgems[index]->getPos().y)*0.1f, getgems[index]->getPos().y,
 				beginpos.y + (scale.y + 1.f), [this, index](float t)
 			{
 				auto p = getgems[index]->root->get_position_3d();
 				p.y = t;
 				getgems[index]->root->set_position_3d(p);
 			}), call_func::create([] {; })));
-
+			GemManager->getGems()[i]->setIsDrillhit(true);
 
 
 		/*	eracenum.push_back(GemManager->getGems()[i].getId());
@@ -249,18 +250,18 @@ void cDrill::moveGetGem(const float delttime)
 	console() << "delta: " << delttime << std::endl;
 	for (int i = 0; i <getgems.size(); i++)
 	{
-		getgems[i]->root->entry_update(delttime);
-		vec3 p = getgems[i]->root->get_position_3d();
-
-		float rotate_speed = delttime*6.f;
-
-		getgems[i]->setSinRotate(getgems[i]->getSinRotate() + rotate_speed);
-
-		getgems[i]->setPos(vec3(getgems[i]->getPutPos().x + ((scale.x / 2.f) + 0.5f)*cos(getgems[i]->getSinRotate()),
-			p.y,
-			getgems[i]->getPutPos().z + ((scale.z / 2.f) + 0.5f)*sin(getgems[i]->getSinRotate())));
+		
 		if (!(getgems[i]->getPos().y >= beginpos.y + (scale.y + 1.f))) {
+			getgems[i]->root->entry_update(delttime);
+			vec3 p = getgems[i]->root->get_position_3d();
 
+			float rotate_speed = delttime*6.f;
+
+			getgems[i]->setSinRotate(getgems[i]->getSinRotate() + rotate_speed);
+
+			getgems[i]->setPos(vec3(getgems[i]->getPutPos().x + ((scale.x / 2.f) + 0.5f)*cos(getgems[i]->getSinRotate()),
+				p.y,
+				getgems[i]->getPutPos().z + ((scale.z / 2.f) + 0.5f)*sin(getgems[i]->getSinRotate())));
 		
 		}
 	}
