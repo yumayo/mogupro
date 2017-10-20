@@ -13,6 +13,7 @@
 #include <Network/cUDPManager.h>
 #include <Network/Packet.hpp>
 #include <Network/cRequestManager.h>
+#include <Resource/TextureManager.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -67,7 +68,8 @@ void cGameMain::draw( )
 
 void cGameMain::draw2D( )
 {
-
+    gl::enableFaceCulling( false );
+    gl::draw( TEX.get( "sky_dome" ), ci::Rectf(0, 300, 300, 0) );
 }
 
 void cGameMain::resize( )
