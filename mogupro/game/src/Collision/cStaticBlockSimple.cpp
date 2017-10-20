@@ -5,7 +5,7 @@ namespace Collision
 cStaticBlockSimple::cStaticBlockSimple( cinder::vec3 pos, cinder::vec3 size )
     : mCollider( pos, size )
 {
-
+    mCollider.addWorld( );
 }
 void cStaticBlockSimple::draw( )
 {
