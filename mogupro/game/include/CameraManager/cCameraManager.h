@@ -91,13 +91,9 @@ public:
         return camera_angle;
     }
 
-	//カメラの向いている位置
+	//カメラの向いている向きをノーマライズして返す
 	ci::vec3 getCameraLook() {
 		return ci::vec3(looking_point.x/10, looking_point.y / 10, looking_point.z / 10);
-	}
-	
-	ci::vec3 getCameraVec() {
-		return looking_position;
 	}
 
     void followingCamera( ci::vec3* pos, const float& camera_farZ ) {
