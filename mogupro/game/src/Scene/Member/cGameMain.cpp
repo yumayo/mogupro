@@ -14,6 +14,7 @@
 #include <Network/Packet.hpp>
 #include <Network/cRequestManager.h>
 #include <Resource/TextureManager.h>
+#include <Shader/cShadowManager.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -29,6 +30,9 @@ void cGameMain::setup( )
     CAMERA->followingCamera( &pos, 30 );
     CAMERA->setup( );
     ENV->padSetup( );
+
+    Shader::cShadowManager::getInstance( )->setup( );
+
     Game::cFieldManager::getInstance( )->setup( );
     //Game::Gem::cGemManager::getInstance()->SetUp(vec3(5, 5, 5), vec3(10, 10, 10), 10, 0);
     //Game::Gem::cGemManager::getInstance()->Create();
@@ -49,6 +53,7 @@ void cGameMain::shutDown( )
 
 void cGameMain::update(float deltaTime)
 { 
+    Shader::cShadowManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
     Game::cFieldManager::getInstance( )->update(deltaTime);
     ENV->padUpdate( );
     ENV->padProcessEvent( );
@@ -60,7 +65,12 @@ void cGameMain::update(float deltaTime)
 
 void cGameMain::draw( )
 {
-	Game::cPlayerManager::getInstance()->draw();
+    Shader::cShadowManager::getInstance( )->draw( std::bind( &cGameMain::drawShadow, this ) );
+}
+
+void cGameMain::drawShadow( )
+{
+    Game::cPlayerManager::getInstance( )->draw( );
     Game::cFieldManager::getInstance( )->draw( );
     Game::cStrategyManager::getInstance( )->draw( );
     skydome.draw( );
