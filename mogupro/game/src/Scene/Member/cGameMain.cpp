@@ -15,6 +15,8 @@
 #include <Network/cRequestManager.h>
 #include <Resource/TextureManager.h>
 #include <Shader/cShadowManager.h>
+#include <Node/renderer.hpp>
+#include <Node/action.hpp>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -31,14 +33,28 @@ void cGameMain::setup( )
     CAMERA->setup( );
     ENV->padSetup( );
 
+    n = Node::node::create( );
+    auto font = Node::Renderer::label::create( "sawarabi-gothic-medium.ttf", 64 );
+    font->set_text( u8"“ú–{Œê‚Ù‚°‚Ù‚°" );
+    font->set_scale( vec2( 1, -1 ) );
+    using namespace Node::Action;
+    n->run_action( repeat_forever::create( sequence::create(
+        ease<EaseOutCubic>::create( move_to::create( 1.0F, vec2( 360, 200 ) ) ),
+        ease<EaseOutCubic>::create( move_to::create( 1.0F, vec2( 360, -200 ) ) ),
+        ease<EaseOutCubic>::create( move_to::create( 1.0F, vec2( -360, -200 ) ) ),
+        ease<EaseOutCubic>::create( move_to::create( 1.0F, vec2( -360, 200 ) ) )
+    ) ) );
+    n->set_schedule_update( );
+    n->add_child( font );
+
     Shader::cShadowManager::getInstance( )->setup( );
 
     Game::cFieldManager::getInstance( )->setup( );
     //Game::Gem::cGemManager::getInstance()->SetUp(vec3(5, 5, 5), vec3(10, 10, 10), 10, 0);
     //Game::Gem::cGemManager::getInstance()->Create();
-	
+
     Game::cStrategyManager::getInstance( )->setup( );
-	Game::cPlayerManager::getInstance()->setup();
+    Game::cPlayerManager::getInstance( )->setup( );
     Collision::cCollisionManager::getInstance( )->setup( );
     Network::cUDPManager::getInstance( )->open( );
 
@@ -51,14 +67,15 @@ void cGameMain::shutDown( )
 
 }
 
-void cGameMain::update(float deltaTime)
-{ 
+void cGameMain::update( float deltaTime )
+{
+    n->entry_update( deltaTime );
     Shader::cShadowManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
-    Game::cFieldManager::getInstance( )->update(deltaTime);
+    Game::cFieldManager::getInstance( )->update( deltaTime );
     ENV->padUpdate( );
     ENV->padProcessEvent( );
-	Game::cPlayerManager::getInstance()->update(deltaTime);
-    Game::cStrategyManager::getInstance( )->update(deltaTime);
+    Game::cPlayerManager::getInstance( )->update( deltaTime );
+    Game::cStrategyManager::getInstance( )->update( deltaTime );
     Collision::cCollisionManager::getInstance( )->update( );
     Network::cUDPManager::getInstance( )->update( );
 }
@@ -79,7 +96,10 @@ void cGameMain::drawShadow( )
 void cGameMain::draw2D( )
 {
     gl::enableFaceCulling( false );
-    gl::draw( TEX.get( "sky_dome" ), ci::Rectf(0, 300, 300, 0) );
+    gl::disableDepthRead( );
+    gl::disableDepthWrite( );
+    gl::draw( TEX.get( "sky_dome" ), ci::Rectf( 0, 300, 300, 0 ) );
+    n->entry_render( mat4( ) );
 }
 
 void cGameMain::resize( )

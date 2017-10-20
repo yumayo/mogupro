@@ -1,6 +1,7 @@
 #pragma once
 #include <Scene/cSceneBase.h>
 #include <Game/SkyDome/cSkyDome.h>
+#include <Node/node.h>
 namespace Scene
 {
 namespace Member
@@ -19,6 +20,7 @@ private:
     cinder::vec3 pos;
     cinder::vec3 size;
     Game::SkyDome::cSkyDome skydome;
+    hardptr<Node::node> n;
 };
 }
 }
