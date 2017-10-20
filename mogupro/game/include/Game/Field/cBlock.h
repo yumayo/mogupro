@@ -2,7 +2,7 @@
 #include <cinder/app/AppBase.h>
 #include <cinder/gl/gl.h>
 #include <Collision/cAABBCollider.h>
-using uint = uint32_t;
+#include <Game/Field/FieldData.h>
 namespace Game
 {
 namespace Field
@@ -12,11 +12,8 @@ class cBlock
 public:
 
     cBlock();
-    cBlock( const ci::vec3& position, const float& scale, const uint& num );
+    cBlock( const ci::vec3& position, const float& scale );
     ~cBlock();
-
-    void update();
-    void draw();
 
 public: // Method
 
@@ -26,10 +23,10 @@ public: // Method
 
 public: // Member
 
+    uint mId;
     ci::vec3 mPosition;
     float mScale;
     bool mIsActive;
-    uint mNum;
     Collision::cAABBCollider mCollider;
     std::vector<int> mDrawSide;
 
