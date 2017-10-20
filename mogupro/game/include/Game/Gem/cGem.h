@@ -42,7 +42,7 @@ namespace Game
 			void setPos(ci::vec3 pos) { mPosition = pos; }
 			void setPutPos(ci::vec3 pos) { mPutPosition = pos; }
 			void setSinRotate(float rotate) { mSinrotate = rotate; }
-			void getIsDrillhit(bool ishit) { misdrillhit = ishit; }
+			void setIsDrillhit(bool ishit) { misdrillhit = ishit; }
 			hardptr<Node::node> root;
 			
 		private:
