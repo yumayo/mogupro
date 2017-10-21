@@ -10,3 +10,6 @@
 #include<Network/Packet/Request/cReqCheckPlayerDeath.h>
 #include<Network/Packet/Request/cReqMakeRoom.h>
 #include<Network/Packet/Request/cReqInRoom.h>
+#include<Network/Packet/Request/cReqWantTeamIn.h>
+#include<Network/Packet/Request/cReqCheckBeginGame.h>
+#include<Network/Packet/Request/cReqCheckMember.h>
