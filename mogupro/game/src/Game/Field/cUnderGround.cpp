@@ -27,17 +27,11 @@ void cUnderGround::setup()
 {
     TEX->set( "dirt", "dirt.jpg" );
 
-    //cTimeMeasurement::getInstance()->make();
+    cTimeMeasurement::getInstance()->make();
 
-    for ( size_t z = 0; z < 1; z++ )
+    for ( size_t i = 0; i < 4; i++ )
     {
-        for ( size_t x = 0; x < 2; x++ )
-        {
-            //mChunkLoadThreads.emplace_back( [&]
-            //{
-            createChunks( x, z );
-            //} );
-        }
+        createChunks( 0, 0 );
     }
 
 }
@@ -49,12 +43,12 @@ void cUnderGround::update()
     for ( auto& chunk : chunks )
         chunk.second.createVboMesh();
 
-    //cTimeMeasurement::getInstance()->make();
-    //auto t = cTimeMeasurement::getInstance()->deltaTime();
+    cTimeMeasurement::getInstance()->make();
+    auto t = cTimeMeasurement::getInstance()->deltaTime();
 
-    //console() << std::endl << std::endl;
-    //console() << "Field create time : " << t << std::endl;
-    //console() << std::endl << std::endl;
+    console() << std::endl << std::endl;
+    console() << "Field create time : " << t << std::endl;
+    console() << std::endl << std::endl;
     mMainMutex.unlock();
 }
 void cUnderGround::draw()
@@ -98,6 +92,7 @@ bool cUnderGround::createChunks( int x, int z )
 
         auto chunk = mChunkHolder.createChunk( x, z );
         mChunkHolder.setChunk( chunk );
+
 
     }
     return true;

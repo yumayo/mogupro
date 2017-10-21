@@ -15,6 +15,8 @@ public:
     cBlock( const ci::vec3& position, const float& scale );
     ~cBlock();
 
+    void setup();
+
 public: // Method
 
     void calcMeshIndexData( uint num );
