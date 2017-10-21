@@ -32,6 +32,7 @@ public: // Player,Strategy Ç≈égÇ§ä÷êî
 private: // Method
 
     bool createChunks();
+    bool calcChunks();
 
     ci::ivec3 getChunkCellFromPosition( const ci::vec3& position );
     ci::ivec3 getBlockCellFromPosition( const ci::vec3& position );

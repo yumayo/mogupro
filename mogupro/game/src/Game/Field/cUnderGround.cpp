@@ -36,17 +36,22 @@ void cUnderGround::setup()
             createChunks();
         }
         );
+        mChunkLoadThreads.emplace_back( [&]
+        {
+            calcChunks();
+        }
+        );
     }
 }
 void cUnderGround::update()
 {
-    //mMainMutex.lock();
+    mMainMutex.lock();
 
     ChunkMap& chunks = mChunkHolder.getChunks();
     for ( auto& chunk : chunks )
         chunk.second.createMainCall();
 
-    //mMainMutex.unlock();
+    mMainMutex.unlock();
 }
 void cUnderGround::draw()
 {
@@ -71,29 +76,46 @@ void cUnderGround::draw()
     //glsl->uniform( "uTexCoordOffset", texRect.getUpperLeft() );
     //glsl->uniform( "uTexCoordScale", texRect.getSize() );
 
-    //mMainMutex.lock();
+    mMainMutex.lock();
 
     ChunkMap& chunks = mChunkHolder.getChunks();
     for ( auto& chunk : chunks )
         chunk.second.draw();
 
-    //mMainMutex.unlock();
+    mMainMutex.unlock();
 
 }
 bool cUnderGround::createChunks()
 {
     while ( mIsRunning )
     {
-        for ( size_t z = 0; z < 100; z++ )
+        for ( size_t z = 0; z < 16; z++ )
         {
-            for ( size_t x = 0; x < 100; x++ )
+            for ( size_t x = 0; x < 16; x++ )
+            {
+                mMainMutex.lock();
+                mChunkHolder.setChunk( x, z );
+                mMainMutex.unlock();
+            }
+        }
+        break;
+    }
+    return true;
+}
+bool cUnderGround::calcChunks()
+{
+    while ( mIsRunning )
+    {
+        for ( size_t z = 0; z < 16; z++ )
+        {
+            for ( size_t x = 0; x < 16; x++ )
             {
                 mChunkHolder.createChunk( x, z );
             }
         }
         mIsRunning = false;
     }
-    return true;
+    return false;
 }
 ci::ivec3 cUnderGround::getChunkCellFromPosition( const ci::vec3 & position )
 {
@@ -108,7 +130,7 @@ bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
 
-    if ( mChunkHolder.isExistsChunks( chunk_cell.x, chunk_cell.z ) )
+    if ( mChunkHolder.isExistsChunk( chunk_cell.x, chunk_cell.z ) )
         return false;
     auto& chunks = mChunkHolder.getChunk( chunk_cell );
 

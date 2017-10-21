@@ -79,7 +79,7 @@ void cChunk::breakBlock( ci::ivec3 c )
 bool cChunk::createMainCall()
 {
     // vbo‚ª¶¬Ï‚Ý‚¾‚Á‚½‚ç‚Í‚¶‚­
-    if ( mIsLoaded )
+    if ( mVbo != nullptr )
         return false;
 
     // ŒvŽZ“r’†‚¾‚Á‚½‚ç‚Í‚¶‚­
@@ -92,14 +92,12 @@ bool cChunk::createMainCall()
     for ( auto& block : mBlocks )
         block.second.setup();
 
-    mIsLoaded = true;
-
     cTimeMeasurement::getInstance()->make();
     auto t = cTimeMeasurement::getInstance()->deltaTime();
 
-    console() << std::endl << std::endl;
-    console() << "Field create time : " << t << std::endl;
-    console() << std::endl << std::endl;
+    //console() << std::endl << std::endl;
+    //console() << "Field create time : " << t << "pos " << mChunkCell << std::endl;
+    //console() << std::endl << std::endl;
     return true;
 }
 ci::TriMeshRef cChunk::createTriMesh()
