@@ -48,13 +48,10 @@ void cGameMain::setup( )
     n->add_child( font );
 
     Shader::cShadowManager::getInstance( )->setup( );
-
     Game::cFieldManager::getInstance( )->setup( );
-    //Game::Gem::cGemManager::getInstance()->SetUp(vec3(5, 5, 5), vec3(10, 10, 10), 10, 0);
-    //Game::Gem::cGemManager::getInstance()->Create();
-
     Game::cStrategyManager::getInstance( )->setup( );
     Game::cPlayerManager::getInstance( )->setup( );
+	GemManager->setUp(vec3(0,0,0),vec3(8,6,16),1,1,10,0);
     Collision::cCollisionManager::getInstance( )->setup( );
     Network::cUDPManager::getInstance( )->open( );
 
@@ -77,6 +74,7 @@ void cGameMain::update( float deltaTime )
     Game::cPlayerManager::getInstance( )->update( deltaTime );
     Game::cStrategyManager::getInstance( )->update( deltaTime );
     Collision::cCollisionManager::getInstance( )->update( );
+	GemManager->update();
     Network::cUDPManager::getInstance( )->update( );
 }
 
@@ -90,6 +88,7 @@ void cGameMain::drawShadow( )
     Game::cPlayerManager::getInstance( )->draw( );
     Game::cFieldManager::getInstance( )->draw( );
     Game::cStrategyManager::getInstance( )->draw( );
+	GemManager->draw();
     skydome.draw( );
 }
 
@@ -98,7 +97,8 @@ void cGameMain::draw2D( )
     gl::enableFaceCulling( false );
     gl::disableDepthRead( );
     gl::disableDepthWrite( );
-    gl::draw( TEX->get( "sky_dome" ), ci::Rectf( 0, 300, 300, 0 ) );
+    //gl::draw( TEX->get( "sky_dome" ), ci::Rectf( 0, 300, 300, 0 ) );
+	GemManager->drawFbo();
     n->entry_render( mat4( ) );
 }
 
