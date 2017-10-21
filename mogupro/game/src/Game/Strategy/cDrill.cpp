@@ -3,7 +3,7 @@
 #include"Game/cFieldManager.h"
 #include"Game/cStrategyManager.h"
 #include"Game/cGemManager.h"
-
+#include<Network.hpp>
 
 using namespace ci;
 using namespace ci::app;
@@ -140,6 +140,36 @@ void cDrill::setField(const ci::vec3 pos)
 
 }
 
+void cDrill::HitGem(const int _gemid)
+{
+	if (!ismyobject)return;
+
+	getgems.push_back(GemManager->FindGem(_gemid));
+
+	///////////////////////////
+
+	//////////////////////
+	int index = getgems.size() - 1;
+
+	getgems[index]->setSinRotate(atan2f(getgems[index]->getPos().z - pos.z, (getgems[index]->getPos().x - pos.x)));
+	getgems[index]->setPutPos(pos);
+
+	getgems[index]->root = Node::node::create();
+	getgems[index]->root->set_schedule_update();
+
+
+	getgems[index]->root->run_action(sequence::create(float_to::create((beginpos.y - getgems[index]->getPos().y)*0.1f, getgems[index]->getPos().y,
+		beginpos.y + (scale.y + 1.f), [this, index](float t)
+	{
+		auto p = getgems[index]->root->get_position_3d();
+		p.y = t;
+		getgems[index]->root->set_position_3d(p);
+	}), call_func::create([] {; })));
+
+	GemManager->getGems()[_gemid]->setIsDrillhit(true);
+
+}
+
 void cDrill::drawCube( const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color )
 {
     gl::pushModelView();
@@ -154,10 +184,12 @@ void cDrill::drawCube( const ci::vec3 pos, const ci::vec3 size, const ci::vec3 r
 }
 void cDrill::collisionFieldGems()
 {
+	if (!ismyobject)return;
+
 	AxisAlignedBox drill_aabb(pos - vec3(float(scale.x) / 2.f, float(scale.y) / 2.f, float(scale.z) / 2.f),
 		pos + vec3(float(scale.x) / 2.f, float(scale.y) / 2.f, float(scale.z) / 2.f));
 
-	for (int i = 0; i <GemManager->getGems().size(); i++)
+	for (int i = 0; i < GemManager->getGems().size(); i++)
 	{
 		if (GemManager->getGems()[i]->getIsDrillhit())continue;
 		vec3 gempos = GemManager->getGems()[i]->getPos();
@@ -168,35 +200,9 @@ void cDrill::collisionFieldGems()
 
 		if (STRM->isAABB(drill_aabb, gem_aabb))
 		{
-			getgems.push_back(GemManager->getGems()[i]);
-
-			int index = getgems.size() - 1;
-
-			getgems[index]->setSinRotate(atan2f(getgems[index]->getPos().z - pos.z, (getgems[index]->getPos().x - pos.x)));
-			getgems[index]->setPutPos(pos);
-
-			getgems[index]->root = Node::node::create();
-			getgems[index]->root->set_schedule_update();
-
-
-			getgems[index]->root->run_action(sequence::create(float_to::create((beginpos.y- getgems[index]->getPos().y)*0.1f, getgems[index]->getPos().y,
-				beginpos.y + (scale.y + 1.f), [this, index](float t)
-			{
-				auto p = getgems[index]->root->get_position_3d();
-				p.y = t;
-				getgems[index]->root->set_position_3d(p);
-			}), call_func::create([] {; })));
-			GemManager->getGems()[i]->setIsDrillhit(true);
-
-
-		/*	eracenum.push_back(GemManager->getGems()[i].getId());
-			getgems.push_back(GemManager->getGems()[i]);
-			getgems[getgems.size() - 1].setSinRotate(atan2f(getgems[getgems.size() - 1].getPos().z-pos.z, (getgems[getgems.size() - 1].getPos().x - pos.x)));
-			getgems[getgems.size() - 1].setPutPos(pos);*/
+			Network::cUDPManager::getInstance()->send(Network::cNetworkHandle("10.25.32.240", 25565), new Network::Packet::Request::cReqCheckGetJem(id, GemManager->getGems()[i]->getId()));
 		}
-
 	}
-
 
 	//GemManager->gemCountUp(GemManager->getGems()[i]);
 }

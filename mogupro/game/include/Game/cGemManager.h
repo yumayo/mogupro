@@ -41,6 +41,7 @@ namespace Game
 		void gemCountUp(int team, Gem::GemType type);
 		void gemDelete(int it);
 		std::vector<std::shared_ptr<Gem::cGem>> getGems() { return mGemsptr; }
+		std::shared_ptr<Gem::cGem> FindGem(int id);
 
 	private:
 

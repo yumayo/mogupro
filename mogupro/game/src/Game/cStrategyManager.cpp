@@ -3,6 +3,7 @@
 #include"Game/Strategy/cDrill.h"
 #include"Game/Strategy/cStrategyObjectBase.h"
 #include"cinder\Rand.h"
+#include<algorithm>
 using namespace ci;
 using namespace ci::app;
 
@@ -22,29 +23,34 @@ void cStrategyManager::setup()
 }
 void cStrategyManager::draw()
 {
-	for (auto it : strategyobjects) {
-		it->draw();
+	for (auto it : drills) {
+		it.second->draw();
 	}
 }
 void cStrategyManager::update(const float & deltatime)
 {
-	for (auto& it : strategyobjects) {
-		it->update(deltatime);
+	for (auto& it : drills) {
+		it.second->update(deltatime);
 	}
+
+
 	deleteObject();
 	if (ENV->pushKey(KeyEvent::KEY_p)) {
 
-		strategyobjects.push_back(std::make_shared<Game::Strategy::cDrill>(vec3(randInt(0, 10), 15, randInt(0, 10)), vec3(1, 1, 1), 0));
+		//drills.insert(std::make_pair(, std::make_shared<Game::Strategy::cDrill>(vec3(randInt(0, 10), 15, randInt(0, 10)), vec3(1, 1, 1), 0)));
 
 	}
+
+
+
 }
 
 void cStrategyManager::deleteObject()
 {
-	for (auto itr = strategyobjects.begin();
-		itr != strategyobjects.end();) {
-		if ((*itr)->DeleteThis()) {
-			itr = strategyobjects.erase(itr);
+	for (auto itr = drills.begin();
+		itr != drills.end();) {
+		if (itr->second->DeleteThis()) {
+			itr = drills.erase(itr);
 		}
 		else {
 			itr++;
@@ -68,5 +74,21 @@ bool cStrategyManager::isAABB(const ci::AxisAlignedBox & a, const ci::AxisAligne
 		return true;
 }
 
-;
+void cStrategyManager::HitDrillToGem(const int _objectid, const int _gemid)
+{
+	auto drill = drills[_objectid];
+
+	drill->HitGem(_gemid);
+
+
 }
+
+void cStrategyManager::CreateDrill(const ci::vec3 _pos, const int _id, const Strategy::cDrill::DrillType _type, const bool _ismyobject)
+{
+	drills.insert(std::make_pair(_id, std::make_shared<Game::Strategy::cDrill>(_pos, _id, _type, _ismyobject)));
+}
+}
+
+
+;
+
