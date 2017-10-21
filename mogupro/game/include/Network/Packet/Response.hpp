@@ -5,7 +5,7 @@
 #include<Network/Packet/Response/cResGetJemPoint.h>
 #include<Network/Packet/Response/cResCheckGetJem.h>
 #include<Network/Packet/Response/cResCheckPlayerRobJem.h>
-#include<Network/Packet/Response/cResCheckBreakBlocks.h>
+#include<Network/Packet/Response/cResBreakBlocks.h>
 #include<Network/Packet/Response/cResCheckSetQuarry.h>
 #include<Network/Packet/Response/cResCheckPlayerDeath.h>
 #include<Network/Packet/Response/cResMakeRoom.h>

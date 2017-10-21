@@ -1,5 +1,5 @@
 #pragma once
-#include <winsock2.h>
+#include <Network/NetworkDefines.h>
 
 namespace Network
 {
@@ -22,4 +22,31 @@ bool importStr(char* value, const char* const buffer, int& offset, int totalSize
 //!@ LookMe : Float‚É‘Î‚·‚éhtonl,ntohl‚Í‚Å‚«‚È‚¢‚Ì‚Å‚Ç‚¤‚·‚é‚©
 bool exportFloat(const float& value, char* const buffer, int& offset, int totalSize);
 bool importFloat(float& value, const char* const buffer, int& offset, int totalSize);
+
+// ˆÈ‰ºyumayo
+
+ubyte2 convertFixedpoint( float value );
+float convertFloat( ubyte2 value );
+
+class cImporter
+{
+public:
+    cImporter( char const* const buffer );
+    template<class Ty>
+    cImporter& operator>>( Ty& value );
+private:
+    ubyte2 mOffset;
+    char const* const mBuffer;
+};
+class cExporter
+{
+public:
+    cExporter( char* const buffer );
+    template<class Ty>
+    cExporter& operator<<( Ty const& value );
+    operator ubyte2( ) const noexcept;
+private:
+    ubyte2 mOffset;
+    char* const mBuffer;
+};
 }

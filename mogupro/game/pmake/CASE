@@ -2,6 +2,6 @@
     {
         Packet::_PACKET_TYPE_::c_TEMPLATE_VALUE_ data;
         data.onReceive( networkHandle, bufferSize, bufferData );
-        c_PACKET_TYPE_Manager::getInstance( )->unget_TEMPLATE_VALUE_( data );
+        c_PACKET_TYPE_Manager::getInstance( )->unget_TEMPLATE_VALUE_( std::move( data ) );
         break;
     }

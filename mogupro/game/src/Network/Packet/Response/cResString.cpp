@@ -1,4 +1,5 @@
 #include <Network/Packet/Response/cResString.h>
+#include <Network/PackFunction.hpp>
 namespace Network
 {
 namespace Packet
@@ -16,12 +17,11 @@ cResString::cResString( std::string str )
 }
 void cResString::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
-    str = std::string( data, transferredBytes );
+    cImporter( data ) >> str;
 }
 ubyte2 cResString::packetExport( char* const data )
 {
-    memcpy( data, str.data( ), str.size( ) );
-    return str.size( );
+    return cExporter( data ) << str;
 }
 }
 }

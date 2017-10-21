@@ -1,4 +1,5 @@
 #include <Network/Packet/Event/cEveString.h>
+#include <Network/PackFunction.hpp>
 namespace Network
 {
 namespace Packet
@@ -16,12 +17,11 @@ cEveString::cEveString( std::string const & str )
 }
 void cEveString::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
-    str = std::string( data, transferredBytes );
+    cImporter( data ) >> str;
 }
 ubyte2 cEveString::packetExport( char* const data )
 {
-    memcpy( data, str.data( ), str.size( ) );
-    return str.size( );
+    return cExporter( data ) << str;
 }
 }
 }

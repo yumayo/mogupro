@@ -1,4 +1,8 @@
 #include <Network/PackFunction.hpp>
+#include <winsock2.h>
+#include <cinder/Vector.h>
+#include <cinder/Quaternion.h>
+#include <cinder/Matrix.h>
 
 namespace Network
 {
@@ -136,4 +140,221 @@ namespace Network
 		offset += sizeof(float);
 		return true;
 	}
+
+    ubyte2 convertFixedpoint( float value )
+    {
+        ubyte2 result;
+        result = static_cast<ubyte2>( value ) << 7;
+        result += static_cast<ubyte2>( ( value - static_cast<unsigned int>( value ) ) * 100.0F );
+        return result;
+    }
+
+    float convertFloat( ubyte2 value )
+    {
+        float result;
+        result = value >> 7;
+        result += static_cast<float>( value & 0x007F ) / 100.0F;
+        return ubyte2( );
+    }
+
+    // ˆÈ‰ºyumayo
+    template<>
+    cImporter& cImporter::operator>><ubyte1>( ubyte1& value )
+    {
+        memcpy( &value, mBuffer + mOffset, sizeof( ubyte1 ) );
+        mOffset += sizeof( ubyte1 );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<ubyte1>( ubyte1 const& value )
+    {
+        memcpy( mBuffer + mOffset, &value, sizeof( ubyte1 ) );
+        mOffset += sizeof( ubyte1 );
+        return *this;
+    }
+    template<>
+    cImporter& cImporter::operator>><ubyte2>( ubyte2& value )
+    {
+        memcpy( &value, mBuffer + mOffset, sizeof( ubyte2 ) );
+        mOffset += sizeof( ubyte2 );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<ubyte2>( ubyte2 const& value )
+    {
+        memcpy( mBuffer + mOffset, &value, sizeof( ubyte2 ) );
+        mOffset += sizeof( ubyte2 );
+        return *this;
+    }
+    template<>
+    cImporter& cImporter::operator>><ubyte4>( ubyte4& value )
+    {
+        memcpy( &value, mBuffer + mOffset, sizeof( ubyte4 ) );
+        mOffset += sizeof( ubyte4 );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<ubyte4>( ubyte4 const& value )
+    {
+        memcpy( mBuffer + mOffset, &value, sizeof( ubyte4 ) );
+        mOffset += sizeof( ubyte4 );
+        return *this;
+    }
+    template<>
+    cImporter& cImporter::operator>><byte1>( byte1& value )
+    {
+        memcpy( &value, mBuffer + mOffset, sizeof( byte1 ) );
+        mOffset += sizeof( byte1 );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<byte1>( byte1 const& value )
+    {
+        memcpy( mBuffer + mOffset, &value, sizeof( byte1 ) );
+        mOffset += sizeof( byte1 );
+        return *this;
+    }
+    template<>
+    cImporter& cImporter::operator>><byte2>( byte2& value )
+    {
+        memcpy( &value, mBuffer + mOffset, sizeof( byte2 ) );
+        mOffset += sizeof( byte2 );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<byte2>( byte2 const& value )
+    {
+        memcpy( mBuffer + mOffset, &value, sizeof( byte2 ) );
+        mOffset += sizeof( byte2 );
+        return *this;
+    }
+    template<>
+    cImporter& cImporter::operator>><byte4>( byte4& value )
+    {
+        memcpy( &value, mBuffer + mOffset, sizeof( byte4 ) );
+        mOffset += sizeof( byte4 );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<byte4>( byte4 const& value )
+    {
+        memcpy( mBuffer + mOffset, &value, sizeof( byte4 ) );
+        mOffset += sizeof( byte4 );
+        return *this;
+    }
+    template<>
+    cImporter& cImporter::operator>><cinder::vec2>( cinder::vec2& value )
+    {
+        memcpy( &value, mBuffer + mOffset, sizeof( cinder::vec2 ) );
+        mOffset += sizeof( cinder::vec2 );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<cinder::vec2>( cinder::vec2 const& value )
+    {
+        memcpy( mBuffer + mOffset, &value, sizeof( cinder::vec2 ) );
+        mOffset += sizeof( cinder::vec2 );
+        return *this;
+    }
+    template<>
+    cImporter& cImporter::operator>><cinder::vec3>( cinder::vec3& value )
+    {
+        memcpy( &value, mBuffer + mOffset, sizeof( cinder::vec3 ) );
+        mOffset += sizeof( cinder::vec3 );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<cinder::vec3>( cinder::vec3 const& value )
+    {
+        memcpy( mBuffer + mOffset, &value, sizeof( cinder::vec3 ) );
+        mOffset += sizeof( cinder::vec3 );
+        return *this;
+    }
+    template<>
+    cImporter& cImporter::operator>><cinder::vec4>( cinder::vec4& value )
+    {
+        memcpy( &value, mBuffer + mOffset, sizeof( cinder::vec4 ) );
+        mOffset += sizeof( cinder::vec4 );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<cinder::vec4>( cinder::vec4 const& value )
+    {
+        memcpy( mBuffer + mOffset, &value, sizeof( cinder::vec4 ) );
+        mOffset += sizeof( cinder::vec4 );
+        return *this;
+    }
+    template<>
+    cImporter& cImporter::operator>><cinder::quat>( cinder::quat& value )
+    {
+        memcpy( &value, mBuffer + mOffset, sizeof( cinder::quat ) );
+        mOffset += sizeof( cinder::quat );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<cinder::quat>( cinder::quat const& value )
+    {
+        memcpy( mBuffer + mOffset, &value, sizeof( cinder::quat ) );
+        mOffset += sizeof( cinder::quat );
+        return *this;
+    }
+    template<>
+    cImporter& cImporter::operator>><cinder::mat3>( cinder::mat3& value )
+    {
+        memcpy( &value, mBuffer + mOffset, sizeof( cinder::mat3 ) );
+        mOffset += sizeof( cinder::mat3 );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<cinder::mat3>( cinder::mat3 const& value )
+    {
+        memcpy( mBuffer + mOffset, &value, sizeof( cinder::mat3 ) );
+        mOffset += sizeof( cinder::mat3 );
+        return *this;
+    }
+    template<>
+    cImporter& cImporter::operator>><cinder::mat4>( cinder::mat4& value )
+    {
+        memcpy( &value, mBuffer + mOffset, sizeof( cinder::mat4 ) );
+        mOffset += sizeof( cinder::mat4 );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<cinder::mat4>( cinder::mat4 const& value )
+    {
+        memcpy( mBuffer + mOffset, &value, sizeof( cinder::mat4 ) );
+        mOffset += sizeof( cinder::mat4 );
+        return *this;
+    }
+    template<>
+    cImporter& cImporter::operator>><std::string>( std::string& value )
+    {
+        value.reserve( PACKET_MAX_BYTE );
+        strcpy( value._Get_data( )._Myptr( ), mBuffer + mOffset );
+        value._Get_data( )._Mysize = strlen( value.c_str( ) );
+        value.shrink_to_fit( );
+        mOffset += static_cast<ubyte2>( value.size( ) );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<std::string>( std::string const& value )
+    {
+        strcpy( mBuffer + mOffset, value.c_str( ) );
+        mOffset += static_cast<ubyte2>( value.size( ) );
+        return *this;
+    }
+    cImporter::cImporter( char const * const buffer )
+        : mBuffer( buffer )
+        , mOffset( 0U )
+    {
+    }
+    cExporter::cExporter( char * const buffer )
+        : mBuffer( buffer )
+        , mOffset( 0U )
+    {
+    }
+    cExporter::operator ubyte2( ) const noexcept
+    {
+        return mOffset;
+    }
 }

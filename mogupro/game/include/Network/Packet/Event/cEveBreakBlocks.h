@@ -1,18 +1,21 @@
 #pragma once
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
+#include <vector>
+#include <cinder/Vector.h>
 namespace Network
 {
 namespace Packet
 {
-namespace _PACKET_TYPE_
+namespace Event
 {
-class _TEMPLATE_CLASS_ : public cPacketBase<_TEMPLATE_CLASS_, PacketId::_TEMPLATE_ENUM_>
+class cEveBreakBlocks : public cPacketBase<cEveBreakBlocks, PacketId::EVE_BREAK_BLOCKS>
 {
 public:
-    _TEMPLATE_CLASS_( );
+    cEveBreakBlocks( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
+    std::vector<cinder::vec3> mBreakPositions;
 };
 }
 }
