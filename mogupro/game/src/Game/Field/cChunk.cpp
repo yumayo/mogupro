@@ -9,6 +9,7 @@ namespace Field
 {
 cChunk::cChunk( int x, int z ) :
     mChunkCell( ci::ivec3( x, 0, z ) )
+    , mIsLoaded( false )
 {
 }
 cChunk::~cChunk()
@@ -32,6 +33,8 @@ cBlock & cChunk::getBlock( int x, int y, int z )
 }
 cBlock & cChunk::getBlock( ci::ivec3 c )
 {
+    if ( isOutOfRange( c ) )
+        return cBlock();
     return mBlocks[c];
 }
 BlockMap & cChunk::getBlocks()
@@ -50,13 +53,10 @@ void cChunk::add( const std::vector<ci::vec3>& vertices,
 }
 void cChunk::breakBlock( ci::ivec3 c )
 {
-    if ( isOutOfRange( c ) )
+    auto& block = getBlock( c );
+    if ( block.mIsActive == false )
         return;
 
-    if ( mBlocks.find( c ) == mBlocks.end() )
-        return;
-
-    auto& block = mBlocks[c];
     auto indices = std::vector<uint>( block.mIndicesNum.size() * 4 );
     for ( uint i = 0; i < block.mIndicesNum.size(); i++ )
     {
@@ -67,10 +67,14 @@ void cChunk::breakBlock( ci::ivec3 c )
     // VboRef‚Ì’†‚ÅIndices‚ª4”{‚³‚ê‚é‚Ì‚ÅA•ÏX‰ÓŠ‚ð4”{‚·‚é
     vbo->bufferSubData( block.mIndicesNum[0] * 4, block.mIndicesNum.size() * 4, &indices[0] );
 }
-ci::gl::VboMeshRef cChunk::createVboMesh()
+void cChunk::createVboMesh()
 {
-    mVbo = gl::VboMesh::create( *createTriMesh() );
-    return mVbo;
+    if ( mIsLoaded )
+        return;
+
+    mVbo = gl::VboMesh::create( *mMesh );
+
+    mIsLoaded = true;
 }
 ci::TriMeshRef cChunk::createTriMesh()
 {

@@ -16,8 +16,9 @@ public:
     cChunk& getChunk( int x, int z );
     cChunk& getChunk( ci::ivec3 c );
     ChunkMap& getChunks();
+    void setChunk( cChunk& chunk );
 
-    cChunk& createChunk( int x, int z );
+    cChunk createChunk( int x, int z );
     bool isExistsChunks( int x, int z );
 
 private:

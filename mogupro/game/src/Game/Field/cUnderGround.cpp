@@ -27,15 +27,35 @@ void cUnderGround::setup()
 {
     TEX->set( "dirt", "dirt.jpg" );
 
-    std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
-    //mChunkLoadThreads.emplace_back( [&]
-    //{
-    createUnderGround();
-    //});
+    cTimeMeasurement::getInstance()->make();
+
+    for ( size_t z = 0; z < 1; z++ )
+    {
+        for ( size_t x = 0; x < 2; x++ )
+        {
+            //mChunkLoadThreads.emplace_back( [&]
+            //{
+            createChunks( x, z );
+            //} );
+        }
+    }
 
 }
 void cUnderGround::update()
 {
+    mMainMutex.lock();
+
+    ChunkMap& chunks = mChunkHolder.getChunks();
+    for ( auto& chunk : chunks )
+        chunk.second.createVboMesh();
+
+    cTimeMeasurement::getInstance()->make();
+    auto t = cTimeMeasurement::getInstance()->deltaTime();
+
+    console() << std::endl << std::endl;
+    console() << "Field create time : " << t << std::endl;
+    console() << std::endl << std::endl;
+    mMainMutex.unlock();
 }
 void cUnderGround::draw()
 {
@@ -61,39 +81,26 @@ void cUnderGround::draw()
     //glsl->uniform( "uTexCoordScale", texRect.getSize() );
 
     mMainMutex.lock();
+
     ChunkMap& chunks = mChunkHolder.getChunks();
     for ( auto& chunk : chunks )
         chunk.second.draw();
+
     mMainMutex.unlock();
 
 }
-bool cUnderGround::createUnderGround()
+bool cUnderGround::createChunks( int x, int z )
 {
-    //while ( mIsRunning )
+    while ( mIsRunning )
     {
-        for ( size_t x = 0; x < 4; x++ )
-        {
-            for ( size_t z = 0; z < 4; z++ )
-            {
-                std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
+        if ( mChunkHolder.isExistsChunks( x, z ) == false )
+            return false;
 
-                if ( mChunkHolder.isExistsChunks( x, z ) == false )
-                    continue;
-                mMainMutex.lock();
-                mChunkHolder.createChunk( x, z );
-                mMainMutex.unlock();
-            }
-        }
+        auto chunk = mChunkHolder.createChunk( x, z );
+        mChunkHolder.setChunk( chunk );
+
     }
     return true;
-}
-bool cUnderGround::createMesh()
-{
-    return true;
-}
-bool cUnderGround::loadChunks()
-{
-    return false;
 }
 ci::ivec3 cUnderGround::getChunkCellFromPosition( const ci::vec3 & position )
 {
@@ -107,16 +114,19 @@ bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 {
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
+
+    if ( mChunkHolder.isExistsChunks( chunk_cell.x, chunk_cell.z ) )
+        return false;
     auto& chunks = mChunkHolder.getChunk( chunk_cell );
 
     auto r = ivec3( int( radius / BLOCK_SIZE ) );
-    auto s = chunk_cell - r;
-    auto e = chunk_cell + r;
+    auto s = block_cell - r;
+    auto e = block_cell + r;
 
     for ( int z = s.z; z < e.z; z++ )
         for ( int y = s.y; y < e.y; y++ )
             for ( int x = s.x; x < e.x; x++ )
-                chunks.breakBlock( block_cell );
+                chunks.breakBlock( ivec3( x, y, z ) );
 
     return true;
 }
@@ -129,8 +139,7 @@ ci::vec3 cUnderGround::getBlockCenterTopPosition( const ci::vec3 & target_positi
 }
 ci::ivec3 cUnderGround::getBlockMaxCell()
 {
-    //return mBlockMaxCell;
-    return ivec3();
+    return ivec3( CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE );
 }
 }
 }

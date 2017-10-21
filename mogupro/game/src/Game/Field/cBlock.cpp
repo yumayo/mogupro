@@ -10,10 +10,11 @@ namespace Field
 {
 cBlock::cBlock() :
     mPosition( vec3( 0 ) ),
-    mScale( 1 ),
-    mIsActive( true ),
-    mCollider( mPosition, vec3( mScale ), vec3( 0.5f ) )
+    mScale( BLOCK_SIZE ),
+    mIsActive( false ),
+    mCollider( mPosition, vec3( BLOCK_SIZE ), vec3( 0.5f ) )
 {
+    mCollider.addWorld();
 }
 cBlock::cBlock( const ci::vec3& position, const float& scale ) :
     mPosition( position ),
@@ -21,9 +22,11 @@ cBlock::cBlock( const ci::vec3& position, const float& scale ) :
     mIsActive( true ),
     mCollider( mPosition, vec3( scale ), vec3( 0.5f ) )
 {
+    mCollider.addWorld();
 }
 cBlock::~cBlock()
 {
+
 }
 void cBlock::calcMeshIndexData( uint num )
 {
@@ -45,6 +48,7 @@ void cBlock::toBreak()
 {
     mIsActive = false;
     clear();
+    mCollider.removeWorld();
 }
 }
 }

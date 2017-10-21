@@ -1,4 +1,5 @@
 #include <Scene/Member/cMatchingServer.h>
+#include <Network/cMatchingMemberManager.h>
 using namespace Network;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
@@ -17,19 +18,6 @@ namespace Scene
 
 		}
 
-		bool cMatchingServer::addRoomMembers(Network::cNetworkHandle addMember)
-		{
-			if ((int)mRoomMembers.size() > 8)return false;
-
-			for each(auto member in mRoomMembers)
-			{
-				if (member.ipAddress == addMember.ipAddress && member.port == addMember.port)
-					return false;
-			}
-
-			mRoomMembers.push_back(addMember);
-			return true;
-		}
 		void cMatchingServer::update(float deltaTime)
 		{
 			checkReqMakeRoom();
@@ -50,9 +38,9 @@ namespace Scene
 
 				mOpenRoom = true;
 				mRoomID = mReqMakeRoom.mRoomID;
-				mMasterData = mReqMakeRoom.mNetworkHandle;
+				cMatchingMemberManager::getInstance()->mMasterHandle = mReqMakeRoom.mNetworkHandle;
 				cUDPManager::getInstance()->send(mReqMakeRoom.mNetworkHandle, new cResMakeRoom(true));
-				addRoomMembers(mMasterData);
+				cMatchingMemberManager::getInstance()->addRoomMembers(mReqMakeRoom.mNetworkHandle);
 				cRequestManager::getInstance()->mReqMakeRoom.pop();
 				mPhaseState = PhaseState::IN_ROOM;
 				continue;
@@ -64,7 +52,8 @@ namespace Scene
 			while (!cRequestManager::getInstance()->mReqInRoom.empty())
 			{
 				auto reqInRoom = cRequestManager::getInstance()->mReqInRoom.top();
-				if (mOpenRoom != true || !addRoomMembers(reqInRoom.mNetworkHandle))
+				if (mOpenRoom != true ||
+					cMatchingMemberManager::getInstance()->addRoomMembers(reqInRoom.mNetworkHandle) != true)
 				{
 					cUDPManager::getInstance()->send(reqInRoom.mNetworkHandle, new cResInRoom(false));
 					cRequestManager::getInstance()->mReqInRoom.pop();

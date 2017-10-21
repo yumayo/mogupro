@@ -29,15 +29,19 @@ public:
 
     void breakBlock( ci::ivec3 c );
 
-    ci::gl::VboMeshRef createVboMesh();
+    ci::ivec3 getCell() { return mChunkCell; }
+
+    void createVboMesh();
     ci::TriMeshRef createTriMesh();
     void createBlocks();
 
-    bool isOutOfRange(ci::ivec3 c);
+    bool isOutOfRange( ci::ivec3 c );
 
 private:
 
     ci::ivec3 mChunkCell;
+    bool mIsLoaded;
+
     std::vector<ci::vec3> mVertices;
     std::vector<uint> mIndices;
     std::vector<ci::vec2> mUv;
