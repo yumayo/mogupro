@@ -2,45 +2,90 @@
 namespace Network
 {
 // P=====BEGIN=====P
-Packet::Event::cEveString cEventManager::getEveString( )
-{
-    auto top = mEveString.top( );
-    mEveString.pop( );
-    return std::move( top );
-}
-void cEventManager::ungetEveString( Packet::Event::cEveString const & data )
-{
-    mEveString.push( data );
-}
-Packet::Event::cEveGetJem cEventManager::getEveGetJem( )
-{
-    auto top = mEveGetJem.top( );
-    mEveGetJem.pop( );
-    return std::move( top );
-}
-void cEventManager::ungetEveGetJem( Packet::Event::cEveGetJem const & data )
-{
-    mEveGetJem.push( data );
-}
-Packet::Event::cEvePlayerRobJem cEventManager::getEvePlayerRobJem( )
-{
-    auto top = mEvePlayerRobJem.top( );
-    mEvePlayerRobJem.pop( );
-    return std::move( top );
-}
-void cEventManager::ungetEvePlayerRobJem( Packet::Event::cEvePlayerRobJem const & data )
-{
-    mEvePlayerRobJem.push( data );
-}
-Packet::Event::cEvePlayerDeath cEventManager::getEvePlayerDeath( )
-{
-    auto top = mEvePlayerDeath.top( );
-    mEvePlayerDeath.pop( );
-    return std::move( top );
-}
-void cEventManager::ungetEvePlayerDeath( Packet::Event::cEvePlayerDeath const & data )
-{
-    mEvePlayerDeath.push( data );
-}
+boost::optional<Packet::Event::cEveString> cEventManager::getEveString( )
+{
+    if ( mEveString.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEveString.top( );
+        mEveString.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEveString( Packet::Event::cEveString&& data )
+{
+    mEveString.push( std::move( data ) );
+}
+boost::optional<Packet::Event::cEveGetJem> cEventManager::getEveGetJem( )
+{
+    if ( mEveGetJem.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEveGetJem.top( );
+        mEveGetJem.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEveGetJem( Packet::Event::cEveGetJem&& data )
+{
+    mEveGetJem.push( std::move( data ) );
+}
+boost::optional<Packet::Event::cEveBreakBlocks> cEventManager::getEveBreakBlocks( )
+{
+    if ( mEveBreakBlocks.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEveBreakBlocks.top( );
+        mEveBreakBlocks.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEveBreakBlocks( Packet::Event::cEveBreakBlocks&& data )
+{
+    mEveBreakBlocks.push( std::move( data ) );
+}
+boost::optional<Packet::Event::cEvePlayerRobJem> cEventManager::getEvePlayerRobJem( )
+{
+    if ( mEvePlayerRobJem.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEvePlayerRobJem.top( );
+        mEvePlayerRobJem.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEvePlayerRobJem( Packet::Event::cEvePlayerRobJem&& data )
+{
+    mEvePlayerRobJem.push( std::move( data ) );
+}
+boost::optional<Packet::Event::cEvePlayerDeath> cEventManager::getEvePlayerDeath( )
+{
+    if ( mEvePlayerDeath.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEvePlayerDeath.top( );
+        mEvePlayerDeath.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEvePlayerDeath( Packet::Event::cEvePlayerDeath&& data )
+{
+    mEvePlayerDeath.push( std::move( data ) );
+}
 // P=====END=====P
 }

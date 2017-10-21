@@ -24,8 +24,29 @@ bool exportFloat(const float& value, char* const buffer, int& offset, int totalS
 bool importFloat(float& value, const char* const buffer, int& offset, int totalSize);
 
 // ˆÈ‰ºyumayo
-template<class Ty>
-ubyte2 imp( Ty& value, const char* const buffer, ubyte2 offset );
-template<class Ty>
-ubyte2 exp( Ty const& value, char* const buffer, ubyte2 offset );
+
+ubyte2 convertFixedpoint( float value );
+float convertFloat( ubyte2 value );
+
+class cImporter
+{
+public:
+    cImporter( char const* const buffer );
+    template<class Ty>
+    cImporter& operator>>( Ty& value );
+private:
+    ubyte2 mOffset;
+    char const* const mBuffer;
+};
+class cExporter
+{
+public:
+    cExporter( char* const buffer );
+    template<class Ty>
+    cExporter& operator<<( Ty const& value );
+    operator ubyte2( ) const noexcept;
+private:
+    ubyte2 mOffset;
+    char* const mBuffer;
+};
 }

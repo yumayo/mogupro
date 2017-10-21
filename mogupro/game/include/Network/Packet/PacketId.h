@@ -19,6 +19,8 @@ enum class PacketId : ubyte1
     EVE_STRING,
     // 他のプレイヤーや掘削機がフィールドのジェムを採ったと通知されました。
     EVE_GET_JEM,
+    // 他のプレイヤーや掘削機がフィールドのブロックを破壊したと通知されました。
+    EVE_BREAK_BLOCKS,
     // 他のプレイヤーに奪われたと通知されました。
     // ※この瞬間にプレイヤーはステータスを変えてください。
     EVE_PLAYER_ROB_JEM,
@@ -46,8 +48,7 @@ enum class PacketId : ubyte1
     // ※このタイミングでは奪取できません。サーバーからのレスポンスを待ってください。
     REQ_CHECK_PLAYER_ROB_JEM,
     // ブロックを破壊したと知らせます。
-    // ※このタイミングでは破壊できません。サーバーからのレスポンスを待ってください。
-    REQ_CHECK_BREAK_BLOCKS,
+    REQ_BREAK_BLOCKS,
     // 掘削機を設置したと知らせます。
     // ※このタイミングでは設置できません。サーバーからのレスポンスを待ってください。
     REQ_CHECK_SET_QUARRY,
@@ -82,8 +83,8 @@ enum class PacketId : ubyte1
     RES_CHECK_GET_JEM,
     // ジェムの奪取に成功したか失敗したか、について通知します。
     RES_CHECK_PLAYER_ROB_JEM,
-    // ブロック破壊に成功したか失敗したか、について通知します。
-    RES_CHECK_BREAK_BLOCKS,
+    // ブロック破壊した座標がそのまま帰ってきます。
+    RES_BREAK_BLOCKS,
     // 掘削機の設置に成功したか失敗したか、について通知します。
     RES_CHECK_SET_QUARRY,
     // 他のプレイヤーのキルに成功したか失敗したか、について通知します。

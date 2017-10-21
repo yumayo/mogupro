@@ -1,22 +1,21 @@
 #pragma once
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
+#include <vector>
 #include <cinder/Vector.h>
-#include <cinder/Quaternion.h>
 namespace Network
 {
 namespace Packet
 {
-namespace Request
+namespace Event
 {
-class cReqPlayer : public cPacketBase<cReqPlayer, PacketId::REQ_PLAYER>
+class cEveBreakBlocks : public cPacketBase<cEveBreakBlocks, PacketId::EVE_BREAK_BLOCKS>
 {
 public:
-    cReqPlayer( ) = default;
+    cEveBreakBlocks( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-    cinder::vec3 mPosition;
-    cinder::quat mRotation;
+    std::vector<cinder::vec3> mBreakPositions;
 };
 }
 }
