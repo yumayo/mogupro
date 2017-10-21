@@ -144,4 +144,18 @@ namespace Game
 
 		mGemsptr.erase(iterator);
 	}
+
+	std::shared_ptr<Gem::cGem> cGemManager::FindGem(int id)
+	{
+		bool isNothig = true;
+		for (int i = 0; i < mGemsptr.size(); i++)
+		{
+			if (mGemsptr[i]->getId() == id)
+			{
+				return  mGemsptr[i];
+			}
+		}
+		ci::app::console() << "This is no Gem that has that " << id << std::endl;
+		return nullptr;
+	}
 }
