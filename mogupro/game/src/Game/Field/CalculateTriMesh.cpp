@@ -1,5 +1,6 @@
 #include <Game/Field/CalculateTriMesh.h>
 #include <Game/Field/cChunk.h>
+#include <Game/Field/cChunkHolder.h>
 using namespace ci;
 namespace Game
 {
@@ -126,44 +127,26 @@ int getIndex( const ci::vec3 & vtx, const ci::vec3 & normal,
               const std::vector<ci::vec3>& normals )
 {
     for ( uint i = 0; i < ( vertices.size() ); ++i )
-    {
+
         if ( vertices[i] == vtx
              && normals[i] == normal )
-        {
-            // ‘S•”ˆê’v
             return i;
-        }
-    }
     return -1;
 }
-cChunk calcChunk( const ci::ivec3& chunk_size,
-                  const ci::ivec2& chunk_num,
-                  const uint& count,
-                  const float& block_scale )
+cChunk calcChunkData( cChunk chunk )
 {
-    cChunk chunk;
-
-    vec3 offset_vertices = vec3( chunk_num.x * block_scale * chunk_size.x,
-                                 0,
-                                 chunk_num.y * block_scale * chunk_size.z );
-    uint offset_indices =
-        cBlock::cube_indices_size * count * multiplyIvec3( chunk_size );
-
+    auto& c = chunk.getBlocks();
     // UV
     auto uvs = getUv( 6 );
-    vec3 prev_position = vec3( 0 );
+    uint offset_id = 0;
 
-    for ( uint z = 0; z < chunk_size.z; z++ )
+    for ( uint z = 0; z < CHUNK_SIZE; z++ )
     {
-        for ( uint y = 0; y < chunk_size.y; y++ )
+        for ( uint y = 0; y < CHUNK_SIZE; y++ )
         {
-            for ( uint x = 0; x < chunk_size.x; x++ )
+            for ( uint x = 0; x < CHUNK_SIZE; x++ )
             {
-                auto position = vec3( x * block_scale,
-                                      y * block_scale,
-                                      z * block_scale );
-                offset_vertices += position - prev_position;
-                prev_position = position;
+                auto position = c[ivec3( x, y, z )].mPosition;
 
                 // DrawElements
                 std::vector<ci::vec3> vertices;
@@ -174,7 +157,7 @@ cChunk calcChunk( const ci::ivec3& chunk_size,
                 {
                     vec3 vertex = vec3( cube_vtx[i * 3 + 0],
                                         cube_vtx[i * 3 + 1],
-                                        cube_vtx[i * 3 + 2] ) + offset_vertices;
+                                        cube_vtx[i * 3 + 2] ) + position;
                     vec3 normal = vec3( cube_normal[i * 3 + 0],
                                         cube_normal[i * 3 + 1],
                                         cube_normal[i * 3 + 2] );
@@ -184,25 +167,21 @@ cChunk calcChunk( const ci::ivec3& chunk_size,
 
                     if ( id < 0 )
                     {
-                        indices.emplace_back( vertices.size() + offset_indices );
+                        indices.emplace_back( vertices.size() + offset_id );
                         vertices.emplace_back( vertex );
                         normals.emplace_back( normal );
                     }
                     else
-                        indices.emplace_back( id + offset_indices );
+                        indices.emplace_back( id + offset_id );
                 }
 
-                offset_indices += cBlock::cube_indices_size;
-
-                std::copy( vertices.begin(), vertices.end(), std::back_inserter( chunk.mVertices ) );
-                std::copy( indices.begin(), indices.end(), std::back_inserter( chunk.mIndices ) );
-                std::copy( normals.begin(), normals.end(), std::back_inserter( chunk.mNormals ) );
-                std::copy( uvs.begin(), uvs.end(), std::back_inserter( chunk.mUv ) );
+                offset_id += cBlock::cube_indices_size;
+                chunk.add( vertices, indices, uvs, normals );
             }
         }
     }
 
-    chunk.createTriMesh();
+    chunk.createVboMesh();
     return chunk;
 }
 }

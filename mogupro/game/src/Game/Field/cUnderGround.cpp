@@ -17,17 +17,22 @@ cUnderGround::cUnderGround()
 }
 cUnderGround::~cUnderGround()
 {
+    mIsRunning = false;
+    for ( auto& thread : mChunkLoadThreads )
+    {
+        thread.join();
+    }
 }
 void cUnderGround::setup()
 {
     TEX.set( "dirt", "dirt.jpg" );
 
-    mBlockMaxCell = ivec3( 4, 4, 4 );
-    mChunkNum = ivec3( 4, 0, 4 );
-    mIntervalOffset = 0.0f;
-    mScale = 1.0f;
-    mOffset = vec3( mScale / 2 );
+    std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
+    //mChunkLoadThreads.emplace_back( [&]
+    //{
     createUnderGround();
+    //});
+
 }
 void cUnderGround::update()
 {
@@ -55,175 +60,77 @@ void cUnderGround::draw()
     //glsl->uniform( "uTexCoordOffset", texRect.getUpperLeft() );
     //glsl->uniform( "uTexCoordScale", texRect.getSize() );
 
-    gl::draw( mVboMesh );
+    mMainMutex.lock();
+    ChunkMap& chunks = mChunkHolder.getChunks();
+    for ( auto& chunk : chunks )
+        chunk.second.draw();
+    mMainMutex.unlock();
+
 }
 bool cUnderGround::createUnderGround()
 {
-    uint count = 0;
-
-    cTimeMeasurement::getInstance()->make();
-
-    mBlocks = std::vector<std::vector<std::vector<std::shared_ptr<cBlock>>>>(
-        mBlockMaxCell.z * mChunkNum.z, std::vector<std::vector<std::shared_ptr<cBlock>>>(
-            mBlockMaxCell.y, std::vector<std::shared_ptr<cBlock>>(
-                mBlockMaxCell.x * mChunkNum.x ) ) );
-
-    for ( int cz = 0; cz < mChunkNum.z; cz++ )
+    //while ( mIsRunning )
     {
-        for ( int cx = 0; cx < mChunkNum.x; cx++ )
+        for ( size_t x = 0; x < 4; x++ )
         {
-            uint sz = cz * mBlockMaxCell.z;
-            uint sx = cx * mBlockMaxCell.x;
-            for ( int z = sz; z < mBlockMaxCell.z * mChunkNum.z; z++ )
+            for ( size_t z = 0; z < 4; z++ )
             {
-                if ( z / mBlockMaxCell.z > sz / mBlockMaxCell.z )
-                    break;
-                for ( int y = 0; y < mBlockMaxCell.y; y++ )
-                {
-                    for ( int x = sx; x < mBlockMaxCell.x * mChunkNum.x; x++ )
-                    {
-                        if ( x / mBlockMaxCell.x > sx / mBlockMaxCell.x )
-                            break;
+                std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
 
-                        auto position = vec3( x * mScale + x * mIntervalOffset,
-                                              y * mScale + y * mIntervalOffset,
-                                              z * mScale + z * mIntervalOffset ) + mOffset;
-                        std::shared_ptr<cBlock> block = std::make_shared<cBlock>( position, mScale, count );
-                        block->calcMeshIndexData( count++ );
-
-                        mBlocks[z][y][x] = block;
-                    }
-                }
+                if ( mChunkHolder.isExistsChunks( x, z ) == false )
+                    continue;
+                mMainMutex.lock();
+                mChunkHolder.createChunk( x, z );
+                mMainMutex.unlock();
             }
         }
     }
-
-    createMesh();
-
-    cTimeMeasurement::getInstance()->make();
-
-    app::console() << std::endl << std::endl;
-    app::console() << "Field create time : " << cTimeMeasurement::getInstance()->deltaTime() << " sec" << std::endl;
-    app::console() << std::endl << std::endl;
-
     return true;
 }
 bool cUnderGround::createMesh()
 {
-    uint count = 0;
-    for ( uint z = 0; z < mChunkNum.z; z++ )
-    {
-        for ( uint x = 0; x < mChunkNum.x; x++ )
-        {
-            cChunk chunk = calcChunk( mBlockMaxCell, ivec2( x, z ), count++, mScale );
-
-            std::copy( chunk.mVertices.begin(), chunk.mVertices.end(), std::back_inserter( mVertices ) );
-            std::copy( chunk.mIndices.begin(), chunk.mIndices.end(), std::back_inserter( mIndices ) );
-            std::copy( chunk.mNormals.begin(), chunk.mNormals.end(), std::back_inserter( mNormals ) );
-            std::copy( chunk.mUv.begin(), chunk.mUv.end(), std::back_inserter( mUv ) );
-        }
-    }
-
-    mMesh = ci::TriMesh::create();
-    if ( mVertices.size() > 0 )
-        mMesh->appendPositions( &mVertices[0], mVertices.size() );
-    if ( mIndices.size() > 0 )
-        mMesh->appendIndices( &mIndices[0], mIndices.size() );
-    if ( mUv.size() > 0 )
-        mMesh->appendTexCoords0( &mUv[0], mUv.size() );
-    if ( mNormals.size() > 0 )
-        mMesh->appendNormals( &mNormals[0], mNormals.size() );
-    mVboMesh = gl::VboMesh::create( *mMesh );
-
     return true;
 }
-void cUnderGround::blockMeshErase( std::shared_ptr<cBlock> b )
+bool cUnderGround::loadChunks()
 {
-    auto indices = std::vector<uint>( b->mIndicesNum.size() * 4 );
-    for ( uint i = 0; i < b->mIndicesNum.size(); i++ )
-    {
-        auto k = b->mIndicesNum[i];
-        mIndices[k] = 0;
-    }
-    auto vbo = mVboMesh->getIndexVbo();
-    // VboRef‚Ì’†‚ÅIndices‚ª4”{‚³‚ê‚é‚Ì‚ÅA•ÏX‰ÓŠ‚ð4”{‚·‚é
-    vbo->bufferSubData( b->mIndicesNum[0] * 4, b->mIndicesNum.size() * 4, &indices[0] );
+    return false;
 }
-bool cUnderGround::blockDigged( const ci::ivec3& c )
+ci::ivec3 cUnderGround::getChunkCellFromPosition( const ci::vec3 & position )
 {
-    if ( isOutOfRange( c ) )
-        return false;
-
-    auto b = mBlocks[c.z][c.y][c.x];
-    if ( b->mIsActive == false )
-        return false;
-
-    blockMeshErase( b );
-
-    //using namespace Network;
-    //using namespace Network::Packet;
-    //Network::cUDPManager::getInstance()->
-    //    send( cNetworkHandle( "126.77.126.180", 25565 ),
-    //          new Request::cReqCheckBreakBlocks( c ) );
-    return true;
+    return ivec3( position ) / CHUNK_SIZE;
 }
-void cUnderGround::blockAllClear()
+ci::ivec3 cUnderGround::getBlockCellFromPosition( const ci::vec3 & position )
 {
-    mVertices.clear();
-    mIndices.clear();
-    mUv.clear();
-    mNormals.clear();
-}
-ci::ivec3 cUnderGround::getCellNumFromPosition( const ci::vec3 & position )
-{
-    return ivec3( ( position + mOffset ) / mScale );
+    return ci::ivec3( position ) % CHUNK_SIZE;
 }
 bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 {
-    auto c = getCellNumFromPosition( position );
+    auto chunk_cell = getChunkCellFromPosition( position );
+    auto block_cell = getBlockCellFromPosition( position );
+    auto& chunks = mChunkHolder.getChunk( chunk_cell );
 
-    if ( isOutOfRange( c ) )
-        return false;
-
-    auto r = ivec3( int( radius / mScale ) );
-    auto s = c - r;
-    auto e = c + r;
+    auto r = ivec3( int( radius / BLOCK_SIZE ) );
+    auto s = chunk_cell - r;
+    auto e = chunk_cell + r;
 
     for ( int z = s.z; z < e.z; z++ )
         for ( int y = s.y; y < e.y; y++ )
             for ( int x = s.x; x < e.x; x++ )
-            {
-                if ( isOutOfRange( ivec3( x, y, z ) ) )
-                    continue;
-                if ( blockDigged( ivec3( x, y, z ) ) )
-                    mBlocks[z][y][x]->toBreak();
-            }
+                chunks.breakBlock( block_cell );
+
     return true;
-}
-bool cUnderGround::blockBreak( const ci::ivec3 & cell_num, const float & radius )
-{
-    auto c = cell_num;
-    if ( isOutOfRange( cell_num ) )
-        return false;
-    if ( blockDigged( ivec3( c.x, c.y, c.z ) ) )
-        mBlocks[c.z][c.y][c.x]->toBreak();
-    return true;
-}
-bool cUnderGround::isOutOfRange( const ci::ivec3& c )
-{
-    return  (uint) c.z < 0 || (uint) c.z > mBlocks.size() - 1 ||
-        (uint) c.y < 0 || (uint) c.y > mBlocks[c.z].size() - 1 ||
-        (uint) c.x < 0 || (uint) c.x > mBlocks[c.z][c.y].size() - 1;
 }
 ci::vec3 cUnderGround::getBlockCenterTopPosition( const ci::vec3 & target_position )
 {
-    auto c = getCellNumFromPosition( target_position );
-    auto b = mBlocks[c.z][c.y][c.x];
-    return b->mPosition + vec3( 0, b->mScale / 2, 0 );
+    //auto c = getCellNumFromPosition( target_position );
+    //auto b = mBlocks[c.z][c.y][c.x];
+    //return b->mPosition + vec3( 0, b->mScale / 2, 0 );
+    return vec3();
 }
 ci::ivec3 cUnderGround::getBlockMaxCell()
 {
-    return mBlockMaxCell;
+    //return mBlockMaxCell;
+    return ivec3();
 }
 }
 }

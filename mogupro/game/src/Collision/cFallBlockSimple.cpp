@@ -6,7 +6,8 @@ cFallBlockSimple::cFallBlockSimple( cinder::vec3 pos )
     : mCollider( pos, cinder::vec3( 0.8F ) )
     , mRigidbody( mCollider )
 {
-
+    mCollider.addWorld( );
+    mRigidbody.addWorld( );
 }
 void cFallBlockSimple::draw( )
 {

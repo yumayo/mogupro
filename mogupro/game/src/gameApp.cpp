@@ -15,7 +15,7 @@ using namespace std;
 class gameApp : public App
 {
 private:
-    float prevSeconds;
+    float prevSeconds = 0.0F;
 public:
     void setup( ) override;
     void mouseDown( MouseEvent event ) override;

@@ -33,12 +33,11 @@ public:
     static constexpr size_t WORLD_Z = 160;
 private:
     bool isRange( int x, int y, int z );
-    void broadphase( );
-    void narophase( );
     std::tuple<cinder::ivec3, cinder::ivec3> fitWorldSpaceMinMax( cinder::AxisAlignedBox const& aabb );
     std::array<std::array<std::array<std::set<cColliderBase*>, WORLD_X>, WORLD_Y>, WORLD_Z> mWorld;
     std::set<cRigidBody*> mRigidBodys;
 private:
+    bool mIsUpdate = false;
     std::vector<cFallBlockSimple> mFallBlocks;
     Utility::hardptr<cStaticBlockSimple> mStaticBlock;
 };
