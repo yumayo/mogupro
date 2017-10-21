@@ -27,13 +27,16 @@ ChunkMap& cChunkHolder::getChunks()
 {
     return mChunks;
 }
-cChunk & cChunkHolder::createChunk( int x, int z )
+void cChunkHolder::setChunk( cChunk&  chunk )
+{
+    auto cell = chunk.getCell();
+    mChunks[cell] = chunk;
+}
+cChunk cChunkHolder::createChunk( int x, int z )
 {
     cChunk chunk = cChunk( x, z );
     chunk.createBlocks();
     chunk = calcChunkData( chunk );
-
-    mChunks[ivec3( x, 0, z )] = chunk;
     return chunk;
 }
 bool cChunkHolder::isExistsChunks( int x, int z )
