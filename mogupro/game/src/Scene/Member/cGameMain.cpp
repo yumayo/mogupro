@@ -51,7 +51,8 @@ void cGameMain::setup( )
     Game::cFieldManager::getInstance( )->setup( );
     Game::cStrategyManager::getInstance( )->setup( );
     Game::cPlayerManager::getInstance( )->setup( );
-	GemManager->setUp(vec3(0,0,0),vec3(8,6,16),1,1,10,0);
+	int seed = 20171031;
+	GemManager->setUp(vec3(0,0,0),vec3(8,6,16),1,1,10,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
     Network::cUDPManager::getInstance( )->open( );
 
