@@ -9,7 +9,7 @@ _TEMPLATE_CLASS_::_TEMPLATE_CLASS_( )
 {
 
 }
-void _TEMPLATE_CLASS_::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
+void _TEMPLATE_CLASS_::packetImport( ubyte2 size, char const* const data )
 {
 
 }
