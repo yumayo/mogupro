@@ -11,8 +11,13 @@ class cResCheckGetJem : public cPacketBase<cResCheckGetJem, PacketId::RES_CHECK_
 {
 public:
     cResCheckGetJem( );
-    void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
+	cResCheckGetJem(char flag,short drillID,short gemID);
+	void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
+
+	char mFlag;
+	short mDrillID;
+	short mGemID;
 };
 }
 }
