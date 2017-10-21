@@ -1,4 +1,5 @@
 #include <Network/PackFunction.hpp>
+#include <winsock2.h>
 
 namespace Network
 {
@@ -136,4 +137,46 @@ namespace Network
 		offset += sizeof(float);
 		return true;
 	}
+
+    // ˆÈ‰ºyumayo
+    template<>
+    ubyte2 imp<ubyte1>( ubyte1& value, const char* const buffer, ubyte2 offset )
+    {
+        memcpy( &value, buffer + offset, sizeof( ubyte1 ) );
+        return offset += sizeof( ubyte1 );
+    }
+    template<>
+    ubyte2 exp<ubyte1>( ubyte1 const& value, char* const buffer, ubyte2 offset )
+    {
+        memcpy( buffer + offset, &value, sizeof( ubyte1 ) );
+        return offset += sizeof( ubyte1 );
+    }
+    template<>
+    ubyte2 imp<ubyte2>( ubyte2& value, const char* const buffer, ubyte2 offset )
+    {
+        memcpy( &value, buffer + offset, sizeof( ubyte2 ) );
+        return offset += sizeof( ubyte2 );
+    }
+    template<>
+    ubyte2 exp<ubyte2>( ubyte2 const& value, char* const buffer, ubyte2 offset )
+    {
+        memcpy( buffer + offset, &value, sizeof( ubyte2 ) );
+        return offset += sizeof( ubyte2 );
+    }
+    template<>
+    ubyte2 imp<ubyte4>( ubyte4& value, const char* const buffer, ubyte2 offset )
+    {
+        memcpy( &value, buffer + offset, sizeof( ubyte4 ) );
+        return offset += sizeof( ubyte4 );
+    }
+    template<>
+    ubyte2 exp<ubyte4>( ubyte4 const& value, char* const buffer, ubyte2 offset )
+    {
+        memcpy( buffer + offset, &value, sizeof( ubyte4 ) );
+        return offset += sizeof( ubyte4 );
+    }
+    ubyte2 convertFixedpoint( float value )
+    {
+        return ubyte2( );
+    }
 }

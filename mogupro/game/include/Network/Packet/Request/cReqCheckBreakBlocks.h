@@ -2,6 +2,7 @@
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
 #include <cinder/Vector.h>
+#include <vector>
 namespace Network
 {
 namespace Packet
@@ -12,10 +13,9 @@ class cReqCheckBreakBlocks : public cPacketBase<cReqCheckBreakBlocks, PacketId::
 {
 public:
     cReqCheckBreakBlocks( );
-    cReqCheckBreakBlocks( cinder::ivec3 cellNum );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-    cinder::ivec3 mCellNum;
+    std::vector<cinder::vec3> mBreakPositions;
 };
 }
 }
