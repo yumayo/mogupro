@@ -27,6 +27,12 @@ public:
 class cNetworkHandle
 {
 public:
+	cNetworkHandle()
+		: ipAddress("")
+		, port(0)
+	{
+
+	}
     cNetworkHandle( std::string ipAddress, int port )
         : ipAddress( ipAddress )
         , port( port )
