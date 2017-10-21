@@ -181,7 +181,7 @@ cChunk calcChunkData( cChunk chunk )
         }
     }
 
-    chunk.createVboMesh();
+    chunk.createTriMesh();
     return chunk;
 }
 }
