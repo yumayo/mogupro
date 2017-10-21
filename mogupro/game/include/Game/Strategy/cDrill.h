@@ -7,16 +7,22 @@ namespace Game
 {
 namespace Strategy
 {
+	
+
 class cDrill : public cStrategyObjectBase
 {
 public:
-    cDrill( const ci::vec3 _pos, const ci::vec3 _scale,const int _id);
+	enum DrillType {
+		Level1, Level2, Level3,
+	};
+    cDrill( const ci::vec3 _pos,const int _id,const DrillType type,const bool ismyobject);
     ~cDrill();
     void draw() override;
     void update( const float& delta_time ) override;
     void setup() override;
     bool DeleteThis() override;
 	void setField(const ci::vec3 pos) override;
+	DrillType drilltype;
 private:
 	enum DrillState{
 		DRILLMOVE,DRILLRETURN,DRILLSTOP
