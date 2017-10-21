@@ -2,6 +2,8 @@
 #include <Collision/cAABBCollider.h>
 #include <Game/cFieldManager.h>
 #include <CameraManager/cCameraManager.h>
+#include <Resource/cObjectManager.h>
+#include <Resource/TextureManager.h>
 //void Game::Player::cPlayer::playerRotation()
 //{
 //	//プレイヤーの前方向
@@ -42,43 +44,31 @@ void Game::Player::cPlayer::playerRotation()
 	//回転軸
 	ci::vec3 quataxis = glm::cross(rotateaxis, targetvec);
 
-	float rotation = 0;
+	float rotation = atan2f(velocity.x, velocity.z);
 
 	//回転
 	// 左回り
-	if (atan2f(velocity.x, velocity.z) > 0.0f)
-		ci::gl::rotate(atan2f(velocity.x, velocity.z), quataxis);
+	if (rotation > 0.1f) {
+		ci::gl::rotate(rotation, quataxis);
+		save_rotate = rotation;
+	}
 	// 右回り
-	else if (atan2f(velocity.x, velocity.z) < 0.0f)
-		ci::gl::rotate(-atan2f(velocity.x, velocity.z), quataxis);
-
-	if (quataxis == ci::vec3(0))
-	{
-		if (velocity.z > 0.0f)
-			ci::gl::rotate(0, ci::vec3(0, 1, 0));
-		if (velocity.z < 0.0f)
-			ci::gl::rotate((float)M_PI, ci::vec3(0, 1, 0));
+	else if (rotation < -0.1f) {
+		ci::gl::rotate(-rotation, quataxis);
+		save_rotate = rotation;
 	}
+
+	//ベクトルが出なければ
+	if (rotation <= 0.1f &&
+		rotation >= -0.1f) {
+		if (save_rotate > 0.1f)
+			ci::gl::rotate(save_rotate, ci::vec3(0, 1, 0));
+		if (save_rotate < -0.1f)
+			ci::gl::rotate(save_rotate, ci::vec3(0, 1, 0));
+	}
+
 }
 
-float Game::Player::cPlayer::angleDifference(const float & angle1, const float & angle2)
-{
-	if (angle1 == angle2)
-	{
-		return 0.0f;
-	}
-	float angle_difference = angle1 - angle2;
-	if (angle_difference < -M_PI)
-	{
-		angle_difference = 2.0f * M_PI + angle_difference;
-	}
-	else if (angle_difference > M_PI)
-	{
-		angle_difference = 2.0f * -M_PI + angle_difference;
-	}
-	angle_difference = std::fmodf(angle_difference, 2.0f * M_PI);
-	return angle_difference;
-}
 
 //コンストラクタで
 //位置と角度と何Pかとどれが自分のプレイヤーかを
@@ -96,8 +86,9 @@ Game::Player::cPlayer::cPlayer(
 	color = ci::vec4(1);
 	color = ci::ColorA8u(1, 0, 1, 1);
 	velocity = ci::vec3(0);
+	save_rotate = 0;
 	drilling = false;
-	speed = 5.0f;
+	speed = DEFAULT_SPEED;
 	player_id = id;
 	active_user = is_active_user;
 }
@@ -114,12 +105,14 @@ void Game::Player::cPlayer::move(const ci::vec3 & velocity)
 
 void Game::Player::cPlayer::setup()
 {
+	mesh = Resource::cObjectManager::getInstance()->findObject("montamogura/moguraHontai.obj");
+	TEX->set("mogura", "OBJ/montamogura/moguraHontai.png");
 }
 
 void Game::Player::cPlayer::update(const float & delta_time)
 {
 	if (drilling) {
-		Game::cFieldManager::getInstance()->blockBreak(mPos, 1);
+		Game::cFieldManager::getInstance()->blockBreak(mPos, 2);
 	}
 	/*mPos = mCollider.getPosition();
 	size = mCollider.getSize();*/
@@ -128,12 +121,14 @@ void Game::Player::cPlayer::update(const float & delta_time)
 void Game::Player::cPlayer::draw()
 {
 	ci::gl::pushModelView();
-	ci::gl::translate(mPos);
-	ci::gl::scale(ci::vec3(1));
+	ci::gl::translate(mPos - ci::vec3(0, 1, 0));
+	ci::gl::scale(ci::vec3(0.02f) + ci::vec3(0.01f, 0, 0.01f));
 	playerRotation();
 	ci::gl::color(color);
-	ci::gl::ScopedGlslProg sgp(ci::gl::getStockShader(ci::gl::ShaderDef().lambert()));
-	ci::gl::drawCube(ci::vec3(0, 0, 0), ci::vec3(1, 1, 1));
+	TEX->get("mogura")->bind();
+	ci::gl::ScopedGlslProg sgp(ci::gl::getStockShader(ci::gl::ShaderDef().texture()));
+	ci::gl::draw(mesh);
+	Resource::TextureManager::getInstance()->get("mogura")->unbind();
 	ci::gl::color(1, 1, 1, 1);
 	ci::gl::popModelView();
 }

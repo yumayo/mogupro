@@ -5,7 +5,7 @@
 void Game::SkyDome::cSkyDome::setup()
 {
 	//画像のバインド
-	TEX.set("sky_dome","SkyDome/Skydome151004y.jpg");
+	TEX->set("sky_dome","SkyDome/Skydome151004y.jpg");
 
 	size = ci::vec3(5000, 5000, 5000);
 	
@@ -23,13 +23,13 @@ void Game::SkyDome::cSkyDome::draw()
 {
 	
 	//画像をバインド
-	TEX.get("sky_dome")->bind();
+	Resource::TextureManager::getInstance()->get("sky_dome")->bind();
 	ci::gl::pushModelView();
 	ci::gl::translate(CAMERA->getPos());
 	ci::gl::scale(size);
 	mSphere->draw();
 	ci::gl::popModelView();
-	TEX.get("sky_dome")->unbind();
+	Resource::TextureManager::getInstance()->get("sky_dome")->unbind();
 
 
 }

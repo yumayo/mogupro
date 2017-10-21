@@ -9,14 +9,20 @@ namespace Game {
 		private:
 			ci::vec3 size;
 			ci::ColorA8u color;
+			//メッシュ
+			ci::gl::VboMeshRef mesh;
 			//速度
 			float speed;
+			const float DEFAULT_SPEED = 5.0f;
 			//何Pか
 			int player_id;
 			//操作するプレイヤーかどうか
 			bool active_user;
 			//掘削中
 			bool drilling;
+
+			//クォータニオンの例外用の角度
+			float save_rotate;
 
 			//プレイヤーの移動ベクトル保存
 			ci::vec3 velocity;
@@ -33,7 +39,6 @@ namespace Game {
 			ci::gl::GlslProgRef mGlsl;
 
 			void playerRotation();
-			float angleDifference(const float & angle1, const float & angle2);
 		public:
 			cPlayer(const ci::vec3& pos, const ci::vec3& center_angle, const int& id, const bool& is_active_user);
 			
@@ -43,6 +48,13 @@ namespace Game {
 
 			float getSpeed() {
 				return speed;
+			}
+			void setSpeed(const float& speed) {
+				this->speed = speed;
+			}
+			
+			void setDefaultSpeed() {
+				this->speed = DEFAULT_SPEED;
 			}
 
 			int getPlayerId() {
