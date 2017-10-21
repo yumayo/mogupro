@@ -3,6 +3,7 @@
 #include <Utility/cInput.h>
 #include <string>
 #include <Network.hpp>
+#include <CameraManager/cCameraManager.h>
 using namespace Network;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
@@ -34,6 +35,12 @@ namespace Member
 		mWaitClassState = ClassState::NOT;
 		mPhaseState = PhaseState::NOT_IN_ROOM;
 		mCanSend = true;
+		Network::cUDPManager::getInstance()->open();
+		ci::vec3 pos = ci::vec3(0);
+		CAMERA->followingCamera(&pos, 30);
+		CAMERA->setup();
+		ENV->padSetup();
+		//mFont = ci::Font("timesi.ttf",20);
 	}
 
 	void cMatching::shutDown()
@@ -43,6 +50,7 @@ namespace Member
 
 	void cMatching::update(float deltaTime)
 	{
+		Network::cUDPManager::getInstance()->update();
 		makeRoom();
 		inRoom();
 	}
@@ -63,13 +71,13 @@ namespace Member
 			if (ENV->pushKey(ci::app::KeyEvent::KEY_z))
 			{
 				mCanSend = false;
-				cUDPManager::getInstance()->send(cNetworkHandle("127.0.0.1", 25565), new cReqMakeRoom(100));
+				cUDPManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565), new cReqMakeRoom(100));
 				mWaitClassState = ClassState::MASTER;
 			}
 
 			else if (ENV->pushKey(ci::app::KeyEvent::KEY_x))
 			{
-				cUDPManager::getInstance()->send(cNetworkHandle("127.0.0.1", 25565), new cReqInRoom(100));
+				cUDPManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565), new cReqInRoom(100));
 				mCanSend = false;
 				mWaitClassState = ClassState::CLIENT;
 			}
@@ -93,7 +101,6 @@ namespace Member
 				cResponseManager::getInstance()->mResInRoom.pop();
 				continue;
 			}
-
 		}
 
 		else if (mWaitClassState == ClassState::MASTER)
@@ -119,7 +126,26 @@ namespace Member
 	}
 	void cMatching::inRoom()
 	{
+		if (mClassState == ClassState::CLIENT)
+		{
+			if (ENV->pushKey(ci::app::KeyEvent::KEY_1))
+			{
 
+
+			}
+
+			else if (ENV->pushKey(ci::app::KeyEvent::KEY_2))
+			{
+
+
+			}
+		}
+
+		else if (mClassState == ClassState::MASTER)
+		{
+
+
+		}
 	}
 
 	void cMatching::draw()
@@ -131,8 +157,8 @@ namespace Member
 		switch (mPhaseState)
 		{
 		case PhaseState::NOT_IN_ROOM:
-			drawRect(ci::vec2(-300, -100), ci::vec2(200,100),ci::ColorA(1,0,0,1));
-			drawRect(ci::vec2(300, -100), ci::vec2(200, 100), ci::ColorA(1, 0, 0, 1));
+			drawRect(ci::vec2(-300, -100), ci::vec2(200,200),ci::ColorA(1,0,0,1));
+			drawRect(ci::vec2(300, -100), ci::vec2(200, 200), ci::ColorA(1, 0, 0, 1));
 			break;
 		case PhaseState::IN_ROOM:
 

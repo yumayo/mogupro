@@ -10,3 +10,6 @@
 #include<Network/Packet/Response/cResCheckPlayerDeath.h>
 #include<Network/Packet/Response/cResMakeRoom.h>
 #include<Network/Packet/Response/cResInRoom.h>
+#include<Network/Packet/Response/cResWantTeamIn.h>
+#include<Network/Packet/Response/cResCheckBeginGame.h>
+#include<Network/Packet/Response/cResCheckMember.h>
