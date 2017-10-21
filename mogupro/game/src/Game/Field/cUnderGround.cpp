@@ -27,7 +27,7 @@ void cUnderGround::setup()
 {
     TEX->set( "dirt", "dirt.jpg" );
 
-    cTimeMeasurement::getInstance()->make();
+    //cTimeMeasurement::getInstance()->make();
 
     for ( size_t z = 0; z < 1; z++ )
     {
@@ -49,12 +49,12 @@ void cUnderGround::update()
     for ( auto& chunk : chunks )
         chunk.second.createVboMesh();
 
-    cTimeMeasurement::getInstance()->make();
-    auto t = cTimeMeasurement::getInstance()->deltaTime();
+    //cTimeMeasurement::getInstance()->make();
+    //auto t = cTimeMeasurement::getInstance()->deltaTime();
 
-    console() << std::endl << std::endl;
-    console() << "Field create time : " << t << std::endl;
-    console() << std::endl << std::endl;
+    //console() << std::endl << std::endl;
+    //console() << "Field create time : " << t << std::endl;
+    //console() << std::endl << std::endl;
     mMainMutex.unlock();
 }
 void cUnderGround::draw()
