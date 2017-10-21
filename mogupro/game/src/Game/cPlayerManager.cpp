@@ -17,7 +17,6 @@ void Game::cPlayerManager::playerInstance()
 	player_pos.push_back(ci::vec3(20, 20, 0));
 	player_pos.push_back(ci::vec3(30, 0, 30));
 
-
 	//生成
 	for (int i = 0; i < player_number; i++) {
 		//通信で代入
@@ -29,7 +28,6 @@ void Game::cPlayerManager::playerInstance()
 		else {
 			player.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, false));
 		}
-
 	}
 }
 
@@ -45,22 +43,33 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 	//プレイヤーの速度
 	float player_speed = active_player->getSpeed() * delta_time;
 
+	ci::vec3 keybord_velocity = ci::vec3(0);
+
+	float x_axis = 0;
+	float z_axis = 0;
+
+	
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_w)) {
-		active_player->move(ci::vec3(player_speed*sin(CAMERA->getCameraAngle().x), 0.0f, player_speed * cos(CAMERA->getCameraAngle().x)));
+		z_axis = delta_time * active_player->getSpeed();
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_s)) {
-		active_player->move(ci::vec3(-player_speed*sin(CAMERA->getCameraAngle().x), 0.0f, -player_speed*cos(CAMERA->getCameraAngle().x)));
+		z_axis = -delta_time * active_player->getSpeed();
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_d)) {
-		active_player->move(ci::vec3(-player_speed*cos(CAMERA->getCameraAngle().x), 0, player_speed*sin(CAMERA->getCameraAngle().x)));
+		x_axis = -delta_time * active_player->getSpeed();
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_a)) {
-		active_player->move(ci::vec3(+player_speed*cos(CAMERA->getCameraAngle().x), 0, -player_speed*sin(CAMERA->getCameraAngle().x)));
+		x_axis = delta_time * active_player->getSpeed();
 	}
-		
+
+	keybord_velocity += ci::vec3(z_axis*sin(CAMERA->getCameraAngle().x), 0.0f, z_axis*cos(CAMERA->getCameraAngle().x));
+	keybord_velocity += ci::vec3(x_axis*cos(CAMERA->getCameraAngle().x), 0.0f, -x_axis*sin(CAMERA->getCameraAngle().x));
+	
+	active_player->move(keybord_velocity);
+
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_q)) {
 		active_player->move(ci::vec3(0, -player_speed, 0));
@@ -87,11 +96,31 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 			mouse_on = true;
 		}
 	}
+
+	//掘削中はtrue 
+	active_player->Drilling(false);
+	if (ENV->pressKey(ci::app::MouseEvent::LEFT_DOWN)) {
+		active_player->Drilling(true);
+	}
+	if (ENV->isPadPress(ENV->BUTTON_2)) {
+		active_player->Drilling(true);
+	}
+
+	//ダッシュ
+	if (ENV->pullKey(ci::app::KeyEvent::KEY_SPACE)) {
+		active_player->setDefaultSpeed();
+	}
+	if (ENV->pushKey(ci::app::KeyEvent::KEY_SPACE)) {
+		active_player->setSpeed(10.0f);
+	}
+
 	//パッドの判定仮置き
 	if (ENV->isPadPush(ENV->BUTTON_1)) {
 		CAMERA->shakeCamera(0.1f, 0.1f);
 	}
 	CAMERA->setCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
+
+	padMove(delta_time);
 
 	//掘削中は動き方が変わる
 	if (active_player->isDrilling()) {
@@ -100,19 +129,9 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	else {
 		playerNormalMove(delta_time);
 	}
+
 	
 	
-
-	//掘削中はtrue 
-	active_player->Drilling(false);
-	if (ENV->pressKey(ci::app::MouseEvent::LEFT_DOWN)) {
-		active_player->Drilling(true);
-	}
-	if (ENV->pressKey(ci::app::KeyEvent::KEY_m)) {
-		active_player->Drilling(true);
-	}
-
-
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_UP)) {
 		CAMERA->setCameraAngle(ci::vec2(0, 0.05f));
 	}
@@ -125,6 +144,18 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_LEFT))
 		CAMERA->setCameraAngle(ci::vec2(0.05f, 0));
 }
+void Game::cPlayerManager::padMove(const float & delta_time)
+{
+	ci::vec3 pad_velocity = ci::vec3(0);
+
+	float x_axis = -1 * ENV->getPadAxis(0) * delta_time * active_player->getSpeed();
+	float z_axis = -1 * ENV->getPadAxis(1) * delta_time * active_player->getSpeed();
+
+	pad_velocity += ci::vec3(z_axis*sin(CAMERA->getCameraAngle().x), 0.0f, z_axis*cos(CAMERA->getCameraAngle().x));
+	pad_velocity += ci::vec3(x_axis*cos(CAMERA->getCameraAngle().x), 0.0f, -x_axis*sin(CAMERA->getCameraAngle().x));
+	
+	active_player->move(pad_velocity);
+}
 void Game::cPlayerManager::setup()
 {
 	playerInstance();
@@ -134,14 +165,27 @@ void Game::cPlayerManager::setup()
 		it->setup();
 	}
 }
-
+#include <Network.hpp>
 void Game::cPlayerManager::update(const float& delta_time)
 {
-	
+	//auto& p = Network::cResponseManager::getInstance()->mResPlayer;
+	//while (!p.empty())
+	//{
+	//	auto top = p.top();
+	//	p.pop();
+	//	player[0]->setPos(cinder::vec3(top.xPos, top.yPos, top.zPos));
+	//}
+
 	for (auto it : player) {
 		it->update(delta_time);
 	}
 	playerMove(delta_time);
+
+	//auto pos = player[1]->getPos();
+	//Network::cUDPManager::getInstance()->send(Network::cNetworkHandle("10.25.36.137", 25565),
+	//	new Network::Packet::Request::cReqPlayer( pos.x, pos.y, pos.z, 0, 0 ));
+
+
 }
 
 void Game::cPlayerManager::draw()

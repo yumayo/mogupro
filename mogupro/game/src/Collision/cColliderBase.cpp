@@ -30,9 +30,10 @@ std::vector<std::set<cColliderBase*>*> const & cColliderBase::getLeafs( )
 {
     return mLeafs;
 }
-void cColliderBase::calc( cRigidBody * rigidbody, cinder::vec3 const & position )
+void cColliderBase::calc( cinder::vec3 position )
 {
+    cCollisionManager::getInstance( )->remove( *this );
     mPosition = position;
-    rigidbody->setSpeed( rigidbody->getSpeed( ) * 0.1F );
+    cCollisionManager::getInstance( )->add( *this );
 }
 }

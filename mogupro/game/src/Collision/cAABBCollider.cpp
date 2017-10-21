@@ -8,9 +8,15 @@ cAABBCollider::cAABBCollider( cinder::vec3 position, cinder::vec3 size, cinder::
     , mSize( size )
     , mAnchor( anchor )
 {
-    cCollisionManager::getInstance( )->add( *this );
 }
 cAABBCollider::~cAABBCollider( )
+{
+}
+void cAABBCollider::addWorld( )
+{
+    cCollisionManager::getInstance( )->add( *this );
+}
+void cAABBCollider::removeWorld( )
 {
     cCollisionManager::getInstance( )->remove( *this );
 }

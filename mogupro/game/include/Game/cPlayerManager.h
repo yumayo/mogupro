@@ -18,6 +18,7 @@ private:
     void playerNormalMove(const float& delta_time);
 	void playerDrillMove(const float& delta_time);
 	void playerMove(const float& delta_time);
+	void padMove(const float & delta_time);
 public:
     void setup();
     void update( const float& delta_time );
