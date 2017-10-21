@@ -12,8 +12,12 @@ class cReqCheckGetJem : public cPacketBase<cReqCheckGetJem, PacketId::REQ_CHECK_
 {
 public:
     cReqCheckGetJem( );
+	cReqCheckGetJem(short drillID,short gemID);
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
+
+	short mDrillID;
+	short mGemID;
 };
 }
 }
