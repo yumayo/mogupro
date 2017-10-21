@@ -17,7 +17,7 @@ using ChunkMap = std::unordered_map<ci::ivec3, Game::Field::cChunk>;
 
 constexpr int
 BLOCK_SIZE = 1,
-CHUNK_SIZE = 8,
+CHUNK_SIZE = 4,
 CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE,
 CHUNK_VOLUME = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
 constexpr float

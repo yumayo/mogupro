@@ -18,7 +18,7 @@ public:
     ChunkMap& getChunks();
     void setChunk( cChunk& chunk );
 
-    cChunk createChunk( int x, int z );
+    bool createChunk( int x, int z );
     bool isExistsChunks( int x, int z );
 
 private:

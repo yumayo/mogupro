@@ -31,7 +31,7 @@ public: // Player,Strategy Ç≈égÇ§ä÷êî
 
 private: // Method
 
-    bool createChunks( int x, int z );
+    bool createChunks();
 
     ci::ivec3 getChunkCellFromPosition( const ci::vec3& position );
     ci::ivec3 getBlockCellFromPosition( const ci::vec3& position );
@@ -42,8 +42,6 @@ private: // Member
     std::vector<std::thread> mChunkLoadThreads;
     std::mutex mMainMutex;
     std::atomic<bool> mIsRunning{ true };
-    //boost::lockfree::queue<int> mLockFreeQueue;
-
 
 };
 }

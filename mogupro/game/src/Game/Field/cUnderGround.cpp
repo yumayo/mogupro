@@ -29,27 +29,24 @@ void cUnderGround::setup()
 
     cTimeMeasurement::getInstance()->make();
 
-    for ( size_t i = 0; i < 4; i++ )
+    for ( size_t i = 0; i < 1; i++ )
     {
-        createChunks( 0, 0 );
+        mChunkLoadThreads.emplace_back( [&]
+        {
+            createChunks();
+        }
+        );
     }
-
 }
 void cUnderGround::update()
 {
-    mMainMutex.lock();
+    //mMainMutex.lock();
 
     ChunkMap& chunks = mChunkHolder.getChunks();
     for ( auto& chunk : chunks )
-        chunk.second.createVboMesh();
+        chunk.second.createMainCall();
 
-    cTimeMeasurement::getInstance()->make();
-    auto t = cTimeMeasurement::getInstance()->deltaTime();
-
-    console() << std::endl << std::endl;
-    console() << "Field create time : " << t << std::endl;
-    console() << std::endl << std::endl;
-    mMainMutex.unlock();
+    //mMainMutex.unlock();
 }
 void cUnderGround::draw()
 {
@@ -74,26 +71,27 @@ void cUnderGround::draw()
     //glsl->uniform( "uTexCoordOffset", texRect.getUpperLeft() );
     //glsl->uniform( "uTexCoordScale", texRect.getSize() );
 
-    mMainMutex.lock();
+    //mMainMutex.lock();
 
     ChunkMap& chunks = mChunkHolder.getChunks();
     for ( auto& chunk : chunks )
         chunk.second.draw();
 
-    mMainMutex.unlock();
+    //mMainMutex.unlock();
 
 }
-bool cUnderGround::createChunks( int x, int z )
+bool cUnderGround::createChunks()
 {
     while ( mIsRunning )
     {
-        if ( mChunkHolder.isExistsChunks( x, z ) == false )
-            return false;
-
-        auto chunk = mChunkHolder.createChunk( x, z );
-        mChunkHolder.setChunk( chunk );
-
-
+        for ( size_t z = 0; z < 100; z++ )
+        {
+            for ( size_t x = 0; x < 100; x++ )
+            {
+                mChunkHolder.createChunk( x, z );
+            }
+        }
+        mIsRunning = false;
     }
     return true;
 }

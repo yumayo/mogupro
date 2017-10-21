@@ -10,7 +10,7 @@ class cChunk
 {
 public:
 
-    cChunk() {}
+    cChunk();
     cChunk( int x, int z );
     ~cChunk();
 
@@ -31,16 +31,18 @@ public:
 
     ci::ivec3 getCell() { return mChunkCell; }
 
-    void createVboMesh();
+    bool createMainCall();
     ci::TriMeshRef createTriMesh();
     void createBlocks();
 
     bool isOutOfRange( ci::ivec3 c );
 
-private:
 
     ci::ivec3 mChunkCell;
     bool mIsLoaded;
+    bool mIsDone;
+
+private:
 
     std::vector<ci::vec3> mVertices;
     std::vector<uint> mIndices;

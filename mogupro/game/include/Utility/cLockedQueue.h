@@ -15,23 +15,20 @@ public:
     template<typename ...Args>
     void push( Args&& ...args )
     {
-        std::lock_guard<std::mutex> lock( mutexque_ );
-        que_.emplace( std::forward<Args>( args )... );
-        popwait_.notify_one();
-    }
-
-    template<typename ...Args>
-    void triPush()
-    {
-
+        std::lock_guard<std::mutex> lock( mMutexQue );
+        mQue.emplace( std::forward<Args>( args )... );
+        mPopWait.notify_one();
     }
 
     T pop()
     {
-        std::unique_lock<std::mutex> lock( mutexque_ );
-        popwait_.wait( lock, [this] { return !que_.empty(); } );
-        T data = std::move( que_.front() );
-        que_.pop();
+        std::unique_lock<std::mutex> lock( mMutexQue );
+        mPopWait.wait( lock, [this]
+        {
+            return !mQue.empty();
+        } );
+        T data = std::move( mQue.front() );
+        mQue.pop();
         return data;
     }
 
@@ -39,6 +36,6 @@ public:
 
     std::queue<T> mQue;
     std::mutex mMutexQue;
-    std::condition_variable mCondition;
+    std::condition_variable mPopWait;
 };
 }
