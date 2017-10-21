@@ -16,13 +16,28 @@ namespace Game
 namespace Strategy
 {
 
-cDrill::cDrill(const ci::vec3 _pos, const ci::vec3 _scale, const int _id)
+cDrill::cDrill(const ci::vec3 _pos, const int _id, const DrillType type, const bool _ismyobject)
 {
+	drilltype = type;
+	ismyobject = _ismyobject;
 
+	switch (drilltype)
+	{
+	case Level1:
+		scale = vec3(1, 1, 1);
+		break;
+	case Level2:
+		scale = vec3(3, 3, 3);
+		break;
+	case Level3:
+		scale = vec3(5, 5, 5);
+		break;
+	default:
+		break;
+	}
 
-	machinescale = _scale + vec3(2, 2, 2);
+	machinescale = scale + vec3(2, 2, 2);
 	pos = _pos + vec3(0, machinescale.y / 2.f, 0);
-	scale = _scale;
 	beginpos = pos;
 	id = _id;
 	slope = vec3(scale.x, 0, scale.z);
@@ -31,13 +46,6 @@ cDrill::cDrill(const ci::vec3 _pos, const ci::vec3 _scale, const int _id)
 	root = Node::node::create();
 	root->set_schedule_update();
 	float a = 0.0f;
-
-	/*root->run_action(sequence::create( float_to::create(2.0f, 0.0f, 10.0f, [this](float t)
-	{
-		auto p = root->get_position_3d();
-		p.y = t;
-		root->set_position_3d(p);
-	}), call_func::create([] {GemManager->draw(); })));*/
 }
 cDrill::~cDrill()
 {
