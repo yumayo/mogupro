@@ -98,7 +98,7 @@ void cGameMain::draw2D( )
     gl::enableFaceCulling( false );
     gl::disableDepthRead( );
     gl::disableDepthWrite( );
-    gl::draw( TEX.get( "sky_dome" ), ci::Rectf( 0, 300, 300, 0 ) );
+    gl::draw( TEX->get( "sky_dome" ), ci::Rectf( 0, 300, 300, 0 ) );
     n->entry_render( mat4( ) );
 }
 

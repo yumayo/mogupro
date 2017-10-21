@@ -25,7 +25,7 @@ cUnderGround::~cUnderGround()
 }
 void cUnderGround::setup()
 {
-    TEX.set( "dirt", "dirt.jpg" );
+    TEX->set( "dirt", "dirt.jpg" );
 
     std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
     //mChunkLoadThreads.emplace_back( [&]
