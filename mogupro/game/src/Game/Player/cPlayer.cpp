@@ -79,7 +79,7 @@ Game::Player::cPlayer::cPlayer(
 	const int& id,
 	const bool& is_active_user)
 	: cObjectBase(pos),
-	mCollider(mPos, ci::vec3(0.8F)),
+	mCollider(mPos, ci::vec3(1.5, 2.3, 1.5)),
 	mRigidbody(mCollider)
 {
 	size = ci::vec3(1);
@@ -95,16 +95,23 @@ Game::Player::cPlayer::cPlayer(
 
 void Game::Player::cPlayer::move(const ci::vec3 & velocity)
 {
+
+	auto speed = mRigidbody.getSpeed() - this->velocity;
+
 	//プレイヤーの移動ベクトル保存
 	this->velocity = velocity;
 
+	mRigidbody.setSpeed(ci::vec3(0,speed.y,0) + velocity);
 	//プレイヤーの移動
-	mPos += velocity;
+	mPos = mCollider.getPosition();
 
 }
 
 void Game::Player::cPlayer::setup()
 {
+	mCollider.addWorld();
+	mRigidbody.addWorld();
+	
 	mesh = Resource::cObjectManager::getInstance()->findObject("montamogura/moguraHontai.obj");
 	TEX->set("mogura", "OBJ/montamogura/moguraHontai.png");
 }
@@ -112,7 +119,7 @@ void Game::Player::cPlayer::setup()
 void Game::Player::cPlayer::update(const float & delta_time)
 {
 	if (drilling) {
-		Game::cFieldManager::getInstance()->blockBreak(mPos, 2);
+		Game::cFieldManager::getInstance()->blockBreak(mPos, 3);
 	}
 	/*mPos = mCollider.getPosition();
 	size = mCollider.getSize();*/

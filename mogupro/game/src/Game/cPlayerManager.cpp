@@ -4,6 +4,8 @@
 #include <CameraManager/cCameraManager.h>
 #include <Game/cStrategyManager.h>
 #include <Game/Strategy/cDrill.h>
+#include <Game/cFieldManager.h>
+#include <Network.hpp>
 
 
 void Game::cPlayerManager::playerInstance()
@@ -15,7 +17,7 @@ void Game::cPlayerManager::playerInstance()
 
 	std::vector<ci::vec3> player_pos;
 	player_pos.push_back(ci::vec3(20, 20, 0));
-	player_pos.push_back(ci::vec3(30, 0, 30));
+	player_pos.push_back(ci::vec3(10, 10, 0));
 
 	//ê∂ê¨
 	for (int i = 0; i < player_number; i++) {
@@ -76,13 +78,27 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_e)) {
-		active_player->move(ci::vec3(0, player_speed, 0));
+		active_player->move(ci::vec3(0, player_speed * 10, 0));
 	}
 	//å@çÌã@ê›íu
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_o)) {
-		Game::cStrategyManager::getInstance()->CreateStrategyObject(Game::Strategy::cDrill(active_player->getPos(), ci::vec3(1),0));
+		auto drill_pos = Game::cFieldManager::getInstance()->getBlockCenterTopPosition(active_player->getPos());
+		Game::cStrategyManager::getInstance()->CreateDrill(active_player->getPos(), 0,Game::Strategy::cDrill::DrillType::Level1, 0);
 	}
-
+	
+	/*static int id = 0;
+	auto& p = Network::cRequestManager::getInstance()->mReqCheckSetQuarry;
+	while (!p.empty()) {
+		auto q = p.top();
+		p.pop();
+		auto drill_pos = Game::cFieldManager::getInstance()->getBlockCenterTopPosition(ci::vec3(q.mXPos, q.mYPos, q.mZPos));
+		Game::Strategy::cDrill::DrillType type = static_cast<Game::Strategy::cDrill::DrillType>(q.mType >> 1);
+		bool isTeam = q.mType & 0x1 == 1;
+		auto objectId = ++id;
+		Game::cStrategyManager::getInstance()->CreateDrill(ci::vec3(q.mXPos, q.mYPos, q.mZPos), objectId, type, isTeam);
+		Network::cUDPManager::getInstance()->send(q.handle, new Network::Packet::Response::cResCheckSetQuarry(true, q.mXPos, q.mYPos, q.mZPos, 0, id++));
+	}*/
+	
 }
 void Game::cPlayerManager::playerMove(const float & delta_time)
 {
