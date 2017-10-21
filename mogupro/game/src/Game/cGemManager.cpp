@@ -18,14 +18,13 @@ namespace Game
 		}
 		create();
 
-		auto con = ci::gl::context();
-	    //cinder::ColorAf coloraf = con->getCurrentColor();
 		ci::gl::Fbo::Format format;
 		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth(), ci::app::getWindowHeight(), true);
+		mShader = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/GemManager.frag"));
+		//batch->replaceGlslProg(ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/GemManager.frag")));
 		ci::gl::enableDepthWrite();
 		ci::gl::enableDepthRead();
 		ci::gl::enableAlphaBlending();
-		//ci::gl::enable(GL_CULL_FACE);
 	}
 
 	void cGemManager::draw()
@@ -35,28 +34,31 @@ namespace Game
 		{
 			g->draw();
 		}
-		ci::gl::color(ci::Color(1, 1, 1));
-		
-		auto rect = ci::Rectf(0, 0, 20, 20);
-		ci::gl::Texture2dRef tex;
-		mGemBuffer->bindTexture();
-		tex = mGemBuffer->getTexture2d(GL_COLOR_ATTACHMENT0);
-		
-		ci::gl::GlslProgRef glsl = ci::gl::getStockShader(ci::gl::ShaderDef().uniformBasedPosAndTexCoord().texture());
-		ci::gl::ScopedGlslProg shaderScp(glsl);
 
-		ci::gl::draw(mGemBuffer->getColorTexture(), rect);
-		ci::gl::draw(mGemBuffer->getDepthTexture(), ci::Rectf(20, 0, 40, 20));
-		mGemBuffer->unbindTexture();
-	
+		ci::gl::color(ci::Color(1, 1, 1));
 	};
+
+	void cGemManager::drawFbo()
+	{
+		ci::gl::ScopedGlslProg shaderScp(ci::gl::getStockShader(ci::gl::ShaderDef().texture()));
+		ci::gl::ScopedTextureBind texture(mGemBuffer->getColorTexture());
+		mShader->uniform("texture", 0);
+		auto rect = ci::Rectf(-ci::app::getWindowWidth()/2, -ci::app::getWindowHeight()/2, ci::app::getWindowWidth() / 2, ci::app::getWindowHeight() / 2);
+		ci::gl::Texture2dRef tex = mGemBuffer->getColorTexture();
+	    //ci::gl::VboMeshRef vboRect = ci::gl::VboMesh::create(ci::geom::Rect(rect));
+		//batch = ci::gl::Batch::create(vboRect,mShader);
+		//batch->draw();
+		tex->setTopDown();
+		ci::gl::draw(tex,rect);
+		//ci::gl::drawSolidRect(rect);
+		//ci::gl::drawSolidRect(ci::Rectf(0, 0, 20, 20));
+	}
 
 	void cGemManager::update()
 	{
 		ci::gl::ScopedFramebuffer fbScp(mGemBuffer);
-		ci::gl::clear(ci::ColorA(1,1,1,0));
+		ci::gl::clear(ci::ColorA(0,0,0,0));
 		ci::gl::ScopedViewport scpVp2(ci::ivec2(0), mGemBuffer->getSize());
-
 
 		ci::gl::setMatrices(CAMERA->getCamera());
 		ci::gl::ScopedGlslProg shaderScp(ci::gl::getStockShader(ci::gl::ShaderDef().color()));
