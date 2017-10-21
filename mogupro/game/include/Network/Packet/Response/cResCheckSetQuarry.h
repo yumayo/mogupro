@@ -11,8 +11,17 @@ class cResCheckSetQuarry : public cPacketBase<cResCheckSetQuarry, PacketId::RES_
 {
 public:
     cResCheckSetQuarry( );
+	cResCheckSetQuarry(char flag,float xPos, float yPos, float zPos,char type,short storageID);
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
+
+	char mFlag;
+	float mXPos; 
+	float mYPos; 
+	float mZPos; 
+	char mType;
+	short mStorageID;
+
 };
 }
 }

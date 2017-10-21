@@ -58,6 +58,13 @@ enum class PacketId : ubyte1
 	REQ_MAKE_ROOM,
 	//Matching時にクライアントが部屋に入る申請
 	REQ_IN_ROOM,
+	//Matching時にどっちのチームに入るのかの申請
+	REQ_WANT_TEAM_IN,
+	//Masterからゲームが開始できるかどうかを確認するために送信
+	//!@ LookMe : 受信したServerから全員に送る
+	REQ_CHECK_BEGIN_GAME,
+	//自分がルームにいることの送信
+	REQ_CHECK_MEMBER,
     //=========================================================//
     //                        Response                         //
     //=========================================================//
@@ -85,6 +92,12 @@ enum class PacketId : ubyte1
 	RES_MAKE_ROOM,
 	//Matching時にクライアントが部屋に入る申請をうけ、入れたかどうか
 	RES_IN_ROOM,
+	//Matching時にどっちのチームに入るのかの申請をうけ、入れたかどうか
+	RES_WANT_TEAM_IN,
+    //ゲームを開始できるかどうか
+	RES_CHECK_BEGIN_GAME,
+	//自分がルームにいることの送信してもらう
+	RES_CHECK_MEMBER,
 };
 }
 }

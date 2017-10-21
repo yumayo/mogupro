@@ -23,12 +23,8 @@ private:
 		IN_ROOM,
 	};
 
-	bool addRoomMembers(Network::cNetworkHandle addMember);
 
 	PhaseState mPhaseState;
-	Network::cNetworkHandle mMasterData;
-
-	std::vector<Network::cNetworkHandle> mRoomMembers;
 	int mRoomID;
 	bool mOpenRoom;
 };
