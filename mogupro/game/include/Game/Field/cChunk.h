@@ -31,7 +31,7 @@ public:
 
     ci::ivec3 getCell() { return mChunkCell; }
 
-    ci::gl::VboMeshRef createVboMesh();
+    void createVboMesh();
     ci::TriMeshRef createTriMesh();
     void createBlocks();
 
@@ -40,6 +40,8 @@ public:
 private:
 
     ci::ivec3 mChunkCell;
+    bool mIsLoaded;
+
     std::vector<ci::vec3> mVertices;
     std::vector<uint> mIndices;
     std::vector<ci::vec2> mUv;
