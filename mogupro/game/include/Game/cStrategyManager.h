@@ -3,7 +3,8 @@
 #include"Game\cObjectBase.h"
 #include"Game/Strategy/cStrategyObjectBase.h"
 #include"cinder\AxisAlignedBox.h"
-#include<list>
+#include"Strategy/cDrill.h"
+#include<map>
 
 namespace Game
 {
@@ -18,8 +19,10 @@ public:
     template<class T>
     void CreateStrategyObject( T _object );
     bool isAABB( const ci::AxisAlignedBox & a, const ci::AxisAlignedBox & b );
+	void HitDrillToGem(const int _objectid,const int _gemid);
+	void CreateDrill(const ci::vec3 _pos, const int _id,const Strategy::cDrill::DrillType _type,const bool _ismyobject);
 private:
-    std::list<std::shared_ptr<Strategy::cStrategyObjectBase>>strategyobjects;
+	std::map<int, std::shared_ptr<Game::Strategy::cDrill>>drills;
     void deleteObject();
 	int id_counter = 0;
 };
