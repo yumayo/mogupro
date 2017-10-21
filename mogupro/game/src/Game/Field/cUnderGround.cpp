@@ -29,15 +29,9 @@ void cUnderGround::setup()
 
     cTimeMeasurement::getInstance()->make();
 
-    for ( size_t z = 0; z < 1; z++ )
+    for ( size_t i = 0; i < 4; i++ )
     {
-        for ( size_t x = 0; x < 2; x++ )
-        {
-            //mChunkLoadThreads.emplace_back( [&]
-            //{
-            createChunks( x, z );
-            //} );
-        }
+        createChunks( 0, 0 );
     }
 
 }
@@ -98,6 +92,7 @@ bool cUnderGround::createChunks( int x, int z )
 
         auto chunk = mChunkHolder.createChunk( x, z );
         mChunkHolder.setChunk( chunk );
+
 
     }
     return true;
