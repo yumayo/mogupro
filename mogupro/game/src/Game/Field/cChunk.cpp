@@ -7,9 +7,16 @@ namespace Game
 {
 namespace Field
 {
+cChunk::cChunk() :
+    mChunkCell( ci::ivec3( -1, -1, -1 ) )
+    , mIsLoaded( false )
+    , mIsDone( false )
+{
+}
 cChunk::cChunk( int x, int z ) :
     mChunkCell( ci::ivec3( x, 0, z ) )
     , mIsLoaded( false )
+    , mIsDone( false )
 {
 }
 cChunk::~cChunk()
@@ -25,7 +32,9 @@ void cChunk::update()
 void cChunk::draw()
 {
     if ( mVbo != nullptr )
+    {
         gl::draw( mVbo );
+    }
 }
 cBlock & cChunk::getBlock( int x, int y, int z )
 {
@@ -67,14 +76,29 @@ void cChunk::breakBlock( ci::ivec3 c )
     // VboRef‚Ì’†‚ÅIndices‚ª4”{‚³‚ê‚é‚Ì‚ÅA•ÏX‰ÓŠ‚ð4”{‚·‚é
     vbo->bufferSubData( block.mIndicesNum[0] * 4, block.mIndicesNum.size() * 4, &indices[0] );
 }
-void cChunk::createVboMesh()
+bool cChunk::createMainCall()
 {
-    if ( mIsLoaded )
-        return;
+    // vbo‚ª¶¬Ï‚Ý‚¾‚Á‚½‚ç‚Í‚¶‚­
+    if ( mVbo != nullptr )
+        return false;
 
+    // ŒvŽZ“r’†‚¾‚Á‚½‚ç‚Í‚¶‚­
+    if ( mIsDone == false )
+        return false;
+
+    if ( mMesh == nullptr )
+        return false;
     mVbo = gl::VboMesh::create( *mMesh );
+    for ( auto& block : mBlocks )
+        block.second.setup();
 
-    mIsLoaded = true;
+    cTimeMeasurement::getInstance()->make();
+    auto t = cTimeMeasurement::getInstance()->deltaTime();
+
+    //console() << std::endl << std::endl;
+    //console() << "Field create time : " << t << "pos " << mChunkCell << std::endl;
+    //console() << std::endl << std::endl;
+    return true;
 }
 ci::TriMeshRef cChunk::createTriMesh()
 {

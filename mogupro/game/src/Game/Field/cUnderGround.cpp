@@ -29,11 +29,19 @@ void cUnderGround::setup()
 
     cTimeMeasurement::getInstance()->make();
 
-    for ( size_t i = 0; i < 4; i++ )
+    for ( size_t i = 0; i < 1; i++ )
     {
-        createChunks( 0, 0 );
+        mChunkLoadThreads.emplace_back( [&]
+        {
+            createChunks();
+        }
+        );
+        mChunkLoadThreads.emplace_back( [&]
+        {
+            calcChunks();
+        }
+        );
     }
-
 }
 void cUnderGround::update()
 {
@@ -41,14 +49,8 @@ void cUnderGround::update()
 
     ChunkMap& chunks = mChunkHolder.getChunks();
     for ( auto& chunk : chunks )
-        chunk.second.createVboMesh();
+        chunk.second.createMainCall();
 
-    cTimeMeasurement::getInstance()->make();
-    auto t = cTimeMeasurement::getInstance()->deltaTime();
-
-    console() << std::endl << std::endl;
-    console() << "Field create time : " << t << std::endl;
-    console() << std::endl << std::endl;
     mMainMutex.unlock();
 }
 void cUnderGround::draw()
@@ -83,19 +85,37 @@ void cUnderGround::draw()
     mMainMutex.unlock();
 
 }
-bool cUnderGround::createChunks( int x, int z )
+bool cUnderGround::createChunks()
 {
     while ( mIsRunning )
     {
-        if ( mChunkHolder.isExistsChunks( x, z ) == false )
-            return false;
-
-        auto chunk = mChunkHolder.createChunk( x, z );
-        mChunkHolder.setChunk( chunk );
-
-
+        for ( size_t z = 0; z < 16; z++ )
+        {
+            for ( size_t x = 0; x < 16; x++ )
+            {
+                mMainMutex.lock();
+                mChunkHolder.setChunk( x, z );
+                mMainMutex.unlock();
+            }
+        }
+        break;
     }
     return true;
+}
+bool cUnderGround::calcChunks()
+{
+    while ( mIsRunning )
+    {
+        for ( size_t z = 0; z < 16; z++ )
+        {
+            for ( size_t x = 0; x < 16; x++ )
+            {
+                mChunkHolder.createChunk( x, z );
+            }
+        }
+        mIsRunning = false;
+    }
+    return false;
 }
 ci::ivec3 cUnderGround::getChunkCellFromPosition( const ci::vec3 & position )
 {
@@ -110,7 +130,7 @@ bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
 
-    if ( mChunkHolder.isExistsChunks( chunk_cell.x, chunk_cell.z ) )
+    if ( mChunkHolder.isExistsChunk( chunk_cell.x, chunk_cell.z ) )
         return false;
     auto& chunks = mChunkHolder.getChunk( chunk_cell );
 
