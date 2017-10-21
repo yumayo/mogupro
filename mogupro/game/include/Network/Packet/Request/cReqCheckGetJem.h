@@ -14,6 +14,10 @@ public:
     cReqCheckGetJem( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
+public:
+	cNetworkHandle handle;
+	short mDrillId;
+	short mGemId;
 };
 }
 }
