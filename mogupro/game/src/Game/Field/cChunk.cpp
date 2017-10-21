@@ -69,7 +69,8 @@ void cChunk::breakBlock( ci::ivec3 c )
 }
 ci::gl::VboMeshRef cChunk::createVboMesh()
 {
-    mVbo = gl::VboMesh::create( *createTriMesh() );
+    auto mesh = gl::VboMesh::create( *createTriMesh() );
+    mVbo = mesh;
     return mVbo;
 }
 ci::TriMeshRef cChunk::createTriMesh()

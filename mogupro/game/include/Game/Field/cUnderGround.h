@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <boost/lockfree/queue.hpp>
 
 namespace Game
 {
@@ -30,9 +31,7 @@ public: // Player,Strategy Ç≈égÇ§ä÷êî
 
 private: // Method
 
-    bool loadChunks();
-    bool createUnderGround();
-    bool createMesh();
+    bool createChunks( int x, int z );
 
     ci::ivec3 getChunkCellFromPosition( const ci::vec3& position );
     ci::ivec3 getBlockCellFromPosition( const ci::vec3& position );
@@ -43,6 +42,7 @@ private: // Member
     std::vector<std::thread> mChunkLoadThreads;
     std::mutex mMainMutex;
     std::atomic<bool> mIsRunning{ true };
+    //boost::lockfree::queue<int> mLockFreeQueue;
 
 
 };

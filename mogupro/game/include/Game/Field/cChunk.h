@@ -29,11 +29,13 @@ public:
 
     void breakBlock( ci::ivec3 c );
 
+    ci::ivec3 getCell() { return mChunkCell; }
+
     ci::gl::VboMeshRef createVboMesh();
     ci::TriMeshRef createTriMesh();
     void createBlocks();
 
-    bool isOutOfRange(ci::ivec3 c);
+    bool isOutOfRange( ci::ivec3 c );
 
 private:
 
