@@ -27,22 +27,35 @@ void cUnderGround::setup()
 {
     TEX->set( "dirt", "dirt.jpg" );
 
-    std::this_thread::sleep_for( std::chrono::milliseconds( 50 ) );
+    cTimeMeasurement::getInstance()->make();
 
-
-    for ( size_t i = 0; i < 1; i++ )
+    for ( size_t z = 0; z < 1; z++ )
     {
-        int x = i * 4, z = i * 4;
-        //mChunkLoadThreads.emplace_back( [&]
+        for ( size_t x = 0; x < 2; x++ )
         {
+            //mChunkLoadThreads.emplace_back( [&]
+            //{
             createChunks( x, z );
-        } //);
+            //} );
+        }
     }
-
 
 }
 void cUnderGround::update()
 {
+    mMainMutex.lock();
+
+    ChunkMap& chunks = mChunkHolder.getChunks();
+    for ( auto& chunk : chunks )
+        chunk.second.createVboMesh();
+
+    cTimeMeasurement::getInstance()->make();
+    auto t = cTimeMeasurement::getInstance()->deltaTime();
+
+    console() << std::endl << std::endl;
+    console() << "Field create time : " << t << std::endl;
+    console() << std::endl << std::endl;
+    mMainMutex.unlock();
 }
 void cUnderGround::draw()
 {
@@ -67,34 +80,25 @@ void cUnderGround::draw()
     //glsl->uniform( "uTexCoordOffset", texRect.getUpperLeft() );
     //glsl->uniform( "uTexCoordScale", texRect.getSize() );
 
-    //mMainMutex.lock();
+    mMainMutex.lock();
 
     ChunkMap& chunks = mChunkHolder.getChunks();
     for ( auto& chunk : chunks )
         chunk.second.draw();
 
-    //mMainMutex.unlock();
+    mMainMutex.unlock();
 
 }
 bool cUnderGround::createChunks( int x, int z )
 {
-    //while ( mIsRunning )
+    while ( mIsRunning )
     {
-        for ( size_t cz = z; cz < z + 4; cz++ )
-        {
-            for ( size_t cx = x; cx < x + 4; cx++ )
-            {
-                //mMainMutex.lock();
+        if ( mChunkHolder.isExistsChunks( x, z ) == false )
+            return false;
 
-                if ( mChunkHolder.isExistsChunks( cx, cz ) == false )
-                    continue;
-                auto chunk = mChunkHolder.createChunk( cx, cz );
+        auto chunk = mChunkHolder.createChunk( x, z );
+        mChunkHolder.setChunk( chunk );
 
-                mChunkHolder.setChunk( chunk );
-
-                //mMainMutex.unlock();
-            }
-        }
     }
     return true;
 }
