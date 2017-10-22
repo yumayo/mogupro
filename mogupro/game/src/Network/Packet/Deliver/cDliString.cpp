@@ -1,24 +1,28 @@
-#include <Network/Packet/Request/cReqCheckGetJemPlayer.h>
+#include <Network/Packet/Deliver/cDliString.h>
 #include <Network/PackFunction.hpp>
 namespace Network
 {
 namespace Packet
 {
-namespace Request
+namespace Deliver
 {
-void cReqCheckGetJemPlayer::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
+cDliString::cDliString( )
+{
+
+}
+void cDliString::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
     cImporter imp( data );
     // 使い方: vec2 pos1, pos2; ubyte2 a1, a2;
     // imp >> pos1 >> a1 >> pos2 >> a2;
-    imp >> mGemId;
+    imp >> str;
 }
-ubyte2 cReqCheckGetJemPlayer::packetExport( char* const data )
+ubyte2 cDliString::packetExport( char* const data )
 {
     cExporter exp( data );
     // 使い方: vec2 pos1, pos2; ubyte2 a1, a2;
     // exp << pos1 << a1 << pos2 << a2;
-    exp << mGemId;
+    exp << str;
     return exp;
 }
 }

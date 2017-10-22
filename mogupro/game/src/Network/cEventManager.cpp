@@ -19,6 +19,23 @@ void cEventManager::ungetEveString( Packet::Event::cEveString&& data )
 {
     mEveString.push( std::move( data ) );
 }
+boost::optional<Packet::Event::cEvePlayers> cEventManager::getEvePlayers( )
+{
+    if ( mEvePlayers.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEvePlayers.top( );
+        mEvePlayers.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEvePlayers( Packet::Event::cEvePlayers&& data )
+{
+    mEvePlayers.push( std::move( data ) );
+}
 boost::optional<Packet::Event::cEveGetJemPlayer> cEventManager::getEveGetJemPlayer( )
 {
     if ( mEveGetJemPlayer.empty( ) )
@@ -69,6 +86,23 @@ boost::optional<Packet::Event::cEveBreakBlocks> cEventManager::getEveBreakBlocks
 void cEventManager::ungetEveBreakBlocks( Packet::Event::cEveBreakBlocks&& data )
 {
     mEveBreakBlocks.push( std::move( data ) );
+}
+boost::optional<Packet::Event::cEveSetQuarry> cEventManager::getEveSetQuarry( )
+{
+    if ( mEveSetQuarry.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEveSetQuarry.top( );
+        mEveSetQuarry.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEveSetQuarry( Packet::Event::cEveSetQuarry&& data )
+{
+    mEveSetQuarry.push( std::move( data ) );
 }
 boost::optional<Packet::Event::cEvePlayerRobJem> cEventManager::getEvePlayerRobJem( )
 {

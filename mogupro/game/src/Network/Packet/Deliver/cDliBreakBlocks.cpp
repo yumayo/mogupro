@@ -1,16 +1,16 @@
-#include <Network/Packet/Request/cReqBreakBlocks.h>
+#include <Network/Packet/Deliver/cDliBreakBlocks.h>
 #include <Network/PackFunction.hpp>
 namespace Network
 {
 namespace Packet
 {
-namespace Request
+namespace Deliver
 {
-cReqBreakBlocks::cReqBreakBlocks( )
+cDliBreakBlocks::cDliBreakBlocks( )
 {
 
 }
-void cReqBreakBlocks::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
+void cDliBreakBlocks::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
     cImporter imp( data );
     for ( int i = 0; i < transferredBytes / ( sizeof( ubyte2 ) * 3 ); ++i )
@@ -25,7 +25,7 @@ void cReqBreakBlocks::packetImport( cNetworkHandle networkHandle, ubyte2 transfe
         mBreakPositions.emplace_back( p[0], p[1], p[2] );
     }
 }
-ubyte2 cReqBreakBlocks::packetExport( char* const data )
+ubyte2 cDliBreakBlocks::packetExport( char* const data )
 {
     cExporter exp( data );
     for ( auto& o : mBreakPositions )

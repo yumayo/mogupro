@@ -6,17 +6,17 @@ namespace Network
 {
 namespace Packet
 {
-namespace Response
+namespace Event
 {
-class cResCheckSetQuarry : public cPacketBase<cResCheckSetQuarry, PacketId::RES_CHECK_SET_QUARRY>
+class cEveSetQuarry : public cPacketBase<cEveSetQuarry, PacketId::EVE_SET_QUARRY>
 {
 public:
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
 public:
-    ubyte1 mIsSucceeded;
     cinder::vec3 mPosition;
     ubyte1 mType;
+    ubyte1 mTeamId;
     ubyte2 mDrillId;
 };
 }
