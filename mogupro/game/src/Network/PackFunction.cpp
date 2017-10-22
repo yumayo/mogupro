@@ -243,6 +243,20 @@ namespace Network
         return *this;
     }
     template<>
+    cImporter& cImporter::operator>><float>( float& value )
+    {
+        memcpy( &value, mBuffer + mOffset, sizeof( float ) );
+        mOffset += sizeof( float );
+        return *this;
+    }
+    template<>
+    cExporter& cExporter::operator<<<float>( float const& value )
+    {
+        memcpy( mBuffer + mOffset, &value, sizeof( float ) );
+        mOffset += sizeof( float );
+        return *this;
+    }
+    template<>
     cImporter& cImporter::operator>><cinder::vec2>( cinder::vec2& value )
     {
         memcpy( &value, mBuffer + mOffset, sizeof( cinder::vec2 ) );
