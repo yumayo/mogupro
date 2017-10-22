@@ -1,23 +1,21 @@
 #pragma once
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
-
 namespace Network
 {
 namespace Packet
 {
-namespace Request
+namespace Event
 {
-class cReqCheckGetJem : public cPacketBase<cReqCheckGetJem, PacketId::REQ_CHECK_GET_JEM>
+class cEveGetJemQuarry : public cPacketBase<cEveGetJemQuarry, PacketId::EVE_GET_JEM_QUARRY>
 {
 public:
-    cReqCheckGetJem( );
-	cReqCheckGetJem(short drillID,short gemID);
+    cEveGetJemQuarry( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-
-	short mDrillID;
-	short mGemID;
+public:
+    ubyte2 mDrillId;
+    ubyte2 mGemId;
 };
 }
 }

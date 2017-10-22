@@ -3,7 +3,8 @@
 #include<Network/Packet/Request/cReqPlayer.h>
 #include<Network/Packet/Request/cReqGetJemSeed.h>
 #include<Network/Packet/Request/cReqGetJemPoint.h>
-#include<Network/Packet/Request/cReqCheckGetJem.h>
+#include<Network/Packet/Request/cReqCheckGetJemPlayer.h>
+#include<Network/Packet/Request/cReqCheckGetJemQuarry.h>
 #include<Network/Packet/Request/cReqCheckPlayerRobJem.h>
 #include<Network/Packet/Request/cReqBreakBlocks.h>
 #include<Network/Packet/Request/cReqCheckSetQuarry.h>

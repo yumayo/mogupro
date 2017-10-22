@@ -70,22 +70,39 @@ void cResponseManager::ungetResGetJemPoint( Packet::Response::cResGetJemPoint&& 
 {
     mResGetJemPoint.push( std::move( data ) );
 }
-boost::optional<Packet::Response::cResCheckGetJem> cResponseManager::getResCheckGetJem( )
+boost::optional<Packet::Response::cResCheckGetJemPlayer> cResponseManager::getResCheckGetJemPlayer( )
 {
-    if ( mResCheckGetJem.empty( ) )
+    if ( mResCheckGetJemPlayer.empty( ) )
     {
         return boost::none;
     }
     else
     {
-        auto top = mResCheckGetJem.top( );
-        mResCheckGetJem.pop( );
+        auto top = mResCheckGetJemPlayer.top( );
+        mResCheckGetJemPlayer.pop( );
         return top;
     }
 }
-void cResponseManager::ungetResCheckGetJem( Packet::Response::cResCheckGetJem&& data )
+void cResponseManager::ungetResCheckGetJemPlayer( Packet::Response::cResCheckGetJemPlayer&& data )
 {
-    mResCheckGetJem.push( std::move( data ) );
+    mResCheckGetJemPlayer.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResCheckGetJemQuarry> cResponseManager::getResCheckGetJemQuarry( )
+{
+    if ( mResCheckGetJemQuarry.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResCheckGetJemQuarry.top( );
+        mResCheckGetJemQuarry.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResCheckGetJemQuarry( Packet::Response::cResCheckGetJemQuarry&& data )
+{
+    mResCheckGetJemQuarry.push( std::move( data ) );
 }
 boost::optional<Packet::Response::cResCheckPlayerRobJem> cResponseManager::getResCheckPlayerRobJem( )
 {

@@ -60,11 +60,18 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
         cEventManager::getInstance( )->ungetEveString( std::move( data ) );
         break;
     }
-    case Network::Packet::PacketId::EVE_GET_JEM:
+    case Network::Packet::PacketId::EVE_GET_JEM_PLAYER:
     {
-        Packet::Event::cEveGetJem data;
+        Packet::Event::cEveGetJemPlayer data;
         data.onReceive( networkHandle, bufferSize, bufferData );
-        cEventManager::getInstance( )->ungetEveGetJem( std::move( data ) );
+        cEventManager::getInstance( )->ungetEveGetJemPlayer( std::move( data ) );
+        break;
+    }
+    case Network::Packet::PacketId::EVE_GET_JEM_QUARRY:
+    {
+        Packet::Event::cEveGetJemQuarry data;
+        data.onReceive( networkHandle, bufferSize, bufferData );
+        cEventManager::getInstance( )->ungetEveGetJemQuarry( std::move( data ) );
         break;
     }
     case Network::Packet::PacketId::EVE_BREAK_BLOCKS:
@@ -116,11 +123,18 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
         cRequestManager::getInstance( )->ungetReqGetJemPoint( std::move( data ) );
         break;
     }
-    case Network::Packet::PacketId::REQ_CHECK_GET_JEM:
+    case Network::Packet::PacketId::REQ_CHECK_GET_JEM_PLAYER:
     {
-        Packet::Request::cReqCheckGetJem data;
+        Packet::Request::cReqCheckGetJemPlayer data;
         data.onReceive( networkHandle, bufferSize, bufferData );
-        cRequestManager::getInstance( )->ungetReqCheckGetJem( std::move( data ) );
+        cRequestManager::getInstance( )->ungetReqCheckGetJemPlayer( std::move( data ) );
+        break;
+    }
+    case Network::Packet::PacketId::REQ_CHECK_GET_JEM_QUARRY:
+    {
+        Packet::Request::cReqCheckGetJemQuarry data;
+        data.onReceive( networkHandle, bufferSize, bufferData );
+        cRequestManager::getInstance( )->ungetReqCheckGetJemQuarry( std::move( data ) );
         break;
     }
     case Network::Packet::PacketId::REQ_CHECK_PLAYER_ROB_JEM:
@@ -214,11 +228,18 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
         cResponseManager::getInstance( )->ungetResGetJemPoint( std::move( data ) );
         break;
     }
-    case Network::Packet::PacketId::RES_CHECK_GET_JEM:
+    case Network::Packet::PacketId::RES_CHECK_GET_JEM_PLAYER:
     {
-        Packet::Response::cResCheckGetJem data;
+        Packet::Response::cResCheckGetJemPlayer data;
         data.onReceive( networkHandle, bufferSize, bufferData );
-        cResponseManager::getInstance( )->ungetResCheckGetJem( std::move( data ) );
+        cResponseManager::getInstance( )->ungetResCheckGetJemPlayer( std::move( data ) );
+        break;
+    }
+    case Network::Packet::PacketId::RES_CHECK_GET_JEM_QUARRY:
+    {
+        Packet::Response::cResCheckGetJemQuarry data;
+        data.onReceive( networkHandle, bufferSize, bufferData );
+        cResponseManager::getInstance( )->ungetResCheckGetJemQuarry( std::move( data ) );
         break;
     }
     case Network::Packet::PacketId::RES_CHECK_PLAYER_ROB_JEM:

@@ -19,22 +19,39 @@ void cEventManager::ungetEveString( Packet::Event::cEveString&& data )
 {
     mEveString.push( std::move( data ) );
 }
-boost::optional<Packet::Event::cEveGetJem> cEventManager::getEveGetJem( )
+boost::optional<Packet::Event::cEveGetJemPlayer> cEventManager::getEveGetJemPlayer( )
 {
-    if ( mEveGetJem.empty( ) )
+    if ( mEveGetJemPlayer.empty( ) )
     {
         return boost::none;
     }
     else
     {
-        auto top = mEveGetJem.top( );
-        mEveGetJem.pop( );
+        auto top = mEveGetJemPlayer.top( );
+        mEveGetJemPlayer.pop( );
         return top;
     }
 }
-void cEventManager::ungetEveGetJem( Packet::Event::cEveGetJem&& data )
+void cEventManager::ungetEveGetJemPlayer( Packet::Event::cEveGetJemPlayer&& data )
 {
-    mEveGetJem.push( std::move( data ) );
+    mEveGetJemPlayer.push( std::move( data ) );
+}
+boost::optional<Packet::Event::cEveGetJemQuarry> cEventManager::getEveGetJemQuarry( )
+{
+    if ( mEveGetJemQuarry.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEveGetJemQuarry.top( );
+        mEveGetJemQuarry.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEveGetJemQuarry( Packet::Event::cEveGetJemQuarry&& data )
+{
+    mEveGetJemQuarry.push( std::move( data ) );
 }
 boost::optional<Packet::Event::cEveBreakBlocks> cEventManager::getEveBreakBlocks( )
 {
