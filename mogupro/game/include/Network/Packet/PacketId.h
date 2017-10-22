@@ -17,8 +17,10 @@ enum class PacketId : ubyte1
 
     // <std::string>が送られてきました。
     EVE_STRING,
-    // 他のプレイヤーや掘削機がフィールドのジェムを採ったと通知されました。
-    EVE_GET_JEM,
+    // 他のプレイヤーがフィールドのジェムを採ったと通知されました。
+    EVE_GET_JEM_PLAYER,
+    // 掘削機がフィールドのジェムを採ったと通知されました。
+    EVE_GET_JEM_QUARRY,
     // 他のプレイヤーや掘削機がフィールドのブロックを破壊したと通知されました。
     EVE_BREAK_BLOCKS,
     // 他のプレイヤーに奪われたと通知されました。
@@ -41,9 +43,12 @@ enum class PacketId : ubyte1
     REQ_GET_JEM_SEED,
     // 現在持っているジェムの数をサーバーから取り寄せます。
     REQ_GET_JEM_POINT,
-    // ジェムを取得したことを知らせます。プレイヤーと掘削機の両方、このパケットを使ってください。
+    // プレイヤーがジェムを取得したことを知らせます。
     // ※このタイミングでは取得できません。サーバーからのレスポンスを待ってください。
-    REQ_CHECK_GET_JEM,
+    REQ_CHECK_GET_JEM_PLAYER,
+    // 掘削機がジェムを取得したことを知らせます。
+    // ※このタイミングでは取得できません。サーバーからのレスポンスを待ってください。
+    REQ_CHECK_GET_JEM_QUARRY,
     // プレイヤーが他のプレイヤーのジェムを奪ったことを通知します。
     // ※このタイミングでは奪取できません。サーバーからのレスポンスを待ってください。
     REQ_CHECK_PLAYER_ROB_JEM,
@@ -79,8 +84,10 @@ enum class PacketId : ubyte1
     RES_GET_JEM_SEED,
     // プレイヤーが持っているジェムの数を渡します。
     RES_GET_JEM_POINT,
-    // ジェムの取得に成功したか失敗したか、について通知します。
-    RES_CHECK_GET_JEM,
+    // プレイヤーがジェムの取得に成功したか失敗したか、について通知します。
+    RES_CHECK_GET_JEM_PLAYER,
+    // 掘削機がジェムの取得に成功したか失敗したか、について通知します。
+    RES_CHECK_GET_JEM_QUARRY,
     // ジェムの奪取に成功したか失敗したか、について通知します。
     RES_CHECK_PLAYER_ROB_JEM,
     // ブロック破壊した座標がそのまま帰ってきます。

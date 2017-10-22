@@ -14,10 +14,15 @@ public:
 public:
     std::stack<Packet::Event::cEveString> mEveString;
 public:
-    boost::optional<Packet::Event::cEveGetJem> getEveGetJem( );
-    void ungetEveGetJem( Packet::Event::cEveGetJem&& data );
+    boost::optional<Packet::Event::cEveGetJemPlayer> getEveGetJemPlayer( );
+    void ungetEveGetJemPlayer( Packet::Event::cEveGetJemPlayer&& data );
 public:
-    std::stack<Packet::Event::cEveGetJem> mEveGetJem;
+    std::stack<Packet::Event::cEveGetJemPlayer> mEveGetJemPlayer;
+public:
+    boost::optional<Packet::Event::cEveGetJemQuarry> getEveGetJemQuarry( );
+    void ungetEveGetJemQuarry( Packet::Event::cEveGetJemQuarry&& data );
+public:
+    std::stack<Packet::Event::cEveGetJemQuarry> mEveGetJemQuarry;
 public:
     boost::optional<Packet::Event::cEveBreakBlocks> getEveBreakBlocks( );
     void ungetEveBreakBlocks( Packet::Event::cEveBreakBlocks&& data );

@@ -29,10 +29,15 @@ public:
 public:
     std::stack<Packet::Request::cReqGetJemPoint> mReqGetJemPoint;
 public:
-    boost::optional<Packet::Request::cReqCheckGetJem> getReqCheckGetJem( );
-    void ungetReqCheckGetJem( Packet::Request::cReqCheckGetJem&& data );
+    boost::optional<Packet::Request::cReqCheckGetJemPlayer> getReqCheckGetJemPlayer( );
+    void ungetReqCheckGetJemPlayer( Packet::Request::cReqCheckGetJemPlayer&& data );
 public:
-    std::stack<Packet::Request::cReqCheckGetJem> mReqCheckGetJem;
+    std::stack<Packet::Request::cReqCheckGetJemPlayer> mReqCheckGetJemPlayer;
+public:
+    boost::optional<Packet::Request::cReqCheckGetJemQuarry> getReqCheckGetJemQuarry( );
+    void ungetReqCheckGetJemQuarry( Packet::Request::cReqCheckGetJemQuarry&& data );
+public:
+    std::stack<Packet::Request::cReqCheckGetJemQuarry> mReqCheckGetJemQuarry;
 public:
     boost::optional<Packet::Request::cReqCheckPlayerRobJem> getReqCheckPlayerRobJem( );
     void ungetReqCheckPlayerRobJem( Packet::Request::cReqCheckPlayerRobJem&& data );

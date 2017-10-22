@@ -7,17 +7,14 @@ namespace Packet
 {
 namespace Event
 {
-class cEveGetJem : public cPacketBase<cEveGetJem, PacketId::EVE_GET_JEM>
+class cEveGetJemPlayer : public cPacketBase<cEveGetJemPlayer, PacketId::EVE_GET_JEM_PLAYER>
 {
 public:
-    cEveGetJem( );
-    cEveGetJem( ubyte2 gemId );
+    cEveGetJemPlayer( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-    // 採った相手の名前。
-    // ※掘削機にも名前を付けておくのか、あとで話し合わないと！
-    std::string mTargetName;
-    // フィールドにあるどのジェムなのか。
+public:
+    ubyte1 mPlayerId;
     ubyte2 mGemId;
 };
 }

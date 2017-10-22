@@ -3,7 +3,8 @@
 #include<Network/Packet/Response/cResPlayer.h>
 #include<Network/Packet/Response/cResGetJemSeed.h>
 #include<Network/Packet/Response/cResGetJemPoint.h>
-#include<Network/Packet/Response/cResCheckGetJem.h>
+#include<Network/Packet/Response/cResCheckGetJemPlayer.h>
+#include<Network/Packet/Response/cResCheckGetJemQuarry.h>
 #include<Network/Packet/Response/cResCheckPlayerRobJem.h>
 #include<Network/Packet/Response/cResBreakBlocks.h>
 #include<Network/Packet/Response/cResCheckSetQuarry.h>
