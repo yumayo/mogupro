@@ -19,23 +19,6 @@ void cResponseManager::ungetResString( Packet::Response::cResString&& data )
 {
     mResString.push( std::move( data ) );
 }
-boost::optional<Packet::Response::cResPlayer> cResponseManager::getResPlayer( )
-{
-    if ( mResPlayer.empty( ) )
-    {
-        return boost::none;
-    }
-    else
-    {
-        auto top = mResPlayer.top( );
-        mResPlayer.pop( );
-        return top;
-    }
-}
-void cResponseManager::ungetResPlayer( Packet::Response::cResPlayer&& data )
-{
-    mResPlayer.push( std::move( data ) );
-}
 boost::optional<Packet::Response::cResGetJemSeed> cResponseManager::getResGetJemSeed( )
 {
     if ( mResGetJemSeed.empty( ) )
@@ -120,23 +103,6 @@ boost::optional<Packet::Response::cResCheckPlayerRobJem> cResponseManager::getRe
 void cResponseManager::ungetResCheckPlayerRobJem( Packet::Response::cResCheckPlayerRobJem&& data )
 {
     mResCheckPlayerRobJem.push( std::move( data ) );
-}
-boost::optional<Packet::Response::cResBreakBlocks> cResponseManager::getResBreakBlocks( )
-{
-    if ( mResBreakBlocks.empty( ) )
-    {
-        return boost::none;
-    }
-    else
-    {
-        auto top = mResBreakBlocks.top( );
-        mResBreakBlocks.pop( );
-        return top;
-    }
-}
-void cResponseManager::ungetResBreakBlocks( Packet::Response::cResBreakBlocks&& data )
-{
-    mResBreakBlocks.push( std::move( data ) );
 }
 boost::optional<Packet::Response::cResCheckSetQuarry> cResponseManager::getResCheckSetQuarry( )
 {

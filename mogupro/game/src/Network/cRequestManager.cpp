@@ -19,23 +19,6 @@ void cRequestManager::ungetReqString( Packet::Request::cReqString&& data )
 {
     mReqString.push( std::move( data ) );
 }
-boost::optional<Packet::Request::cReqPlayer> cRequestManager::getReqPlayer( )
-{
-    if ( mReqPlayer.empty( ) )
-    {
-        return boost::none;
-    }
-    else
-    {
-        auto top = mReqPlayer.top( );
-        mReqPlayer.pop( );
-        return top;
-    }
-}
-void cRequestManager::ungetReqPlayer( Packet::Request::cReqPlayer&& data )
-{
-    mReqPlayer.push( std::move( data ) );
-}
 boost::optional<Packet::Request::cReqGetJemSeed> cRequestManager::getReqGetJemSeed( )
 {
     if ( mReqGetJemSeed.empty( ) )
@@ -120,23 +103,6 @@ boost::optional<Packet::Request::cReqCheckPlayerRobJem> cRequestManager::getReqC
 void cRequestManager::ungetReqCheckPlayerRobJem( Packet::Request::cReqCheckPlayerRobJem&& data )
 {
     mReqCheckPlayerRobJem.push( std::move( data ) );
-}
-boost::optional<Packet::Request::cReqBreakBlocks> cRequestManager::getReqBreakBlocks( )
-{
-    if ( mReqBreakBlocks.empty( ) )
-    {
-        return boost::none;
-    }
-    else
-    {
-        auto top = mReqBreakBlocks.top( );
-        mReqBreakBlocks.pop( );
-        return top;
-    }
-}
-void cRequestManager::ungetReqBreakBlocks( Packet::Request::cReqBreakBlocks&& data )
-{
-    mReqBreakBlocks.push( std::move( data ) );
 }
 boost::optional<Packet::Request::cReqCheckSetQuarry> cRequestManager::getReqCheckSetQuarry( )
 {

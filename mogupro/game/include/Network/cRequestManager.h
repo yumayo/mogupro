@@ -14,11 +14,6 @@ public:
 public:
     std::stack<Packet::Request::cReqString> mReqString;
 public:
-    boost::optional<Packet::Request::cReqPlayer> getReqPlayer( );
-    void ungetReqPlayer( Packet::Request::cReqPlayer&& data );
-public:
-    std::stack<Packet::Request::cReqPlayer> mReqPlayer;
-public:
     boost::optional<Packet::Request::cReqGetJemSeed> getReqGetJemSeed( );
     void ungetReqGetJemSeed( Packet::Request::cReqGetJemSeed&& data );
 public:
@@ -43,11 +38,6 @@ public:
     void ungetReqCheckPlayerRobJem( Packet::Request::cReqCheckPlayerRobJem&& data );
 public:
     std::stack<Packet::Request::cReqCheckPlayerRobJem> mReqCheckPlayerRobJem;
-public:
-    boost::optional<Packet::Request::cReqBreakBlocks> getReqBreakBlocks( );
-    void ungetReqBreakBlocks( Packet::Request::cReqBreakBlocks&& data );
-public:
-    std::stack<Packet::Request::cReqBreakBlocks> mReqBreakBlocks;
 public:
     boost::optional<Packet::Request::cReqCheckSetQuarry> getReqCheckSetQuarry( );
     void ungetReqCheckSetQuarry( Packet::Request::cReqCheckSetQuarry&& data );

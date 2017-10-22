@@ -1,12 +1,12 @@
-#include <Network/Packet/Response/cResPlayer.h>
+#include <Network/Packet/Event/cEvePlayers.h>
 #include <Network/PackFunction.hpp>
 namespace Network
 {
 namespace Packet
 {
-namespace Response
+namespace Event
 {
-void cResPlayer::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
+void cEvePlayers::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
     cImporter imp( data );
     for ( int i = 0; i < transferredBytes / ( sizeof( ubyte1 ) + sizeof( cinder::vec3 ) + sizeof( cinder::quat ) ); ++i )
@@ -17,7 +17,7 @@ void cResPlayer::packetImport( cNetworkHandle networkHandle, ubyte2 transferredB
         imp >> m.mPosition >> m.mRotation;
     }
 }
-ubyte2 cResPlayer::packetExport( char* const data )
+ubyte2 cEvePlayers::packetExport( char* const data )
 {
     cExporter exp( data );
     for ( auto& o : mPlayerFormats )

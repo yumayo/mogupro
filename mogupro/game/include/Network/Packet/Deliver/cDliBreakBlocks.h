@@ -1,23 +1,22 @@
 #pragma once
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
+#include <vector>
 #include <cinder/Vector.h>
 namespace Network
 {
 namespace Packet
 {
-namespace Response
+namespace Deliver
 {
-class cResCheckSetQuarry : public cPacketBase<cResCheckSetQuarry, PacketId::RES_CHECK_SET_QUARRY>
+class cDliBreakBlocks : public cPacketBase<cDliBreakBlocks, PacketId::DLI_BREAK_BLOCKS>
 {
 public:
+    cDliBreakBlocks( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
 public:
-    ubyte1 mIsSucceeded;
-    cinder::vec3 mPosition;
-    ubyte1 mType;
-    ubyte2 mDrillId;
+    std::vector<cinder::vec3> mBreakPositions;
 };
 }
 }

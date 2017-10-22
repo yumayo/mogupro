@@ -2,22 +2,26 @@
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
 #include <cinder/Vector.h>
+#include <cinder/Quaternion.h>
+#include <map>
 namespace Network
 {
 namespace Packet
 {
-namespace Response
+namespace Event
 {
-class cResCheckSetQuarry : public cPacketBase<cResCheckSetQuarry, PacketId::RES_CHECK_SET_QUARRY>
+class cEvePlayers : public cPacketBase<cEvePlayers, PacketId::EVE_PLAYERS>
 {
 public:
+    struct PlayerFormat
+    {
+        cinder::vec3 mPosition;
+        cinder::quat mRotation;
+    };
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
 public:
-    ubyte1 mIsSucceeded;
-    cinder::vec3 mPosition;
-    ubyte1 mType;
-    ubyte2 mDrillId;
+    std::map<ubyte1, PlayerFormat> mPlayerFormats;
 };
 }
 }

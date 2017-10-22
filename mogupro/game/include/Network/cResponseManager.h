@@ -14,11 +14,6 @@ public:
 public:
     std::stack<Packet::Response::cResString> mResString;
 public:
-    boost::optional<Packet::Response::cResPlayer> getResPlayer( );
-    void ungetResPlayer( Packet::Response::cResPlayer&& data );
-public:
-    std::stack<Packet::Response::cResPlayer> mResPlayer;
-public:
     boost::optional<Packet::Response::cResGetJemSeed> getResGetJemSeed( );
     void ungetResGetJemSeed( Packet::Response::cResGetJemSeed&& data );
 public:
@@ -43,11 +38,6 @@ public:
     void ungetResCheckPlayerRobJem( Packet::Response::cResCheckPlayerRobJem&& data );
 public:
     std::stack<Packet::Response::cResCheckPlayerRobJem> mResCheckPlayerRobJem;
-public:
-    boost::optional<Packet::Response::cResBreakBlocks> getResBreakBlocks( );
-    void ungetResBreakBlocks( Packet::Response::cResBreakBlocks&& data );
-public:
-    std::stack<Packet::Response::cResBreakBlocks> mResBreakBlocks;
 public:
     boost::optional<Packet::Response::cResCheckSetQuarry> getResCheckSetQuarry( );
     void ungetResCheckSetQuarry( Packet::Response::cResCheckSetQuarry&& data );
