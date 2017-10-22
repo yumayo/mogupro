@@ -85,12 +85,11 @@ void cUnderGround::draw()
     ChunkMap& chunks = mChunkHolder.getChunks();
     for ( auto& chunk : chunks )
         chunk.second.draw();
-
 }
 
 bool cUnderGround::createChunks()
 {
-    int t = 8;
+    int t = 32;
     while ( mIsRunning )
     {
         for ( int z = -t; z < t; z++ )
@@ -107,7 +106,7 @@ bool cUnderGround::createChunks()
 
 bool cUnderGround::calcChunks()
 {
-    int t = 8;
+    int t = 32;
     while ( mIsRunning )
     {
         for ( int z = -t; z < t; z++ )

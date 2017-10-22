@@ -56,10 +56,10 @@ const std::array<GLfloat, 12> bottom_face
 
 const std::array<ci::vec2, 4> texture_coords
 {
-    ci::vec2( 0.0 ,1.0 ),
-    ci::vec2( 1.0 ,0.0 ),
     ci::vec2( 0.0 ,0.0 ),
+    ci::vec2( 0.0 ,1.0 ),
     ci::vec2( 1.0 ,1.0 ),
+    ci::vec2( 1.0 ,0.0 ),
 };
 
 struct AdjacentBlockPositions
