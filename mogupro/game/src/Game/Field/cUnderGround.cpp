@@ -45,75 +45,76 @@ void cUnderGround::setup()
 }
 void cUnderGround::update()
 {
-    mMainMutex.lock();
+    std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
 
     ChunkMap& chunks = mChunkHolder.getChunks();
     for ( auto& chunk : chunks )
         chunk.second.createMainCall();
 
-    mMainMutex.unlock();
 }
 void cUnderGround::draw()
 {
-    //auto texture = TEX.get( "dirt" );
-    //if (!texture)
-    //    return;
-    //using namespace ci::gl;
+    std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
 
-    //auto ctx = context();
+    auto texture = TEX->get( "dirt" );
+    if ( !texture )
+        return;
+    using namespace ci::gl;
 
-    //Rectf texRect = texture->getAreaTexCoords( Area( vec2( 0 ), texture->getSize() ) );
+    auto ctx = context();
 
-    //ScopedVao vaoScp( ctx->getDrawTextureVao() );
-    //ScopedBuffer vboScp( ctx->getDrawTextureVbo() );
-    //ScopedTextureBind texBindScope( texture );
+    Rectf texRect = texture->getAreaTexCoords( Area( vec2( 0 ), texture->getSize() ) );
 
-    //auto glsl = getStockShader( ShaderDef().uniformBasedPosAndTexCoord().color().texture( texture ) );
-    //ScopedGlslProg glslScp( glsl );
-    //glsl->uniform( "uTex0", 0 );
-    //glsl->uniform( "uPositionOffset", vec2( 0 ) );
-    //glsl->uniform( "uPositionScale", vec2( 1 ) );
-    //glsl->uniform( "uTexCoordOffset", texRect.getUpperLeft() );
-    //glsl->uniform( "uTexCoordScale", texRect.getSize() );
+    ScopedVao vaoScp( ctx->getDrawTextureVao() );
+    ScopedBuffer vboScp( ctx->getDrawTextureVbo() );
+    ScopedTextureBind texBindScope( texture );
 
-    mMainMutex.lock();
+    auto glsl = getStockShader( ShaderDef().uniformBasedPosAndTexCoord().color().texture( texture ) );
+    ScopedGlslProg glslScp( glsl );
+    glsl->uniform( "uTex0", 0 );
+    glsl->uniform( "uPositionOffset", vec2( 0 ) );
+    glsl->uniform( "uPositionScale", vec2( 1 ) );
+    glsl->uniform( "uTexCoordOffset", texRect.getUpperLeft() );
+    glsl->uniform( "uTexCoordScale", texRect.getSize() );
 
     ChunkMap& chunks = mChunkHolder.getChunks();
     for ( auto& chunk : chunks )
         chunk.second.draw();
 
-    mMainMutex.unlock();
 
 }
 bool cUnderGround::createChunks()
 {
+    int t = 32;
     while ( mIsRunning )
     {
-        for ( size_t z = 0; z < 16; z++ )
+        for ( int z = -t; z < t; z++ )
         {
-            for ( size_t x = 0; x < 16; x++ )
+            for ( int x = -t; x < t; x++ )
             {
-                mMainMutex.lock();
+                std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
                 mChunkHolder.setChunk( x, z );
-                mMainMutex.unlock();
             }
         }
-        break;
     }
     return true;
 }
 bool cUnderGround::calcChunks()
 {
+    int t = 32;
     while ( mIsRunning )
     {
-        for ( size_t z = 0; z < 16; z++ )
+        for ( int z = -t; z < t; z++ )
         {
-            for ( size_t x = 0; x < 16; x++ )
+            for ( int x = -t; x < t; x++ )
             {
-                mChunkHolder.createChunk( x, z );
+                mMainMutex.lock();
+                auto & chunk = mChunkHolder.getChunk( x, z );
+                mMainMutex.unlock();
+                mChunkHolder.createChunk( chunk );
             }
         }
-        mIsRunning = false;
+        //mIsRunning = false;
     }
     return false;
 }

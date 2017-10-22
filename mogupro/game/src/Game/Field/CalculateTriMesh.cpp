@@ -146,7 +146,11 @@ cChunk calcChunkData( cChunk chunk )
         {
             for ( uint x = 0; x < CHUNK_SIZE; x++ )
             {
-                auto position = c[ivec3( x, y, z )].mPosition;
+                auto b = c[ivec3( x, y, z )];
+                if ( b.mIsActive == false )
+                    continue;
+
+                auto position = b.mPosition;
 
                 // DrawElements
                 std::vector<ci::vec3> vertices;

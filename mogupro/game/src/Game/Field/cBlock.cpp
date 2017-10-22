@@ -34,15 +34,20 @@ void cBlock::setup()
 void cBlock::calcMeshIndexData( uint num )
 {
     mId = num;
+    mVerticesNum = std::vector<uint>( cube_vertices_index_size );
+    mIndicesNum = std::vector<uint>( cube_indices_index_size );
+    mNormalsNum = std::vector<uint>( cube_vertices_index_size );
+    mUvNum = std::vector<uint>( cube_vertices_index_size );
+
     for ( uint i = 0; i < cube_vertices_index_size; i++ )
     {
         uint n = i + mId * cube_vertices_index_size;
-        mVerticesNum.emplace_back( n );
-        mNormalsNum.emplace_back( n );
-        mUvNum.emplace_back( n );
+        mVerticesNum[i] = n;
+        mNormalsNum[i] = n;
+        mUvNum[i] = n;
     }
     for ( uint i = 0; i < cube_indices_index_size; i++ )
-        mIndicesNum.emplace_back( i + mId * cube_indices_index_size );
+        mIndicesNum[i] = i + mId * cube_indices_index_size;
 }
 void cBlock::clear()
 {

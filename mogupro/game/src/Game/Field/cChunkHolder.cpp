@@ -21,7 +21,11 @@ cChunk & cChunkHolder::getChunk( int x, int z )
 cChunk & cChunkHolder::getChunk( ci::ivec3 c )
 {
     if ( isExistsChunk( c.x, c.z ) )
-        return cChunk();
+    {
+        auto chunk = cChunk( c.x, c.z );
+        chunk.createBlocks();
+        return mChunks[c] = chunk;
+    }
     return mChunks[c];
 }
 ChunkMap& cChunkHolder::getChunks()
@@ -37,21 +41,19 @@ void cChunkHolder::setChunk( const int& x, const int& z )
 {
     if ( isExistsChunk( x, z ) == false )
         return;
-    mChunks[ivec3( x, 0, z )] = cChunk( x, z );
+    auto chunk = cChunk( x, z );
+    mChunks[ivec3( x, 0, z )] = chunk;
 }
-bool cChunkHolder::createChunk( const int& x, const int& z )
+bool cChunkHolder::createChunk( cChunk& chunk )
 {
-    if ( isExistsChunk( x, z ) )
-        return false;
-    auto & chunk = mChunks[ivec3( x, 0, z )];
     if ( chunk.mIsLoaded )
         return false;
     chunk.mIsLoaded = true;
+
     chunk.createBlocks();
     chunk = calcChunkData( chunk );
-    chunk.mIsDone = true;
 
-    return true;
+    return chunk.mIsDone = true;
 }
 bool cChunkHolder::isExistsChunk( const int& x, const int& z )
 {

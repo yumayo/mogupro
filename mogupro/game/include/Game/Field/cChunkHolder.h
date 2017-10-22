@@ -19,7 +19,7 @@ public:
     void setChunk( cChunk& chunk );
 
     void setChunk( const int& x, const int& z );
-    bool createChunk( const int& x, const int& z );
+    bool createChunk( cChunk& chunk );
     bool isExistsChunk( const int& x, const int& z );
 
 private:
