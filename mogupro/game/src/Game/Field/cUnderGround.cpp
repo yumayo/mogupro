@@ -3,7 +3,6 @@
 #include <Utility/cTimeMeasurement.h>
 #include <Network/cUDPManager.h>
 #include <Network/cRequestManager.h>
-#include <Game/Field/CalculateTriMesh.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -12,9 +11,12 @@ namespace Game
 {
 namespace Field
 {
-cUnderGround::cUnderGround()
+
+cUnderGround::cUnderGround() :
+    mChunkHolder( this )
 {
 }
+
 cUnderGround::~cUnderGround()
 {
     mIsRunning = false;
@@ -23,6 +25,7 @@ cUnderGround::~cUnderGround()
         thread.join();
     }
 }
+
 void cUnderGround::setup()
 {
     TEX->set( "dirt", "dirt.jpg" );
@@ -43,6 +46,7 @@ void cUnderGround::setup()
         );
     }
 }
+
 void cUnderGround::update()
 {
     std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
@@ -52,6 +56,7 @@ void cUnderGround::update()
         chunk.second.createMainCall();
 
 }
+
 void cUnderGround::draw()
 {
     std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
@@ -81,11 +86,11 @@ void cUnderGround::draw()
     for ( auto& chunk : chunks )
         chunk.second.draw();
 
-
 }
+
 bool cUnderGround::createChunks()
 {
-    int t = 32;
+    int t = 8;
     while ( mIsRunning )
     {
         for ( int z = -t; z < t; z++ )
@@ -99,9 +104,10 @@ bool cUnderGround::createChunks()
     }
     return true;
 }
+
 bool cUnderGround::calcChunks()
 {
-    int t = 32;
+    int t = 8;
     while ( mIsRunning )
     {
         for ( int z = -t; z < t; z++ )
@@ -114,18 +120,39 @@ bool cUnderGround::calcChunks()
                 mChunkHolder.createChunk( chunk );
             }
         }
-        //mIsRunning = false;
+        mIsRunning = false;
     }
     return false;
 }
+
 ci::ivec3 cUnderGround::getChunkCellFromPosition( const ci::vec3 & position )
 {
     return ivec3( position ) / CHUNK_SIZE;
 }
+
 ci::ivec3 cUnderGround::getBlockCellFromPosition( const ci::vec3 & position )
 {
     return ci::ivec3( position ) % CHUNK_SIZE;
 }
+
+cBlock cUnderGround::getBlock( ci::ivec3 position )
+{
+    auto block_cell = getBlockCellFromPosition( position );
+    auto chunk_cell = getChunkCellFromPosition( position );
+
+    return mChunkHolder.getChunk( chunk_cell ).getBlock( block_cell );
+}
+
+void cUnderGround::setBlock( ci::ivec3 position, cBlock block )
+{
+    if ( position.y <= 0 )
+        return;
+    auto block_cell = getBlockCellFromPosition( position );
+    auto chunk_cell = getChunkCellFromPosition( position );
+
+    mChunkHolder.getChunk( chunk_cell ).setBlock( block_cell, block );
+}
+
 bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 {
     auto chunk_cell = getChunkCellFromPosition( position );
@@ -146,6 +173,7 @@ bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 
     return true;
 }
+
 ci::vec3 cUnderGround::getBlockCenterTopPosition( const ci::vec3 & target_position )
 {
     //auto c = getCellNumFromPosition( target_position );
@@ -153,9 +181,11 @@ ci::vec3 cUnderGround::getBlockCenterTopPosition( const ci::vec3 & target_positi
     //return b->mPosition + vec3( 0, b->mScale / 2, 0 );
     return vec3();
 }
+
 ci::ivec3 cUnderGround::getBlockMaxCell()
 {
     return ivec3( CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE );
 }
+
 }
 }
