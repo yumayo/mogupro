@@ -5,6 +5,7 @@
 #include <Network/Packet/PacketId.h>
 #include <cinder/Vector.h>
 #include <cinder/Quaternion.h>
+#include <Node/node.h>
 namespace Network
 {
 class cUDPClientManager : public Utility::cSingletonAble<cUDPClientManager>
@@ -29,8 +30,9 @@ public:
     void close( );
     void open( );
     bool isConnected( );
-    void connect( cNetworkHandle const& handle );
-    void update( );
+    void connect( std::string const& ipAddress );
+    void connectOfflineServer( );
+    void update( float delta );
 
     // ªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªª
     // ‚­ƒR:œc
@@ -47,5 +49,6 @@ private:
     std::vector<char> mSendDataBuffer;
     cNetworkHandle mConnectServerHandle;
     float mCloseSecond;
+    hardptr<Node::node> mRoot;
 };
 }

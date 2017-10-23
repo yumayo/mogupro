@@ -7,11 +7,13 @@ namespace Game
 {
 namespace Trans
 {
-class cServerAdapter
+class cServerAdapter : public Utility::cSingletonAble<cServerAdapter>
 {
 public:
     cServerAdapter( );
     ~cServerAdapter( );
+public:
+    void update( );
 private:
     void sendPlayersPosition( );
     void sendSetQuarry( );

@@ -6,6 +6,21 @@
 #include <Network/cResponseManager.h>
 namespace Network
 {
+bool cUDPManager::isConnectPacket( cPacketChunk const & packetChunk )
+{
+    cNetworkHandle const& networkHandle = packetChunk.networkHandle;
+    cPacketBuffer const& packetBuffer = packetChunk.packetBuffer;
+    ubyte2 const& transferredBytes = packetBuffer.transferredBytes;
+    cBuffer const& buffer = packetBuffer.buffer;
+
+    if ( transferredBytes != sizeof( Packet::PacketHeader ) ) return false;
+
+    Packet::PacketHeader packetHeader;
+    char const* bufferData = buffer.data( );
+    memcpy( &packetHeader, bufferData, sizeof( Packet::PacketHeader ) );
+    ubyte2 bufferSize = packetHeader.mPacketByte;
+    return packetHeader.mPacketId == Network::Packet::PacketId::REQ_CONNECT;
+}
 void cUDPManager::onReceive( cPacketChunk const & packetChunk )
 {
     cNetworkHandle const& networkHandle = packetChunk.networkHandle;

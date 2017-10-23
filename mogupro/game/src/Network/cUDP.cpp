@@ -1,6 +1,7 @@
 #include <Network/cUDP.h>
 #include <Utility/cScopedMutex.h>
 #include <boost/lexical_cast.hpp>
+#include <Utility/MessageBox.h>
 using udp = boost::asio::ip::udp;
 namespace Network
 {
@@ -25,6 +26,7 @@ void cUDP::write( cNetworkHandle const& networkHandle, size_t sendDataByteNumber
         // 送信できない時に呼ばれます。
         // ネットワークデバイスが向こうになっているときや、
         // ネットワークにつながっていないときに呼ばれます。
+        Utility::MessageBoxOk( e.message( ), [ ] { } );
     }
 }
 void cUDP::close( )
@@ -48,11 +50,13 @@ void cUDP::open( int port )
         if ( e )
         {
             // openできなかった時
+            Utility::MessageBoxOk( e.message( ), [ ] { } );
         }
         mUdpSocket.bind( udp::endpoint( udp::v4( ), port ), e );
         if ( e )
         {
             // bindできなかった時
+            Utility::MessageBoxOk( e.message( ), [ ] { } );
         }
     }
     mUpdateIoService = std::thread( [ this ]
@@ -94,6 +98,7 @@ void cUDP::receive( )
             // 受信できなかった時に呼ばれます。
             // ※パケットロスとかの判断はここでは出来ません。
             // というかここが呼ばれたところを見たことがないです。
+            Utility::MessageBoxOk( e.message( ), [ ] { } );
         }
         else
         {

@@ -21,6 +21,14 @@ cServerAdapter::~cServerAdapter( )
 {
 
 }
+void cServerAdapter::update( )
+{
+    sendPlayersPosition( );
+    sendSetQuarry( );
+    sendGetGemPlayer( );
+    sendGetGemQuarry( );
+    sendBreakBlocks( );
+}
 void cServerAdapter::sendPlayersPosition( )
 {
     auto m = Network::cDeliverManager::getInstance( );

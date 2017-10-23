@@ -9,15 +9,19 @@
 #include <Network/cUDPManager.h>
 #include <Scene/cSceneManager.h>
 #include <Scene/Member/cMatching.h>
+#include <Node/action.hpp>
 namespace Network
 {
 cUDPClientManager::cUDPClientManager( )
     : mCloseSecond( std::numeric_limits<float>::max( ) )
+    , mRoot( Node::node::create( ) )
 {
+    mRoot->set_schedule_update( );
 }
 void cUDPClientManager::close( )
 {
     mSocket.close( );
+    mRoot->remove_action_by_name( "ping" );
 }
 void cUDPClientManager::open( )
 {
@@ -27,20 +31,23 @@ bool cUDPClientManager::isConnected( )
 {
     return mConnectServerHandle;
 }
-void cUDPClientManager::connect( cNetworkHandle const & handle )
+void cUDPClientManager::connect( std::string const& ipAddress )
 {
-    mCloseSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
-
     auto packet = new Packet::Request::cReqConnect( );
     cPacketBuffer packetBuffer;
     packet->createPacket( packetBuffer );
-    mSocket.write( handle, packetBuffer.transferredBytes, packetBuffer.buffer.data( ) );
+    mSocket.write( cNetworkHandle( ipAddress, 25565 ), packetBuffer.transferredBytes, packetBuffer.buffer.data( ) );
     delete packet;
 }
-void cUDPClientManager::update( )
+void cUDPClientManager::connectOfflineServer( )
 {
-    updateSend( );
+    connect( "127.0.0.1" );
+}
+void cUDPClientManager::update( float delta )
+{
     updateRecv( );
+    updateSend( );
+    mRoot->entry_update( delta );
 }
 void cUDPClientManager::updateSend( )
 {
@@ -74,6 +81,16 @@ void cUDPClientManager::connection( )
     while ( auto p = cResponseManager::getInstance( )->getResConnect( ) )
     {
         mConnectServerHandle = p->mNetworkHandle;
+
+        mCloseSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
+
+        using namespace Node::Action;
+        auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
+        {
+            send( new Packet::Deliver::cDliPing( ) );
+        } ) ) );
+        act->set_name( "ping" );
+        mRoot->run_action( act );
     }
 }
 void cUDPClientManager::ping( )
