@@ -35,9 +35,10 @@ private:
         float rotate;
     };
 	DrillState state = DrillState::DRILLMOVE;
+	void setScale(const DrillType _type);
     void drawCube( const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color );
 	void collisionFieldGems();
-    std::vector<DrillSlope>drillslopes;
+    DrillSlope drillslopes;
 	std::vector<std::shared_ptr<Game::Gem::cGem>>getgems;
 	void drawBasket();
     void createDrills();
@@ -53,8 +54,10 @@ private:
     float drillslope;
 	bool isretun = false;
 	DrillState changeState();
-	float test;
-	hardptr<Node::node>root;
+	void DigEasing();
+	void drawMachine();
+	void setEasing(const float count, float _scale);
+	std::vector<ci::vec3>easingpos;
 };
 }
 }
