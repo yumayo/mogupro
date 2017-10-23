@@ -16,12 +16,14 @@ class cMatchingMemberManager : public Utility::cSingletonAble<cMatchingMemberMan
 public:
 	cMatchingMemberManager();
 	~cMatchingMemberManager();
+	//メンバー追加
 	bool addRoomMembers(Network::cNetworkHandle addMember);
+	//メンバーにいるかどうか (知らない奴からの通信はじくため)
+	bool checkInMembers(Network::cNetworkHandle member);
+	//Teamにメンバー追加 コードが汚いからリファクタリング必要
+	bool checkTeamIn(int teamNum,Network::cNetworkHandle addMember);
+	bool checkMaster(cNetworkHandle masterHandle);
 	cNetworkHandle mMasterHandle;
-	std::vector<cNetworkHandle> mRoomMembers;
-	//これ分ける必要があるのか
-	std::vector<cNetworkHandle> m1PMembers;
-	std::vector<cNetworkHandle> m2PMembers;
-
+	std::map<cNetworkHandle, int> mRoomMembers;
 };
 }

@@ -1,5 +1,9 @@
 #include <Scene/Member/cMatchingServer.h>
 #include <Network/cMatchingMemberManager.h>
+#include <Node/renderer.hpp>
+#include <Node/action.hpp>
+#include <Scene/Member/cGameMain.h>
+#include <Scene/cSceneManager.h>
 using namespace Network;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
@@ -12,6 +16,11 @@ namespace Scene
 		{
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mOpenRoom = false;
+			font = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 20);
+			font->set_text(u8"‚Ê‚í‚ ‚ ‚Ÿ‚Ÿ‚Ÿ‚Ÿ‚ñ");
+			font->set_scale(ci::vec2(1, -1));
+			n->add_child(font);
+
 		}
 		void cMatchingServer::shutDown()
 		{
@@ -20,8 +29,11 @@ namespace Scene
 
 		void cMatchingServer::update(float deltaTime)
 		{
+			n->entry_update(deltaTime);
 			checkReqMakeRoom();
 			checkReqInRoom();
+			checkTeamIn();
+			checkBeginGame();
 		}
 
 		void cMatchingServer::checkReqMakeRoom()
@@ -67,6 +79,50 @@ namespace Scene
 
 		}
 
+		void cMatchingServer::checkTeamIn()
+		{
+			while (!cRequestManager::getInstance()->mReqWantTeamIn.empty())
+			{
+				auto reqWantTeamIn = cRequestManager::getInstance()->mReqWantTeamIn.top();
+				if (cMatchingMemberManager::getInstance()->checkTeamIn(reqWantTeamIn.mTeamNum,
+					reqWantTeamIn.mNetworkHandle) != true)
+				{
+					cUDPManager::getInstance()->send(reqWantTeamIn.mNetworkHandle, new cResWantTeamIn(0,reqWantTeamIn.mTeamNum));
+					cRequestManager::getInstance()->mReqWantTeamIn.pop();
+					continue;
+				}
+				
+				cUDPManager::getInstance()->send(reqWantTeamIn.mNetworkHandle, new cResWantTeamIn(1, reqWantTeamIn.mTeamNum));
+				cRequestManager::getInstance()->mReqWantTeamIn.pop();
+				continue;
+			}
+		}
+
+		void cMatchingServer::checkBeginGame()
+		{
+			while (!cRequestManager::getInstance()->mReqCheckBeginGame.empty())
+			{
+				auto reqCheckBeginGame = cRequestManager::getInstance()->mReqCheckBeginGame.top();
+				//Master‚¶‚á‚È‚¢l‚Í‚Í‚¶‚­
+				if (cMatchingMemberManager::getInstance()->checkMaster(reqCheckBeginGame.mNetworkHandle) != true)
+				{
+					cRequestManager::getInstance()->mReqWantTeamIn.pop();
+					continue;
+				}
+
+				mPhaseState = PhaseState::BEGIN_GAME;
+
+				for each(auto m in cMatchingMemberManager::getInstance()->mRoomMembers)
+					cUDPManager::getInstance()->send(m.first, new cResCheckBeginGame());
+				
+				cRequestManager::getInstance()->mReqWantTeamIn.pop();
+				shutDown();
+				cSceneManager::getInstance()->change<Scene::Member::cGameMain>();
+				cSceneManager::getInstance()->now().setup();
+				continue;
+			}
+		}
+
 		void cMatchingServer::draw()
 		{
 
@@ -74,7 +130,14 @@ namespace Scene
 
 		void cMatchingServer::draw2D()
 		{
-
+			int c = 0;
+			for each(auto m in cMatchingMemberManager::getInstance()->mRoomMembers)
+			{
+				font->set_text(u8"" + m.first.ipAddress + " : " + std::to_string(m.first.port));
+				font->set_position_3d(glm::vec3(0, c * 50,0));
+				n->entry_render(ci::mat4());
+				c++;
+			}
 		}
 
 		void cMatchingServer::resize()
