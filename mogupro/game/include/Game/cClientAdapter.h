@@ -16,8 +16,6 @@ class cDliBreakBlocks;
 }
 namespace Game
 {
-namespace Trans
-{
 class cClientAdapter : public Utility::cSingletonAble<cClientAdapter>
 {
 public:
@@ -53,5 +51,4 @@ private:
 private:
     Network::Packet::Deliver::cDliBreakBlocks* mBreakBlocksPecket = nullptr;
 };
-}
 }

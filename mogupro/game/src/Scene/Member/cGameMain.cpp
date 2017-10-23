@@ -11,8 +11,8 @@
 #include <Game/cGemManager.h>
 #include <Collision/cCollisionManager.h>
 #include <Network.hpp>
-#include <Game/Trans/cClientAdapter.h>
-#include <Game/Trans/cServerAdapter.h>
+#include <Game/cClientAdapter.h>
+#include <Game/cServerAdapter.h>
 #include <Resource/TextureManager.h>
 #include <Shader/cShadowManager.h>
 #include <Node/renderer.hpp>
@@ -80,8 +80,8 @@ void cGameMain::update( float deltaTime )
 	GemManager->update();
     Network::cUDPClientManager::getInstance( )->update( deltaTime );
     Network::cUDPServerManager::getInstance( )->update( deltaTime );
-    Game::Trans::cClientAdapter::getInstance( )->update( );
-    Game::Trans::cServerAdapter::getInstance( )->update( );
+    Game::cClientAdapter::getInstance( )->update( );
+    Game::cServerAdapter::getInstance( )->update( );
 }
 
 void cGameMain::draw( )

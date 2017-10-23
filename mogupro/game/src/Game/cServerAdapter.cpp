@@ -1,4 +1,4 @@
-#include <Game/Trans/cServerAdapter.h>
+#include <Game/cServerAdapter.h>
 #include <Network/cUDPServerManager.h>
 #include <Network/cUDPManager.h>
 #include <Network/cDeliverManager.h>
@@ -10,8 +10,6 @@
 #include <Game/cStrategyManager.h>
 #include <Game/cFieldManager.h>
 namespace Game
-{
-namespace Trans
 {
 cServerAdapter::cServerAdapter( )
 {
@@ -61,6 +59,5 @@ void cServerAdapter::sendGetGemQuarry( )
 }
 void cServerAdapter::sendBreakBlocks( )
 {
-}
 }
 }

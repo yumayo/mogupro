@@ -1,4 +1,4 @@
-#include <Game/Trans/cClientAdapter.h>
+#include <Game/cClientAdapter.h>
 #include <Network/cUDPClientManager.h>
 #include <Network/cDeliverManager.h>
 #include <Network/cEventManager.h>
@@ -9,8 +9,6 @@
 #include <Game/cStrategyManager.h>
 #include <Game/cFieldManager.h>
 namespace Game
-{
-namespace Trans
 {
 cClientAdapter::cClientAdapter( )
     : mBreakBlocksPecket( new Network::Packet::Deliver::cDliBreakBlocks( ) )
@@ -152,6 +150,5 @@ void cClientAdapter::sendBreakBlocks( )
         Network::cUDPClientManager::getInstance( )->send( mBreakBlocksPecket );
         mBreakBlocksPecket = new Network::Packet::Deliver::cDliBreakBlocks( );
     }
-}
 }
 }

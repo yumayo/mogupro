@@ -5,8 +5,6 @@
 #include <set>
 namespace Game
 {
-namespace Trans
-{
 class cServerAdapter : public Utility::cSingletonAble<cServerAdapter>
 {
 public:
@@ -25,5 +23,4 @@ private:
     std::set<Network::ubyte2> mQuarrys;
     std::set<Network::ubyte2> mGems;
 };
-}
 }
