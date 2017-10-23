@@ -12,6 +12,7 @@ cResConnect::cResConnect( )
 }
 void cResConnect::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
+    mNetworkHandle = networkHandle;
     cImporter imp( data );
     // 使い方: vec2 pos1, pos2; ubyte2 a1, a2;
     // imp >> pos1 >> a1 >> pos2 >> a2;

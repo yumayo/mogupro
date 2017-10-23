@@ -4,10 +4,8 @@
 #include <Network/cEventManager.h>
 #include <Network/cRequestManager.h>
 #include <Network/cResponseManager.h>
-#include <Game/cGemManager.h>
-#include <Game/cPlayerManager.h>
-#include <Game/cStrategyManager.h>
-#include <Game/cFieldManager.h>
+#include <cinder/app/App.h>
+#include <limits>
 namespace Network
 {
 void cUDPServerManager::close( )
@@ -43,17 +41,14 @@ void cUDPServerManager::updateRecv( )
     while ( !mSocket.emptyChunk( ) )
     {
         auto chunk = mSocket.popChunk( );
-        cUDPManager::getInstance( )->onReceive( chunk );
+        if ( mHandle.find( chunk.networkHandle ) != mHandle.end( ) )
+        {
+            cUDPManager::getInstance( )->onReceive( chunk );
+        }
     }
 
     connection( );
     ping( );
-
-    sendPlayersPosition( );
-    sendSetQuarry( );
-    sendGetGemPlayer( );
-    sendGetGemQuarry( );
-    sendBreakBlocks( );
 }
 void cUDPServerManager::sendDataBufferAdd( cNetworkHandle const & networkHandle, cPacketBuffer const & packetBuffer )
 {
@@ -77,7 +72,7 @@ void cUDPServerManager::connection( )
 {
     while ( auto p = cRequestManager::getInstance( )->getReqConnect( ) )
     {
-        mHandle.insert( std::make_pair( p->mNetworkHandle, std::numeric_limits<float>::max( ) ) );
+        mHandle.insert( std::make_pair( p->mNetworkHandle, cinder::app::getElapsedSeconds( ) + 5.0F ) );
         send( p->mNetworkHandle, new Packet::Response::cResConnect( ) );
     }
 }
@@ -97,38 +92,5 @@ void cUDPServerManager::ping( )
         }
         itr++;
     }
-}
-void cUDPServerManager::sendPlayersPosition( )
-{
-    auto m = Network::cDeliverManager::getInstance( );
-    while ( auto packet = m->getDliPlayer( ) )
-    {
-        auto id = mHandlePlayers[packet->mNetworkHandle];
-        //Game::cPlayerManager::getInstance( )->setPlayerPosition( 
-        //    id, 
-        //    packet->mPosition, 
-        //    packet->mRotation
-        //);
-    }
-    //std::vector<cinder::vec3> const& playersPosition = Game::cPlayerManager::getInstance( )->getPlayersPosition( );
-    //std::vector<cinder::quat> const& playersRotation = Game::cPlayerManager::getInstance( )->getPlayersRotation( );
-    //for ( auto& players : mHandlePlayers )
-    //{
-    //    for(int i = 0; i <  )
-    //    cUDPManager::getInstance( )->send( players.first,
-    //                                       new );
-    //}
-}
-void cUDPServerManager::sendSetQuarry( )
-{
-}
-void cUDPServerManager::sendGetGemPlayer( )
-{
-}
-void cUDPServerManager::sendGetGemQuarry( )
-{
-}
-void cUDPServerManager::sendBreakBlocks( )
-{
 }
 }
