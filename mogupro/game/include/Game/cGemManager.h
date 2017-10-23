@@ -53,8 +53,11 @@ namespace Game
 		float mGemScale;
 		int mGemMaxNum;
 		ci::gl::FboRef mGemBuffer;
-		ci::gl::GlslProgRef mShader;
+		ci::gl::GlslProgRef mHShader;
+		ci::gl::GlslProgRef mVShader;
 		ci::gl::BatchRef batch;
+		float blurSize;
+		float mBloom;
 		unsigned long mSeed;
 	};
 }
