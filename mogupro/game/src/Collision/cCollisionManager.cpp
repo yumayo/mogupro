@@ -49,18 +49,6 @@ void cCollisionManager::remove( cRigidBody & rigidBody )
 }
 void cCollisionManager::setup( )
 {
-    mStaticBlock = std::make_shared<cStaticBlockSimple>( cinder::vec3( 10, 2, 10 ), cinder::vec3( 22, 4, 22 ) );
-    mFallBlocks.reserve( 2048 );
-    for ( int x = 0; x < 5; ++x )
-    {
-        for ( int y = 0; y < 5; ++y )
-        {
-            for ( int z = 0; z < 5; ++z )
-            {
-                mFallBlocks.emplace_back( vec3( x + 0.5F, 10 + y + 0.5F, z + 0.5F ) );
-            }
-        }
-    }
 }
 void cCollisionManager::update( )
 {
@@ -78,10 +66,18 @@ void cCollisionManager::update( )
     }
     for ( auto& rigidBody : mRigidBodys )
     {
+    recalc:
+
         auto&& aabb = std::move( rigidBody->createAABB( ) );
         auto&& minMax = std::move( fitWorldSpaceMinMax( aabb ) );
         ivec3 min = std::get<0>( minMax );
         ivec3 max = std::get<1>( minMax );
+
+        float length = std::numeric_limits<float>::max( );
+        cinder::Ray ray;
+        cinder::AxisAlignedBox boundingBox;
+        cColliderBase* targetCollider = nullptr;
+
         for ( int x = min.x; x <= max.x; ++x )
         {
             for ( int y = min.y; y <= max.y; ++y )
@@ -92,10 +88,16 @@ void cCollisionManager::update( )
                     auto& colliders = mWorld[x][y][z];
                     for ( auto& collider : colliders )
                     {
-                        hitCubeToCube( &rigidCollider, rigidBody, collider );
+                        hitCubeToCube( &rigidCollider, rigidBody, collider, length, ray, boundingBox, &targetCollider );
                     }
                 }
             }
+        }
+
+        if ( targetCollider != nullptr )
+        {
+            rigidBody->calc( length, ray, boundingBox, targetCollider );
+            goto recalc;
         }
     }
     for ( auto& rigidBody : mRigidBodys )
@@ -105,8 +107,6 @@ void cCollisionManager::update( )
 }
 void cCollisionManager::draw( )
 {
-    for ( auto& b : mFallBlocks ) b.draw( );
-    mStaticBlock->draw( );
 }
 bool cCollisionManager::isRange( int x, int y, int z )
 {

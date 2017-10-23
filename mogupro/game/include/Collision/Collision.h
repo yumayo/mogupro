@@ -14,8 +14,6 @@ namespace Collision
 // bSize: Ž~‚Ü‚Á‚Ä‚¢‚éCube‚Ì‘å‚«‚³
 bool hitCubeToCube( cinder::vec3* const result, cinder::vec3 aPos, cinder::vec3 aSpeed, cinder::vec3 aSize,
                     cinder::vec3 bPos, cinder::vec3 bSize );
-void hitCubeToCube( cColliderBase * aCollider, cRigidBody * aRigidBody,
-                    cColliderBase * bCollider );
-void hitCubeToCube( cAABBCollider * aAABB, cRigidBody * aRigidBody,
-                    cAABBCollider * bAABB );
+void hitCubeToCube( cColliderBase * aCollider, cRigidBody * aRigidBody, cColliderBase * bCollider, float& min, cinder::Ray& ray, cinder::AxisAlignedBox& boundingBox, cColliderBase** targetCollider );
+void hitCubeToCube( cAABBCollider * aAABB, cRigidBody * aRigidBody, cAABBCollider * bAABB, float& min, cinder::Ray& ray, cinder::AxisAlignedBox& boundingBox, cColliderBase** targetCollider );
 }
