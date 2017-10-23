@@ -1,20 +1,54 @@
 #pragma once
 #include <Utility/cSingletonAble.h>
-#include <Network/cUDPManager.h>
+#include <Network/cUDP.h>
+#include <Network/Packet/cPacketBase.h>
+#include <Network/Packet/PacketId.h>
 #include <cinder/Vector.h>
 #include <cinder/Quaternion.h>
-#include <Network/Packet/Deliver/cDliBreakBlocks.h>
 namespace Network
 {
+namespace Packet
+{
+namespace Deliver
+{
+class cDliBreakBlocks;
+}
+}
 class cUDPClientManager : public Utility::cSingletonAble<cUDPClientManager>
 {
 public:
     cUDPClientManager( );
+private:
+    template <class Ty, Packet::PacketId packetId>
+    void send( cNetworkHandle const& networkHandle, Packet::cPacketBase<Ty, packetId>* packetBase )
+    {
+        if ( packetBase == nullptr ) return;
+
+        cPacketBuffer packetBuffer;
+        packetBase->createPacket( packetBuffer );
+
+        sendDataBufferAdd( networkHandle, packetBuffer );
+
+        delete packetBase;
+        packetBase = nullptr;
+    }
 public:
+    void close( );
+    void open( );
+    bool isConnected( );
+    void connect( cNetworkHandle const& handle );
     void update( );
 private:
+    void updateSend( );
+    void updateRecv( );
+private:
+    void connection( );
+    void ping( );
+private:
+    void sendDataBufferAdd( cNetworkHandle const& networkHandle, cPacketBuffer const& packetBuffer );
+private:
     // 全てのプレイヤーの座標を行う。
-    void allPlayersPosition( );
+    void allPlayersFormat( );
     // 全ての掘削機の設置イベントを行う。
     void allQuarrys( );
     // 全てのジェム採取イベントを行う。
@@ -29,7 +63,7 @@ public:
     // 掘削機を設置したら呼んでください。
     void sendSetQuarry( cinder::vec3 const& position, ubyte1 drillType );
     // プレイヤーの位置情報をサーバーに送りますので呼んでください。
-    void sendPlayerPosition( cinder::vec3 const& position, cinder::quat const& rotation );
+    void sendPlayerFormat( cinder::vec3 const& position, cinder::quat const& rotation );
     // プレイヤーがジェムを取得したら呼んでください。
     void sendGetGemPlayer( ubyte2 gemId );
     // 掘削機がジェムを取得したら呼んでください。
@@ -38,7 +72,12 @@ private:
     // 上記でたまったブロックを実際に送ります。
     void sendBreakBlocks( );
 private:
-    cNetworkHandle mConnectServerHandle;
     Packet::Deliver::cDliBreakBlocks* mBreakBlocksPecket = nullptr;
+private:
+    cUDP mSocket;
+    std::map<cNetworkHandle, std::vector<char>> mSendDataBuffer;
+    bool mIsConnected = false;
+    cNetworkHandle mConnectServerHandle;
+    float mCloseSecond;
 };
 }

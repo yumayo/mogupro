@@ -14,6 +14,11 @@ public:
 public:
     std::stack<Packet::Event::cEveString> mEveString;
 public:
+    boost::optional<Packet::Event::cEvePing> getEvePing( );
+    void ungetEvePing( Packet::Event::cEvePing&& data );
+public:
+    std::stack<Packet::Event::cEvePing> mEvePing;
+public:
     boost::optional<Packet::Event::cEvePlayers> getEvePlayers( );
     void ungetEvePlayers( Packet::Event::cEvePlayers&& data );
 public:

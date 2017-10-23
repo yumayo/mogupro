@@ -1,5 +1,6 @@
 #pragma once
 #include<Network/Packet/Request/cReqString.h>
+#include<Network/Packet/Request/cReqConnect.h>
 #include<Network/Packet/Request/cReqGetJemSeed.h>
 #include<Network/Packet/Request/cReqGetJemPoint.h>
 #include<Network/Packet/Request/cReqCheckGetJemPlayer.h>

@@ -14,6 +14,11 @@ public:
 public:
     std::stack<Packet::Request::cReqString> mReqString;
 public:
+    boost::optional<Packet::Request::cReqConnect> getReqConnect( );
+    void ungetReqConnect( Packet::Request::cReqConnect&& data );
+public:
+    std::stack<Packet::Request::cReqConnect> mReqConnect;
+public:
     boost::optional<Packet::Request::cReqGetJemSeed> getReqGetJemSeed( );
     void ungetReqGetJemSeed( Packet::Request::cReqGetJemSeed&& data );
 public:

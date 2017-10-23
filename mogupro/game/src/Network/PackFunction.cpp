@@ -3,6 +3,7 @@
 #include <cinder/Vector.h>
 #include <cinder/Quaternion.h>
 #include <cinder/Matrix.h>
+#include <vector>
 
 namespace Network
 {

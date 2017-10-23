@@ -14,6 +14,11 @@ public:
 public:
     std::stack<Packet::Deliver::cDliString> mDliString;
 public:
+    boost::optional<Packet::Deliver::cDliPing> getDliPing( );
+    void ungetDliPing( Packet::Deliver::cDliPing&& data );
+public:
+    std::stack<Packet::Deliver::cDliPing> mDliPing;
+public:
     boost::optional<Packet::Deliver::cDliPlayer> getDliPlayer( );
     void ungetDliPlayer( Packet::Deliver::cDliPlayer&& data );
 public:

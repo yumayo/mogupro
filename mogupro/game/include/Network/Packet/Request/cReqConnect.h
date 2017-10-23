@@ -1,23 +1,20 @@
 #pragma once
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
-#include <vector>
-#include <cinder/Vector.h>
 namespace Network
 {
 namespace Packet
 {
-namespace Deliver
+namespace Request
 {
-class cDliBreakBlocks : public cPacketBase<cDliBreakBlocks, PacketId::DLI_BREAK_BLOCKS>
+class cReqConnect : public cPacketBase<cReqConnect, PacketId::REQ_CONNECT>
 {
 public:
-    cDliBreakBlocks( );
+    cReqConnect( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
 public:
     cNetworkHandle mNetworkHandle;
-    std::vector<cinder::vec3> mBreakPositions;
 };
 }
 }

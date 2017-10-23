@@ -19,6 +19,23 @@ void cDeliverManager::ungetDliString( Packet::Deliver::cDliString&& data )
 {
     mDliString.push( std::move( data ) );
 }
+boost::optional<Packet::Deliver::cDliPing> cDeliverManager::getDliPing( )
+{
+    if ( mDliPing.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mDliPing.top( );
+        mDliPing.pop( );
+        return top;
+    }
+}
+void cDeliverManager::ungetDliPing( Packet::Deliver::cDliPing&& data )
+{
+    mDliPing.push( std::move( data ) );
+}
 boost::optional<Packet::Deliver::cDliPlayer> cDeliverManager::getDliPlayer( )
 {
     if ( mDliPlayer.empty( ) )

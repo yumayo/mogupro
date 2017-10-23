@@ -19,6 +19,23 @@ void cEventManager::ungetEveString( Packet::Event::cEveString&& data )
 {
     mEveString.push( std::move( data ) );
 }
+boost::optional<Packet::Event::cEvePing> cEventManager::getEvePing( )
+{
+    if ( mEvePing.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEvePing.top( );
+        mEvePing.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEvePing( Packet::Event::cEvePing&& data )
+{
+    mEvePing.push( std::move( data ) );
+}
 boost::optional<Packet::Event::cEvePlayers> cEventManager::getEvePlayers( )
 {
     if ( mEvePlayers.empty( ) )
