@@ -8,7 +8,7 @@ namespace Collision
 cRigidBody::cRigidBody( cColliderBase& collider, cinder::vec3 speed )
     : mCollider( collider )
     , mSpeed( speed )
-    , mIsHitAlready( false )
+    , mMinValue( std::numeric_limits<float>::max( ) )
 {
 }
 cRigidBody::~cRigidBody( )
@@ -32,27 +32,24 @@ cinder::AxisAlignedBox cRigidBody::createAABB( ) const
 
 void cRigidBody::update( )
 {
-    mIsHitAlready = false;
+    mMinValue = std::numeric_limits<float>::max( );
+    mIsLanding = false;
 
     if ( mSpeed.y > -10.0F )
         mSpeed.y += -0.98F / 60.0F;
 
     mCollider.update( this );
-
-    mCalcedSpeed = mSpeed;
-    mCalcedPosition = mCollider.getPosition( );
 }
 void cRigidBody::lateUpdate( )
 {
-    if ( mIsHitAlready )
+    if ( mMinValue != std::numeric_limits<float>::max( ) )
     {
-        mCollider.calc( mCalcedPosition );
-        mSpeed = mCalcedSpeed * 0.9F;
+        mSpeed *= 0.9F;
     }
 }
-bool cRigidBody::isHitAlready( )
+bool cRigidBody::isLanding( )
 {
-    return mIsHitAlready;
+    return mIsLanding;
 }
 cinder::vec3 const & cRigidBody::getSpeed( )
 {
@@ -99,21 +96,18 @@ cinder::vec3 cRigidBody::calcWallScratchVector( cinder::vec3 spd, cinder::vec3 n
 }
 void cRigidBody::calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase* targetCollider )
 {
-    mIsHitAlready = true;
-
-    auto intersectPoint = ray.calcPosition( minValue );
-    auto targetPoint = ray.calcPosition( 1.0F );
+    auto intersectPoint = ray.calcPosition( minValue - 0.005F );
     auto normal = getNormal( intersectPoint, aabb );
 
-    auto tapVec = -glm::abs( normal );
-
-    auto already = length( tapVec * ( mCollider.getPosition( ) - mCalcedPosition ) );
-    auto targetBackVec = tapVec * ( targetPoint - intersectPoint );
-    auto target = length( tapVec * ( targetPoint - intersectPoint ) );
-    if ( already < target )
+    if ( normal.y == 1.0F )
     {
-        mCalcedPosition += targetBackVec * 1.001F;
-        mCalcedSpeed = calcWallScratchVector( mSpeed, normal );
+        mIsLanding = true;
     }
+
+    mSpeed = calcWallScratchVector( mSpeed, normal );
+
+    auto position = intersectPoint + mSpeed;
+
+    mCollider.calc( position );
 }
 }
