@@ -14,13 +14,25 @@ namespace Scene
 	{
 		void cMatchingServer::setup()
 		{
+			using namespace Node::Action;
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mOpenRoom = false;
 			font = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 20);
 			font->set_text(u8"‚Ê‚í‚ ‚ ‚Ÿ‚Ÿ‚Ÿ‚Ÿ‚ñ");
 			font->set_scale(ci::vec2(1, -1));
 			n->add_child(font);
-
+			n->run_action(repeat_forever::create(sequence::create(delay::create(1.5f),
+				call_func::create([this]
+			{
+				for each(auto m in cMatchingMemberManager::getInstance()->mRoomMembers)
+				{
+					for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
+					{
+						cUDPManager::getInstance()->send(m.first,
+							new cEveTeamMember(p.teamNum,p.nameStr,p.playerID));
+					}
+				}
+			}))));
 		}
 		void cMatchingServer::shutDown()
 		{
@@ -38,6 +50,9 @@ namespace Scene
 
 		void cMatchingServer::checkReqMakeRoom()
 		{
+			if (mPhaseState != PhaseState::NOT_IN_ROOM)
+				return;
+
 			while (!cRequestManager::getInstance()->mReqMakeRoom.empty())
 			{
 				auto mReqMakeRoom = cRequestManager::getInstance()->mReqMakeRoom.top();
@@ -54,6 +69,8 @@ namespace Scene
 				cUDPManager::getInstance()->send(mReqMakeRoom.mNetworkHandle, new cResMakeRoom(true));
 				cMatchingMemberManager::getInstance()->addRoomMembers(mReqMakeRoom.mNetworkHandle);
 				cRequestManager::getInstance()->mReqMakeRoom.pop();
+				cMatchingMemberManager::getInstance()->addPlayerDatas("Mogura" + mReqMakeRoom.mNetworkHandle.ipAddress, -1);
+
 				mPhaseState = PhaseState::IN_ROOM;
 				continue;
 			}
@@ -73,6 +90,7 @@ namespace Scene
 				}
 
 				cUDPManager::getInstance()->send(reqInRoom.mNetworkHandle, new cResInRoom(true));
+				cMatchingMemberManager::getInstance()->addPlayerDatas("Mogura" + reqInRoom.mNetworkHandle.ipAddress,-1);
 				cRequestManager::getInstance()->mReqInRoom.pop();
 				continue;
 			}
@@ -93,6 +111,7 @@ namespace Scene
 				}
 				
 				cUDPManager::getInstance()->send(reqWantTeamIn.mNetworkHandle, new cResWantTeamIn(1, reqWantTeamIn.mTeamNum));
+				cMatchingMemberManager::getInstance()->addPlayerDatas("Mogura" + reqWantTeamIn.mNetworkHandle.ipAddress, reqWantTeamIn.mTeamNum);
 				cRequestManager::getInstance()->mReqWantTeamIn.pop();
 				continue;
 			}

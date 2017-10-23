@@ -48,6 +48,11 @@ public:
     void ungetEvePlayerDeath( Packet::Event::cEvePlayerDeath&& data );
 public:
     std::stack<Packet::Event::cEvePlayerDeath> mEvePlayerDeath;
+public:
+    boost::optional<Packet::Event::cEveTeamMember> getEveTeamMember( );
+    void ungetEveTeamMember( Packet::Event::cEveTeamMember&& data );
+public:
+    std::stack<Packet::Event::cEveTeamMember> mEveTeamMember;
     // P=====END=====P
 };
 }

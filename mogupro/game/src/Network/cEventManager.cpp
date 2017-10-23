@@ -138,5 +138,22 @@ void cEventManager::ungetEvePlayerDeath( Packet::Event::cEvePlayerDeath&& data )
 {
     mEvePlayerDeath.push( std::move( data ) );
 }
+boost::optional<Packet::Event::cEveTeamMember> cEventManager::getEveTeamMember( )
+{
+    if ( mEveTeamMember.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEveTeamMember.top( );
+        mEveTeamMember.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEveTeamMember( Packet::Event::cEveTeamMember&& data )
+{
+    mEveTeamMember.push( std::move( data ) );
+}
 // P=====END=====P
 }

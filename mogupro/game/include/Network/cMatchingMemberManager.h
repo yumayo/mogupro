@@ -11,6 +11,23 @@
 
 namespace Network
 {
+	struct PlayerData
+	{
+		ubyte1 teamNum;
+		std::string nameStr;
+		ubyte1 playerID;
+		
+		PlayerData()
+		{
+
+		}
+		PlayerData(ubyte1 _teamNum,std::string _nameStr,ubyte1 _playerID) : 
+			teamNum(_teamNum),nameStr(_nameStr),playerID(_playerID)
+		{
+
+		}
+	};
+
 class cMatchingMemberManager : public Utility::cSingletonAble<cMatchingMemberManager>
 {
 public:
@@ -23,7 +40,10 @@ public:
 	//Teamにメンバー追加 コードが汚いからリファクタリング必要
 	bool checkTeamIn(int teamNum,Network::cNetworkHandle addMember);
 	bool checkMaster(cNetworkHandle masterHandle);
+	void addPlayerDatas(std::string playerStr,ubyte1 teamNum);
+	void addPlayerDatas(std::string playerStr, ubyte1 teamNum, ubyte1 playerID);
 	cNetworkHandle mMasterHandle;
 	std::map<cNetworkHandle, int> mRoomMembers;
+	std::vector<PlayerData> mPlayerDatas;
 };
 }

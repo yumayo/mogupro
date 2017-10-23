@@ -2,6 +2,7 @@
 #include <Scene/cSceneBase.h>
 #include <Network.hpp>
 #include <Node/node.h>
+#include <Node/renderer.hpp>
 namespace Scene
 {
 namespace Member
