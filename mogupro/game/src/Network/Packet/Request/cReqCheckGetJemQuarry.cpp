@@ -8,6 +8,7 @@ namespace Request
 {
 void cReqCheckGetJemQuarry::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
+    mNetworkHandle = networkHandle;
     cImporter(data) >> mDrillId >> mGemId;
 }
 ubyte2 cReqCheckGetJemQuarry::packetExport( char* const data )

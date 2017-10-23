@@ -19,6 +19,23 @@ void cResponseManager::ungetResString( Packet::Response::cResString&& data )
 {
     mResString.push( std::move( data ) );
 }
+boost::optional<Packet::Response::cResConnect> cResponseManager::getResConnect( )
+{
+    if ( mResConnect.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResConnect.top( );
+        mResConnect.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResConnect( Packet::Response::cResConnect&& data )
+{
+    mResConnect.push( std::move( data ) );
+}
 boost::optional<Packet::Response::cResGetJemSeed> cResponseManager::getResGetJemSeed( )
 {
     if ( mResGetJemSeed.empty( ) )

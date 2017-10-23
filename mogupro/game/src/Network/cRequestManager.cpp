@@ -19,6 +19,23 @@ void cRequestManager::ungetReqString( Packet::Request::cReqString&& data )
 {
     mReqString.push( std::move( data ) );
 }
+boost::optional<Packet::Request::cReqConnect> cRequestManager::getReqConnect( )
+{
+    if ( mReqConnect.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqConnect.top( );
+        mReqConnect.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqConnect( Packet::Request::cReqConnect&& data )
+{
+    mReqConnect.push( std::move( data ) );
+}
 boost::optional<Packet::Request::cReqGetJemSeed> cRequestManager::getReqGetJemSeed( )
 {
     if ( mReqGetJemSeed.empty( ) )

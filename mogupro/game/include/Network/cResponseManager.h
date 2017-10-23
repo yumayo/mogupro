@@ -14,6 +14,11 @@ public:
 public:
     std::stack<Packet::Response::cResString> mResString;
 public:
+    boost::optional<Packet::Response::cResConnect> getResConnect( );
+    void ungetResConnect( Packet::Response::cResConnect&& data );
+public:
+    std::stack<Packet::Response::cResConnect> mResConnect;
+public:
     boost::optional<Packet::Response::cResGetJemSeed> getResGetJemSeed( );
     void ungetResGetJemSeed( Packet::Response::cResGetJemSeed&& data );
 public:

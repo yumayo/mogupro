@@ -12,6 +12,7 @@ cDliBreakBlocks::cDliBreakBlocks( )
 }
 void cDliBreakBlocks::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
+    mNetworkHandle = networkHandle;
     cImporter imp( data );
     for ( int i = 0; i < transferredBytes / ( sizeof( ubyte2 ) * 3 ); ++i )
     {

@@ -17,6 +17,8 @@ enum class PacketId : ubyte1
 
     // <std::string>を送ります。
     DLI_STRING,
+    // 接続を維持するパケットを送ります。
+    DLI_PING,
     // 自機のプレイヤー情報をサーバーに送ります。
     DLI_PLAYER,
     // ブロックを破壊したと知らせます。
@@ -29,6 +31,8 @@ enum class PacketId : ubyte1
 
     // <std::string>を送ります。
     EVE_STRING,
+    // 接続を維持するパケットを送ります。
+    EVE_PING,
     // 他のプレイヤーの位置情報を送ります。
     EVE_PLAYERS,
     // 他のプレイヤーがフィールドのジェムを採ったと通知します。
@@ -54,6 +58,8 @@ enum class PacketId : ubyte1
 
     // <std::string>を送ります。
     REQ_STRING,
+    // サーバーに接続を申し込みます。
+    REQ_CONNECT,
     // ワールドを生成するためのシード値を要求します。
     REQ_GET_JEM_SEED,
     // 現在持っているジェムの数をサーバーから取り寄せます。
@@ -92,6 +98,8 @@ enum class PacketId : ubyte1
 
     // <std::string>を送ります。
     RES_STRING,
+    // クライアントの接続要請に答えます。
+    RES_CONNECT,
     // ワールドを生成するためのシード値を渡します。
     RES_GET_JEM_SEED,
     // プレイヤーが持っているジェムの数を渡します。

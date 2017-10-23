@@ -16,6 +16,7 @@ public:
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
 public:
+    cNetworkHandle mNetworkHandle;
     cinder::vec3 mPosition;
     cinder::quat mRotation;
 };

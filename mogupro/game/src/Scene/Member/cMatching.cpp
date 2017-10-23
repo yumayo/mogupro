@@ -38,7 +38,7 @@ namespace Scene
 			mWaitClassState = ClassState::NOT;
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mCanSend = true;
-			Network::cUDPManager::getInstance()->open();
+			Network::cUDPServerManager::getInstance()->open();
 			ci::vec3 pos = ci::vec3(0);
 			CAMERA->followingCamera(&pos, 30);
 			CAMERA->setup();
@@ -53,7 +53,7 @@ namespace Scene
 
 		void cMatching::update(float deltaTime)
 		{
-			Network::cUDPManager::getInstance()->update();
+			Network::cUDPServerManager::getInstance()->update(deltaTime);
 			makeRoom();
 			inRoom();
 		}
@@ -74,13 +74,13 @@ namespace Scene
 				if (ENV->pushKey(ci::app::KeyEvent::KEY_z))
 				{
 					mCanSend = false;
-					cUDPManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565), new cReqMakeRoom(100));
+                    cUDPServerManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565), new cReqMakeRoom(100));
 					mWaitClassState = ClassState::MASTER;
 				}
 
 				else if (ENV->pushKey(ci::app::KeyEvent::KEY_x))
 				{
-					cUDPManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565), new cReqInRoom(100));
+                    cUDPServerManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565), new cReqInRoom(100));
 					mCanSend = false;
 					mWaitClassState = ClassState::CLIENT;
 				}
@@ -139,14 +139,14 @@ namespace Scene
 					//1PE2P‚Ì‚Ç‚Á‚¿‚É“ü‚é‚Ì‚©‚Ì‘I‘ð
 					if (ENV->pushKey(ci::app::KeyEvent::KEY_1))
 					{
-						cUDPManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565),
+                        cUDPServerManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565),
 							new cReqWantTeamIn(0));
 						mCanSend = false;
 					}
 
 					else if (ENV->pushKey(ci::app::KeyEvent::KEY_2))
 					{
-						cUDPManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565),
+                        cUDPServerManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565),
 							new cReqWantTeamIn(1));
 						mCanSend = false;
 					}
@@ -198,7 +198,7 @@ namespace Scene
 			{
 				if (ENV->pushKey(ci::app::KeyEvent::KEY_3))
 				{
-					cUDPManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565), new cReqCheckBeginGame());
+                    cUDPServerManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565), new cReqCheckBeginGame());
 					mCanSend = false;
 				}
 			}

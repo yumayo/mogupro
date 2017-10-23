@@ -6,36 +6,20 @@
 #include <Network/cResponseManager.h>
 namespace Network
 {
-void cUDPManager::close( )
+bool cUDPManager::isConnectPacket( cPacketChunk const & packetChunk )
 {
-    mSocket.close( );
-}
-void cUDPManager::open( )
-{
-    mSocket.open( );
-}
-void cUDPManager::open( int port )
-{
-    mSocket.open( port );
-}
-void cUDPManager::update( )
-{
-    while ( !mSocket.emptyChunk( ) )
-    {
-        auto chunk = mSocket.popChunk( );
-        onReceive( chunk );
-    }
+    cNetworkHandle const& networkHandle = packetChunk.networkHandle;
+    cPacketBuffer const& packetBuffer = packetChunk.packetBuffer;
+    ubyte2 const& transferredBytes = packetBuffer.transferredBytes;
+    cBuffer const& buffer = packetBuffer.buffer;
 
-    for ( auto& buffer : mSendDataBuffer )
-    {
-        // 余ってたらパケットを送ります。
-        if ( !buffer.second.empty( ) )
-        {
-            mSocket.write( buffer.first, buffer.second.size( ), buffer.second.data( ) );
-            buffer.second.clear( );
-            buffer.second.shrink_to_fit( );
-        }
-    }
+    if ( transferredBytes != sizeof( Packet::PacketHeader ) ) return false;
+
+    Packet::PacketHeader packetHeader;
+    char const* bufferData = buffer.data( );
+    memcpy( &packetHeader, bufferData, sizeof( Packet::PacketHeader ) );
+    ubyte2 bufferSize = packetHeader.mPacketByte;
+    return packetHeader.mPacketId == Network::Packet::PacketId::REQ_CONNECT;
 }
 void cUDPManager::onReceive( cPacketChunk const & packetChunk )
 {
@@ -59,6 +43,13 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             Packet::Event::cEveString data;
             data.onReceive( networkHandle, bufferSize, bufferData );
             cEventManager::getInstance( )->ungetEveString( std::move( data ) );
+            break;
+        }
+        case Network::Packet::PacketId::EVE_PING:
+        {
+            Packet::Event::cEvePing data;
+            data.onReceive( networkHandle, bufferSize, bufferData );
+            cEventManager::getInstance( )->ungetEvePing( std::move( data ) );
             break;
         }
         case Network::Packet::PacketId::EVE_PLAYERS:
@@ -124,6 +115,13 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             cDeliverManager::getInstance( )->ungetDliString( std::move( data ) );
             break;
         }
+        case Network::Packet::PacketId::DLI_PING:
+        {
+            Packet::Deliver::cDliPing data;
+            data.onReceive( networkHandle, bufferSize, bufferData );
+            cDeliverManager::getInstance( )->ungetDliPing( std::move( data ) );
+            break;
+        }
         case Network::Packet::PacketId::DLI_PLAYER:
         {
             Packet::Deliver::cDliPlayer data;
@@ -143,6 +141,13 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             Packet::Request::cReqString data;
             data.onReceive( networkHandle, bufferSize, bufferData );
             cRequestManager::getInstance( )->ungetReqString( std::move( data ) );
+            break;
+        }
+        case Network::Packet::PacketId::REQ_CONNECT:
+        {
+            Packet::Request::cReqConnect data;
+            data.onReceive( networkHandle, bufferSize, bufferData );
+            cRequestManager::getInstance( )->ungetReqConnect( std::move( data ) );
             break;
         }
         case Network::Packet::PacketId::REQ_GET_JEM_SEED:
@@ -234,6 +239,13 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             Packet::Response::cResString data;
             data.onReceive( networkHandle, bufferSize, bufferData );
             cResponseManager::getInstance( )->ungetResString( std::move( data ) );
+            break;
+        }
+        case Network::Packet::PacketId::RES_CONNECT:
+        {
+            Packet::Response::cResConnect data;
+            data.onReceive( networkHandle, bufferSize, bufferData );
+            cResponseManager::getInstance( )->ungetResConnect( std::move( data ) );
             break;
         }
         case Network::Packet::PacketId::RES_GET_JEM_SEED:
@@ -330,23 +342,5 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             throw std::exception( "やばい。" );
         }
     } while ( headerOffset != transferredBytes );
-}
-void cUDPManager::sendDataBufferAdd( cNetworkHandle const& networkHandle, cPacketBuffer const & packetBuffer )
-{
-    auto& buf = mSendDataBuffer[networkHandle];
-
-    // パケットが大きくなりそうなら先に送ってしまいます。
-    if ( 1024 < buf.size( ) )
-    {
-        mSocket.write( networkHandle, buf.size( ), buf.data( ) );
-        buf.clear( );
-        buf.shrink_to_fit( );
-    }
-
-    ubyte2 const& byte = packetBuffer.transferredBytes;
-    cBuffer const& buffer = packetBuffer.buffer;
-
-    buf.resize( buf.size( ) + byte );
-    memcpy( buf.data( ) + buf.size( ) - byte, &buffer, byte );
 }
 }

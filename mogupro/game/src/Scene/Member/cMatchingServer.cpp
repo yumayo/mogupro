@@ -28,7 +28,7 @@ namespace Scene
 				{
 					for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
 					{
-						cUDPManager::getInstance()->send(m.first,
+						cUDPServerManager::getInstance()->send(m.first,
 							new cEveTeamMember(p.teamNum,p.nameStr,p.playerID));
 					}
 				}
@@ -58,7 +58,7 @@ namespace Scene
 				auto mReqMakeRoom = cRequestManager::getInstance()->mReqMakeRoom.top();
 				if (mOpenRoom != false)
 				{
-					cUDPManager::getInstance()->send(mReqMakeRoom.mNetworkHandle, new cResMakeRoom(false));
+                    cUDPServerManager::getInstance()->send(mReqMakeRoom.mNetworkHandle, new cResMakeRoom(false));
 					cRequestManager::getInstance()->mReqMakeRoom.pop();
 					continue;
 				}
@@ -66,7 +66,7 @@ namespace Scene
 				mOpenRoom = true;
 				mRoomID = mReqMakeRoom.mRoomID;
 				cMatchingMemberManager::getInstance()->mMasterHandle = mReqMakeRoom.mNetworkHandle;
-				cUDPManager::getInstance()->send(mReqMakeRoom.mNetworkHandle, new cResMakeRoom(true));
+                cUDPServerManager::getInstance()->send(mReqMakeRoom.mNetworkHandle, new cResMakeRoom(true));
 				cMatchingMemberManager::getInstance()->addRoomMembers(mReqMakeRoom.mNetworkHandle);
 				cRequestManager::getInstance()->mReqMakeRoom.pop();
 				cMatchingMemberManager::getInstance()->addPlayerDatas("Mogura" + mReqMakeRoom.mNetworkHandle.ipAddress, -1);
@@ -84,12 +84,12 @@ namespace Scene
 				if (mOpenRoom != true ||
 					cMatchingMemberManager::getInstance()->addRoomMembers(reqInRoom.mNetworkHandle) != true)
 				{
-					cUDPManager::getInstance()->send(reqInRoom.mNetworkHandle, new cResInRoom(false));
+                    cUDPServerManager::getInstance()->send(reqInRoom.mNetworkHandle, new cResInRoom(false));
 					cRequestManager::getInstance()->mReqInRoom.pop();
 					continue;
 				}
 
-				cUDPManager::getInstance()->send(reqInRoom.mNetworkHandle, new cResInRoom(true));
+                cUDPServerManager::getInstance()->send(reqInRoom.mNetworkHandle, new cResInRoom(true));
 				cMatchingMemberManager::getInstance()->addPlayerDatas("Mogura" + reqInRoom.mNetworkHandle.ipAddress,-1);
 				cRequestManager::getInstance()->mReqInRoom.pop();
 				continue;
@@ -105,12 +105,12 @@ namespace Scene
 				if (cMatchingMemberManager::getInstance()->checkTeamIn(reqWantTeamIn.mTeamNum,
 					reqWantTeamIn.mNetworkHandle) != true)
 				{
-					cUDPManager::getInstance()->send(reqWantTeamIn.mNetworkHandle, new cResWantTeamIn(0,reqWantTeamIn.mTeamNum));
+                    cUDPServerManager::getInstance()->send(reqWantTeamIn.mNetworkHandle, new cResWantTeamIn(0,reqWantTeamIn.mTeamNum));
 					cRequestManager::getInstance()->mReqWantTeamIn.pop();
 					continue;
 				}
 				
-				cUDPManager::getInstance()->send(reqWantTeamIn.mNetworkHandle, new cResWantTeamIn(1, reqWantTeamIn.mTeamNum));
+                cUDPServerManager::getInstance()->send(reqWantTeamIn.mNetworkHandle, new cResWantTeamIn(1, reqWantTeamIn.mTeamNum));
 				cMatchingMemberManager::getInstance()->addPlayerDatas("Mogura" + reqWantTeamIn.mNetworkHandle.ipAddress, reqWantTeamIn.mTeamNum);
 				cRequestManager::getInstance()->mReqWantTeamIn.pop();
 				continue;
@@ -132,7 +132,7 @@ namespace Scene
 				mPhaseState = PhaseState::BEGIN_GAME;
 
 				for each(auto m in cMatchingMemberManager::getInstance()->mRoomMembers)
-					cUDPManager::getInstance()->send(m.first, new cResCheckBeginGame());
+                    cUDPServerManager::getInstance()->send(m.first, new cResCheckBeginGame());
 				
 				cRequestManager::getInstance()->mReqWantTeamIn.pop();
 				shutDown();

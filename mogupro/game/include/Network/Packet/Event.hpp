@@ -1,5 +1,6 @@
 #pragma once
 #include<Network/Packet/Event/cEveString.h>
+#include<Network/Packet/Event/cEvePing.h>
 #include<Network/Packet/Event/cEvePlayers.h>
 #include<Network/Packet/Event/cEveGetJemPlayer.h>
 #include<Network/Packet/Event/cEveGetJemQuarry.h>

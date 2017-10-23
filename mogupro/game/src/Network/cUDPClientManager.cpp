@@ -3,143 +3,136 @@
 #include <Network/cEventManager.h>
 #include <Network/cRequestManager.h>
 #include <Network/cResponseManager.h>
-#include <Game/cGemManager.h>
-#include <Game/cPlayerManager.h>
-#include <Game/cStrategyManager.h>
-#include <Game/cFieldManager.h>
+#include <cinder/app/App.h>
+#include <limits>
+#include <Utility/MessageBox.h>
+#include <Network/cUDPManager.h>
+#include <Scene/cSceneManager.h>
+#include <Scene/Member/cMatching.h>
+#include <Node/action.hpp>
 namespace Network
 {
 cUDPClientManager::cUDPClientManager( )
-    : mConnectServerHandle( "127.0.0.1", 25565 )
-    , mBreakBlocksPecket( new Packet::Deliver::cDliBreakBlocks( ) )
+    : mCloseSecond( std::numeric_limits<float>::max( ) )
+    , mRoot( Node::node::create( ) )
 {
+    mRoot->set_schedule_update( );
 }
-void cUDPClientManager::update( )
+void cUDPClientManager::close( )
 {
-    allPlayersPosition( );
-    allQuarrys( );
-    allGems( );
-    allBreakBlocks( );
+    mSocket.close( );
+    mRoot->remove_action_by_name( "ping" );
 }
-void cUDPClientManager::allPlayersPosition( )
+void cUDPClientManager::open( )
 {
-    auto m = Network::cEventManager::getInstance( );
-    while ( auto packet = m->getEvePlayers( ) )
+    mSocket.open( );
+}
+bool cUDPClientManager::isConnected( )
+{
+    return mConnectServerHandle;
+}
+void cUDPClientManager::connect( std::string const& ipAddress )
+{
+    auto packet = new Packet::Request::cReqConnect( );
+    cPacketBuffer packetBuffer;
+    packet->createPacket( packetBuffer );
+    mSocket.write( cNetworkHandle( ipAddress, 25565 ), packetBuffer.transferredBytes, packetBuffer.buffer.data( ) );
+    delete packet;
+}
+void cUDPClientManager::connectOfflineServer( )
+{
+    connect( "127.0.0.1" );
+}
+void cUDPClientManager::update( float delta )
+{
+    updateRecv( );
+    updateSend( );
+    mRoot->entry_update( delta );
+}
+void cUDPClientManager::updateSend( )
+{
+    if ( mConnectServerHandle )
     {
-        for ( auto& o : packet->mPlayerFormats )
+        // 送信するものがあればバッファーから取り出して送る。
+        auto& buffer = mSendDataBuffer;
+        // 余ってたらパケットを送ります。
+        if ( !buffer.empty( ) )
         {
-            //Game::cPlayerManager::getInstance( )->setPlayerPosition( 
-            //    o.first, 
-            //    o.second.mPosition, 
-            //    o.second.mRotation
-            //);
+            mSocket.write( mConnectServerHandle, buffer.size( ), buffer.data( ) );
+            buffer.clear( );
+            buffer.shrink_to_fit( );
         }
     }
 }
-void cUDPClientManager::allQuarrys( )
+void cUDPClientManager::updateRecv( )
 {
-    auto m = Network::cEventManager::getInstance( );
-    while ( auto packet = m->getEveSetQuarry( ) )
+    // 受信したものがあればバッファーから取り出してパケットの分別を行う。
+    while ( !mSocket.emptyChunk( ) )
     {
-        Game::cStrategyManager::getInstance( )->CreateDrill(
-            packet->mPosition,
-            packet->mDrillId,
-            static_cast<Game::Strategy::cDrill::DrillType>( packet->mType ),
-            packet->mTeamId == 1 // TODO: チームIDと比較する。
-        );
+        auto chunk = mSocket.popChunk( );
+        cUDPManager::getInstance( )->onReceive( chunk );
     }
+
+    connection( );
+    ping( );
 }
-void cUDPClientManager::allGems( )
+void cUDPClientManager::connection( )
 {
-    auto eve = Network::cEventManager::getInstance( );
-    while ( auto packet = eve->getEveGetJemQuarry( ) )
+    while ( auto p = cResponseManager::getInstance( )->getResConnect( ) )
     {
-        Game::cStrategyManager::getInstance( )->HitDrillToGem(
-            packet->mDrillId,
-            packet->mGemId
-        );
-    }
-    while ( auto packet = eve->getEveGetJemPlayer( ) )
-    {
-        //Game::cPlayerManager::getInstance( )->mineGem(
-        //    packet->mPlayerId,
-        //    packet->mGemId
-        //);
-    }
-    auto res = Network::cResponseManager::getInstance( );
-    while ( auto packet = res->getResCheckGetJemQuarry( ) )
-    {
-        if ( !packet->mIsSuccessed ) continue;
-        Game::cStrategyManager::getInstance( )->HitDrillToGem(
-            packet->mDrillId,
-            packet->mGemId
-        );
-    }
-    while ( auto packet = res->getResCheckGetJemPlayer( ) )
-    {
-        if ( !packet->mIsSuccessed ) continue;
-        //Game::cPlayerManager::getInstance( )->mineGem(
-        //    packet->mPlayerId,
-        //    packet->mGemId
-        //);
-    }
-}
-void cUDPClientManager::allBreakBlocks( )
-{
-    auto eve = Network::cEventManager::getInstance( );
-    while ( auto packet = eve->getEveBreakBlocks( ) )
-    {
-        for ( auto& o : packet->mBreakPositions )
+        mConnectServerHandle = p->mNetworkHandle;
+
+        mCloseSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
+
+        using namespace Node::Action;
+        auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
         {
-            Game::cFieldManager::getInstance( )->blockBreak(
-                o
-            );
-        }
+            send( new Packet::Deliver::cDliPing( ) );
+        } ) ) );
+        act->set_name( "ping" );
+        mRoot->run_action( act );
     }
 }
-void cUDPClientManager::sendBreakBlock( cinder::vec3 const & position )
+void cUDPClientManager::ping( )
 {
-    // ブロック破壊は一旦バッファに詰めておきます。
-    mBreakBlocksPecket->mBreakPositions.emplace_back( position );
-}
-void cUDPClientManager::sendBreakBlocks( std::vector<cinder::vec3> const & positions )
-{
-    // ブロック破壊は一旦バッファに詰めておきます。
-    std::copy( positions.begin( ), positions.end( ), std::back_inserter( mBreakBlocksPecket->mBreakPositions ) );
-}
-void cUDPClientManager::sendSetQuarry( cinder::vec3 const & position, ubyte1 drillType )
-{
-    auto packet = new Packet::Request::cReqCheckSetQuarry( );
-    packet->mPosition = position;
-    packet->mType = drillType;
-    cUDPManager::getInstance( )->send( mConnectServerHandle, packet );
-}
-void cUDPClientManager::sendPlayerPosition( cinder::vec3 const & position, cinder::quat const & rotation )
-{
-    auto packet = new Packet::Deliver::cDliPlayer( );
-    packet->mPosition = position;
-    packet->mRotation = rotation;
-    cUDPManager::getInstance( )->send( mConnectServerHandle, packet );
-}
-void cUDPClientManager::sendGetGemPlayer( ubyte2 gemId )
-{
-    auto packet = new Packet::Request::cReqCheckGetJemPlayer( );
-    packet->mGemId = gemId;
-    cUDPManager::getInstance( )->send( mConnectServerHandle, packet );
-}
-void cUDPClientManager::sendGetGemQuarry( ubyte1 drillId, ubyte2 gemId )
-{
-    auto packet = new Packet::Request::cReqCheckGetJemQuarry( );
-    packet->mDrillId = drillId;
-    packet->mGemId = gemId;
-    cUDPManager::getInstance( )->send( mConnectServerHandle, packet );
-}
-void cUDPClientManager::sendBreakBlocks( )
-{
-    if ( !mBreakBlocksPecket->mBreakPositions.empty( ) )
+    while ( auto p = cEventManager::getInstance( )->getEvePing( ) )
     {
-        cUDPManager::getInstance( )->send( mConnectServerHandle, mBreakBlocksPecket );
-        mBreakBlocksPecket = new Packet::Deliver::cDliBreakBlocks( );
+        mCloseSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
     }
+    if ( mCloseSecond < cinder::app::getElapsedSeconds( ) )
+    {
+        close( );
+        Utility::MessageBoxOk( "サーバーとの接続が切れました。", [ ]
+        {
+            cSceneManager::getInstance( )->change<Scene::Member::cMatching>( );
+        } );
+    }
+}
+void cUDPClientManager::sendDataBufferAdd( cPacketBuffer const & packetBuffer )
+{
+    if ( !isConnected( ) )
+    {
+        close( );
+        Utility::MessageBoxOk( "connectが成立する前に通信をしないでください。", [ ]
+        {
+            cSceneManager::getInstance( )->change<Scene::Member::cMatching>( );
+        } );
+    }
+
+    auto& buf = mSendDataBuffer;
+
+    // パケットが大きくなりそうなら先に送ってしまいます。
+    if ( 1024 < buf.size( ) )
+    {
+        mSocket.write( mConnectServerHandle, buf.size( ), buf.data( ) );
+        buf.clear( );
+        buf.shrink_to_fit( );
+    }
+
+    ubyte2 const& byte = packetBuffer.transferredBytes;
+    cBuffer const& buffer = packetBuffer.buffer;
+
+    buf.resize( buf.size( ) + byte );
+    memcpy( buf.data( ) + buf.size( ) - byte, &buffer, byte );
 }
 }

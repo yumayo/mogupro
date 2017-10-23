@@ -1,9 +1,11 @@
 #pragma once
 #include <Utility/cSingletonAble.h>
-#include <Network/cUDPManager.h>
+#include <Network/cUDP.h>
+#include <Network/Packet/cPacketBase.h>
+#include <Network/Packet/PacketId.h>
 #include <cinder/Vector.h>
 #include <cinder/Quaternion.h>
-#include <Network/Packet/Deliver/cDliBreakBlocks.h>
+#include <Node/node.h>
 namespace Network
 {
 class cUDPClientManager : public Utility::cSingletonAble<cUDPClientManager>
@@ -11,34 +13,42 @@ class cUDPClientManager : public Utility::cSingletonAble<cUDPClientManager>
 public:
     cUDPClientManager( );
 public:
-    void update( );
-private:
-    // 全てのプレイヤーの座標を行う。
-    void allPlayersPosition( );
-    // 全ての掘削機の設置イベントを行う。
-    void allQuarrys( );
-    // 全てのジェム採取イベントを行う。
-    void allGems( );
-    // 全てのブロック破壊イベントを行う。
-    void allBreakBlocks( );
+    template <class Ty, Packet::PacketId packetId>
+    void send( Packet::cPacketBase<Ty, packetId>* packetBase )
+    {
+        if ( packetBase == nullptr ) return;
+
+        cPacketBuffer packetBuffer;
+        packetBase->createPacket( packetBuffer );
+
+        sendDataBufferAdd( packetBuffer );
+
+        delete packetBase;
+        packetBase = nullptr;
+    }
 public:
-    // ブロックを破壊したら呼んでください。
-    void sendBreakBlock( cinder::vec3 const& position );
-    // まとめてブロックを破壊したら呼んでください。
-    void sendBreakBlocks( std::vector<cinder::vec3> const& positions );
-    // 掘削機を設置したら呼んでください。
-    void sendSetQuarry( cinder::vec3 const& position, ubyte1 drillType );
-    // プレイヤーの位置情報をサーバーに送りますので呼んでください。
-    void sendPlayerPosition( cinder::vec3 const& position, cinder::quat const& rotation );
-    // プレイヤーがジェムを取得したら呼んでください。
-    void sendGetGemPlayer( ubyte2 gemId );
-    // 掘削機がジェムを取得したら呼んでください。
-    void sendGetGemQuarry( ubyte1 drillId, ubyte2 gemId );
+    void close( );
+    void open( );
+    bool isConnected( );
+    void connect( std::string const& ipAddress );
+    void connectOfflineServer( );
+    void update( float delta );
+
+    // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+    // くコ:彡
 private:
-    // 上記でたまったブロックを実際に送ります。
-    void sendBreakBlocks( );
+    void updateSend( );
+    void updateRecv( );
 private:
+    void connection( );
+    void ping( );
+private:
+    void sendDataBufferAdd( cPacketBuffer const& packetBuffer );
+private:
+    cUDP mSocket;
+    std::vector<char> mSendDataBuffer;
     cNetworkHandle mConnectServerHandle;
-    Packet::Deliver::cDliBreakBlocks* mBreakBlocksPecket = nullptr;
+    float mCloseSecond;
+    hardptr<Node::node> mRoot;
 };
 }
