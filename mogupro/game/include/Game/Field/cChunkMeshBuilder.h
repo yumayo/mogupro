@@ -14,7 +14,7 @@ public:
     cChunkMeshBuilder( cChunk& chunk );
     ~cChunkMeshBuilder();
 
-    void buildMesh();
+    bool buildMesh();
 
 private:
 

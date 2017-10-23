@@ -34,12 +34,16 @@ public:
 
     void breakBlock( ci::ivec3 c );
 
-
+    void reBuildMesh();
+    void buildMesh();
+    void reLoading();
     bool createMainCall();
     void createBlocks();
 
+
 private:
 
+    void clearMesh();
     ci::ivec3 toWorldPosition( ci::ivec3 c )const;
     bool isOutOfRange( ci::ivec3 c );
     int getIndex( ci::ivec3 c );
@@ -47,8 +51,10 @@ private:
 
 public:
 
-    bool mIsLoaded = 0;
-    bool mIsDone = 0;
+    bool mHasBuilded = false;
+    bool mHasLoadingCompleted = false;
+    bool mIsLoaded = false;
+    bool mIsDone = false;
     ci::TriMeshRef mMesh;
     ci::gl::VboMeshRef mVbo;
 

@@ -1,6 +1,9 @@
 #include <Game/Field/cChunk.h>
 #include <Game/Field/cUnderGround.h>
+#include <Game/Field/cChunkMeshBuilder.h>
 #include <Utility/cTimeMeasurement.h>
+#include <Utility/cString.h>
+
 using namespace ci;
 using namespace ci::app;
 
@@ -80,7 +83,7 @@ void cChunk::addFace( const std::array<GLfloat, 12>& block_face,
     mMesh->appendTexCoords0( &texture_coords[0], 4 );
     for ( int i = 0, index = 0; i < 4; i++ )
     {
-        vec3 vertex ;
+        vec3 vertex;
         vertex.x += block_face[index++] + block_position.x;
         vertex.y += block_face[index++] + block_position.y;
         vertex.z += block_face[index++] + block_position.z;
@@ -103,10 +106,13 @@ void cChunk::addFace( const std::array<GLfloat, 12>& block_face,
 
 void cChunk::breakBlock( ci::ivec3 c )
 {
+    if ( mHasBuilded )
+        return;
     auto& block = getBlock( c );
     if ( block.mIsActive == false )
         return;
     block.mIsActive = false;
+    mHasBuilded = true;
 
     //auto id = block.mId;
     //auto indices = std::vector<uint>( block.mIndicesNum.size() * 4 );
@@ -120,18 +126,45 @@ void cChunk::breakBlock( ci::ivec3 c )
     //vbo->bufferSubData( block.mIndicesNum[0] * 4, block.mIndicesNum.size() * 4, &indices[0] );
 }
 
+void cChunk::reBuildMesh()
+{
+    clearMesh();
+    buildMesh();
+
+    std::string str = "Reloaded mesh cell  x:" + std::to_string( mChunkCell.x ) + " z:" + std::to_string( mChunkCell.z );
+    Utility::cString::log( str.c_str() );
+
+    str = std::to_string( mHasLoadingCompleted );
+    Utility::cString::log( str.c_str() );
+}
+
+void cChunk::buildMesh()
+{
+    cChunkMeshBuilder builder( *this );
+    mHasLoadingCompleted = builder.buildMesh();
+}
+
+void cChunk::reLoading()
+{
+    mVbo = gl::VboMesh::create( *mMesh );   
+}
+
 bool cChunk::createMainCall()
 {
-    // vbo‚ª¶¬Ï‚Ý‚¾‚Á‚½‚ç‚Í‚¶‚­
-    if ( mVbo != nullptr )
-        return false;
+    //reLoading();
 
     // ŒvŽZ“r’†‚¾‚Á‚½‚ç‚Í‚¶‚­
     if ( mIsDone == false )
         return false;
 
+    // vbo‚ª¶¬Ï‚Ý‚¾‚Á‚½‚ç‚Í‚¶‚­
+    if ( mVbo != nullptr )
+        return false;
+
     if ( mMesh == nullptr )
         return false;
+
+    mHasLoadingCompleted = true;
     mVbo = gl::VboMesh::create( *mMesh );
     for ( auto& block : mBlocks )
         block.setup();
@@ -139,9 +172,7 @@ bool cChunk::createMainCall()
     cTimeMeasurement::getInstance()->make();
     auto t = cTimeMeasurement::getInstance()->deltaTime();
 
-    console() << std::endl << std::endl;
-    console() << "Field create time : " << t << "pos " << mChunkCell << std::endl;
-    console() << std::endl << std::endl;
+    //console() << "Field create time : " << t << "pos " << mChunkCell << std::endl;
     return true;
 }
 
@@ -160,6 +191,12 @@ void cChunk::createBlocks()
 
                 mBlocks[getIndex( x, y, z )] = block;
             }
+}
+
+void cChunk::clearMesh()
+{
+    mIndicesIndex = 0;
+    mMesh->clear();
 }
 
 ci::ivec3 cChunk::toWorldPosition( ci::ivec3 c )const

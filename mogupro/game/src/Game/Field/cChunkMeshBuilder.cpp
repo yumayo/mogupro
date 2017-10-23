@@ -92,7 +92,7 @@ cChunkMeshBuilder::~cChunkMeshBuilder()
 
 }
 
-void cChunkMeshBuilder::buildMesh()
+bool cChunkMeshBuilder::buildMesh()
 {
     AdjacentBlockPositions directions;
 
@@ -121,7 +121,7 @@ void cChunkMeshBuilder::buildMesh()
             }
         }
     }
-
+    return true;
 }
 
 void cChunkMeshBuilder::tryAddFaceToMesh( const std::array<GLfloat, 12>& block_face,

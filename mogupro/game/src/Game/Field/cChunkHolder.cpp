@@ -24,11 +24,11 @@ cChunk & cChunkHolder::getChunk( int x, int z )
 
 cChunk & cChunkHolder::getChunk( ci::ivec3 c )
 {
-    if ( isExistsChunk( c.x, c.z ) )
-    {
-        auto chunk = cChunk( c.x, c.z, mUnderGround );
-        return mChunks[c] = chunk;
-    }
+    //if ( isExistsChunk( c.x, c.z ) )
+    //{
+    //    auto chunk = cChunk( c.x, c.z, mUnderGround );
+    //    return mChunks[c] = chunk;
+    //}
     return mChunks[c];
 }
 
@@ -58,9 +58,7 @@ bool cChunkHolder::createChunk( cChunk& chunk )
     chunk.mIsLoaded = true;
 
     chunk.createBlocks();
-    cChunkMeshBuilder builder( chunk );
-    builder.buildMesh();
-
+    chunk.buildMesh();
     return chunk.mIsDone = true;
 }
 

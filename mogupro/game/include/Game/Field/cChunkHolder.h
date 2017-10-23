@@ -10,7 +10,7 @@ class cChunkHolder
 {
 public:
 
-    cChunkHolder(cUnderGround* under_ground);
+    cChunkHolder( cUnderGround* under_ground );
     ~cChunkHolder();
 
     cChunk& getChunk( int x, int z );
