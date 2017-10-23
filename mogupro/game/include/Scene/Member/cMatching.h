@@ -30,6 +30,7 @@ private:
 	{
 		NOT_IN_ROOM,
 		IN_ROOM,
+		BEGIN_GAME
 	};
 
 	PhaseState mPhaseState;

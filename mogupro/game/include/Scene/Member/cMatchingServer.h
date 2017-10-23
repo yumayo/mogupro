@@ -1,6 +1,7 @@
 #pragma once
 #include <Scene/cSceneBase.h>
 #include <Network.hpp>
+#include <Node/node.h>
 namespace Scene
 {
 namespace Member
@@ -13,6 +14,8 @@ public:
 	void update(float deltaTime);
 	void checkReqMakeRoom();
 	void checkReqInRoom();
+	void checkTeamIn();
+	void checkBeginGame();
 	void draw();
 	void draw2D();
 	void resize();
@@ -21,12 +24,14 @@ private:
 	{
 		NOT_IN_ROOM,
 		IN_ROOM,
+		//Ç∆ÇËÇ†Ç¶Ç∏ÉQÅ[ÉÄäJénÇ∑ÇÈ
+		BEGIN_GAME
 	};
-
-
 	PhaseState mPhaseState;
 	int mRoomID;
 	bool mOpenRoom;
+	Utility::hardptr<Node::node> n;
+	Utility::hardptr<Node::Renderer::label> font;
 };
 }
 }
