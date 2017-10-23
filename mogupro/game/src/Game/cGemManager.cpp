@@ -9,6 +9,7 @@ namespace Game
 		mMapChipSize = mapChipSize;
 		mGemScale = gemScale;
 		mGemMaxNum = gemMaxNum;
+		mBloom = 1.0f;
 		for (int i = 0; i < 2; i++)
 		{
 			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Dia, 0));
@@ -19,8 +20,9 @@ namespace Game
 		create();
 
 		ci::gl::Fbo::Format format;
-		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth()/2, ci::app::getWindowHeight()/2, true);
-		mShader = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/GemManager.frag"));
+		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth()/4, ci::app::getWindowHeight()/4, true);
+		mHShader = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/GemManager.frag"));
+		//mVShader = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/VerticalGemBlur.frag"));
 		ci::gl::enableDepthWrite();
 		ci::gl::enableDepthRead();
 		ci::gl::enableAlphaBlending();
@@ -40,15 +42,31 @@ namespace Game
 	void cGemManager::drawFbo()
 	{
 
-		auto rect = ci::Rectf(-ci::app::getWindowWidth()/2, -ci::app::getWindowHeight()/2, ci::app::getWindowWidth() / 2, ci::app::getWindowHeight() / 2);
+		auto rect = ci::Rectf(-ci::app::getWindowSize()/2, ci::app::getWindowSize()/2);
 	    ci::gl::VboMeshRef vboRect = ci::gl::VboMesh::create(ci::geom::Rect(rect));
-		batch = ci::gl::Batch::create(vboRect,mShader);
+		batch = ci::gl::Batch::create(vboRect,mHShader);
+		ci::gl::Texture2dRef tex = mGemBuffer->getColorTexture();
+		tex->bind();
+		mHShader->bind();
+		mHShader->uniform("uTex0", 0);
+		mHShader->uniform("uColor", ci::vec4(1, 1, 1, 1));
+		mHShader->uniform("uWindowSize", ci::vec2(ci::app::getWindowSize()/2));
+		mHShader->uniform("uAlpha", 0.5f);
+		//mHShader->uniform("texture0", 0);
+		//mHShader->uniform("width", ci::app::getWindowWidth());
+		//mHShader->uniform("blurSize", ci::app::getWindowWidth() / 4);
+		//mHShader->uniform("bloom", mBloom);
 
-		ci::gl::ScopedTextureBind texture(mGemBuffer->getColorTexture());
-		mShader->uniform("uTex0", 0);
-		mShader->uniform("uColor", ci::vec4(1, 1, 1, 1));
-		mShader->uniform("uWindowSize", ci::vec2(ci::app::getWindowSize()/2));
-		batch->draw();
+		//mVShader->uniform("texture0", 0);
+		//mVShader->uniform("windowHeight", ci::app::getWindowHeight());
+		//mVShader->uniform("blurSize", ci::app::getWindowHeight() / 4);
+		//mVShader->uniform("bloom", mBloom);
+
+		ci::gl::drawSolidRect(rect);
+		tex->unbind();
+
+		//batch->draw();
+
 	}
 
 	void cGemManager::update()
