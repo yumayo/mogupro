@@ -7,3 +7,4 @@
 #include<Network/Packet/Event/cEveSetQuarry.h>
 #include<Network/Packet/Event/cEvePlayerRobJem.h>
 #include<Network/Packet/Event/cEvePlayerDeath.h>
+#include<Network/Packet/Event/cEveTeamMember.h>

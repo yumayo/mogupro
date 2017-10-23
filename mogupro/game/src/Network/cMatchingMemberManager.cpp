@@ -15,7 +15,7 @@ bool cMatchingMemberManager::addRoomMembers(Network::cNetworkHandle addMember)
 
 	for each(auto member in mRoomMembers)
 	{
-		if (member.first.ipAddress == addMember.ipAddress && member.first.port == addMember.port)
+		if (member.first == addMember)
 			return false;
 	}
 
@@ -27,7 +27,7 @@ bool cMatchingMemberManager::checkInMembers(Network::cNetworkHandle member)
 {
 	for each(auto m in mRoomMembers)
 	{
-		if (m.first.ipAddress == member.ipAddress && m.first.port == member.port)
+		if (m.first == member)
 			return true;
 	}
 	return false;
@@ -36,8 +36,19 @@ bool cMatchingMemberManager::checkTeamIn(int teamNum, Network::cNetworkHandle ad
 {
 	auto m = mRoomMembers.find(addMember);
 
+	int teamNums[2];
+	teamNums[0] = 0;
+	teamNums[1] = 0;
+	for each(auto m in mRoomMembers)
+	{
+		if (m.second != -1)
+			teamNums[m.second]++;
+	}
+
 	if (m != mRoomMembers.end())
 	{
+		if (teamNums[teamNum] > 3)
+			return false;
 		m->second = teamNum;
 		return true;
 	}
@@ -46,10 +57,38 @@ bool cMatchingMemberManager::checkTeamIn(int teamNum, Network::cNetworkHandle ad
 
 bool cMatchingMemberManager::checkMaster(cNetworkHandle masterHandle)
 {
-	if (mMasterHandle.ipAddress == masterHandle.ipAddress
-		&& mMasterHandle.port == masterHandle.port)
+	if (mMasterHandle == masterHandle)
 		return true;
 
 	return false;
+}
+
+void cMatchingMemberManager::addPlayerDatas(std::string playerStr, ubyte1 teamNum)
+{
+	for each(auto p in mPlayerDatas)
+	{
+		if (p.nameStr == playerStr)
+		{
+			p.teamNum = teamNum;
+			return;
+		}
+	}
+
+	mPlayerDatas.push_back(PlayerData(teamNum,playerStr, mPlayerDatas.size()));
+}
+
+
+void cMatchingMemberManager::addPlayerDatas(std::string playerStr, ubyte1 teamNum, ubyte1 playerID)
+{
+	for each(auto p in mPlayerDatas)
+	{
+		if (p.nameStr == playerStr)
+		{
+			p.teamNum = teamNum;
+			return;
+		}
+	}
+
+	mPlayerDatas.push_back(PlayerData(teamNum, playerStr, playerID));
 }
 }

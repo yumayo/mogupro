@@ -6,6 +6,7 @@
 #include <CameraManager/cCameraManager.h>
 #include <Scene/Member/cGameMain.h>
 #include <Scene/cSceneManager.h>
+#include <Network/cMatchingMemberManager.h>
 using namespace Network;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
@@ -183,6 +184,13 @@ namespace Scene
 					cSceneManager::getInstance()->change<Scene::Member::cGameMain>();
 					cSceneManager::getInstance()->now().setup();
 					continue;
+				}
+
+				while (!cEventManager::getInstance()->mEveTeamMember.empty())
+				{
+					auto eveTeamMember = cEventManager::getInstance()->mEveTeamMember.top();
+					cMatchingMemberManager::getInstance()->addPlayerDatas(
+						eveTeamMember.mNameStr,eveTeamMember.mTeamNum,eveTeamMember.mPlayerID);
 				}
 			}
 
