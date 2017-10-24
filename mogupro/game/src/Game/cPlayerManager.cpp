@@ -182,27 +182,12 @@ void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& pla
 		it->setup();
 	}
 }
-#include <Network.hpp>
 void Game::cPlayerManager::update(const float& delta_time)
 {
-	//auto& p = Network::cResponseManager::getInstance()->mResPlayer;
-	//while (!p.empty())
-	//{
-	//	auto top = p.top();
-	//	p.pop();
-	//	player[0]->setPos(cinder::vec3(top.xPos, top.yPos, top.zPos));
-	//}
-
 	for (auto it : players) {
 		it->update(delta_time);
 	}
 	playerMove(delta_time);
-
-	//auto pos = player[1]->getPos();
-	//Network::cUDPManager::getInstance()->send(Network::cNetworkHandle("10.25.36.137", 25565),
-	//	new Network::Packet::Request::cReqPlayer( pos.x, pos.y, pos.z, 0, 0 ));
-
-
 }
 
 void Game::cPlayerManager::draw()

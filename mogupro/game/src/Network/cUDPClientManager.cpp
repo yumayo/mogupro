@@ -10,6 +10,7 @@
 #include <Scene/cSceneManager.h>
 #include <Scene/Member/cMatching.h>
 #include <Node/action.hpp>
+#include <Network/IpHost.h>
 namespace Network
 {
 cUDPClientManager::cUDPClientManager( )
@@ -43,7 +44,7 @@ void cUDPClientManager::connect( std::string const& ipAddress )
 }
 void cUDPClientManager::connectOfflineServer( )
 {
-    connect( "127.0.0.1" );
+    connect( Network::getLocalIpAddressHost( ) );
 }
 void cUDPClientManager::update( float delta )
 {

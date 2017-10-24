@@ -116,11 +116,13 @@ void Game::Player::cPlayer::setup()
 	TEX->set("mogura", "OBJ/montamogura/moguraHontai.png");
 }
 
+#include <Game/cClientAdapter.h>
 void Game::Player::cPlayer::update(const float & delta_time)
 {
 	if (drilling) {
 		Game::cFieldManager::getInstance()->blockBreak(mPos, 3);
 	}
+    cClientAdapter::getInstance( )->sendPlayerFormat( mPos, cinder::quat() );
 	/*mPos = mCollider.getPosition();
 	size = mCollider.getSize();*/
 }

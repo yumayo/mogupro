@@ -44,11 +44,11 @@ ubyte1 cUDPServerManager::getPlayerId( cNetworkHandle const & handle )
     auto itr = mHandle.find( handle );
     if ( itr != mHandle.end( ) )
     {
-        throw std::runtime_error( "Networkhandle nothing" );
+        return itr->second.id;
     }
     else
     {
-        return itr->second.id;
+        throw std::runtime_error( "Networkhandle nothing" );
     }
 }
 void cUDPServerManager::updateSend( )
