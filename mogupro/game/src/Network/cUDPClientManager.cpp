@@ -15,6 +15,7 @@ namespace Network
 cUDPClientManager::cUDPClientManager( )
     : mCloseSecond( std::numeric_limits<float>::max( ) )
     , mRoot( Node::node::create( ) )
+    , mConnectSecond( std::numeric_limits<float>::max( ) )
 {
     mRoot->set_schedule_update( );
 }
@@ -38,6 +39,7 @@ void cUDPClientManager::connect( std::string const& ipAddress )
     packet->createPacket( packetBuffer );
     mSocket.write( cNetworkHandle( ipAddress, 25565 ), packetBuffer.transferredBytes, packetBuffer.buffer.data( ) );
     delete packet;
+    mConnectSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
 }
 void cUDPClientManager::connectOfflineServer( )
 {
@@ -91,6 +93,17 @@ void cUDPClientManager::connection( )
         } ) ) );
         act->set_name( "ping" );
         mRoot->run_action( act );
+    }
+    if ( !isConnected( ) )
+    {
+        if ( mConnectSecond < cinder::app::getElapsedSeconds( ) )
+        {
+            close( );
+            Utility::MessageBoxOk( "サーバーからの応答がありません。", [ ]
+            {
+                cSceneManager::getInstance( )->change<Scene::Member::cMatching>( );
+            } );
+        }
     }
 }
 void cUDPClientManager::ping( )

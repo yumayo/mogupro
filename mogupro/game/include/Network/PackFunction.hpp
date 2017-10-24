@@ -36,17 +36,7 @@ public:
     template<class Ty>
     cImporter& operator>>( Ty& value );
     template<class Ty>
-    cImporter& operator>>( std::vector<Ty> const& value )
-    {
-        ubyte2 size;
-        *this >> size;
-        for ( ubyte2 i = 0; i < size; ++i )
-        {
-            Ty type;
-            *this >> type;
-            value.emplace_back( std::move( type ) );
-        }
-    }
+    cImporter& operator>>( std::vector<Ty>& value );
 private:
     ubyte2 mOffset;
     char const* const mBuffer;
@@ -58,17 +48,33 @@ public:
     template<class Ty>
     cExporter& operator<<( Ty const& value );
     template<class Ty>
-    cExporter& operator<<( std::vector<Ty> const& value )
-    {
-        *this << static_cast<ubyte2>( value.size( ) );
-        for ( auto const& o : value )
-        {
-            *this << o;
-        }
-    }
+    cExporter& operator<<( std::vector<Ty> const& value );
     operator ubyte2( ) const noexcept;
 private:
     ubyte2 mOffset;
     char* const mBuffer;
 };
+template<class Ty>
+inline cImporter & cImporter::operator>>( std::vector<Ty>& value )
+{
+    ubyte2 size;
+    *this >> size;
+    for ( ubyte2 i = 0; i < size; ++i )
+    {
+        Ty type;
+        *this >> type;
+        value.emplace_back( std::move( type ) );
+    }
+    return *this;
+}
+template<class Ty>
+inline cExporter & cExporter::operator<<( std::vector<Ty> const & value )
+{
+    *this << static_cast<ubyte2>( value.size( ) );
+    for ( auto const& o : value )
+    {
+        *this << o;
+    }
+    return *this;
+}
 }

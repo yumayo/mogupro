@@ -48,7 +48,14 @@ private:
     cUDP mSocket;
     std::vector<char> mSendDataBuffer;
     cNetworkHandle mConnectServerHandle;
-    float mCloseSecond;
     hardptr<Node::node> mRoot;
+
+    // サーバーとの接続が維持されているのかを保証します。
+    // 5秒以上応答がない場合は切断します。
+    float mCloseSecond;
+
+    // サーバーに接続できたかを保証します。
+    // 5秒以上応答がない場合は切断します。
+    float mConnectSecond;
 };
 }

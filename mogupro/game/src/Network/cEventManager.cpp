@@ -172,5 +172,22 @@ void cEventManager::ungetEveTeamMember( Packet::Event::cEveTeamMember&& data )
 {
     mEveTeamMember.push( std::move( data ) );
 }
+boost::optional<Packet::Event::cEvePlayersRespawn> cEventManager::getEvePlayersRespawn( )
+{
+    if ( mEvePlayersRespawn.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEvePlayersRespawn.top( );
+        mEvePlayersRespawn.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEvePlayersRespawn( Packet::Event::cEvePlayersRespawn&& data )
+{
+    mEvePlayersRespawn.push( std::move( data ) );
+}
 // P=====END=====P
 }

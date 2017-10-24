@@ -108,6 +108,13 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             cEventManager::getInstance( )->ungetEveTeamMember( std::move( data ) );
             break;
         }
+        case Network::Packet::PacketId::EVE_PLAYERS_RESPAWN:
+        {
+            Packet::Event::cEvePlayersRespawn data;
+            data.onReceive( networkHandle, bufferSize, bufferData );
+            cEventManager::getInstance( )->ungetEvePlayersRespawn( std::move( data ) );
+            break;
+        }
         case Network::Packet::PacketId::DLI_STRING:
         {
             Packet::Deliver::cDliString data;

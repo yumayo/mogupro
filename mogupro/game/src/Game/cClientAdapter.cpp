@@ -37,11 +37,11 @@ void cClientAdapter::recvAllPlayersFormat( )
     {
         for ( auto& o : packet->mPlayerFormats )
         {
-            //Game::cPlayerManager::getInstance( )->setPlayerPosition( 
-            //    o.first, 
-            //    o.second.mPosition, 
-            //    o.second.mRotation
-            //);
+            auto players = Game::cPlayerManager::getInstance( )->getPlayers( );
+            for ( auto& player : players )
+            {
+                player->setPos( o.mPosition );
+            }
         }
     }
 }
@@ -54,7 +54,7 @@ void cClientAdapter::recvAllQuarrys( )
             packet->mPosition,
             packet->mDrillId,
             static_cast<Game::Strategy::cDrill::DrillType>( packet->mType ),
-            packet->mTeamId == 1 // TODO: チームIDと比較する。
+            packet->mTeamId == 0 // TODO: チームIDと比較する。
         );
     }
 }
