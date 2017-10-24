@@ -38,7 +38,5 @@ private:
     std::set<cRigidBody*> mRigidBodys;
 private:
     bool mIsUpdate = false;
-    std::vector<cFallBlockSimple> mFallBlocks;
-    Utility::hardptr<cStaticBlockSimple> mStaticBlock;
 };
 }

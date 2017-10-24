@@ -2,145 +2,243 @@
 namespace Network
 {
 // P=====BEGIN=====P
-Packet::Response::cResString cResponseManager::getResString( )
-{
-    auto top = mResString.top( );
-    mResString.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResString( Packet::Response::cResString const & data )
-{
-    mResString.push( data );
-}
-Packet::Response::cResPlayer cResponseManager::getResPlayer( )
-{
-    auto top = mResPlayer.top( );
-    mResPlayer.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResPlayer( Packet::Response::cResPlayer const & data )
-{
-    mResPlayer.push( data );
-}
-Packet::Response::cResGetJemSeed cResponseManager::getResGetJemSeed( )
-{
-    auto top = mResGetJemSeed.top( );
-    mResGetJemSeed.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResGetJemSeed( Packet::Response::cResGetJemSeed const & data )
-{
-    mResGetJemSeed.push( data );
-}
-Packet::Response::cResGetJemPoint cResponseManager::getResGetJemPoint( )
-{
-    auto top = mResGetJemPoint.top( );
-    mResGetJemPoint.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResGetJemPoint( Packet::Response::cResGetJemPoint const & data )
-{
-    mResGetJemPoint.push( data );
-}
-Packet::Response::cResCheckGetJem cResponseManager::getResCheckGetJem( )
-{
-    auto top = mResCheckGetJem.top( );
-    mResCheckGetJem.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResCheckGetJem( Packet::Response::cResCheckGetJem const & data )
-{
-    mResCheckGetJem.push( data );
-}
-Packet::Response::cResCheckPlayerRobJem cResponseManager::getResCheckPlayerRobJem( )
-{
-    auto top = mResCheckPlayerRobJem.top( );
-    mResCheckPlayerRobJem.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResCheckPlayerRobJem( Packet::Response::cResCheckPlayerRobJem const & data )
-{
-    mResCheckPlayerRobJem.push( data );
-}
-Packet::Response::cResCheckBreakBlocks cResponseManager::getResCheckBreakBlocks( )
-{
-    auto top = mResCheckBreakBlocks.top( );
-    mResCheckBreakBlocks.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResCheckBreakBlocks( Packet::Response::cResCheckBreakBlocks const & data )
-{
-    mResCheckBreakBlocks.push( data );
-}
-Packet::Response::cResCheckSetQuarry cResponseManager::getResCheckSetQuarry( )
-{
-    auto top = mResCheckSetQuarry.top( );
-    mResCheckSetQuarry.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResCheckSetQuarry( Packet::Response::cResCheckSetQuarry const & data )
-{
-    mResCheckSetQuarry.push( data );
-}
-Packet::Response::cResCheckPlayerDeath cResponseManager::getResCheckPlayerDeath( )
-{
-    auto top = mResCheckPlayerDeath.top( );
-    mResCheckPlayerDeath.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResCheckPlayerDeath( Packet::Response::cResCheckPlayerDeath const & data )
-{
-    mResCheckPlayerDeath.push( data );
-}
-Packet::Response::cResMakeRoom cResponseManager::getResMakeRoom( )
-{
-    auto top = mResMakeRoom.top( );
-    mResMakeRoom.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResMakeRoom( Packet::Response::cResMakeRoom const & data )
-{
-    mResMakeRoom.push( data );
-}
-Packet::Response::cResInRoom cResponseManager::getResInRoom( )
-{
-    auto top = mResInRoom.top( );
-    mResInRoom.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResInRoom( Packet::Response::cResInRoom const & data )
-{
-    mResInRoom.push( data );
-}
-Packet::Response::cResWantTeamIn cResponseManager::getResWantTeamIn( )
-{
-    auto top = mResWantTeamIn.top( );
-    mResWantTeamIn.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResWantTeamIn( Packet::Response::cResWantTeamIn const & data )
-{
-    mResWantTeamIn.push( data );
-}
-Packet::Response::cResCheckBeginGame cResponseManager::getResCheckBeginGame( )
-{
-    auto top = mResCheckBeginGame.top( );
-    mResCheckBeginGame.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResCheckBeginGame( Packet::Response::cResCheckBeginGame const & data )
-{
-    mResCheckBeginGame.push( data );
-}
-Packet::Response::cResCheckMember cResponseManager::getResCheckMember( )
-{
-    auto top = mResCheckMember.top( );
-    mResCheckMember.pop( );
-    return std::move( top );
-}
-void cResponseManager::ungetResCheckMember( Packet::Response::cResCheckMember const & data )
-{
-    mResCheckMember.push( data );
-}
+boost::optional<Packet::Response::cResString> cResponseManager::getResString( )
+{
+    if ( mResString.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResString.top( );
+        mResString.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResString( Packet::Response::cResString&& data )
+{
+    mResString.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResConnect> cResponseManager::getResConnect( )
+{
+    if ( mResConnect.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResConnect.top( );
+        mResConnect.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResConnect( Packet::Response::cResConnect&& data )
+{
+    mResConnect.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResGetJemSeed> cResponseManager::getResGetJemSeed( )
+{
+    if ( mResGetJemSeed.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResGetJemSeed.top( );
+        mResGetJemSeed.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResGetJemSeed( Packet::Response::cResGetJemSeed&& data )
+{
+    mResGetJemSeed.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResGetJemPoint> cResponseManager::getResGetJemPoint( )
+{
+    if ( mResGetJemPoint.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResGetJemPoint.top( );
+        mResGetJemPoint.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResGetJemPoint( Packet::Response::cResGetJemPoint&& data )
+{
+    mResGetJemPoint.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResCheckGetJemPlayer> cResponseManager::getResCheckGetJemPlayer( )
+{
+    if ( mResCheckGetJemPlayer.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResCheckGetJemPlayer.top( );
+        mResCheckGetJemPlayer.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResCheckGetJemPlayer( Packet::Response::cResCheckGetJemPlayer&& data )
+{
+    mResCheckGetJemPlayer.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResCheckGetJemQuarry> cResponseManager::getResCheckGetJemQuarry( )
+{
+    if ( mResCheckGetJemQuarry.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResCheckGetJemQuarry.top( );
+        mResCheckGetJemQuarry.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResCheckGetJemQuarry( Packet::Response::cResCheckGetJemQuarry&& data )
+{
+    mResCheckGetJemQuarry.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResCheckPlayerRobJem> cResponseManager::getResCheckPlayerRobJem( )
+{
+    if ( mResCheckPlayerRobJem.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResCheckPlayerRobJem.top( );
+        mResCheckPlayerRobJem.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResCheckPlayerRobJem( Packet::Response::cResCheckPlayerRobJem&& data )
+{
+    mResCheckPlayerRobJem.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResCheckSetQuarry> cResponseManager::getResCheckSetQuarry( )
+{
+    if ( mResCheckSetQuarry.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResCheckSetQuarry.top( );
+        mResCheckSetQuarry.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResCheckSetQuarry( Packet::Response::cResCheckSetQuarry&& data )
+{
+    mResCheckSetQuarry.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResCheckPlayerDeath> cResponseManager::getResCheckPlayerDeath( )
+{
+    if ( mResCheckPlayerDeath.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResCheckPlayerDeath.top( );
+        mResCheckPlayerDeath.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResCheckPlayerDeath( Packet::Response::cResCheckPlayerDeath&& data )
+{
+    mResCheckPlayerDeath.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResMakeRoom> cResponseManager::getResMakeRoom( )
+{
+    if ( mResMakeRoom.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResMakeRoom.top( );
+        mResMakeRoom.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResMakeRoom( Packet::Response::cResMakeRoom&& data )
+{
+    mResMakeRoom.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResInRoom> cResponseManager::getResInRoom( )
+{
+    if ( mResInRoom.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResInRoom.top( );
+        mResInRoom.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResInRoom( Packet::Response::cResInRoom&& data )
+{
+    mResInRoom.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResWantTeamIn> cResponseManager::getResWantTeamIn( )
+{
+    if ( mResWantTeamIn.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResWantTeamIn.top( );
+        mResWantTeamIn.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResWantTeamIn( Packet::Response::cResWantTeamIn&& data )
+{
+    mResWantTeamIn.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResCheckBeginGame> cResponseManager::getResCheckBeginGame( )
+{
+    if ( mResCheckBeginGame.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResCheckBeginGame.top( );
+        mResCheckBeginGame.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResCheckBeginGame( Packet::Response::cResCheckBeginGame&& data )
+{
+    mResCheckBeginGame.push( std::move( data ) );
+}
+boost::optional<Packet::Response::cResCheckMember> cResponseManager::getResCheckMember( )
+{
+    if ( mResCheckMember.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResCheckMember.top( );
+        mResCheckMember.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResCheckMember( Packet::Response::cResCheckMember&& data )
+{
+    mResCheckMember.push( std::move( data ) );
+}
 // P=====END=====P
 }

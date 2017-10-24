@@ -1,6 +1,6 @@
 #pragma once
 #include <Network/Packet/cPacketBase.h>
-#include <Network/Packet/PacketId.h>
+#include <Network/Packet/PacketId.h>
 namespace Network
 {
 namespace Packet
@@ -11,9 +11,11 @@ class cReqWantTeamIn : public cPacketBase<cReqWantTeamIn, PacketId::REQ_WANT_TEA
 {
 public:
     cReqWantTeamIn( );
+	cReqWantTeamIn(char teamNum);
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-	short mTeamNum;
+	char mTeamNum;
+	cNetworkHandle mNetworkHandle;
 };
 }
 }

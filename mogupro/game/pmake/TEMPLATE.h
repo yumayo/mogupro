@@ -7,7 +7,6 @@ namespace Packet
 {
 namespace _PACKET_TYPE_
 {
-#pragma pack(1)
 class _TEMPLATE_CLASS_ : public cPacketBase<_TEMPLATE_CLASS_, PacketId::_TEMPLATE_ENUM_>
 {
 public:
@@ -15,7 +14,6 @@ public:
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
 };
-#pragma pack()
 }
 }
 }

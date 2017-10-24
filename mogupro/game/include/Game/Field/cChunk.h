@@ -6,51 +6,64 @@ namespace Game
 {
 namespace Field
 {
+class cUnderGround;
 class cChunk
 {
 public:
 
-    cChunk() {}
-    cChunk( int x, int z );
+    cChunk();
+    cChunk( int x, int z, cUnderGround* under_ground );
     ~cChunk();
 
     void setup();
     void update();
     void draw();
 
+
+    ci::ivec3 getCell() { return mChunkCell; }
     cBlock& getBlock( int x, int y, int z );
     cBlock& getBlock( ci::ivec3 c );
-    BlockMap& getBlocks();
+    std::array<cBlock, CHUNK_VOLUME>& getBlocks();
 
-    void add( const std::vector<ci::vec3>& vertices,
-              const std::vector<uint32_t>& indices,
-              const std::vector<ci::vec2>& uvs,
-              const std::vector<ci::vec3>& normals );
+    void setBlock( ci::ivec3 c, cBlock block );
+
+    void addFace( const std::array<GLfloat, 12>& block_face,
+                  const std::array<ci::vec2, 4>& texture_coords,
+                  const ci::ivec3 & chunk_position,
+                  const ci::vec3 & block_position );
 
     void breakBlock( ci::ivec3 c );
 
-    ci::ivec3 getCell() { return mChunkCell; }
-
-    void createVboMesh();
-    ci::TriMeshRef createTriMesh();
+    void reBuildMesh();
+    void buildMesh();
+    void reLoading();
+    bool createMainCall();
     void createBlocks();
 
+
+private:
+
+    void clearMesh();
+    ci::ivec3 toWorldPosition( ci::ivec3 c )const;
     bool isOutOfRange( ci::ivec3 c );
+    int getIndex( ci::ivec3 c );
+    int getIndex( int x, int y, int z );
+
+public:
+
+    bool mHasBuilded = false;
+    bool mHasLoadingCompleted = false;
+    bool mIsLoaded = false;
+    bool mIsDone = false;
+    ci::TriMeshRef mMesh;
+    ci::gl::VboMeshRef mVbo;
 
 private:
 
     ci::ivec3 mChunkCell;
-    bool mIsLoaded;
-
-    std::vector<ci::vec3> mVertices;
-    std::vector<uint> mIndices;
-    std::vector<ci::vec2> mUv;
-    std::vector<ci::vec3> mNormals;
-    ci::TriMeshRef mMesh;
-    ci::gl::VboMeshRef mVbo;
-
-    BlockMap mBlocks;
-
+    uint mIndicesIndex = 0;
+    std::array<cBlock, CHUNK_VOLUME> mBlocks;
+    cUnderGround* mUnderGround;
 };
 }
 }

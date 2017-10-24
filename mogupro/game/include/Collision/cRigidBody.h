@@ -16,7 +16,7 @@ public:
     cinder::AxisAlignedBox createAABB( ) const;
     void update( );
     void lateUpdate( );
-    bool isHitAlready( );
+    bool isLanding( );
     cinder::vec3 const& getSpeed( );
     void setSpeed( cinder::vec3 value );
     void calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase* targetCollider );
@@ -25,9 +25,8 @@ public:
 private:
     cinder::vec3 mSpeed;
 private:
-    bool mIsHitAlready;
-    cinder::vec3 mCalcedPosition;
-    cinder::vec3 mCalcedSpeed;
+    bool mIsLanding;
+    float mMinValue;
 private:
     static cinder::vec3 calcWallScratchVector( cinder::vec3 speed, cinder::vec3 normal );
     static cinder::vec3 cardinalAxis( int i );

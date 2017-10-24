@@ -12,7 +12,6 @@ class cChunk;
 
 using uint = uint32_t;
 // tuple‰»ŒŸ“¢
-using BlockMap = std::unordered_map<ci::ivec3, Game::Field::cBlock>;
 using ChunkMap = std::unordered_map<ci::ivec3, Game::Field::cChunk>;
 
 constexpr int

@@ -25,9 +25,9 @@ void cFieldManager::draw()
     if (is_culling_change == false)
         gl::enableFaceCulling( true );
 
-    auto lambert = gl::ShaderDef().lambert();
-    auto shader = gl::getStockShader( lambert );
-    gl::ScopedGlslProg shaderScp( shader );
+    //auto lambert = gl::ShaderDef().lambert();
+    //auto shader = gl::getStockShader( lambert );
+    //gl::ScopedGlslProg shaderScp( shader );
 
     mUnderGround.draw();
 

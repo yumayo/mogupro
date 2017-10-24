@@ -10,9 +10,9 @@
 #include <Game/cPlayerManager.h>
 #include <Game/cGemManager.h>
 #include <Collision/cCollisionManager.h>
-#include <Network/cUDPManager.h>
-#include <Network/Packet.hpp>
-#include <Network/cRequestManager.h>
+#include <Network.hpp>
+#include <Game/cClientAdapter.h>
+#include <Game/cServerAdapter.h>
 #include <Resource/TextureManager.h>
 #include <Shader/cShadowManager.h>
 #include <Node/renderer.hpp>
@@ -54,7 +54,9 @@ void cGameMain::setup( )
 	int seed = 20171031;
 	GemManager->setUp(vec3(0,0,0),vec3(8,6,16),1,1,10,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
-    Network::cUDPManager::getInstance( )->open( );
+    Network::cUDPClientManager::getInstance( )->open( );
+    Network::cUDPServerManager::getInstance( )->open( );
+    Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
 
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
@@ -76,7 +78,10 @@ void cGameMain::update( float deltaTime )
     Game::cStrategyManager::getInstance( )->update( deltaTime );
     Collision::cCollisionManager::getInstance( )->update( );
 	GemManager->update();
-    Network::cUDPManager::getInstance( )->update( );
+    Network::cUDPClientManager::getInstance( )->update( deltaTime );
+    Network::cUDPServerManager::getInstance( )->update( deltaTime );
+    Game::cClientAdapter::getInstance( )->update( );
+    Game::cServerAdapter::getInstance( )->update( );
 }
 
 void cGameMain::draw( )

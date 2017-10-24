@@ -2,145 +2,243 @@
 namespace Network
 {
 // P=====BEGIN=====P
-Packet::Request::cReqString cRequestManager::getReqString( )
-{
-    auto top = mReqString.top( );
-    mReqString.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqString( Packet::Request::cReqString const & data )
-{
-    mReqString.push( data );
-}
-Packet::Request::cReqPlayer cRequestManager::getReqPlayer( )
-{
-    auto top = mReqPlayer.top( );
-    mReqPlayer.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqPlayer( Packet::Request::cReqPlayer const & data )
-{
-    mReqPlayer.push( data );
-}
-Packet::Request::cReqGetJemSeed cRequestManager::getReqGetJemSeed( )
-{
-    auto top = mReqGetJemSeed.top( );
-    mReqGetJemSeed.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqGetJemSeed( Packet::Request::cReqGetJemSeed const & data )
-{
-    mReqGetJemSeed.push( data );
-}
-Packet::Request::cReqGetJemPoint cRequestManager::getReqGetJemPoint( )
-{
-    auto top = mReqGetJemPoint.top( );
-    mReqGetJemPoint.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqGetJemPoint( Packet::Request::cReqGetJemPoint const & data )
-{
-    mReqGetJemPoint.push( data );
-}
-Packet::Request::cReqCheckGetJem cRequestManager::getReqCheckGetJem( )
-{
-    auto top = mReqCheckGetJem.top( );
-    mReqCheckGetJem.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqCheckGetJem( Packet::Request::cReqCheckGetJem const & data )
-{
-    mReqCheckGetJem.push( data );
-}
-Packet::Request::cReqCheckPlayerRobJem cRequestManager::getReqCheckPlayerRobJem( )
-{
-    auto top = mReqCheckPlayerRobJem.top( );
-    mReqCheckPlayerRobJem.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqCheckPlayerRobJem( Packet::Request::cReqCheckPlayerRobJem const & data )
-{
-    mReqCheckPlayerRobJem.push( data );
-}
-Packet::Request::cReqCheckBreakBlocks cRequestManager::getReqCheckBreakBlocks( )
-{
-    auto top = mReqCheckBreakBlocks.top( );
-    mReqCheckBreakBlocks.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqCheckBreakBlocks( Packet::Request::cReqCheckBreakBlocks const & data )
-{
-    mReqCheckBreakBlocks.push( data );
-}
-Packet::Request::cReqCheckSetQuarry cRequestManager::getReqCheckSetQuarry( )
-{
-    auto top = mReqCheckSetQuarry.top( );
-    mReqCheckSetQuarry.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqCheckSetQuarry( Packet::Request::cReqCheckSetQuarry const & data )
-{
-    mReqCheckSetQuarry.push( data );
-}
-Packet::Request::cReqCheckPlayerDeath cRequestManager::getReqCheckPlayerDeath( )
-{
-    auto top = mReqCheckPlayerDeath.top( );
-    mReqCheckPlayerDeath.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqCheckPlayerDeath( Packet::Request::cReqCheckPlayerDeath const & data )
-{
-    mReqCheckPlayerDeath.push( data );
-}
-Packet::Request::cReqMakeRoom cRequestManager::getReqMakeRoom( )
-{
-    auto top = mReqMakeRoom.top( );
-    mReqMakeRoom.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqMakeRoom( Packet::Request::cReqMakeRoom const & data )
-{
-    mReqMakeRoom.push( data );
-}
-Packet::Request::cReqInRoom cRequestManager::getReqInRoom( )
-{
-    auto top = mReqInRoom.top( );
-    mReqInRoom.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqInRoom( Packet::Request::cReqInRoom const & data )
-{
-    mReqInRoom.push( data );
-}
-Packet::Request::cReqWantTeamIn cRequestManager::getReqWantTeamIn( )
-{
-    auto top = mReqWantTeamIn.top( );
-    mReqWantTeamIn.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqWantTeamIn( Packet::Request::cReqWantTeamIn const & data )
-{
-    mReqWantTeamIn.push( data );
-}
-Packet::Request::cReqCheckBeginGame cRequestManager::getReqCheckBeginGame( )
-{
-    auto top = mReqCheckBeginGame.top( );
-    mReqCheckBeginGame.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqCheckBeginGame( Packet::Request::cReqCheckBeginGame const & data )
-{
-    mReqCheckBeginGame.push( data );
-}
-Packet::Request::cReqCheckMember cRequestManager::getReqCheckMember( )
-{
-    auto top = mReqCheckMember.top( );
-    mReqCheckMember.pop( );
-    return std::move( top );
-}
-void cRequestManager::ungetReqCheckMember( Packet::Request::cReqCheckMember const & data )
-{
-    mReqCheckMember.push( data );
-}
+boost::optional<Packet::Request::cReqString> cRequestManager::getReqString( )
+{
+    if ( mReqString.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqString.top( );
+        mReqString.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqString( Packet::Request::cReqString&& data )
+{
+    mReqString.push( std::move( data ) );
+}
+boost::optional<Packet::Request::cReqConnect> cRequestManager::getReqConnect( )
+{
+    if ( mReqConnect.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqConnect.top( );
+        mReqConnect.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqConnect( Packet::Request::cReqConnect&& data )
+{
+    mReqConnect.push( std::move( data ) );
+}
+boost::optional<Packet::Request::cReqGetJemSeed> cRequestManager::getReqGetJemSeed( )
+{
+    if ( mReqGetJemSeed.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqGetJemSeed.top( );
+        mReqGetJemSeed.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqGetJemSeed( Packet::Request::cReqGetJemSeed&& data )
+{
+    mReqGetJemSeed.push( std::move( data ) );
+}
+boost::optional<Packet::Request::cReqGetJemPoint> cRequestManager::getReqGetJemPoint( )
+{
+    if ( mReqGetJemPoint.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqGetJemPoint.top( );
+        mReqGetJemPoint.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqGetJemPoint( Packet::Request::cReqGetJemPoint&& data )
+{
+    mReqGetJemPoint.push( std::move( data ) );
+}
+boost::optional<Packet::Request::cReqCheckGetJemPlayer> cRequestManager::getReqCheckGetJemPlayer( )
+{
+    if ( mReqCheckGetJemPlayer.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqCheckGetJemPlayer.top( );
+        mReqCheckGetJemPlayer.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqCheckGetJemPlayer( Packet::Request::cReqCheckGetJemPlayer&& data )
+{
+    mReqCheckGetJemPlayer.push( std::move( data ) );
+}
+boost::optional<Packet::Request::cReqCheckGetJemQuarry> cRequestManager::getReqCheckGetJemQuarry( )
+{
+    if ( mReqCheckGetJemQuarry.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqCheckGetJemQuarry.top( );
+        mReqCheckGetJemQuarry.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqCheckGetJemQuarry( Packet::Request::cReqCheckGetJemQuarry&& data )
+{
+    mReqCheckGetJemQuarry.push( std::move( data ) );
+}
+boost::optional<Packet::Request::cReqCheckPlayerRobJem> cRequestManager::getReqCheckPlayerRobJem( )
+{
+    if ( mReqCheckPlayerRobJem.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqCheckPlayerRobJem.top( );
+        mReqCheckPlayerRobJem.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqCheckPlayerRobJem( Packet::Request::cReqCheckPlayerRobJem&& data )
+{
+    mReqCheckPlayerRobJem.push( std::move( data ) );
+}
+boost::optional<Packet::Request::cReqCheckSetQuarry> cRequestManager::getReqCheckSetQuarry( )
+{
+    if ( mReqCheckSetQuarry.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqCheckSetQuarry.top( );
+        mReqCheckSetQuarry.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqCheckSetQuarry( Packet::Request::cReqCheckSetQuarry&& data )
+{
+    mReqCheckSetQuarry.push( std::move( data ) );
+}
+boost::optional<Packet::Request::cReqCheckPlayerDeath> cRequestManager::getReqCheckPlayerDeath( )
+{
+    if ( mReqCheckPlayerDeath.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqCheckPlayerDeath.top( );
+        mReqCheckPlayerDeath.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqCheckPlayerDeath( Packet::Request::cReqCheckPlayerDeath&& data )
+{
+    mReqCheckPlayerDeath.push( std::move( data ) );
+}
+boost::optional<Packet::Request::cReqMakeRoom> cRequestManager::getReqMakeRoom( )
+{
+    if ( mReqMakeRoom.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqMakeRoom.top( );
+        mReqMakeRoom.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqMakeRoom( Packet::Request::cReqMakeRoom&& data )
+{
+    mReqMakeRoom.push( std::move( data ) );
+}
+boost::optional<Packet::Request::cReqInRoom> cRequestManager::getReqInRoom( )
+{
+    if ( mReqInRoom.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqInRoom.top( );
+        mReqInRoom.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqInRoom( Packet::Request::cReqInRoom&& data )
+{
+    mReqInRoom.push( std::move( data ) );
+}
+boost::optional<Packet::Request::cReqWantTeamIn> cRequestManager::getReqWantTeamIn( )
+{
+    if ( mReqWantTeamIn.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqWantTeamIn.top( );
+        mReqWantTeamIn.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqWantTeamIn( Packet::Request::cReqWantTeamIn&& data )
+{
+    mReqWantTeamIn.push( std::move( data ) );
+}
+boost::optional<Packet::Request::cReqCheckBeginGame> cRequestManager::getReqCheckBeginGame( )
+{
+    if ( mReqCheckBeginGame.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqCheckBeginGame.top( );
+        mReqCheckBeginGame.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqCheckBeginGame( Packet::Request::cReqCheckBeginGame&& data )
+{
+    mReqCheckBeginGame.push( std::move( data ) );
+}
+boost::optional<Packet::Request::cReqCheckMember> cRequestManager::getReqCheckMember( )
+{
+    if ( mReqCheckMember.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqCheckMember.top( );
+        mReqCheckMember.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqCheckMember( Packet::Request::cReqCheckMember&& data )
+{
+    mReqCheckMember.push( std::move( data ) );
+}
 // P=====END=====P
 }

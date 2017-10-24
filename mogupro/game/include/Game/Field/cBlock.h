@@ -12,14 +12,13 @@ class cBlock
 public:
 
     cBlock();
-    cBlock( const ci::vec3& position, const float& scale );
+    cBlock( const ci::vec3& position, const float& scale, const uint & id );
     ~cBlock();
 
     void setup();
 
 public: // Method
 
-    void calcMeshIndexData( uint num );
     void clear();
     void toBreak();
 
@@ -30,12 +29,6 @@ public: // Member
     float mScale;
     bool mIsActive;
     Collision::cAABBCollider mCollider;
-    std::vector<int> mDrawSide;
-
-    std::vector<uint> mVerticesNum;
-    std::vector<uint> mIndicesNum;
-    std::vector<uint> mUvNum;
-    std::vector<uint> mNormalsNum;
 
 public: // Const
 

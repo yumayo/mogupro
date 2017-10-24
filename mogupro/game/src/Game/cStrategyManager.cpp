@@ -4,6 +4,7 @@
 #include"Game/Strategy/cStrategyObjectBase.h"
 #include"cinder\Rand.h"
 #include<algorithm>
+#include <Network.hpp>
 using namespace ci;
 using namespace ci::app;
 
@@ -29,6 +30,20 @@ void cStrategyManager::draw()
 }
 void cStrategyManager::update(const float & deltatime)
 {
+	//using namespace Network;
+	//using namespace Network::Packet::Response;
+	//auto& p = cResponseManager::getInstance()->mResCheckGetJem;
+	//while (!p.empty())
+	//{
+	//	auto t = p.top();
+	//	p.pop();
+
+	//	if (t.mFlag)
+	//	{
+	//		HitDrillToGem(t.mDrillID, t.mGemID);
+	//	}
+	//}
+
 	for (auto& it : drills) {
 		it.second->update(deltatime);
 	}
@@ -37,8 +52,8 @@ void cStrategyManager::update(const float & deltatime)
 	deleteObject();
 	if (ENV->pushKey(KeyEvent::KEY_p)) {
 
-		//drills.insert(std::make_pair(, std::make_shared<Game::Strategy::cDrill>(vec3(randInt(0, 10), 15, randInt(0, 10)), vec3(1, 1, 1), 0)));
-
+		drills.insert(std::make_pair(testcount, std::make_shared<Game::Strategy::cDrill>(vec3(randInt(0, 10), 15, randInt(0, 10)), testcount, Strategy::cDrill::DrillType::Level1, true)));
+		testcount++;
 	}
 
 

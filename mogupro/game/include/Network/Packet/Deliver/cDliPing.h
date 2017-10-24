@@ -1,23 +1,20 @@
 #pragma once
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
-
 namespace Network
 {
 namespace Packet
 {
-namespace Request
+namespace Deliver
 {
-class cReqCheckGetJem : public cPacketBase<cReqCheckGetJem, PacketId::REQ_CHECK_GET_JEM>
+class cDliPing : public cPacketBase<cDliPing, PacketId::DLI_PING>
 {
 public:
-    cReqCheckGetJem( );
-	cReqCheckGetJem(short drillID,short gemID);
+    cDliPing( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-
-	short mDrillID;
-	short mGemID;
+public:
+    cNetworkHandle mNetworkHandle;
 };
 }
 }

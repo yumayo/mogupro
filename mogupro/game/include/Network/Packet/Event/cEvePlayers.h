@@ -1,24 +1,27 @@
 #pragma once
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
+#include <cinder/Vector.h>
+#include <cinder/Quaternion.h>
+#include <map>
 namespace Network
 {
 namespace Packet
 {
 namespace Event
 {
-class cEveGetJem : public cPacketBase<cEveGetJem, PacketId::EVE_GET_JEM>
+class cEvePlayers : public cPacketBase<cEvePlayers, PacketId::EVE_PLAYERS>
 {
 public:
-    cEveGetJem( );
-    cEveGetJem( ubyte2 gemId );
+    struct PlayerFormat
+    {
+        cinder::vec3 mPosition;
+        cinder::quat mRotation;
+    };
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-    // 採った相手の名前。
-    // ※掘削機にも名前を付けておくのか、あとで話し合わないと！
-    std::string mTargetName;
-    // フィールドにあるどのジェムなのか。
-    ubyte2 mGemId;
+public:
+    std::map<ubyte1, PlayerFormat> mPlayerFormats;
 };
 }
 }
