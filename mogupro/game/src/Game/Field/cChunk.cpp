@@ -26,7 +26,6 @@ cChunk::cChunk( int x, int z, cUnderGround* under_ground ) :
 
 cChunk::~cChunk()
 {
-
 }
 
 void cChunk::setup()
@@ -68,8 +67,6 @@ void cChunk::setBlock( ci::ivec3 c, cBlock block )
 {
     if ( isOutOfRange( c ) )
     {
-        auto world_position = toWorldPosition( c );
-        mUnderGround->setBlock( world_position, block );
         return;
     }
     mBlocks[getIndex( c )] = block;
@@ -106,13 +103,15 @@ void cChunk::addFace( const std::array<GLfloat, 12>& block_face,
 
 void cChunk::breakBlock( ci::ivec3 c )
 {
-    if ( mHasBuilded )
-        return;
     auto& block = getBlock( c );
+    console() << "Block Active : " <<  block.mIsActive << std::endl;
     if ( block.mIsActive == false )
         return;
     block.mIsActive = false;
-    mHasBuilded = true;
+    mIsBlockBroken = true;
+
+    // Vbo‚ðŠÛ‚²‚Æ\’z‚·‚é‚Ì‚Åindex‘‚«Š·‚¦‚Í‚µ‚È‚­‚È‚Á‚Ä‚µ‚Ü‚Á‚½B
+    // d‚­‚È‚Á‚½‚ç—vŒŸ“¢
 
     //auto id = block.mId;
     //auto indices = std::vector<uint>( block.mIndicesNum.size() * 4 );
@@ -126,35 +125,66 @@ void cChunk::breakBlock( ci::ivec3 c )
     //vbo->bufferSubData( block.mIndicesNum[0] * 4, block.mIndicesNum.size() * 4, &indices[0] );
 }
 
+void cChunk::reBuildStart()
+{
+    if ( mIsBlockBroken == false )
+        return;
+    clearMesh();
+    mHasBuild = true;
+}
+
 void cChunk::reBuildMesh()
 {
-    clearMesh();
-    buildMesh();
+    if ( mHasBuild == false )
+        return;
+
+    if ( mIsLoading )
+        return;
+    mIsLoading = true;
 
     std::string str = "Reloaded mesh cell  x:" + std::to_string( mChunkCell.x ) + " z:" + std::to_string( mChunkCell.z );
     Utility::cString::log( str.c_str() );
 
-    str = std::to_string( mHasLoadingCompleted );
+    str = std::to_string( mHasBuildCompleted );
     Utility::cString::log( str.c_str() );
+
+    buildMesh();
 }
 
 void cChunk::buildMesh()
 {
     cChunkMeshBuilder builder( *this );
-    mHasLoadingCompleted = builder.buildMesh();
+    mHasBuildCompleted = builder.buildMesh();
 }
 
-void cChunk::reLoading()
+bool cChunk::reLoading()
 {
-    mVbo = gl::VboMesh::create( *mMesh );   
+    if ( mHasBuildCompleted == false )
+        return false;
+    if ( mHasBuild == false )
+        return false;
+
+    if ( mVbo != nullptr )
+    {
+        mIsLoading = false;
+        mHasBuild = false;
+        mIsBlockBroken = false;
+        mHasBuildCompleted = false;
+
+        mVbo = gl::VboMesh::create( *mMesh );
+        return true;
+    }
+    return false;
 }
 
 bool cChunk::createMainCall()
 {
-    //reLoading();
-
     // ŒvŽZ“r’†‚¾‚Á‚½‚ç‚Í‚¶‚­
     if ( mIsDone == false )
+        return false;
+
+    // vbo‚ðÄ\’z‚µ‚½‚ç‚Í‚¶‚­
+    if ( reLoading() )
         return false;
 
     // vbo‚ª¶¬Ï‚Ý‚¾‚Á‚½‚ç‚Í‚¶‚­
@@ -164,7 +194,6 @@ bool cChunk::createMainCall()
     if ( mMesh == nullptr )
         return false;
 
-    mHasLoadingCompleted = true;
     mVbo = gl::VboMesh::create( *mMesh );
     for ( auto& block : mBlocks )
         block.setup();
@@ -172,7 +201,7 @@ bool cChunk::createMainCall()
     cTimeMeasurement::getInstance()->make();
     auto t = cTimeMeasurement::getInstance()->deltaTime();
 
-    //console() << "Field create time : " << t << "pos " << mChunkCell << std::endl;
+    console() << "Field create time : " << t << "pos " << mChunkCell << std::endl;
     return true;
 }
 
@@ -196,7 +225,8 @@ void cChunk::createBlocks()
 void cChunk::clearMesh()
 {
     mIndicesIndex = 0;
-    mMesh->clear();
+    if ( mMesh != nullptr )
+        mMesh->clear();
 }
 
 ci::ivec3 cChunk::toWorldPosition( ci::ivec3 c )const
