@@ -79,19 +79,23 @@ void cGameMain::shutDown( )
 
 void cGameMain::update( float deltaTime )
 {
-    n->entry_update( deltaTime );
-    Shader::cShadowManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
-    Game::cFieldManager::getInstance( )->update( deltaTime );
-    ENV->padUpdate( );
-    ENV->padProcessEvent( );
-    Game::cPlayerManager::getInstance( )->update( deltaTime );
-    Game::cStrategyManager::getInstance( )->update( deltaTime );
-    Collision::cCollisionManager::getInstance( )->update( );
-	GemManager->update();
     Network::cUDPClientManager::getInstance( )->update( deltaTime );
     Network::cUDPServerManager::getInstance( )->update( deltaTime );
-    Game::cClientAdapter::getInstance( )->update( );
-    Game::cServerAdapter::getInstance( )->update( );
+
+    if ( Network::cUDPClientManager::getInstance( )->isConnected( ) )
+    {
+        Game::cClientAdapter::getInstance( )->update( );
+        Game::cServerAdapter::getInstance( )->update( );
+        n->entry_update( deltaTime );
+        Shader::cShadowManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
+        Game::cFieldManager::getInstance( )->update( deltaTime );
+        ENV->padUpdate( );
+        ENV->padProcessEvent( );
+        Game::cPlayerManager::getInstance( )->update( deltaTime );
+        Game::cStrategyManager::getInstance( )->update( deltaTime );
+        Collision::cCollisionManager::getInstance( )->update( );
+        GemManager->update( );
+    }
 }
 
 void cGameMain::draw( )

@@ -18,16 +18,38 @@ cUDPServerManager::cUDPServerManager( )
 void cUDPServerManager::close( )
 {
     mSocket.close( );
+    mIsAccept = false;
 }
 void cUDPServerManager::open( )
 {
     mSocket.open( 25565 );
+    mIsAccept = true;
+}
+void cUDPServerManager::closeAccepter( )
+{
+    mIsAccept = false;
+}
+void cUDPServerManager::openAccepter( )
+{
+    mIsAccept = true;
 }
 void cUDPServerManager::update( float delta )
 {
     updateRecv( );
     updateSend( );
     mRoot->entry_update( delta );
+}
+ubyte1 cUDPServerManager::getPlayerId( cNetworkHandle const & handle )
+{
+    auto itr = mHandle.find( handle );
+    if ( itr != mHandle.end( ) )
+    {
+        return itr->second.id;
+    }
+    else
+    {
+        throw std::runtime_error( "Networkhandle nothing" );
+    }
 }
 void cUDPServerManager::updateSend( )
 {
@@ -49,7 +71,7 @@ void cUDPServerManager::updateRecv( )
     while ( !mSocket.emptyChunk( ) )
     {
         auto chunk = mSocket.popChunk( );
-        if ( cUDPManager::getInstance( )->isConnectPacket( chunk ) || 
+        if ( cUDPManager::getInstance( )->isConnectPacket( chunk ) ||
             ( mHandle.find( chunk.networkHandle ) != mHandle.end( ) ) )
         {
             cUDPManager::getInstance( )->onReceive( chunk );
@@ -85,6 +107,8 @@ void cUDPServerManager::connection( )
 {
     while ( auto p = cRequestManager::getInstance( )->getReqConnect( ) )
     {
+        if ( !mIsAccept ) continue;
+
         auto itr = mHandle.insert( std::make_pair( p->mNetworkHandle, std::move( cClientInfo( ) ) ) );
         send( p->mNetworkHandle, new Packet::Response::cResConnect( ) );
 
@@ -118,10 +142,8 @@ void cUDPServerManager::ping( )
 cUDPServerManager::cClientInfo::cClientInfo( )
     : closeSecond( cinder::app::getElapsedSeconds( ) + 5.0F )
 {
-    idCount += 1;
-
-    // オーバーフローしたらエラーにします。
-    if ( idCount == 0U )
+    // とりあえず9人以上は入れません。
+    if ( idCount == 8 )
     {
         Utility::MessageBoxOk( "クライアントの数が上限に達しました。",
                                [ ] { exit( 0 ); } );
@@ -130,6 +152,7 @@ cUDPServerManager::cClientInfo::cClientInfo( )
     {
         id = idCount;
     }
+    idCount += 1;
 }
-ubyte2 cUDPServerManager::cClientInfo::idCount = 0U;
+ubyte1 cUDPServerManager::cClientInfo::idCount = 0U;
 }
