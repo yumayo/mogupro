@@ -50,7 +50,17 @@ void cGameMain::setup( )
     Shader::cShadowManager::getInstance( )->setup( );
     Game::cFieldManager::getInstance( )->setup( );
     Game::cStrategyManager::getInstance( )->setup( );
-    Game::cPlayerManager::getInstance( )->setup( );
+
+	
+	//プレイヤーの人数
+	int player_numbers = 8;
+	//自分が何Pなのか
+	const int active_player_id = 1;
+	for (int i = 0; i < player_numbers; i++) {
+		positions.push_back(ci::vec3(0, 10, i * 2));
+	}
+    Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id);
+
 	int seed = 20171031;
 	GemManager->setUp(vec3(0,0,0),vec3(8,6,16),1,1,10,seed);
     Collision::cCollisionManager::getInstance( )->setup( );

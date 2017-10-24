@@ -1,4 +1,3 @@
-#include <Game/Player/cPlayer.h>
 #include <Game/cPlayerManager.h>
 #include <Utility/cInput.h>
 #include <CameraManager/cCameraManager.h>
@@ -8,27 +7,22 @@
 #include <Network.hpp>
 
 
-void Game::cPlayerManager::playerInstance()
+void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id)
 {
-	//人数(通信で代入)
-	int player_number = 2;
-	//自分が操作するユーザーかどうか
-	int active_user_number = 0;
-
-	std::vector<ci::vec3> player_pos;
-	player_pos.push_back(ci::vec3(20, 20, 0));
-	player_pos.push_back(ci::vec3(10, 10, 0));
+	
+	std::vector<ci::vec3> player_pos = positions;
+	
 
 	//生成
 	for (int i = 0; i < player_number; i++) {
 		//通信で代入
-		if (active_user_number == 0) {
-			player.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, true));
+		if (i == active_player_id) {
+			players.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, true));
 			//アクティブユーザに代入
-			active_player = player[i];
+			active_player = players[i];
 		}
 		else {
-			player.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, false));
+			players.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, false));
 		}
 	}
 }
@@ -172,12 +166,19 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 	
 	active_player->move(pad_velocity);
 }
-void Game::cPlayerManager::setup()
+void Game::cPlayerManager::setPlayersPosition(std::vector<ci::vec3> positions)
 {
-	playerInstance();
+	for (int i = 0; i < players.size(); i++) {
+		ci::vec3 vec = positions[i] - players[i]->getPos();
+		players[i]->move(vec);
+	}
+}
+void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id)
+{
+	playerInstance(positions, player_number, active_player_id);
 	//ポジションの参照とカメラのズームを設定
 	CAMERA->followingCamera(&active_player->getReferencePos(), 15);
-	for (auto it : player) {
+	for (auto it : players) {
 		it->setup();
 	}
 }
@@ -192,7 +193,7 @@ void Game::cPlayerManager::update(const float& delta_time)
 	//	player[0]->setPos(cinder::vec3(top.xPos, top.yPos, top.zPos));
 	//}
 
-	for (auto it : player) {
+	for (auto it : players) {
 		it->update(delta_time);
 	}
 	playerMove(delta_time);
@@ -206,7 +207,7 @@ void Game::cPlayerManager::update(const float& delta_time)
 
 void Game::cPlayerManager::draw()
 {
-	for (auto it : player) {
+	for (auto it : players) {
 		it->draw();
 	}
 }
