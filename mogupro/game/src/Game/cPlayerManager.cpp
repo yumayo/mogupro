@@ -7,27 +7,22 @@
 #include <Network.hpp>
 
 
-void Game::cPlayerManager::playerInstance()
+void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id)
 {
-	//人数(通信で代入)
-	int player_number = 8;
-	//自分が操作するユーザーかどうか
-	int active_user_number = 0;
-
-	std::vector<ci::vec3> player_pos;
-	player_pos.push_back(ci::vec3(20, 20, 0));
-	player_pos.push_back(ci::vec3(10, 10, 0));
+	
+	std::vector<ci::vec3> player_pos = positions;
+	
 
 	//生成
 	for (int i = 0; i < player_number; i++) {
 		//通信で代入
-		if (active_user_number == 0) {
+		if (i == active_player_id) {
 			players.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, true));
 			//アクティブユーザに代入
 			active_player = players[i];
 		}
 		else {
-			players.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, i * 2), i, false));
+			players.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, false));
 		}
 	}
 }
@@ -171,9 +166,16 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 	
 	active_player->move(pad_velocity);
 }
-void Game::cPlayerManager::setup()
+void Game::cPlayerManager::setPlayersPosition(std::vector<ci::vec3> positions)
 {
-	playerInstance();
+	for (int i = 0; i < players.size(); i++) {
+		ci::vec3 vec = positions[i] - players[i]->getPos();
+		players[i]->move(vec);
+	}
+}
+void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id)
+{
+	playerInstance(positions, player_number, active_player_id);
 	//ポジションの参照とカメラのズームを設定
 	CAMERA->followingCamera(&active_player->getReferencePos(), 15);
 	for (auto it : players) {
