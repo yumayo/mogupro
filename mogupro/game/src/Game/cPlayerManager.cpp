@@ -1,4 +1,3 @@
-#include <Game/Player/cPlayer.h>
 #include <Game/cPlayerManager.h>
 #include <Utility/cInput.h>
 #include <CameraManager/cCameraManager.h>
@@ -11,7 +10,7 @@
 void Game::cPlayerManager::playerInstance()
 {
 	//人数(通信で代入)
-	int player_number = 2;
+	int player_number = 8;
 	//自分が操作するユーザーかどうか
 	int active_user_number = 0;
 
@@ -23,12 +22,12 @@ void Game::cPlayerManager::playerInstance()
 	for (int i = 0; i < player_number; i++) {
 		//通信で代入
 		if (active_user_number == 0) {
-			player.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, true));
+			players.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, true));
 			//アクティブユーザに代入
-			active_player = player[i];
+			active_player = players[i];
 		}
 		else {
-			player.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, false));
+			players.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, i * 2), i, false));
 		}
 	}
 }
@@ -177,7 +176,7 @@ void Game::cPlayerManager::setup()
 	playerInstance();
 	//ポジションの参照とカメラのズームを設定
 	CAMERA->followingCamera(&active_player->getReferencePos(), 15);
-	for (auto it : player) {
+	for (auto it : players) {
 		it->setup();
 	}
 }
@@ -192,7 +191,7 @@ void Game::cPlayerManager::update(const float& delta_time)
 	//	player[0]->setPos(cinder::vec3(top.xPos, top.yPos, top.zPos));
 	//}
 
-	for (auto it : player) {
+	for (auto it : players) {
 		it->update(delta_time);
 	}
 	playerMove(delta_time);
@@ -206,7 +205,7 @@ void Game::cPlayerManager::update(const float& delta_time)
 
 void Game::cPlayerManager::draw()
 {
-	for (auto it : player) {
+	for (auto it : players) {
 		it->draw();
 	}
 }
