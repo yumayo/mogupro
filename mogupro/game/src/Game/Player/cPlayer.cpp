@@ -4,33 +4,7 @@
 #include <CameraManager/cCameraManager.h>
 #include <Resource/cObjectManager.h>
 #include <Resource/TextureManager.h>
-//void Game::Player::cPlayer::playerRotation()
-//{
-//	//プレイヤーの前方向
-//	ci::vec3 rotateaxis = ci::vec3(0.0f, 0.0f, 1.0f);
-//	//移動先のベクトル
-//	ci::vec3 targetvec = ci::vec3(velocity.x, 0, velocity.z);
-//	//移動方向をnormalize
-//	targetvec = ci::normalize(targetvec);
-//	//回転軸
-//	ci::vec3 quataxis = glm::cross(rotateaxis, targetvec);
-//	//回転
-//	// 左回り
-//	if (atan2f(velocity.x, velocity.z) > 0.0f)
-//		ci::gl::rotate(atan2f(velocity.x, velocity.z), quataxis);
-//	// 右回り
-//	else if (atan2f(velocity.x, velocity.z) < 0.0f)
-//		ci::gl::rotate(-atan2f(velocity.x, velocity.z), quataxis);
-//
-//	if (quataxis == ci::vec3(0))
-//	{
-//		if (velocity.z > 0.0f)
-//			ci::gl::rotate(0, ci::vec3(0, 1, 0));
-//		if (velocity.z < 0.0f)
-//			ci::gl::rotate((float)M_PI, ci::vec3(0, 1, 0));
-//	}
-//
-//}
+
 
 void Game::Player::cPlayer::playerRotation()
 {
@@ -40,6 +14,11 @@ void Game::Player::cPlayer::playerRotation()
 	ci::vec3 targetvec = ci::vec3(velocity.x, 0, velocity.z);
 	//移動方向をnormalize
 	targetvec = ci::normalize(targetvec);
+	if (velocity.x >= 0.01f ||
+		velocity.x <= -0.01f ||
+		velocity.z >= 0.01f ||
+		velocity.z <= -0.01f )
+		installation_position = ci::vec3(velocity.x * 10, 0, velocity.z * 10);
 
 	//回転軸
 	ci::vec3 quataxis = glm::cross(rotateaxis, targetvec);
@@ -88,7 +67,16 @@ Game::Player::cPlayer::cPlayer(
 	velocity = ci::vec3(0);
 	save_rotate = 0;
 	drilling = false;
-	speed = DEFAULT_SPEED;
+	jump_flag = false;
+
+	//プレイヤーのステータス
+	status.attack = 10;
+	status.drill_range = 1;
+	status.jump_force = 1;
+	status.speed = DEFAULT_SPEED;
+	//設置位置
+	installation_position = ci::vec3(0,0,2);
+
 	player_id = id;
 	active_user = is_active_user;
 }
@@ -101,10 +89,24 @@ void Game::Player::cPlayer::move(const ci::vec3 & velocity)
 	//プレイヤーの移動ベクトル保存
 	this->velocity = velocity;
 
+
 	mRigidbody.setSpeed(ci::vec3(0,speed.y,0) + velocity);
 	//プレイヤーの移動
 	mPos = mCollider.getPosition();
 
+}
+
+void Game::Player::cPlayer::jump(bool flag)
+{
+	if(jump_flag == false)
+	jump_flag = flag;
+
+	if (jump_flag == true) {
+		if (mRigidbody.isLanding()) {
+			velocity.y = -(status.jump_force/6);
+			jump_flag = false;
+		}
+	}
 }
 
 void Game::Player::cPlayer::setup()
@@ -123,15 +125,13 @@ void Game::Player::cPlayer::update(const float & delta_time)
 		Game::cFieldManager::getInstance()->blockBreak(mPos, 3);
 	}
     cClientAdapter::getInstance( )->sendPlayerFormat( mPos, cinder::quat() );
-	/*mPos = mCollider.getPosition();
-	size = mCollider.getSize();*/
 }
 
 void Game::Player::cPlayer::draw()
 {
 	ci::gl::pushModelView();
 	ci::gl::translate(mPos - ci::vec3(0, 1, 0));
-	ci::gl::scale(ci::vec3(0.02f) + ci::vec3(0.01f, 0, 0.01f));
+	ci::gl::scale(ci::vec3(0.01f) + ci::vec3(0.01f, 0, 0.01f));
 	playerRotation();
 	ci::gl::color(color);
 	TEX->get("mogura")->bind();

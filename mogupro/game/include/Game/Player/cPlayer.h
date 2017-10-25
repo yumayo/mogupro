@@ -5,21 +5,36 @@
 #include <Collision/cRigidBody.h>
 namespace Game {
 	namespace Player {
+
+		struct PlayerStatus {
+			float attack;
+			float drill_range;
+			float jump_force;
+			float speed;
+		};
+
+		//基準スピード
+		static const float DEFAULT_SPEED = 5.0f;
+
 		class cPlayer : public Game::cObjectBase {
 		private:
 			ci::vec3 size;
 			ci::ColorA8u color;
 			//メッシュ
 			ci::gl::VboMeshRef mesh;
-			//速度
-			float speed;
-			const float DEFAULT_SPEED = 5.0f;
+			//ステータス
+			PlayerStatus status;
+			//設置位置
+			ci::vec3 installation_position;
+
 			//何Pか
 			int player_id;
 			//操作するプレイヤーかどうか
 			bool active_user;
 			//掘削中
 			bool drilling;
+			//ジャンプ中はtrue
+			bool jump_flag;
 
 			//クォータニオンの例外用の角度
 			float save_rotate;
@@ -45,16 +60,19 @@ namespace Game {
 			ci::vec3 getSize() {
 				return size;
 			}
+			ci::vec3 getInstallationPosition() {
+				return installation_position;
+			}
 
 			float getSpeed() {
-				return speed;
+				return status.speed;
 			}
 			void setSpeed(const float& speed) {
-				this->speed = speed;
+				status.speed = speed;
 			}
 			
 			void setDefaultSpeed() {
-				this->speed = DEFAULT_SPEED;
+				status.speed = DEFAULT_SPEED;
 			}
 
 			int getPlayerId() {
@@ -71,6 +89,7 @@ namespace Game {
 			}
 
 			void move(const ci::vec3& velocity);
+			void jump(bool flag);
 
 			void setup() override;
 			void update(const float& delta_time) override;
