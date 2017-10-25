@@ -35,8 +35,15 @@ void cServerAdapter::sendPlayersPosition( )
     auto dli = Network::cDeliverManager::getInstance( );
     while ( auto packet = dli->getDliPlayer( ) )
     {
-        auto id = Network::cUDPServerManager::getInstance( )->getPlayerId( packet->mNetworkHandle );
-        mPlayersPosition[id] = packet->mPosition;
+        try
+        {
+            auto id = Network::cUDPServerManager::getInstance( )->getPlayerId( packet->mNetworkHandle );
+            mPlayersPosition[id] = packet->mPosition;
+        }
+        catch ( std::runtime_error e )
+        {
+            continue;
+        }
     }
     auto eventPack = new Network::Packet::Event::cEvePlayers( );
     for ( auto& player : mPlayersPosition )
@@ -73,22 +80,29 @@ void cServerAdapter::sendGetGemPlayer( )
     auto req = Network::cRequestManager::getInstance( );
     while ( auto packet = req->getReqCheckGetJemPlayer( ) )
     {
-        auto resPack = new Network::Packet::Response::cResCheckGetJemPlayer( );
-        auto playerId = Network::cUDPServerManager::getInstance( )->getPlayerId( packet->mNetworkHandle );
-        auto isSuccess = mGems.insert( packet->mGemId ).second;
-
-        resPack->mPlayerId = playerId;
-        resPack->mGemId = packet->mGemId;
-        resPack->mIsSuccessed = isSuccess;
-        Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, resPack );
-
-        // 成功なら他の人に俺、宝石採ったぜアピールをします。
-        if ( isSuccess )
+        try
         {
-            auto eventPack = new Network::Packet::Event::cEveGetJemPlayer( );
-            eventPack->mPlayerId = playerId;
-            eventPack->mGemId = packet->mGemId;
-            Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
+            auto resPack = new Network::Packet::Response::cResCheckGetJemPlayer( );
+            auto playerId = Network::cUDPServerManager::getInstance( )->getPlayerId( packet->mNetworkHandle );
+            auto isSuccess = mGems.insert( packet->mGemId ).second;
+
+            resPack->mPlayerId = playerId;
+            resPack->mGemId = packet->mGemId;
+            resPack->mIsSuccessed = isSuccess;
+            Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, resPack );
+
+            // 成功なら他の人に俺、宝石採ったぜアピールをします。
+            if ( isSuccess )
+            {
+                auto eventPack = new Network::Packet::Event::cEveGetJemPlayer( );
+                eventPack->mPlayerId = playerId;
+                eventPack->mGemId = packet->mGemId;
+                Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
+            }
+        }
+        catch ( std::runtime_error e )
+        {
+            continue;
         }
     }
 }
