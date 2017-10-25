@@ -222,9 +222,13 @@ bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 
 ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
 {
-    auto center_top = getBlockHighestPosition( target_position );
-    center_top.y = CHUNK_SIZE + ( BLOCK_SIZE / 2.0f );
-    return center_top;
+    auto chunk_cell = getChunkCellFromPosition( target_position );
+    auto block_cell = getBlockCellFromPosition( target_position );
+
+    auto p = (block_cell * BLOCK_SIZE) + ( chunk_cell * CHUNK_SIZE );
+    p.y = CHUNK_SIZE + ( BLOCK_SIZE / 2.0f );
+
+    return p;
 }
 
 ci::vec3 cUnderGround::getBlockHighestPosition( const ci::vec3 & target_position )
