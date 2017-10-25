@@ -114,7 +114,6 @@ bool cUnderGround::chunkMeshReLoaded()
         {
             for ( int x = -cr; x < cr; x++ )
             {
-                std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
                 auto & chunk = mChunkHolder.getChunk( x, z );
                 chunk.reBuildMesh();
             }
