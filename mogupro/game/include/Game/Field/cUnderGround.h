@@ -26,7 +26,8 @@ public:
 public: // Player,Strategy Ç≈égÇ§ä÷êî
 
     bool blockBreak( const ci::vec3& position, const float& radius );
-    ci::vec3 getBlockCenterTopPosition( const ci::vec3& target_position );
+    ci::vec3 getBlockTopPosition( const ci::vec3& target_position );
+    ci::vec3 getBlockHighestPosition( const ci::vec3& target_position );
     ci::ivec3 getBlockMaxCell();
 
 public: // Field ì‡Ç≈égÇ§ä÷êî
