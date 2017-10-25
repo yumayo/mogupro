@@ -30,7 +30,7 @@ cUnderGround::~cUnderGround()
     }
 }
 
-int cr = 4;
+int cr = 2;
 
 void cUnderGround::setup()
 {
@@ -62,6 +62,7 @@ void cUnderGround::setup()
         }
         );
     }
+
 }
 
 void cUnderGround::update()
@@ -221,10 +222,17 @@ bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 
 ci::vec3 cUnderGround::getBlockCenterTopPosition( const ci::vec3 & target_position )
 {
-    //auto c = getCellNumFromPosition( target_position );
-    //auto b = mBlocks[c.z][c.y][c.x];
-    //return b->mPosition + vec3( 0, b->mScale / 2, 0 );
-    return vec3();
+    auto chunk_cell = getChunkCellFromPosition( target_position );
+    auto block_cell = getBlockCellFromPosition( target_position );
+    block_cell.y = CHUNK_SIZE - 1;
+
+    if ( mChunkHolder.isExistsChunk( chunk_cell.x, chunk_cell.y, chunk_cell.z ) )
+        return ivec3( 0 );
+
+    auto & chunk = mChunkHolder.getChunk( chunk_cell );
+    auto block_pos = chunk.getBlock( block_cell ).mPosition;
+    block_pos.y += (BLOCK_SIZE / 2.0f);
+    return block_pos;
 }
 
 ci::ivec3 cUnderGround::getBlockMaxCell()
