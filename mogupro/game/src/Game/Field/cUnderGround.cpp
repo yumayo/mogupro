@@ -3,6 +3,7 @@
 #include <Utility/cTimeMeasurement.h>
 #include <Network/cUDPManager.h>
 #include <Network/cRequestManager.h>
+#include <Utility/cString.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -20,6 +21,7 @@ cUnderGround::cUnderGround() :
 
 cUnderGround::~cUnderGround()
 {
+    std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
     mChunkHolder.clear();
     mIsRunning = false;
     for ( auto& thread : mChunkLoadThreads )
@@ -46,7 +48,6 @@ void cUnderGround::setup()
     cTimeMeasurement::getInstance()->make();
 
     console() << "Chunk set time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
-
 
     for ( size_t i = 0; i < 1; i++ )
     {
@@ -113,14 +114,13 @@ bool cUnderGround::chunkMeshReLoaded()
         {
             for ( int x = -cr; x < cr; x++ )
             {
-                if ( mIsRunning == false )
-                    return true;
                 std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
                 auto & chunk = mChunkHolder.getChunk( x, z );
                 chunk.reBuildMesh();
             }
         }
     }
+
     return true;
 }
 
@@ -171,7 +171,6 @@ ci::ivec3 cUnderGround::getBlockCellFromPosition( const ci::vec3 & position )
         c.x += CHUNK_SIZE;
     if ( c.z < 0 )
         c.z += CHUNK_SIZE;
-    console() << " Adjs : " << c << std::endl;
     return ivec3( std::abs( c.x ), std::abs( c.y ), std::abs( c.z ) );
 }
 
@@ -196,7 +195,6 @@ void cUnderGround::setBlock( ci::ivec3 position, cBlock block )
 bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 {
     auto chunk_cell = getChunkCellFromPosition( position );
-    console() << " Chunk Cell : " << chunk_cell << std::endl;
     auto block_cell = getBlockCellFromPosition( position );
 
     if ( mChunkHolder.isExistsChunk( chunk_cell.x, chunk_cell.y, chunk_cell.z ) )
