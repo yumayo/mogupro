@@ -22,7 +22,7 @@ void cFieldManager::draw()
     auto ctx = gl::context();
     bool is_culling_change = ctx->getBoolState( GL_CULL_FACE );
 
-    if (is_culling_change == false)
+    if ( is_culling_change == false )
         gl::enableFaceCulling( true );
 
     //auto lambert = gl::ShaderDef().lambert();
@@ -31,23 +31,15 @@ void cFieldManager::draw()
 
     mUnderGround.draw();
 
-    if (is_culling_change == false)
+    if ( is_culling_change == false )
         gl::enableFaceCulling( false );
 }
 bool cFieldManager::blockBreak( const ci::vec3& position, const float& radius )
 {
     return mUnderGround.blockBreak( position, radius );
 }
-bool cFieldManager::blockBreak( const ci::ivec3 & cell_num, const float & radius )
-{
-    return mUnderGround.blockBreak( cell_num, radius );
-}
 ci::vec3 cFieldManager::getBlockCenterTopPosition( const ci::vec3 & target_position )
 {
     return mUnderGround.getBlockCenterTopPosition( target_position );
-}
-ci::ivec3 cFieldManager::getBlockMaxCell()
-{
-    return mUnderGround.getBlockMaxCell();
 }
 }

@@ -53,7 +53,8 @@ cBlock & cChunk::getBlock( ci::ivec3 c )
 {
     if ( isOutOfRange( c ) )
     {
-        return cBlock();
+        //auto world_pos = toWorldPosition( c );
+        return cBlock(); //mUnderGround->getBlock( world_pos );
     }
     return mBlocks[getIndex( c )];
 }
@@ -104,10 +105,11 @@ void cChunk::addFace( const std::array<GLfloat, 12>& block_face,
 void cChunk::breakBlock( ci::ivec3 c )
 {
     auto& block = getBlock( c );
-    console() << "Block Active : " <<  block.mIsActive << std::endl;
     if ( block.mIsActive == false )
         return;
     block.mIsActive = false;
+    block.toBreak();
+
     mIsBlockBroken = true;
 
     // Vbo‚ðŠÛ‚²‚Æ\’z‚·‚é‚Ì‚Åindex‘‚«Š·‚¦‚Í‚µ‚È‚­‚È‚Á‚Ä‚µ‚Ü‚Á‚½B
@@ -141,12 +143,6 @@ void cChunk::reBuildMesh()
     if ( mIsLoading )
         return;
     mIsLoading = true;
-
-    std::string str = "Reloaded mesh cell  x:" + std::to_string( mChunkCell.x ) + " z:" + std::to_string( mChunkCell.z );
-    Utility::cString::log( str.c_str() );
-
-    str = std::to_string( mHasBuildCompleted );
-    Utility::cString::log( str.c_str() );
 
     buildMesh();
 }
@@ -201,7 +197,6 @@ bool cChunk::createMainCall()
     cTimeMeasurement::getInstance()->make();
     auto t = cTimeMeasurement::getInstance()->deltaTime();
 
-    console() << "Field create time : " << t << "pos " << mChunkCell << std::endl;
     return true;
 }
 

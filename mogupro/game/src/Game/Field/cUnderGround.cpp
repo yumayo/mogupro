@@ -3,6 +3,7 @@
 #include <Utility/cTimeMeasurement.h>
 #include <Network/cUDPManager.h>
 #include <Network/cRequestManager.h>
+#include <Utility/cString.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -20,6 +21,7 @@ cUnderGround::cUnderGround() :
 
 cUnderGround::~cUnderGround()
 {
+    std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
     mChunkHolder.clear();
     mIsRunning = false;
     for ( auto& thread : mChunkLoadThreads )
@@ -28,7 +30,7 @@ cUnderGround::~cUnderGround()
     }
 }
 
-int cr = 4;
+int cr = 2;
 
 void cUnderGround::setup()
 {
@@ -47,7 +49,6 @@ void cUnderGround::setup()
 
     console() << "Chunk set time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 
-
     for ( size_t i = 0; i < 1; i++ )
     {
         mChunkLoadThreads.emplace_back( [&]
@@ -61,6 +62,7 @@ void cUnderGround::setup()
         }
         );
     }
+
 }
 
 void cUnderGround::update()
@@ -113,14 +115,13 @@ bool cUnderGround::chunkMeshReLoaded()
         {
             for ( int x = -cr; x < cr; x++ )
             {
-                if ( mIsRunning == false )
-                    return true;
                 std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
                 auto & chunk = mChunkHolder.getChunk( x, z );
                 chunk.reBuildMesh();
             }
         }
     }
+
     return true;
 }
 
@@ -171,7 +172,6 @@ ci::ivec3 cUnderGround::getBlockCellFromPosition( const ci::vec3 & position )
         c.x += CHUNK_SIZE;
     if ( c.z < 0 )
         c.z += CHUNK_SIZE;
-    console() << " Adjs : " << c << std::endl;
     return ivec3( std::abs( c.x ), std::abs( c.y ), std::abs( c.z ) );
 }
 
@@ -196,7 +196,6 @@ void cUnderGround::setBlock( ci::ivec3 position, cBlock block )
 bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 {
     auto chunk_cell = getChunkCellFromPosition( position );
-    console() << " Chunk Cell : " << chunk_cell << std::endl;
     auto block_cell = getBlockCellFromPosition( position );
 
     if ( mChunkHolder.isExistsChunk( chunk_cell.x, chunk_cell.y, chunk_cell.z ) )
@@ -223,10 +222,17 @@ bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 
 ci::vec3 cUnderGround::getBlockCenterTopPosition( const ci::vec3 & target_position )
 {
-    //auto c = getCellNumFromPosition( target_position );
-    //auto b = mBlocks[c.z][c.y][c.x];
-    //return b->mPosition + vec3( 0, b->mScale / 2, 0 );
-    return vec3();
+    auto chunk_cell = getChunkCellFromPosition( target_position );
+    auto block_cell = getBlockCellFromPosition( target_position );
+    block_cell.y = CHUNK_SIZE - 1;
+
+    if ( mChunkHolder.isExistsChunk( chunk_cell.x, chunk_cell.y, chunk_cell.z ) )
+        return ivec3( 0 );
+
+    auto & chunk = mChunkHolder.getChunk( chunk_cell );
+    auto block_pos = chunk.getBlock( block_cell ).mPosition;
+    block_pos.y += (BLOCK_SIZE / 2.0f);
+    return block_pos;
 }
 
 ci::ivec3 cUnderGround::getBlockMaxCell()

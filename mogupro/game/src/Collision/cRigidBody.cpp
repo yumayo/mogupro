@@ -104,7 +104,7 @@ void cRigidBody::calc( float minValue, cinder::Ray const& ray, cinder::AxisAlign
         mIsLanding = true;
     }
 
-    mSpeed = calcWallScratchVector( mSpeed, normal );
+    mSpeed = calcWallScratchVector( mSpeed, normal ) * 0.9F;
 
     auto position = intersectPoint + mSpeed;
 
