@@ -47,18 +47,18 @@ void cUnderGround::setup()
     }
     cTimeMeasurement::getInstance()->make();
 
-    console() << "Chunk set time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+    //console() << "Chunk set time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 
     for ( size_t i = 0; i < 1; i++ )
     {
         mChunkLoadThreads.emplace_back( [&]
         {
-            chunkMeshReLoaded();
+            calcChunks();
         }
         );
         mChunkLoadThreads.emplace_back( [&]
         {
-            calcChunks();
+            chunkMeshReLoaded();
         }
         );
     }
@@ -220,7 +220,14 @@ bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
     return true;
 }
 
-ci::vec3 cUnderGround::getBlockCenterTopPosition( const ci::vec3 & target_position )
+ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
+{
+    auto center_top = getBlockHighestPosition( target_position );
+    center_top.y = CHUNK_SIZE + ( BLOCK_SIZE / 2.0f );
+    return center_top;
+}
+
+ci::vec3 cUnderGround::getBlockHighestPosition( const ci::vec3 & target_position )
 {
     auto chunk_cell = getChunkCellFromPosition( target_position );
     auto block_cell = getBlockCellFromPosition( target_position );
@@ -231,7 +238,7 @@ ci::vec3 cUnderGround::getBlockCenterTopPosition( const ci::vec3 & target_positi
 
     auto & chunk = mChunkHolder.getChunk( chunk_cell );
     auto block_pos = chunk.getBlock( block_cell ).mPosition;
-    block_pos.y += (BLOCK_SIZE / 2.0f);
+    block_pos.y += ( BLOCK_SIZE / 2.0f );
     return block_pos;
 }
 

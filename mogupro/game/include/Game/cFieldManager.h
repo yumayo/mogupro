@@ -24,8 +24,12 @@ public: //Player, Strategy が使う関数
     bool blockBreak( const ci::vec3& position, const float& radius = 0 );
 
     // 引数(vec3)で近くのブロックの上部中心位置を返す
-    // position : 対象の位置
-    ci::vec3 getBlockCenterTopPosition( const ci::vec3& target_position );
+    // target_position : 対象の位置
+    ci::vec3 getBlockHighestPosition( const ci::vec3& target_position );
+
+    // x,zで近くのブロックの位置を、yはブロックの一番高い固定値を返す
+    // target_position : 対象の位置
+    ci::vec3 getBlockTopPosition( const ci::vec3& target_position );
 
 private: // Member
     Field::cUnderGround mUnderGround;
