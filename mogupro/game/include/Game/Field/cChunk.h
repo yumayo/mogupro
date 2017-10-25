@@ -34,12 +34,12 @@ public:
 
     void breakBlock( ci::ivec3 c );
 
-    void reBuildMesh();
     void buildMesh();
-    void reLoading();
+    void reBuildStart();
+    void reBuildMesh();
+    bool reLoading();
     bool createMainCall();
     void createBlocks();
-
 
 private:
 
@@ -51,8 +51,11 @@ private:
 
 public:
 
-    bool mHasBuilded = false;
-    bool mHasLoadingCompleted = false;
+    bool mIsBlockBroken = false;
+    bool mHasBuild = false;
+    bool mIsLoading = false;
+    bool mHasBuildCompleted = false;
+
     bool mIsLoaded = false;
     bool mIsDone = false;
     ci::TriMeshRef mMesh;

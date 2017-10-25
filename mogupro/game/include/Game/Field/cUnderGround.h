@@ -23,16 +23,16 @@ public:
     void update();
     void draw();
 
-public:
-
-    cBlock getBlock( ci::ivec3 position );
-    void setBlock( ci::ivec3 position, cBlock block );
-
 public: // Player,Strategy Ç≈égÇ§ä÷êî
 
     bool blockBreak( const ci::vec3& position, const float& radius );
     ci::vec3 getBlockCenterTopPosition( const ci::vec3& target_position );
     ci::ivec3 getBlockMaxCell();
+
+public: // Field ì‡Ç≈égÇ§ä÷êî
+
+    cBlock getBlock( ci::ivec3 position );
+    void setBlock( ci::ivec3 position, cBlock block );
 
 
 private: // Method
@@ -49,6 +49,7 @@ private: // Member
     std::vector<std::thread> mChunkLoadThreads;
     std::mutex mMainMutex;
     std::atomic<bool> mIsRunning{ true };
+    std::function<void()> mCallBack = nullptr;
 
 };
 }

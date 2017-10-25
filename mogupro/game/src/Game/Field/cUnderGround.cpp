@@ -12,7 +12,6 @@ namespace Game
 namespace Field
 {
 
-int cr = 4;
 
 cUnderGround::cUnderGround() :
     mChunkHolder( this )
@@ -21,12 +20,15 @@ cUnderGround::cUnderGround() :
 
 cUnderGround::~cUnderGround()
 {
+    mChunkHolder.clear();
     mIsRunning = false;
     for ( auto& thread : mChunkLoadThreads )
     {
         thread.join();
     }
 }
+
+int cr = 4;
 
 void cUnderGround::setup()
 {
@@ -38,7 +40,7 @@ void cUnderGround::setup()
     {
         for ( int x = -cr; x < cr; x++ )
         {
-            mChunkHolder.setChunk( x, z );
+            mChunkHolder.setChunk( x, 0, z );
         }
     }
     cTimeMeasurement::getInstance()->make();
@@ -105,19 +107,20 @@ void cUnderGround::draw()
 
 bool cUnderGround::chunkMeshReLoaded()
 {
-    //while ( mIsRunning )
-    //{
-    //    for ( int z = -cr; z < cr; z++ )
-    //    {
-    //        for ( int x = -cr; x < cr; x++ )
-    //        {
-    //            std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
-    //            auto & chunk = mChunkHolder.getChunk( x, z );
-    //            chunk.reBuildMesh();
-    //        }
-    //    }
-    //    mIsRunning = false;
-    //}
+    while ( mIsRunning )
+    {
+        for ( int z = -cr; z < cr; z++ )
+        {
+            for ( int x = -cr; x < cr; x++ )
+            {
+                if ( mIsRunning == false )
+                    return true;
+                std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
+                auto & chunk = mChunkHolder.getChunk( x, z );
+                chunk.reBuildMesh();
+            }
+        }
+    }
     return true;
 }
 
@@ -134,19 +137,42 @@ bool cUnderGround::calcChunks()
                 mChunkHolder.createChunk( chunk );
             }
         }
-        //mIsRunning = false;
+        return true;
     }
     return true;
 }
 
 ci::ivec3 cUnderGround::getChunkCellFromPosition( const ci::vec3 & position )
 {
-    return ivec3( position ) / CHUNK_SIZE;
+    vec3 abs_p = vec3( std::abs( position.x ), std::abs( position.y ), std::abs( position.z ) );
+    ivec3 cell = ( ivec3( abs_p ) / CHUNK_SIZE );
+    if ( position.x < 0 )
+    {
+        cell.x *= -1;
+        cell.x -= 1;
+    }
+    if ( position.y < 0 )
+    {
+        cell.y *= -1;
+        cell.y -= 1;
+    }
+    if ( position.z < 0 )
+    {
+        cell.z *= -1;
+        cell.z -= 1;
+    }
+    return cell;
 }
 
 ci::ivec3 cUnderGround::getBlockCellFromPosition( const ci::vec3 & position )
 {
-    return ci::ivec3( position ) % CHUNK_SIZE;
+    ivec3 c = ivec3( position ) % CHUNK_SIZE;
+    if ( c.x < 0 )
+        c.x += CHUNK_SIZE;
+    if ( c.z < 0 )
+        c.z += CHUNK_SIZE;
+    console() << " Adjs : " << c << std::endl;
+    return ivec3( std::abs( c.x ), std::abs( c.y ), std::abs( c.z ) );
 }
 
 cBlock cUnderGround::getBlock( ci::ivec3 position )
@@ -170,10 +196,13 @@ void cUnderGround::setBlock( ci::ivec3 position, cBlock block )
 bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 {
     auto chunk_cell = getChunkCellFromPosition( position );
+    console() << " Chunk Cell : " << chunk_cell << std::endl;
     auto block_cell = getBlockCellFromPosition( position );
 
-    if ( mChunkHolder.isExistsChunk( chunk_cell.x, chunk_cell.z ) )
+    if ( mChunkHolder.isExistsChunk( chunk_cell.x, chunk_cell.y, chunk_cell.z ) )
         return false;
+
+    auto & chunk = mChunkHolder.getChunk( chunk_cell );
 
     auto r = ivec3( int( radius / BLOCK_SIZE ) );
     auto s = block_cell - r;
@@ -183,8 +212,11 @@ bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
         for ( int y = s.y; y < e.y; y++ )
             for ( int x = s.x; x < e.x; x++ )
             {
-                mChunkHolder.getChunk( chunk_cell ).breakBlock( ivec3( x, y, z ) );
+                chunk.breakBlock( ivec3( x, y, z ) );
             }
+
+    // ここでbreakblockが呼ばれたチャンクを再構成するフラグを立てる
+    chunk.reBuildStart();
 
     return true;
 }

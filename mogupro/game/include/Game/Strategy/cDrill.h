@@ -56,8 +56,10 @@ private:
 	DrillState changeState();
 	void DigEasing();
 	void drawMachine();
-	void setEasing(const float count, float _scale);
-	std::vector<ci::vec3>easingpos;
+	Utility::hardptr<Node::node> root;
+	bool iseasingfinished = true;
+	int easingcount = 0;
+	ci::vec3 getNextEasingPos();
 };
 }
 }

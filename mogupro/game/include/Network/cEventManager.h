@@ -58,6 +58,11 @@ public:
     void ungetEveTeamMember( Packet::Event::cEveTeamMember&& data );
 public:
     std::stack<Packet::Event::cEveTeamMember> mEveTeamMember;
+public:
+    boost::optional<Packet::Event::cEvePlayersRespawn> getEvePlayersRespawn( );
+    void ungetEvePlayersRespawn( Packet::Event::cEvePlayersRespawn&& data );
+public:
+    std::stack<Packet::Event::cEvePlayersRespawn> mEvePlayersRespawn;
     // P=====END=====P
 };
 }
