@@ -18,6 +18,6 @@ void cRecursionUsableMutex::erase( )
 }
 int & cRecursionUsableMutex::getDuplicationCount( )
 {
-    return mIds[std::this_thread::get_id( )];
+    return mIds.at( std::this_thread::get_id( ) );
 }
 }
