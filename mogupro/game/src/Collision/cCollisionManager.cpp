@@ -97,7 +97,10 @@ void cCollisionManager::update( )
         if ( targetCollider != nullptr )
         {
             rigidBody->calc( length, ray, boundingBox, targetCollider );
-            goto recalc;
+            if ( cinder::length( ray.getDirection() ) > 0.01F )
+            {
+                goto recalc;
+            }
         }
     }
     for ( auto& rigidBody : mRigidBodys )
