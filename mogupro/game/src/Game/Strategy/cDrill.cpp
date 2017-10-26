@@ -6,6 +6,7 @@
 #include<Network.hpp>
 #include"cinder\gl\scoped.h"
 #include"Resource\TextureManager.h"
+#include"Game\cClientAdapter.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -29,8 +30,6 @@ namespace Game
 			slope = vec3(scale.x, 0, scale.z);
 			drillslope = 0.0f;
 			createDrills();
-
-
 			root = Node::node::create();
 			root->set_schedule_update();
 
@@ -51,32 +50,34 @@ namespace Game
 
 			drawBasket();
 
-
 			drawMachine();
 
 			float drawrate = 0.8f;
-			drawCube(beginpos + vec3(0, -slope.y / 2.f, 0), vec3(scale.x*drawrate, std::max(slope.y - float(1.f*scale.y), 0.f), scale.z*drawrate), vec3(0, y_rotate, 0), ColorA(1, 0.5, 0.2, 1));
-			drawCube(beginpos + vec3(0, -slope.y / 2.f, 0), vec3(scale.x*drawrate, std::max(slope.y - float(1.f*scale.y), 0.f), scale.z*drawrate), vec3(0, -y_rotate, 0), ColorA(0, 0, 0, 1));
+			drawCube(vec3(pos.x,(beginpos.y+pos.y)/2.f,pos.z), vec3(scale.x*drawrate, std::max(slope.y - float(1.f*scale.y), 0.f), scale.z*drawrate), vec3(0.0f, y_rotate, 0.0f), ColorA(1.0f, 0.5f, 0.2f, 1.0f));
+			drawCube(vec3(pos.x, (beginpos.y + pos.y) / 2.f, pos.z), vec3(scale.x*drawrate, std::max(slope.y - float(1.f*scale.y), 0.f), scale.z*drawrate), vec3(0.0f, -y_rotate, 0.0f), ColorA(0.0f, 0.f, 0.f, 1));
 
 			float rate = drillslopes.scale.y / 5.f;
-			drawCube(drillslopes.pos - vec3(0, 2, 0)*rate, vec3(rate*1.f, rate*1.f, rate*1.f), vec3(0, drillslopes.rotate*5.f, 0), ColorA(1, 1, 1, 1));
-			drawCube(drillslopes.pos - vec3(0, 1, 0)*rate, vec3(rate*1.f, rate*1.f, rate*1.f), vec3(0, drillslopes.rotate, 0), ColorA(0, 0, 0, 1));
-			drawCube(drillslopes.pos, vec3(rate*3.f, rate*1.f, rate*3.f), vec3(0, drillslopes.rotate*3.f, 0), ColorA(1, 0, 0, 1));
-			drawCube(drillslopes.pos + vec3(0, 1, 0)*rate, vec3(rate*4.f, rate*1.f, rate*4.f), vec3(0, drillslopes.rotate*3.f, 0), ColorA(0, 0, 0, 1));
-			drawCube(drillslopes.pos + vec3(0, 2, 0)*rate, vec3(rate*4.f, rate*1.f, rate*4.f), vec3(0, drillslopes.rotate*-3.f, 0), ColorA(1, 1, 0, 1));
+			drawCube(pos - vec3(0, 2, 0)*rate, vec3(rate*1.f, rate*1.f, rate*1.f), vec3(0, drillslopes.rotate*5.f, 0), ColorA(1, 1, 1, 1));
+			drawCube(pos - vec3(0, 1, 0)*rate, vec3(rate*1.f, rate*1.f, rate*1.f), vec3(0, drillslopes.rotate, 0), ColorA(0, 0, 0, 1));
+			drawCube(pos, vec3(rate*3.f, rate*1.f, rate*3.f), vec3(0, drillslopes.rotate*3.f, 0), ColorA(1, 0, 0, 1));
+			drawCube(pos + vec3(0, 1, 0)*rate, vec3(rate*4.f, rate*1.f, rate*4.f), vec3(0, drillslopes.rotate*3.f, 0), ColorA(0, 0, 0, 1));
+			drawCube(pos + vec3(0, 2, 0)*rate, vec3(rate*4.f, rate*1.f, rate*4.f), vec3(0, drillslopes.rotate*-3.f, 0), ColorA(1, 1, 0, 1));
 
 			gl::color(ColorA(1, 1, 1, 1));
 		}
+
 		void cDrill::update(const float & delta_time)
 		{
+			
+			
 			switch (state)
 			{
 			case Game::Strategy::cDrill::DRILLMOVE:
-				y_rotate++;
-				pos.y -= drillspeed*delta_time;
+				move(delta_time);
 				Game::cFieldManager::getInstance()->blockBreak(pos, scale.z);
 				collisionFieldGems();
 				updateSlope(1.0f, delta_time);
+				y_rotate++;
 				break;
 			case Game::Strategy::cDrill::DRILLRETURN:
 				y_rotate--;
@@ -88,21 +89,6 @@ namespace Game
 			default:
 				break;
 			}
-
-			if (iseasingfinished)
-			{
-				iseasingfinished = false;
-				root->run_action(sequence::create(move_to::create(1.0F, getNextEasingPos()), call_func::create([this]
-				{
-					iseasingfinished = true;
-					easingcount++;
-				})));
-			}
-			vec3 pos_ = root->get_position_3d();
-
-			console() << "x" << pos_.x;
-			console() << "y" << pos_.y;
-			console() << "z" << pos_.z;
 
 
 			state = changeState();
@@ -134,8 +120,8 @@ namespace Game
 
 			int index = getgems.size() - 1;
 
-			getgems[index]->setSinRotate(atan2f(getgems[index]->getPos().z - pos.z, (getgems[index]->getPos().x - pos.x)));
-			getgems[index]->setPutPos(pos);
+			getgems[index]->setSinRotate(atan2f(getgems[index]->getPos().z - beginpos.z, (getgems[index]->getPos().x - beginpos.x)));
+			getgems[index]->setPutPos(vec3(beginpos.x, pos.y, beginpos.z));
 
 			getgems[index]->root = Node::node::create();
 			getgems[index]->root->set_schedule_update();
@@ -189,7 +175,7 @@ namespace Game
 			AxisAlignedBox drill_aabb(pos - vec3(float(scale.x) / 2.f, float(scale.y) / 2.f, float(scale.z) / 2.f),
 				pos + vec3(float(scale.x) / 2.f, float(scale.y) / 2.f, float(scale.z) / 2.f));
 
-			for (int i = 0; i < GemManager->getGems().size(); i++)
+			for (int i = 0; i < int(GemManager->getGems().size()); i++)
 			{
 				if (GemManager->getGems()[i]->getIsDrillhit())continue;
 				vec3 gempos = GemManager->getGems()[i]->getPos();
@@ -200,7 +186,10 @@ namespace Game
 
 				if (STRM->isAABB(drill_aabb, gem_aabb))
 				{
-					HitGem(GemManager->getGems()[i]->getId());
+					cClientAdapter::getInstance()->sendGetGemQuarry(id, GemManager->getGems()[i]->getId());
+
+					//HitGem(GemManager->getGems()[i]->getId());
+				
 					//Network::cUDPManager::getInstance()->send(Network::cNetworkHandle("10.25.32.240", 25565), new Network::Packet::Request::cReqCheckGetJem(id, GemManager->getGems()[i]->getId()));
 				}
 			}
@@ -210,8 +199,8 @@ namespace Game
 		void cDrill::drawBasket()
 		{
 			float backetsize = machinescale.z / 20.f;
-			ColorA pollcolor = ColorA(0.4, 0.15, 0.2);
-			ColorA baketcolor = ColorA(0.7, 0.35, 0.4);
+			ColorA pollcolor = ColorA(0.4f, 0.15f, 0.2f);
+			ColorA baketcolor = ColorA(0.7f, 0.35f, 0.4f);
 			float hulfscale = machinescale.x / 2.f;
 			float hulfbacketsize = backetsize / 2.f;
 
@@ -256,12 +245,22 @@ namespace Game
 		}
 		void cDrill::move(float delttime)
 		{
-			pos.y -= drillspeed*delttime;
+			vec3 pos_ = root->get_position_3d();
+			if (iseasingfinished)
+			{
+				iseasingfinished = false;
+				root->run_action(sequence::create(ease<EaseOutExpo>::create(move_to::create(0.2F, getNextEasingPos())), call_func::create([this]
+				{
+					iseasingfinished = true;
+					easingcount++;
+				})));
+			}
+			pos = pos_;
 		}
 
 		void cDrill::moveGetGem(const float delttime)
 		{
-			for (int i = 0; i < getgems.size(); i++)
+			for (int i = 0; i < int(getgems.size()); i++)
 			{
 
 				if (!(getgems[i]->getPos().y >= beginpos.y + (scale.y + 1.f))) {
@@ -282,10 +281,8 @@ namespace Game
 		}
 		void cDrill::updateSlope(const float direction, float delttime)
 		{
-			slope.y += drillspeed*direction*delttime;///////////
-
+			slope.y = beginpos.y - pos.y;
 			drillslopes.rotate += 5.f*delttime;
-			drillslopes.pos -= vec3(0, drillspeed*direction*delttime, 0);
 		}
 
 		void cDrill::setting(const ci::vec3 _beginpos)
@@ -316,6 +313,7 @@ namespace Game
 			default:
 				break;
 			}
+			return DrillState::DRILLMOVE;
 		}
 
 		void cDrill::DigEasing()
@@ -335,8 +333,20 @@ namespace Game
 		ci::vec3 cDrill::getNextEasingPos()
 		{
 			int num = int(scale.x) + 2;
-			vec3 buf(beginpos.x - 1 + easingcount%num, beginpos.y - (easingcount / (num*num)), beginpos.z - 1 + ((easingcount % (num*num)) / num));
-
+			vec3 buf;
+			int z_direction = easingcount / (num*num) % 2 == 0 ? 1 : -1;
+			int direction = 1*z_direction;
+			if ((easingcount % (num*num) / num) % 2 == 1) {
+				direction = -1 * z_direction;
+			}
+			buf = vec3(beginpos.x - direction*((num - 1) / 2) + direction*(easingcount%num), beginpos.y - (easingcount / (num*num)), beginpos.z - ((num - 1) / 2) + z_direction*((easingcount % (num*num)) / num));
+			if (easingcount / (num*num) % 2 == 0) {
+				
+			}
+			else {
+				buf = vec3(beginpos.x - direction*((num - 1) / 2) + direction*(easingcount%num), beginpos.y - (easingcount / (num*num)), beginpos.z + ((num - 1) / 2) - ((easingcount % (num*num)) / num));
+			}
+			
 			return buf;
 		}
 	}
