@@ -10,6 +10,7 @@ namespace Game
 		mGemScale = gemScale;
 		mGemMaxNum = gemMaxNum;
 		mBloom = 1.0f;
+		mSeed = seed;
 		for (int i = 0; i < 2; i++)
 		{
 			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Dia, 0));
@@ -20,7 +21,7 @@ namespace Game
 		create();
 
 		ci::gl::Fbo::Format format;
-		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth()/4, ci::app::getWindowHeight()/4, true);
+		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth()/2, ci::app::getWindowHeight()/2, true);
 		mHShader = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/GemManager.frag"));
 		//mVShader = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/VerticalGemBlur.frag"));
 		ci::gl::enableDepthWrite();
@@ -46,21 +47,15 @@ namespace Game
 	    ci::gl::VboMeshRef vboRect = ci::gl::VboMesh::create(ci::geom::Rect(rect));
 		batch = ci::gl::Batch::create(vboRect,mHShader);
 		ci::gl::Texture2dRef tex = mGemBuffer->getColorTexture();
+		float uAlpha = 0.8 - 0.6f*std::abs(std::sinf(cTimeMeasurement::getInstance()->totalTime()));
+		cTimeMeasurement::getInstance()->make();
 		tex->bind();
 		mHShader->bind();
 		mHShader->uniform("uTex0", 0);
 		mHShader->uniform("uColor", ci::vec4(1, 1, 1, 1));
 		mHShader->uniform("uWindowSize", ci::vec2(ci::app::getWindowSize()/2));
-		mHShader->uniform("uAlpha", 0.5f);
-		//mHShader->uniform("texture0", 0);
-		//mHShader->uniform("width", ci::app::getWindowWidth());
-		//mHShader->uniform("blurSize", ci::app::getWindowWidth() / 4);
-		//mHShader->uniform("bloom", mBloom);
+		mHShader->uniform("uAlpha", uAlpha);
 
-		//mVShader->uniform("texture0", 0);
-		//mVShader->uniform("windowHeight", ci::app::getWindowHeight());
-		//mVShader->uniform("blurSize", ci::app::getWindowHeight() / 4);
-		//mVShader->uniform("bloom", mBloom);
 
 		ci::gl::drawSolidRect(rect);
 		tex->unbind();
@@ -87,7 +82,7 @@ namespace Game
 
 	void cGemManager::create()
 	{
-		ci::randSeed(mSeed);
+		ci::randSeed(uint32_t(mSeed));
 		for (int i = 0; i < mGemMaxNum; i += 2)
 		{
 			//DeBug:本来はサーバーからもらってくる
@@ -96,7 +91,7 @@ namespace Game
 			int x = ci::randInt(0, mRandomRange.x - 1);
 			int y = ci::randInt(0, mRandomRange.y - 1);
 			int z = ci::randInt(0, mRandomRange.z - 1);
-			Game::Gem::GemType type = Game::Gem::GemType(ci::randInt(0, Gem::GemType::Coal));
+			Game::Gem::GemType type = Game::Gem::GemType(ci::randInt(0, Game::Gem::GemType::Coal + 1));
 
 			
 			//テクスチャーの張替え
@@ -104,16 +99,16 @@ namespace Game
 			switch (type)
 			{
 			case Game::Gem::GemType::Dia:
-				color = ci::Color(1, 0, 0);
+				color = ci::Color8u(52, 152, 219);
 				break;
 			case Game::Gem::GemType::Gold:
-				color = ci::Color(1, 1, 0);
+				color = ci::Color8u(241, 196, 15);
 				break;
 			case Game::Gem::GemType::Coal:
-				color = ci::Color(0, 0, 1);
+				color = ci::Color8u(155, 89, 182);
 				break;
 			case Game::Gem::GemType::Iron:
-				color = ci::Color(0, 1, 0);
+				color = ci::Color8u(139, 195, 74);
 				break;
 			default:
 				break;

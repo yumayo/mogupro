@@ -62,7 +62,7 @@ void cGameMain::setup( )
     Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id);
 
 	int seed = 20171031;
-	GemManager->setUp(vec3(0,0,0),vec3(8,6,16),1,1,10,seed);
+	GemManager->setUp(vec3(-30,-15,-30),vec3(30,30,60),1,1,100,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
     Network::cUDPClientManager::getInstance( )->open( );
     Network::cUDPServerManager::getInstance( )->open( );
