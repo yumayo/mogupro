@@ -69,8 +69,8 @@ void gameApp::update( )
 {
     float delta = app::getElapsedSeconds( ) - prevSeconds;
     prevSeconds = app::getElapsedSeconds( );
-    CAMERA->update( delta );
     cSceneManager::getInstance( )->now( ).update( delta );
+	CAMERA->update(delta);
 }
 
 void gameApp::draw( )
