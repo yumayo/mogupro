@@ -23,6 +23,11 @@ public: //Player, Strategy が使う関数
     // radius    : 球の半径
     bool blockBreak( const ci::vec3& position, const float& radius = 0 );
 
+    // ブロックを破壊する(ネットワーク用)
+    // position : 位置
+    // radius    : 球の半径
+    bool blockBreakNetwork( const ci::vec3& position, const float& radius = 0 );
+
     // 引数(vec3)で近くのブロックの上部中心位置を返す
     // target_position : 対象の位置
     ci::vec3 getBlockHighestPosition( const ci::vec3& target_position );
