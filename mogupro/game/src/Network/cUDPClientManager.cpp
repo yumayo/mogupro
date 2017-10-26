@@ -111,7 +111,7 @@ void cUDPClientManager::ping( )
 {
     while ( auto p = cEventManager::getInstance( )->getEvePing( ) )
     {
-        mCloseSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
+        mCloseSecond = cinder::app::getElapsedSeconds( ) + 50000.0F;
     }
     if (mConnectServerHandle.ipAddress != Network::getLocalIpAddressHost())
     {
