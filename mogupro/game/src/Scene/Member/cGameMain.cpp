@@ -57,7 +57,7 @@ void cGameMain::setup( )
 	//Ž©•ª‚ª‰½P‚È‚Ì‚©
 	const int active_player_id = 1;
 	for (int i = 0; i < player_numbers; i++) {
-		positions.push_back(ci::vec3(0, 10, i * 2));
+		positions.push_back(ci::vec3(0, 20, i * 2));
 	}
     Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id);
 

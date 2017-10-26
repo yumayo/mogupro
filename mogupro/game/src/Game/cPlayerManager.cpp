@@ -12,7 +12,6 @@ void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const
 	
 	std::vector<ci::vec3> player_pos = positions;
 	
-
 	//生成
 	for (int i = 0; i < player_number; i++) {
 		//通信で代入
@@ -43,55 +42,49 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 
 	float x_axis = 0;
 	float z_axis = 0;
-
+	//斜め用スタック
+	int diagonal = 0;
 	
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_w)) {
 		z_axis = delta_time * active_player->getSpeed();
+		diagonal++;
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_s)) {
 		z_axis = -delta_time * active_player->getSpeed();
+		diagonal++;
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_d)) {
 		x_axis = -delta_time * active_player->getSpeed();
+		diagonal++;
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_a)) {
 		x_axis = delta_time * active_player->getSpeed();
+		diagonal++;
 	}
 
 	keybord_velocity += ci::vec3(z_axis*sin(CAMERA->getCameraAngle().x), 0.0f, z_axis*cos(CAMERA->getCameraAngle().x));
 	keybord_velocity += ci::vec3(x_axis*cos(CAMERA->getCameraAngle().x), 0.0f, -x_axis*sin(CAMERA->getCameraAngle().x));
 	
+	if (diagonal >= 2) {
+		std::sqrtf(keybord_velocity.x);
+		std::sqrtf(keybord_velocity.z);
+	}
+
+	if (ENV->pressKey(ci::app::KeyEvent::KEY_SPACE)) {
+		active_player->jump(true);
+	}
+
 	active_player->move(keybord_velocity);
 
-
-	if (ENV->pressKey(ci::app::KeyEvent::KEY_q)) {
-		active_player->move(ci::vec3(0, -player_speed, 0));
-	}
-
-	if (ENV->pressKey(ci::app::KeyEvent::KEY_e)) {
-		active_player->move(ci::vec3(0, player_speed * 10, 0));
-	}
 	//掘削機設置
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_o)) {
-		auto drill_pos = Game::cFieldManager::getInstance()->getBlockCenterTopPosition(active_player->getPos());
-		Game::cStrategyManager::getInstance()->CreateDrill(active_player->getPos(), 0,Game::Strategy::cDrill::DrillType::Level1, 0);
+		auto drill_pos = Game::cFieldManager::getInstance()->getBlockTopPosition(active_player->getPos() + active_player->getInstallationPosition());
+		Game::cStrategyManager::getInstance()->CreateDrill(drill_pos, 0,Game::Strategy::cDrill::DrillType::Level1, 0);
+		ci::app::console() << drill_pos << std::endl;
 	}
-	
-	/*static int id = 0;
-	auto& p = Network::cRequestManager::getInstance()->mReqCheckSetQuarry;
-	while (!p.empty()) {
-		auto q = p.top();
-		p.pop();
-		auto drill_pos = Game::cFieldManager::getInstance()->getBlockCenterTopPosition(ci::vec3(q.mXPos, q.mYPos, q.mZPos));
-		Game::Strategy::cDrill::DrillType type = static_cast<Game::Strategy::cDrill::DrillType>(q.mType >> 1);
-		bool isTeam = q.mType & 0x1 == 1;
-		auto objectId = ++id;
-		Game::cStrategyManager::getInstance()->CreateDrill(ci::vec3(q.mXPos, q.mYPos, q.mZPos), objectId, type, isTeam);
-		Network::cUDPManager::getInstance()->send(q.handle, new Network::Packet::Response::cResCheckSetQuarry(true, q.mXPos, q.mYPos, q.mZPos, 0, id++));
-	}*/
 	
 }
 void Game::cPlayerManager::playerMove(const float & delta_time)
@@ -117,10 +110,11 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	}
 
 	//ダッシュ
-	if (ENV->pullKey(ci::app::KeyEvent::KEY_SPACE)) {
+	//304 = シフト
+	if (ENV->pullKey(304)) {
 		active_player->setDefaultSpeed();
 	}
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_SPACE)) {
+	if (ENV->pushKey(304)) {
 		active_player->setSpeed(10.0f);
 	}
 
@@ -140,8 +134,6 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 		playerNormalMove(delta_time);
 	}
 
-	
-	
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_UP)) {
 		CAMERA->setCameraAngle(ci::vec2(0, 0.05f));
 	}
