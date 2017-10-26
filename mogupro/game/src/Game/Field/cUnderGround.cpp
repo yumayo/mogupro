@@ -4,6 +4,7 @@
 #include <Network/cUDPManager.h>
 #include <Network/cRequestManager.h>
 #include <Utility/cString.h>
+#include <Game/cClientAdapter.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -195,6 +196,13 @@ void cUnderGround::setBlock( ci::ivec3 position, cBlock block )
 
 bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 {
+    if ( blockBreakNetwork( position , radius ) )
+        cClientAdapter::getInstance()->sendBreakBlock( position );
+    return true;
+}
+
+bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & radius )
+{
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
 
@@ -225,8 +233,8 @@ ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
     auto chunk_cell = getChunkCellFromPosition( target_position );
     auto block_cell = getBlockCellFromPosition( target_position );
 
-    auto p = (block_cell * BLOCK_SIZE) + ( chunk_cell * CHUNK_SIZE );
-    p.y = CHUNK_SIZE + ( BLOCK_SIZE / 2.0f );
+    auto p = ( block_cell * BLOCK_SIZE ) + ( chunk_cell * CHUNK_SIZE );
+    p.y = CHUNK_SIZE + (int) ( BLOCK_SIZE / 2.0f );
 
     return p;
 }
