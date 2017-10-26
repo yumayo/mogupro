@@ -87,7 +87,7 @@ void cGameMain::update( float deltaTime )
         Game::cClientAdapter::getInstance( )->update( );
         Game::cServerAdapter::getInstance( )->update( );
         n->entry_update( deltaTime );
-        Shader::cShadowManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
+        //Shader::cShadowManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
         Game::cFieldManager::getInstance( )->update( deltaTime );
         ENV->padUpdate( );
         ENV->padProcessEvent( );
@@ -100,15 +100,18 @@ void cGameMain::update( float deltaTime )
 
 void cGameMain::draw( )
 {
-    Shader::cShadowManager::getInstance( )->draw( std::bind( &cGameMain::drawShadow, this ) );
+    drawShadow( );
+    //Shader::cShadowManager::getInstance( )->draw( std::bind( &cGameMain::drawShadow, this ) );
 }
 
 void cGameMain::drawShadow( )
 {
+    gl::enableDepthRead( );
+    gl::enableDepthWrite( );
     Game::cPlayerManager::getInstance( )->draw( );
     Game::cFieldManager::getInstance( )->draw( );
     Game::cStrategyManager::getInstance( )->draw( );
-	GemManager->draw();
+	//GemManager->draw();
     skydome.draw( );
 }
 

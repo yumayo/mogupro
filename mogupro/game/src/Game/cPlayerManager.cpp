@@ -4,7 +4,7 @@
 #include <Game/cStrategyManager.h>
 #include <Game/Strategy/cDrill.h>
 #include <Game/cFieldManager.h>
-#include <Network.hpp>
+#include <Game/cClientAdapter.h>
 
 
 void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id)
@@ -82,8 +82,9 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 	//Œ@í‹@Ý’u
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_o)) {
 		auto drill_pos = Game::cFieldManager::getInstance()->getBlockTopPosition(active_player->getPos() + active_player->getInstallationPosition());
-		Game::cStrategyManager::getInstance()->CreateDrill(drill_pos, 0,Game::Strategy::cDrill::DrillType::Level1, 0);
-		ci::app::console() << drill_pos << std::endl;
+		//Game::cStrategyManager::getInstance()->CreateDrill(drill_pos, 0,Game::Strategy::cDrill::DrillType::Level1, 0);
+		//ci::app::console() << drill_pos << std::endl;
+        cClientAdapter::getInstance( )->sendSetQuarry( drill_pos, Game::Strategy::cDrill::DrillType::Level1 );
 	}
 	
 }

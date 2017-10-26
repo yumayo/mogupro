@@ -9,6 +9,7 @@ namespace Game
 {
 cServerAdapter::cServerAdapter( )
 {
+    mQuarryId = 0;
     mPlayersPosition[0] = cinder::vec3( 30, 10, 20 );
     mPlayersPosition[1] = cinder::vec3( 32, 10, 20 );
     mPlayersPosition[2] = cinder::vec3( 34, 10, 20 );
@@ -71,7 +72,6 @@ void cServerAdapter::sendSetQuarry( )
         eventPack->mDrillId = quarryPack->mDrillId;
         eventPack->mPosition = quarryPack->mPosition;
         eventPack->mType = quarryPack->mType;
-
         Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
     }
 }
