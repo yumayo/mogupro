@@ -6,6 +6,7 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Texture.h"
 #include "CameraManager\cCameraManager.h"
+#include "Utility\cTimeMeasurement.h"
 #include <Utility/cSingletonAble.h>
 #include <memory>
 #include <cinder/Rand.h>
