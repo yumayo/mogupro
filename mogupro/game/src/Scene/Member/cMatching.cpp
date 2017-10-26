@@ -115,7 +115,7 @@ namespace Scene
 				while (!cResponseManager::getInstance()->mResMakeRoom.empty())
 				{
 					auto resMakeRoom = cResponseManager::getInstance()->mResMakeRoom.top();
-					if (resMakeRoom.mFlag = false)
+					if (resMakeRoom.mFlag == false)
 					{
 						mWaitClassState = ClassState::NOT;
 						mCanSend = true;
@@ -164,20 +164,9 @@ namespace Scene
 					{
 						mCanSend = true;
 					}
+					cResponseManager::getInstance()->mResWantTeamIn.pop();
 				}
-				while (!cResponseManager::getInstance()->mResWantTeamIn.empty())
-				{
-					auto resWantTeamIn = cResponseManager::getInstance()->mResWantTeamIn.top();
-					if (resWantTeamIn.mFlag == true)
-					{
-						mCanSend = true;
-					}
-					else
-					{
-						mCanSend = true;
-					}
-				}
-
+				
 				while (!cResponseManager::getInstance()->mResCheckBeginGame.empty())
 				{
 					auto resWantTeamIn = cResponseManager::getInstance()->mResCheckBeginGame.top();
@@ -193,6 +182,7 @@ namespace Scene
 					auto eveTeamMember = cEventManager::getInstance()->mEveTeamMember.top();
 					cMatchingMemberManager::getInstance()->addPlayerDatas(
 						eveTeamMember.mNameStr,eveTeamMember.mTeamNum,eveTeamMember.mPlayerID);
+					cEventManager::getInstance()->mEveTeamMember.pop();
 				}
 			}
 
