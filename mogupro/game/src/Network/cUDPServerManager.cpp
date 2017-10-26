@@ -8,6 +8,7 @@
 #include <limits>
 #include <Node/action.hpp>
 #include <Utility/MessageBox.h>
+#include <Network/IpHost.h>
 namespace Network
 {
 cUDPServerManager::cUDPServerManager( )
@@ -137,11 +138,15 @@ void cUDPServerManager::ping( )
     }
     for ( auto itr = mHandle.begin( ); itr != mHandle.end( ); )
     {
-        if ( itr->second.closeSecond < cinder::app::getElapsedSeconds( ) )
+        // ローカルの場合はカウントダウンをしません。
+        if (itr->first.ipAddress != Network::getLocalIpAddressHost())
         {
-            mRoot->remove_action_by_tag( itr->second.id );
-            mHandle.erase( itr );
-            continue;
+            if (itr->second.closeSecond < cinder::app::getElapsedSeconds())
+            {
+                mRoot->remove_action_by_tag(itr->second.id);
+                mHandle.erase(itr);
+                continue;
+            }
         }
         itr++;
     }
