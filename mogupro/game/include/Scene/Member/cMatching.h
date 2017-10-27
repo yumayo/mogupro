@@ -1,6 +1,8 @@
 #pragma once
 #include <Scene/cSceneBase.h>
-#include "cinder/Font.h"
+#include <Node/node.h>
+#include <Node/renderer.hpp>
+
 namespace Scene
 {
 namespace Member
@@ -36,7 +38,9 @@ private:
 	PhaseState mPhaseState;
 
 	bool mCanSend;
-	//ci::Font mFont;
+	Utility::hardptr<Node::node> n;
+	Utility::hardptr<Node::Renderer::label> font;
+	Utility::hardptr<Node::Renderer::label> smallFont;
 };
 }
 }
