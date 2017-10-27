@@ -4,7 +4,7 @@
 #include"Game/Strategy/cStrategyObjectBase.h"
 #include"cinder\Rand.h"
 #include<algorithm>
-#include <Network.hpp>
+#include"Game\cClientAdapter.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -14,10 +14,12 @@ cStrategyManager::cStrategyManager( )
 {
 
 };
+
 cStrategyManager::~cStrategyManager( )
 {
 
 }
+
 void cStrategyManager::setup()
 {
 
@@ -52,7 +54,10 @@ void cStrategyManager::update(const float & deltatime)
 	deleteObject();
 	if (ENV->pushKey(KeyEvent::KEY_p)) {
 
-		drills.insert(std::make_pair(testcount, std::make_shared<Game::Strategy::cDrill>(vec3(randInt(0, 10), 15, randInt(0, 10)), testcount, Strategy::cDrill::DrillType::Level1, true)));
+		//cClientAdapter::getInstance()->sendSetQuarry(vec3(randInt(0, 10), 15, randInt(0, 10)),Strategy::cDrill::DrillType::Level1);
+
+		//drills.insert(std::make_pair(testcount, std::make_shared<Game::Strategy::cDrill>(vec3(randInt(0, 10), 15, randInt(0, 10)), testcount, Strategy::cDrill::DrillType::Level1, true)));
+
 		testcount++;
 	}
 

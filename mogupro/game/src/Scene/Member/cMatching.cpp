@@ -34,11 +34,13 @@ namespace Scene
 	{
 		void cMatching::setup()
 		{
+
+			Network::cUDPClientManager::getInstance()->open();
+			cUDPClientManager::getInstance()->connect("10.25.34.217");
 			mClassState = ClassState::NOT;
 			mWaitClassState = ClassState::NOT;
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mCanSend = true;
-			Network::cUDPServerManager::getInstance()->open();
 			ci::vec3 pos = ci::vec3(0);
 			CAMERA->followingCamera(&pos, 30);
 			CAMERA->setup();
@@ -53,7 +55,9 @@ namespace Scene
 
 		void cMatching::update(float deltaTime)
 		{
-			Network::cUDPServerManager::getInstance()->update(deltaTime);
+
+			Network::cUDPClientManager::getInstance()->update(deltaTime);
+			if (cUDPClientManager::getInstance()->isConnected() == false)return;
 			makeRoom();
 			inRoom();
 		}
@@ -74,13 +78,13 @@ namespace Scene
 				if (ENV->pushKey(ci::app::KeyEvent::KEY_z))
 				{
 					mCanSend = false;
-                    cUDPServerManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565), new cReqMakeRoom(100));
+					cUDPClientManager::getInstance()->send(new cReqMakeRoom(100));
 					mWaitClassState = ClassState::MASTER;
 				}
 
 				else if (ENV->pushKey(ci::app::KeyEvent::KEY_x))
 				{
-                    cUDPServerManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565), new cReqInRoom(100));
+                    cUDPClientManager::getInstance()->send(new cReqInRoom(100));
 					mCanSend = false;
 					mWaitClassState = ClassState::CLIENT;
 				}
@@ -111,7 +115,7 @@ namespace Scene
 				while (!cResponseManager::getInstance()->mResMakeRoom.empty())
 				{
 					auto resMakeRoom = cResponseManager::getInstance()->mResMakeRoom.top();
-					if (resMakeRoom.mFlag = false)
+					if (resMakeRoom.mFlag == false)
 					{
 						mWaitClassState = ClassState::NOT;
 						mCanSend = true;
@@ -139,15 +143,13 @@ namespace Scene
 					//1PE2P‚Ì‚Ç‚Á‚¿‚É“ü‚é‚Ì‚©‚Ì‘I‘ð
 					if (ENV->pushKey(ci::app::KeyEvent::KEY_1))
 					{
-                        cUDPServerManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565),
-							new cReqWantTeamIn(0));
+						cUDPClientManager::getInstance()->send(new cReqWantTeamIn(0));
 						mCanSend = false;
 					}
 
 					else if (ENV->pushKey(ci::app::KeyEvent::KEY_2))
 					{
-                        cUDPServerManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565),
-							new cReqWantTeamIn(1));
+						cUDPClientManager::getInstance()->send(new cReqWantTeamIn(1));
 						mCanSend = false;
 					}
 				}
@@ -162,20 +164,9 @@ namespace Scene
 					{
 						mCanSend = true;
 					}
+					cResponseManager::getInstance()->mResWantTeamIn.pop();
 				}
-				while (!cResponseManager::getInstance()->mResWantTeamIn.empty())
-				{
-					auto resWantTeamIn = cResponseManager::getInstance()->mResWantTeamIn.top();
-					if (resWantTeamIn.mFlag == true)
-					{
-						mCanSend = true;
-					}
-					else
-					{
-						mCanSend = true;
-					}
-				}
-
+				
 				while (!cResponseManager::getInstance()->mResCheckBeginGame.empty())
 				{
 					auto resWantTeamIn = cResponseManager::getInstance()->mResCheckBeginGame.top();
@@ -191,6 +182,7 @@ namespace Scene
 					auto eveTeamMember = cEventManager::getInstance()->mEveTeamMember.top();
 					cMatchingMemberManager::getInstance()->addPlayerDatas(
 						eveTeamMember.mNameStr,eveTeamMember.mTeamNum,eveTeamMember.mPlayerID);
+					cEventManager::getInstance()->mEveTeamMember.pop();
 				}
 			}
 
@@ -198,7 +190,7 @@ namespace Scene
 			{
 				if (ENV->pushKey(ci::app::KeyEvent::KEY_3))
 				{
-                    cUDPServerManager::getInstance()->send(cNetworkHandle("10.25.36.137", 25565), new cReqCheckBeginGame());
+					cUDPClientManager::getInstance()->send(new cReqCheckBeginGame());
 					mCanSend = false;
 				}
 			}

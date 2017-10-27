@@ -111,15 +111,18 @@ void cUDPClientManager::ping( )
 {
     while ( auto p = cEventManager::getInstance( )->getEvePing( ) )
     {
-        mCloseSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
+        mCloseSecond = cinder::app::getElapsedSeconds( ) + 50000.0F;
     }
-    if ( mCloseSecond < cinder::app::getElapsedSeconds( ) )
+    if (mConnectServerHandle.ipAddress != Network::getLocalIpAddressHost())
     {
-        close( );
-        Utility::MessageBoxOk( "サーバーとの接続が切れました。", [ ]
+        if (mCloseSecond < cinder::app::getElapsedSeconds())
         {
-            cSceneManager::getInstance( )->change<Scene::Member::cMatching>( );
-        } );
+            close();
+            Utility::MessageBoxOk("サーバーとの接続が切れました。", []
+            {
+                cSceneManager::getInstance()->change<Scene::Member::cMatching>();
+            });
+        }
     }
 }
 void cUDPClientManager::sendDataBufferAdd( cPacketBuffer const & packetBuffer )
