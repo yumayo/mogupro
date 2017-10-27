@@ -7,6 +7,8 @@
 #include <CameraManager/cCameraManager.h>
 #include <Utility/cInput.h>
 #include <Utility/cTimeMeasurement.h>
+#include <Scene/Member/cMatching.h>
+#include <Scene/Member/cMatchingServer.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -31,7 +33,7 @@ public:
 
 void gameApp::setup( )
 {
-    cSceneManager::getInstance( )->change<Scene::Member::cGameMain>( );
+    cSceneManager::getInstance( )->change<Scene::Member::cMatching>( );
     cSceneManager::getInstance( )->now( ).setup( );
 }
 

@@ -169,9 +169,11 @@ namespace Scene
 				
 				while (!cResponseManager::getInstance()->mResCheckBeginGame.empty())
 				{
-					auto resWantTeamIn = cResponseManager::getInstance()->mResCheckBeginGame.top();
-					cRequestManager::getInstance()->mReqWantTeamIn.pop();
-					shutDown();
+					auto resCheckBeginGame = cResponseManager::getInstance()->mResCheckBeginGame.top();
+					cResponseManager::getInstance()->mResCheckBeginGame.pop();
+					
+                    cMatchingMemberManager::getInstance( )->mPlayerID = resCheckBeginGame.mPlayerID;
+                    shutDown();
 					cSceneManager::getInstance()->change<Scene::Member::cGameMain>();
 					cSceneManager::getInstance()->now().setup();
 					continue;

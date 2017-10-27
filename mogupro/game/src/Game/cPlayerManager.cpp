@@ -17,6 +17,8 @@ void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const
 			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, true,static_cast<Game::Player::Team>(teams[i])));
 			//アクティブユーザに代入
 			active_player = players[i];
+            this->active_player_id = active_player_id;
+            this->active_player_team_id = teams[i];
 		}
 		else {
 			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, false, static_cast<Game::Player::Team>(teams[i])));

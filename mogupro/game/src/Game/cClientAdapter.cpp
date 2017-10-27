@@ -54,7 +54,7 @@ void cClientAdapter::recvAllQuarrys( )
             packet->mPosition,
             packet->mDrillId,
             static_cast<Game::Strategy::cDrill::DrillType>( packet->mType ),
-            true // TODO: チームIDと比較する。
+            true
         );
     }
     auto eve = Network::cEventManager::getInstance( );
@@ -64,7 +64,7 @@ void cClientAdapter::recvAllQuarrys( )
             packet->mPosition,
             packet->mDrillId,
             static_cast<Game::Strategy::cDrill::DrillType>( packet->mType ),
-            false // TODO: チームIDと比較する。
+            packet->mTeamId == Game::cPlayerManager::getInstance()->getActivePlayerTeamId( )
         );
     }
 }
@@ -131,6 +131,7 @@ void cClientAdapter::sendSetQuarry( cinder::vec3 const & position, Network::ubyt
     auto packet = new Network::Packet::Request::cReqCheckSetQuarry( );
     packet->mPosition = position;
     packet->mType = drillType;
+    packet->mTeamId = cPlayerManager::getInstance( )->getActivePlayerTeamId( );
     Network::cUDPClientManager::getInstance( )->send( packet );
 }
 void cClientAdapter::sendPlayerFormat( cinder::vec3 const & position, cinder::quat const & rotation )

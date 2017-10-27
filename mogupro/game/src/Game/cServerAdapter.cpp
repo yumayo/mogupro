@@ -65,13 +65,14 @@ void cServerAdapter::sendSetQuarry( )
         quarryPack->mIsSucceeded = true;
         quarryPack->mPosition = packet->mPosition;
         quarryPack->mType = packet->mType;
+        quarryPack->mTeamId = packet->mTeamId;
         Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, quarryPack );
 
         auto eventPack = new Network::Packet::Event::cEveSetQuarry( );
-        eventPack->mTeamId = 0; // TODO: ƒ`[ƒ€ID‚ðŽ‚Á‚Ä‚­‚éB
         eventPack->mDrillId = quarryPack->mDrillId;
         eventPack->mPosition = quarryPack->mPosition;
         eventPack->mType = quarryPack->mType;
+        eventPack->mTeamId = quarryPack->mTeamId;
         Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
     }
 }

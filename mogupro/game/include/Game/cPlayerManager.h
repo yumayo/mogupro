@@ -12,6 +12,9 @@ private:
     //©•ª‚ª‘€ì‚·‚éƒvƒŒƒCƒ„[
     std::shared_ptr<Player::cPlayer> active_player;
 
+    int active_player_id;
+    int active_player_team_id;
+
     bool mouse_on = false;
     void playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams);
     void playerNormalMove(const float& delta_time);
@@ -19,6 +22,14 @@ private:
 	void playerMove(const float& delta_time);
 	void padMove(const float & delta_time);
 public:
+    int getActivePlayerId( )
+    {
+        return active_player_id;
+    }
+    int getActivePlayerTeamId( )
+    {
+        return active_player_team_id;
+    }
 	void setPlayersPosition(std::vector<ci::vec3> positions);
 	std::vector<std::shared_ptr<Player::cPlayer>> getPlayers() {
 		return players;
