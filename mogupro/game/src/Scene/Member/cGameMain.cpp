@@ -56,10 +56,15 @@ void cGameMain::setup( )
 	int player_numbers = 8;
 	//Ž©•ª‚ª‰½P‚È‚Ì‚©
 	const int active_player_id = 1;
+
+	std::vector<int> teams;
+
 	for (int i = 0; i < player_numbers; i++) {
 		positions.push_back(ci::vec3(0, 20, i * 2));
+		teams.push_back(0);
 	}
-    Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id);
+
+    Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id, teams);
 
 	int seed = 20171031;
 	//GemManager->setUp(vec3(-30,-15,-30),vec3(30,30,60),1,1,100,seed);

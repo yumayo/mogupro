@@ -12,6 +12,7 @@ void Game::Player::cPlayer::playerRotation()
 	ci::vec3 rotateaxis = ci::vec3(0.0f, 0.0f, 1.0f);
 	//ˆÚ“®æ‚ÌƒxƒNƒgƒ‹
 	ci::vec3 targetvec = ci::vec3(velocity.x, 0, velocity.z);
+	
 	//ˆÚ“®•ûŒü‚ðnormalize
 	targetvec = ci::normalize(targetvec);
 	if (velocity.x >= 0.01f ||
@@ -54,9 +55,9 @@ void Game::Player::cPlayer::playerRotation()
 //‚à‚ç‚¤
 Game::Player::cPlayer::cPlayer(
 	const ci::vec3& pos,
-	const ci::vec3& center_angle,
 	const int& id,
-	const bool& is_active_user)
+	const bool& is_active_user,
+	const Game::Player::Team& team)
 	: cObjectBase(pos),
 	mCollider(mPos, ci::vec3(1.5, 2.3, 1.5)),
 	mRigidbody(mCollider)
@@ -65,6 +66,7 @@ Game::Player::cPlayer::cPlayer(
 	color = ci::vec4(1);
 	color = ci::ColorA8u(1, 0, 1, 1);
 	velocity = ci::vec3(0);
+	this->team = team;
 	save_rotate = 0;
 	drilling = false;
 	jump_flag = false;
@@ -135,7 +137,7 @@ void Game::Player::cPlayer::draw()
 	playerRotation();
 	ci::gl::color(color);
 	TEX->get("mogura")->bind();
-	ci::gl::ScopedGlslProg sgp(ci::gl::getStockShader(ci::gl::ShaderDef().texture()));
+	ci::gl::ScopedGlslProg sgp(ci::gl::getStockShader(ci::gl::ShaderDef().texture().lambert()));
 	ci::gl::draw(mesh);
 	Resource::TextureManager::getInstance()->get("mogura")->unbind();
 	ci::gl::color(1, 1, 1, 1);

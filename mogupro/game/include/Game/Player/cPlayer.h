@@ -13,6 +13,11 @@ namespace Game {
 			float speed;
 		};
 
+		enum Team {
+			Red = 0,
+			Blue = 1
+		};
+
 		//基準スピード
 		static const float DEFAULT_SPEED = 5.0f;
 
@@ -26,6 +31,9 @@ namespace Game {
 			PlayerStatus status;
 			//設置位置
 			ci::vec3 installation_position;
+
+			//チーム
+			Team team;
 
 			//何Pか
 			int player_id;
@@ -55,13 +63,20 @@ namespace Game {
 
 			void playerRotation();
 		public:
-			cPlayer(const ci::vec3& pos, const ci::vec3& center_angle, const int& id, const bool& is_active_user);
+			cPlayer(
+				const ci::vec3& pos,
+				const int& id,
+				const bool& is_active_user,
+				const Game::Player::Team& team);
 			
 			ci::vec3 getSize() {
 				return size;
 			}
 			ci::vec3 getInstallationPosition() {
 				return installation_position;
+			}
+			Team getWhichTeam() {
+				return team;
 			}
 
 			float getSpeed() {
