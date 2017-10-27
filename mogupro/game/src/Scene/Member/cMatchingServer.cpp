@@ -27,6 +27,7 @@ namespace Scene
 			font->set_text(u8"‚Ê‚í‚ ‚ ‚Ÿ‚Ÿ‚Ÿ‚Ÿ‚ñ");
 			font->set_scale(glm::vec2(1, -1));
 			n = Node::node::create();
+
 			n->add_child(font);
 			n->run_action(repeat_forever::create(sequence::create(delay::create(1.5f),
 				call_func::create([this]
