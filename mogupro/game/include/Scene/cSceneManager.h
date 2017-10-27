@@ -32,7 +32,7 @@ public:
 	void shift(T...args)
 	{
 		mSceneBase->shutDown();
-		change(args...);
+		change<scene>(args...);
 		mSceneBase->setup();
 	}
 private:

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-using string = std::string;
 #include <Utility/cUserPointer.hpp>
 template<class type>
 using hardptr = Utility::hardptr<type>;
