@@ -1,4 +1,5 @@
-#include <Network/Packet/Response/cResCheckBeginGame.h>#include <Network/PackFunction.hpp>
+#include <Network/Packet/Response/cResCheckBeginGame.h>
+#include <Network/PackFunction.hpp>
 
 namespace Network
 {
