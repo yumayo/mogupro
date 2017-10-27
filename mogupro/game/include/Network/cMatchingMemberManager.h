@@ -45,5 +45,6 @@ public:
 	cNetworkHandle mMasterHandle;
 	std::map<cNetworkHandle, int> mRoomMembers;
 	std::vector<PlayerData> mPlayerDatas;
+    int mPlayerID = 0;
 };
 }
