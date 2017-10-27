@@ -114,16 +114,19 @@ void cUDPServerManager::connection( )
         if ( !mIsAccept ) continue;
 
         auto itr = mHandle.insert( std::make_pair( p->mNetworkHandle, std::move( cClientInfo( ) ) ) );
-        send( p->mNetworkHandle, new Packet::Response::cResConnect( ) );
-
-        using namespace Node::Action;
-        auto networkHandle = p->mNetworkHandle;
-        auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ networkHandle, this ]
+        if ( itr.second )
         {
-            send( networkHandle, new Packet::Event::cEvePing( ) );
-        } ) ) );
-        act->set_tag( itr.first->second.id );
-        mRoot->run_action( act );
+            send( p->mNetworkHandle, new Packet::Response::cResConnect( ) );
+
+            using namespace Node::Action;
+            auto networkHandle = p->mNetworkHandle;
+            auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ networkHandle, this ]
+            {
+                send( networkHandle, new Packet::Event::cEvePing( ) );
+            } ) ) );
+            act->set_tag( itr.first->second.id );
+            mRoot->run_action( act );
+        }
     }
 }
 void cUDPServerManager::ping( )
