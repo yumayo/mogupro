@@ -131,6 +131,8 @@ void cChunk::reBuildStart()
 {
     if ( mIsBlockBroken == false )
         return;
+    if ( mIsLoading )
+        return;
     clearMesh();
     mHasBuild = true;
 }
@@ -139,7 +141,6 @@ void cChunk::reBuildMesh()
 {
     if ( mHasBuild == false )
         return;
-
     if ( mIsLoading )
         return;
     mIsLoading = true;

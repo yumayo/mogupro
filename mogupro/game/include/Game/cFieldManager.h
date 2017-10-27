@@ -36,7 +36,10 @@ public: //Player, Strategy が使う関数
     // target_position : 対象の位置
     ci::vec3 getBlockTopPosition( const ci::vec3& target_position );
 
+    // シャットダウン
+    void shutdown();
+
 private: // Member
-    Field::cUnderGround mUnderGround;
+    std::shared_ptr<Field::cUnderGround> mUnderGround;
 };
 }
