@@ -101,6 +101,7 @@ void cGameMain::update( float deltaTime )
 void cGameMain::draw( )
 {
     Shader::cShadowManager::getInstance( )->draw( std::bind( &cGameMain::drawShadow, this ) );
+	GemManager->draw();
 }
 
 void cGameMain::drawShadow( )
@@ -108,7 +109,7 @@ void cGameMain::drawShadow( )
     Game::cPlayerManager::getInstance( )->draw( );
     Game::cFieldManager::getInstance( )->draw( );
     Game::cStrategyManager::getInstance( )->draw( );
-	GemManager->draw();
+	
     skydome.draw( );
 }
 
