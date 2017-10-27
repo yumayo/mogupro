@@ -113,9 +113,11 @@ void cUDPServerManager::connection( )
     {
         if ( !mIsAccept ) continue;
 
-        auto itr = mHandle.insert( std::make_pair( p->mNetworkHandle, std::move( cClientInfo( ) ) ) );
+        auto itr = mHandle.insert( std::make_pair( p->mNetworkHandle, std::move( cClientInfo( idCount ) ) ) );
         if ( itr.second )
         {
+            idCount += 1;
+
             send( p->mNetworkHandle, new Packet::Response::cResConnect( ) );
 
             using namespace Node::Action;
@@ -154,11 +156,10 @@ void cUDPServerManager::ping( )
         itr++;
     }
 }
-cUDPServerManager::cClientInfo::cClientInfo( )
+cUDPServerManager::cClientInfo::cClientInfo( ubyte1 idCount )
     : closeSecond( cinder::app::getElapsedSeconds( ) + 5.0F )
 {
-    // とりあえず9人以上は入れません。
-    if ( idCount == 8 )
+    if ( idCount == 255 )
     {
         Utility::MessageBoxOk( "クライアントの数が上限に達しました。",
                                [ ] { exit( 0 ); } );
@@ -167,7 +168,5 @@ cUDPServerManager::cClientInfo::cClientInfo( )
     {
         id = idCount;
     }
-    idCount += 1;
 }
-ubyte1 cUDPServerManager::cClientInfo::idCount = 0U;
 }
