@@ -37,6 +37,12 @@ void cTitle::setup( )
     toMatching->set_tag( 0 );
     toMatching->set_schedule_update( );
     mRoot->add_child( toMatching );
+    {
+        auto f = Node::Renderer::label::create( "sawarabi-gothic-medium.ttf", 32 );
+        f->set_text( u8"マッチング" );
+        f->set_scale( glm::vec2( 1, -1 ) );
+        toMatching->add_child( f );
+    }
     mScenes.emplace_back( [ ] { cSceneManager::getInstance( )->shift<Scene::Member::cMatching>( ); } );
 
     auto toMatchingServer = Node::Renderer::rect::create( ci::vec2( 200, 200 ) );
@@ -45,6 +51,12 @@ void cTitle::setup( )
     toMatchingServer->set_tag( 1 );
     toMatchingServer->set_schedule_update( );
     mRoot->add_child( toMatchingServer );
+    {
+        auto f = Node::Renderer::label::create( "sawarabi-gothic-medium.ttf", 32 );
+        f->set_text( u8"マッチングサーバー" );
+        f->set_scale( glm::vec2( 1, -1 ) );
+        toMatchingServer->add_child( f );
+    }
     mScenes.emplace_back( [ ] { cSceneManager::getInstance( )->shift<Scene::Member::cMatchingServer>( ); } );
 
     auto toGameMain = Node::Renderer::rect::create( ci::vec2( 200, 200 ) );
@@ -53,6 +65,12 @@ void cTitle::setup( )
     toGameMain->set_tag( 2 );
     toGameMain->set_schedule_update( );
     mRoot->add_child( toGameMain );
+    {
+        auto f = Node::Renderer::label::create( "sawarabi-gothic-medium.ttf", 32 );
+        f->set_text( u8"ゲームメイン" );
+        f->set_scale( glm::vec2( 1, -1 ) );
+        toGameMain->add_child( f );
+    }
     mScenes.emplace_back( [ ] { cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( ); } );
 
     mRoot->get_child_by_tag( mSelectTag )->run_action(
