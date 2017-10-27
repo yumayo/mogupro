@@ -22,6 +22,7 @@ public:
     void setup();
     void update();
     void draw();
+    void shutdown();
 
 public: // Player,Strategy ‚Åg‚¤ŠÖ”
 

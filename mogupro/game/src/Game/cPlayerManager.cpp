@@ -7,21 +7,19 @@
 #include <Game/cClientAdapter.h>
 
 
-void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id)
+void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
-	
-	std::vector<ci::vec3> player_pos = positions;
 	
 	//生成
 	for (int i = 0; i < player_number; i++) {
 		//通信で代入
 		if (i == active_player_id) {
-			players.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, true));
+			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, true,static_cast<Game::Player::Team>(teams[i])));
 			//アクティブユーザに代入
 			active_player = players[i];
 		}
 		else {
-			players.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, false));
+			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, false, static_cast<Game::Player::Team>(teams[i])));
 		}
 	}
 }
@@ -166,18 +164,18 @@ void Game::cPlayerManager::setPlayersPosition(std::vector<ci::vec3> positions)
 		players[i]->move(vec);
 	}
 }
-void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id)
+void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
-	playerInstance(positions, player_number, active_player_id);
+	playerInstance(positions, player_number, active_player_id,teams);
 	//ポジションの参照とカメラのズームを設定
 	CAMERA->followingCamera(&active_player->getReferencePos(), 15);
-	for (auto it : players) {
+	for (auto& it : players) {
 		it->setup();
 	}
 }
 void Game::cPlayerManager::update(const float& delta_time)
 {
-	for (auto it : players) {
+	for (auto& it : players) {
 		it->update(delta_time);
 	}
 	playerMove(delta_time);
@@ -185,7 +183,7 @@ void Game::cPlayerManager::update(const float& delta_time)
 
 void Game::cPlayerManager::draw()
 {
-	for (auto it : players) {
+	for (auto& it : players) {
 		it->draw();
 	}
 }

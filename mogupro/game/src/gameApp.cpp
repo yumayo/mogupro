@@ -26,6 +26,7 @@ public:
     void keyUp( KeyEvent event )       override;
     void update( ) override;
     void draw( ) override;
+    void cleanup( ) override;
 };
 
 void gameApp::setup( )
@@ -86,6 +87,11 @@ void gameApp::draw( )
     CAMERA->unBind2D( );
 
     ENV->flashInput( );
+}
+
+void gameApp::cleanup()
+{
+    cSceneManager::getInstance()->now().shutDown();
 }
 
 CINDER_APP( gameApp, RendererGl, [ ] ( App::AppBase::Settings* s ) { s->setWindowSize( 1600, 900 ); } )

@@ -13,13 +13,32 @@ bool cUDPManager::isConnectPacket( cPacketChunk const & packetChunk )
     ubyte2 const& transferredBytes = packetBuffer.transferredBytes;
     cBuffer const& buffer = packetBuffer.buffer;
 
-    if ( transferredBytes != sizeof( Packet::PacketHeader ) ) return false;
+    ubyte2 headerOffset = 0;
+    do
+    {
+        Packet::PacketHeader packetHeader;
+        char const* bufferData = buffer.data( ) + headerOffset;
+        memcpy( &packetHeader, bufferData, sizeof( Packet::PacketHeader ) );
+        ubyte2 bufferSize = packetHeader.mPacketByte;
+        switch ( packetHeader.mPacketId )
+        {
+        case Network::Packet::PacketId::REQ_CONNECT:
+        {
+            return true;
+            break;
+        }
+        default:
+            break;
+        }
+        headerOffset += packetHeader.mPacketByte;
+        if ( headerOffset > transferredBytes )
+        {
+            throw std::exception( "Ç‚ÇŒÇ¢ÅB" );
+        }
+    
+    } while ( headerOffset != transferredBytes );
 
-    Packet::PacketHeader packetHeader;
-    char const* bufferData = buffer.data( );
-    memcpy( &packetHeader, bufferData, sizeof( Packet::PacketHeader ) );
-    ubyte2 bufferSize = packetHeader.mPacketByte;
-    return packetHeader.mPacketId == Network::Packet::PacketId::REQ_CONNECT;
+    return false;
 }
 void cUDPManager::onReceive( cPacketChunk const & packetChunk )
 {

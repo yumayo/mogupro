@@ -13,7 +13,7 @@ private:
     std::shared_ptr<Player::cPlayer> active_player;
 
     bool mouse_on = false;
-    void playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id);
+    void playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams);
     void playerNormalMove(const float& delta_time);
 	void playerDrillMove(const float& delta_time);
 	void playerMove(const float& delta_time);
@@ -23,7 +23,10 @@ public:
 	std::vector<std::shared_ptr<Player::cPlayer>> getPlayers() {
 		return players;
 	}
-    void setup(std::vector<ci::vec3> positions,const int& player_number,const int& active_player_id);
+	std::shared_ptr<Player::cPlayer> getActivePlayer() {
+		return active_player;
+	}
+    void setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams);
     void update( const float& delta_time );
     void draw();
 };
