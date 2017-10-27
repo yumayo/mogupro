@@ -22,13 +22,6 @@ cUnderGround::cUnderGround() :
 
 cUnderGround::~cUnderGround()
 {
-    std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
-    mChunkHolder.clear();
-    mIsRunning = false;
-    for ( auto& thread : mChunkLoadThreads )
-    {
-        thread.join();
-    }
 }
 
 int cr = 2;
@@ -63,7 +56,6 @@ void cUnderGround::setup()
         }
         );
     }
-
 }
 
 void cUnderGround::update()
@@ -106,6 +98,16 @@ void cUnderGround::draw()
     ChunkMap& chunks = mChunkHolder.getChunks();
     for ( auto& chunk : chunks )
         chunk.second.draw();
+}
+
+void cUnderGround::shutdown()
+{
+    mIsRunning = false;
+    for ( auto& thread : mChunkLoadThreads )
+    {
+        thread.join();
+    }
+    mChunkHolder.clear();
 }
 
 bool cUnderGround::chunkMeshReLoaded()
