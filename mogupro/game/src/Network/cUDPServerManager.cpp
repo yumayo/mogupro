@@ -8,6 +8,7 @@
 #include <limits>
 #include <Node/action.hpp>
 #include <Utility/MessageBox.h>
+#include <Network/IpHost.h>
 namespace Network
 {
 cUDPServerManager::cUDPServerManager( )
@@ -87,7 +88,10 @@ void cUDPServerManager::updateRecv( )
 }
 void cUDPServerManager::sendDataBufferAdd( cNetworkHandle const & networkHandle, cPacketBuffer const & packetBuffer )
 {
-    auto& buf = mHandle[networkHandle].buffer;
+    auto itr = mHandle.find(networkHandle);
+    if (itr == mHandle.end()) return;
+
+    auto& buf = itr->second.buffer;
 
     // パケットが大きくなりそうなら先に送ってしまいます。
     if ( 1024 < buf.size( ) )
@@ -110,31 +114,42 @@ void cUDPServerManager::connection( )
         if ( !mIsAccept ) continue;
 
         auto itr = mHandle.insert( std::make_pair( p->mNetworkHandle, std::move( cClientInfo( ) ) ) );
-        send( p->mNetworkHandle, new Packet::Response::cResConnect( ) );
-
-        using namespace Node::Action;
-        auto networkHandle = p->mNetworkHandle;
-        auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ networkHandle, this ]
+        if ( itr.second )
         {
-            send( networkHandle, new Packet::Event::cEvePing( ) );
-        } ) ) );
-        act->set_tag( itr.first->second.id );
-        mRoot->run_action( act );
+            send( p->mNetworkHandle, new Packet::Response::cResConnect( ) );
+
+            using namespace Node::Action;
+            auto networkHandle = p->mNetworkHandle;
+            auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ networkHandle, this ]
+            {
+                send( networkHandle, new Packet::Event::cEvePing( ) );
+            } ) ) );
+            act->set_tag( itr.first->second.id );
+            mRoot->run_action( act );
+        }
     }
 }
 void cUDPServerManager::ping( )
 {
     while ( auto p = cDeliverManager::getInstance( )->getDliPing( ) )
     {
-        mHandle[p->mNetworkHandle].closeSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
+        auto itr = mHandle.find(p->mNetworkHandle);
+        if (itr != mHandle.end())
+        {
+            itr->second.closeSecond = cinder::app::getElapsedSeconds() + 5.0F;
+        }
     }
     for ( auto itr = mHandle.begin( ); itr != mHandle.end( ); )
     {
-        if ( itr->second.closeSecond < cinder::app::getElapsedSeconds( ) )
+        // ローカルの場合はカウントダウンをしません。
+        if (itr->first.ipAddress != Network::getLocalIpAddressHost())
         {
-            mRoot->remove_action_by_tag( itr->second.id );
-            mHandle.erase( itr );
-            continue;
+            if (itr->second.closeSecond < cinder::app::getElapsedSeconds())
+            {
+                mRoot->remove_action_by_tag(itr->second.id);
+                mHandle.erase(itr);
+                continue;
+            }
         }
         itr++;
     }

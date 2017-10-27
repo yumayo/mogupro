@@ -38,6 +38,10 @@ bool cFieldManager::blockBreak( const ci::vec3& position, const float& radius )
 {
     return mUnderGround.blockBreak( position, radius );
 }
+bool cFieldManager::blockBreakNetwork( const ci::vec3 & position, const float & radius )
+{
+    return mUnderGround.blockBreakNetwork( position, radius );
+}
 ci::vec3 cFieldManager::getBlockHighestPosition( const ci::vec3 & target_position )
 {
     return mUnderGround.getBlockHighestPosition( target_position );
