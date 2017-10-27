@@ -21,7 +21,7 @@ bool cMatchingMemberManager::addRoomMembers(Network::cNetworkHandle addMember)
 			return false;
 	}
 
-	mRoomMembers.insert(std::make_pair(addMember,100));
+	mRoomMembers.insert(std::make_pair(addMember,mRoomMembers.size()));
 	return true;
 }
 
