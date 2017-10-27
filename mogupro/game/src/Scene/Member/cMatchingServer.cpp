@@ -140,7 +140,15 @@ namespace Scene
 
 				mPhaseState = PhaseState::BEGIN_GAME;
 				for each(auto m in cMatchingMemberManager::getInstance()->mRoomMembers)
-					cUDPServerManager::getInstance()->send(m.first, new cResCheckBeginGame());
+				{
+					for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
+					{
+						cUDPServerManager::getInstance()->send(m.first,
+							new cEveTeamMember(p.teamNum, p.nameStr, p.playerID));
+					}
+					cUDPServerManager::getInstance()->send(m.first, new cResCheckBeginGame(m.second));
+				}
+					
 
 				cRequestManager::getInstance()->mReqCheckBeginGame.pop();
 				//cSceneManager::getInstance()->now().shutDown();

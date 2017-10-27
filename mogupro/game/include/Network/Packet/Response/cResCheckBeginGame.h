@@ -11,8 +11,10 @@ class cResCheckBeginGame : public cPacketBase<cResCheckBeginGame, PacketId::RES_
 {
 public:
     cResCheckBeginGame( );
+	cResCheckBeginGame(ubyte1 playerID);
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
+	ubyte1 mPlayerID;
 };
 }
 }

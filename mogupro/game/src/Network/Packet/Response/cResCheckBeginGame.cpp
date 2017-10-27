@@ -1,22 +1,27 @@
-#include <Network/Packet/Response/cResCheckBeginGame.h>
-namespace Network
+#include <Network/Packet/Response/cResCheckBeginGame.h>#include <Network/PackFunction.hpp>
+
+namespace Network
+{
+namespace Packet
+{
+namespace Response
+{
+cResCheckBeginGame::cResCheckBeginGame( )
 {
-namespace Packet
-{
-namespace Response
-{
-cResCheckBeginGame::cResCheckBeginGame( )
-{
-
-}
-void cResCheckBeginGame::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
-{
-
-}
-ubyte2 cResCheckBeginGame::packetExport( char* const data )
-{
-    return 0;
-}
-}
-}
+
+}cResCheckBeginGame::cResCheckBeginGame(ubyte1 playerID) : mPlayerID(playerID)
+{
+
+
+}
+
+void cResCheckBeginGame::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
+{	cImporter(data) >> mPlayerID;
+}
+
+ubyte2 cResCheckBeginGame::packetExport( char* const data )
+{	return cExporter(data) << mPlayerID;
+}
+}
+}
 }
