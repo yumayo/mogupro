@@ -155,6 +155,7 @@ void cUDPServerManager::ping( )
             itr->second.closeSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
         }
     }
+
     for ( auto itr = mHandle.begin( ); itr != mHandle.end( ); )
     {
         // ローカルの場合はカウントダウンをしません。
@@ -163,7 +164,7 @@ void cUDPServerManager::ping( )
             if ( itr->second.closeSecond < cinder::app::getElapsedSeconds( ) )
             {
                 mRoot->remove_action_by_tag( itr->second.id );
-                mHandle.erase( itr );
+                mHandle.erase( itr++ );
                 continue;
             }
         }
