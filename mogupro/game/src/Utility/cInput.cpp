@@ -163,8 +163,11 @@ float Utility::cInputAll::getPadAxis(const int & pad_num)
 }
 
 void Utility::cInputAll::keyDown(const ci::app::KeyEvent& event) {
+	
+	if (press.find(event.getCode()) == press.end()) 
+		push.insert(event.getCode());
+	
 	press.insert(event.getCode());
-	push.insert(event.getCode());
 }
 void Utility::cInputAll::keyUp(const ci::app::KeyEvent& event)
 {
