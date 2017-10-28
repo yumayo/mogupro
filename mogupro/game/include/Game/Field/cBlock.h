@@ -27,7 +27,7 @@ public: // Member
     uint mId;
     ci::vec3 mPosition;
     float mScale;
-    bool mIsActive;
+    bool mIsActive = false;
     Collision::cAABBCollider mCollider;
 
 public: // Const

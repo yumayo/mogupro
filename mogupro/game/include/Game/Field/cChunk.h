@@ -21,12 +21,11 @@ public:
 
 
     ci::ivec3 getCell();
-    cBlock& getBlock( int x, int y, int z );
-    cBlock& getBlock( ci::ivec3 c );
-    std::array<cBlock, CHUNK_VOLUME>& getBlocks();
+    std::shared_ptr<cBlock> getBlock( int x, int y, int z );
+    std::shared_ptr<cBlock> getBlock( ci::ivec3 c );
     cChunk& getChunk( ci::ivec3 block_cell );
 
-    void setBlock( ci::ivec3 c, cBlock block );
+    void setBlock( ci::ivec3 c, std::shared_ptr<cBlock> block );
 
     void addFace( const std::array<GLfloat, 12>& block_face,
                   const std::array<ci::vec2, 4>& texture_coords,
@@ -66,7 +65,7 @@ private:
 
     ci::ivec3 mChunkCell;
     uint mIndicesIndex = 0;
-    std::array<cBlock, CHUNK_VOLUME> mBlocks;
+    std::array<std::shared_ptr<cBlock>, CHUNK_VOLUME> mBlocks;
     cUnderGround* mUnderGround;
 };
 }
