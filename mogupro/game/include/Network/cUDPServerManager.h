@@ -95,6 +95,6 @@ private:
     std::map<cNetworkHandle, cClientInfo> mHandle;
     hardptr<Node::node> mRoot;
     bool mIsAccept;
-    ubyte1 idCount;
+    ubyte1 mIdCount;
 };
 }

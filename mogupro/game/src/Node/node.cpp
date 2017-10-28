@@ -1,6 +1,7 @@
 ﻿#include <Node/node.h>
 #include <cinder/gl/gl.h>
 #include <limits>
+#include <Utility/MessageBox.h>
 namespace Node
 {
 using namespace cinder;
@@ -43,7 +44,8 @@ bool node::entry_mouse_began( cinder::app::MouseEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                // log( e.what( ) );
+                MES_ERR( e.what( ),
+                         [ ] { } );
             }
         }
     }
@@ -73,7 +75,8 @@ bool node::entry_mouse_moved( cinder::app::MouseEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                // log( e.what( ) );
+                MES_ERR( e.what( ),
+                         [ ] { } );
             }
         }
     }
@@ -103,7 +106,8 @@ bool node::entry_mouse_ended( cinder::app::MouseEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                // log( e.what( ) );
+                MES_ERR( e.what( ),
+                         [ ] { } );
             }
         }
     }
@@ -135,7 +139,8 @@ bool node::entry_touch_began( cinder::app::TouchEvent::Touch event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                // log( e.what( ) );
+                MES_ERR( e.what( ),
+                         [ ] { } );
             }
         }
     }
@@ -165,7 +170,8 @@ bool node::entry_touch_moved( cinder::app::TouchEvent::Touch event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                // log( e.what( ) );
+                MES_ERR( e.what( ),
+                         [ ] { } );
             }
         }
     }
@@ -195,7 +201,8 @@ bool node::entry_touch_ended( cinder::app::TouchEvent::Touch event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                // log( e.what( ) );
+                MES_ERR( e.what( ),
+                         [ ] { } );
             }
         }
     }
@@ -223,7 +230,8 @@ void node::entry_touches_began( cinder::app::TouchEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                // log( e.what( ) );
+                MES_ERR( e.what( ),
+                         [ ] { } );
             }
         }
     }
@@ -245,7 +253,8 @@ void node::entry_touches_moved( cinder::app::TouchEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                // log( e.what( ) );
+                MES_ERR( e.what( ),
+                         [ ] { } );
             }
         }
     }
@@ -267,7 +276,8 @@ void node::entry_touches_ended( cinder::app::TouchEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                // log( e.what( ) );
+                MES_ERR( e.what( ),
+                         [ ] { } );
             }
         }
     }
@@ -289,7 +299,8 @@ void node::entry_key_down( cinder::app::KeyEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                // log( e.what( ) );
+                MES_ERR( e.what( ),
+                         [ ] { } );
             }
         }
     }
@@ -327,7 +338,8 @@ void node::entry_update( float delta )
             }
             catch ( exception_node_remove_self const& e )
             {
-                // log( e.what( ) );
+                MES_ERR( e.what( ),
+                         [ ] { } );
             }
         }
     }
@@ -354,7 +366,8 @@ void node::entry_render( cinder::mat4 m )
         }
         catch ( exception_node_remove_self const& e )
         {
-            // log( e.what( ) );
+            MES_ERR( e.what( ),
+                     [ ] { } );
         }
     }
 }

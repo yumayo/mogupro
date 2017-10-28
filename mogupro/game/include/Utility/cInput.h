@@ -21,7 +21,6 @@ private:
     std::set<int> pull;
 
     //マウス
-    ci::vec2 mouse_pos;
     ci::vec2 inc_pos;
     bool cursor_captured;
     POINT last_cursor_pos;
@@ -79,6 +78,7 @@ public:
 
     };
 
+	ci::vec2 mouse_pos;
 
     //キーボード
     void keyDown( const ci::app::KeyEvent& event );

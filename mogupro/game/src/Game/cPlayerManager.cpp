@@ -4,24 +4,24 @@
 #include <Game/cStrategyManager.h>
 #include <Game/Strategy/cDrill.h>
 #include <Game/cFieldManager.h>
-#include <Network.hpp>
+#include <Game/cClientAdapter.h>
 
 
-void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id)
+void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
-	
-	std::vector<ci::vec3> player_pos = positions;
 	
 	//生成
 	for (int i = 0; i < player_number; i++) {
 		//通信で代入
 		if (i == active_player_id) {
-			players.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, true));
+			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, true,static_cast<Game::Player::Team>(teams[i])));
 			//アクティブユーザに代入
 			active_player = players[i];
+            this->active_player_id = active_player_id;
+            this->active_player_team_id = teams[i];
 		}
 		else {
-			players.push_back(std::make_shared<Player::cPlayer>(player_pos[i], ci::vec3(0, 0, 0), i, false));
+			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, false, static_cast<Game::Player::Team>(teams[i])));
 		}
 	}
 }
@@ -82,8 +82,9 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 	//掘削機設置
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_o)) {
 		auto drill_pos = Game::cFieldManager::getInstance()->getBlockTopPosition(active_player->getPos() + active_player->getInstallationPosition());
-		Game::cStrategyManager::getInstance()->CreateDrill(drill_pos, 0,Game::Strategy::cDrill::DrillType::Level1, 0);
-		ci::app::console() << drill_pos << std::endl;
+		//Game::cStrategyManager::getInstance()->CreateDrill(drill_pos, 0,Game::Strategy::cDrill::DrillType::Level1, 0);
+		//ci::app::console() << drill_pos << std::endl;
+        cClientAdapter::getInstance( )->sendSetQuarry( drill_pos, Game::Strategy::cDrill::DrillType::Level1 );
 	}
 	
 }
@@ -165,18 +166,18 @@ void Game::cPlayerManager::setPlayersPosition(std::vector<ci::vec3> positions)
 		players[i]->move(vec);
 	}
 }
-void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id)
+void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
-	playerInstance(positions, player_number, active_player_id);
+	playerInstance(positions, player_number, active_player_id,teams);
 	//ポジションの参照とカメラのズームを設定
 	CAMERA->followingCamera(&active_player->getReferencePos(), 15);
-	for (auto it : players) {
+	for (auto& it : players) {
 		it->setup();
 	}
 }
 void Game::cPlayerManager::update(const float& delta_time)
 {
-	for (auto it : players) {
+	for (auto& it : players) {
 		it->update(delta_time);
 	}
 	playerMove(delta_time);
@@ -184,7 +185,7 @@ void Game::cPlayerManager::update(const float& delta_time)
 
 void Game::cPlayerManager::draw()
 {
-	for (auto it : players) {
+	for (auto& it : players) {
 		it->draw();
 	}
 }

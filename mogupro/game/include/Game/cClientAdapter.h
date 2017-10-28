@@ -44,7 +44,7 @@ public:
     // プレイヤーがジェムを取得したら呼んでください。
     void sendGetGemPlayer( Network::ubyte2 gemId );
     // 掘削機がジェムを取得したら呼んでください。
-    void sendGetGemQuarry( Network::ubyte1 drillId, Network::ubyte2 gemId );
+    void sendGetGemQuarry( Network::ubyte2 drillId, Network::ubyte2 gemId );
 private:
     // 上記でたまったブロックを実際に送ります。
     void sendBreakBlocks( );

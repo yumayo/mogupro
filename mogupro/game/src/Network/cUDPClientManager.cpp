@@ -8,7 +8,7 @@
 #include <Utility/MessageBox.h>
 #include <Network/cUDPManager.h>
 #include <Scene/cSceneManager.h>
-#include <Scene/Member/cMatching.h>
+#include <Scene/Member/cTitle.h>
 #include <Node/action.hpp>
 #include <Network/IpHost.h>
 namespace Network
@@ -43,7 +43,7 @@ void cUDPClientManager::connect( std::string const& ipAddress )
         packet->createPacket( packetBuffer );
         mSocket.write( cNetworkHandle( ipAddress, 25565 ), packetBuffer.transferredBytes, packetBuffer.buffer.data( ) );
         delete packet;
-        mConnectSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
+        mConnectSecond = cinder::app::getElapsedSeconds( ) + 60.0F;
     } ) ), 3 ) );
 }
 void cUDPClientManager::connectOfflineServer( )
@@ -89,7 +89,7 @@ void cUDPClientManager::connection( )
     {
         mConnectServerHandle = p->mNetworkHandle;
 
-        mCloseSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
+        mCloseSecond = cinder::app::getElapsedSeconds( ) + 60.0F;
 
         using namespace Node::Action;
         auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
@@ -104,10 +104,8 @@ void cUDPClientManager::connection( )
         if ( mConnectSecond < cinder::app::getElapsedSeconds( ) )
         {
             close( );
-            Utility::MessageBoxOk( "サーバーからの応答がありません。", [ ]
-            {
-                cSceneManager::getInstance( )->change<Scene::Member::cMatching>( );
-            } );
+            MES_ERR( "サーバーからの応答がありません。",
+                     [ ] { cSceneManager::getInstance( )->change<Scene::Member::cTitle>( ); } );
         }
     }
 }
@@ -115,17 +113,15 @@ void cUDPClientManager::ping( )
 {
     while ( auto p = cEventManager::getInstance( )->getEvePing( ) )
     {
-        mCloseSecond = cinder::app::getElapsedSeconds( ) + 50000.0F;
+        mCloseSecond = cinder::app::getElapsedSeconds( ) + 60.0F;
     }
     if (mConnectServerHandle.ipAddress != Network::getLocalIpAddressHost())
     {
         if (mCloseSecond < cinder::app::getElapsedSeconds())
         {
             close();
-            Utility::MessageBoxOk("サーバーとの接続が切れました。", []
-            {
-                cSceneManager::getInstance()->change<Scene::Member::cMatching>();
-            });
+            MES_ERR( "サーバーとの接続が切れました。",
+                     [ ] { cSceneManager::getInstance( )->change<Scene::Member::cTitle>( ); } );
         }
     }
 }
@@ -134,10 +130,8 @@ void cUDPClientManager::sendDataBufferAdd( cPacketBuffer const & packetBuffer )
     if ( !isConnected( ) )
     {
         close( );
-        Utility::MessageBoxOk( "connectが成立する前に通信をしないでください。", [ ]
-        {
-            cSceneManager::getInstance( )->change<Scene::Member::cMatching>( );
-        } );
+        MES_ERR( "connectが成立する前に通信をしないでください。",
+                 [ ] { cSceneManager::getInstance( )->change<Scene::Member::cTitle>( ); } );
     }
 
     auto& buf = mSendDataBuffer;

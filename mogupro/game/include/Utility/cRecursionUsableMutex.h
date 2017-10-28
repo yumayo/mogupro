@@ -14,6 +14,7 @@ public:
     void unlock( );
     std::pair<std::map<std::thread::id, int>::iterator, bool> emplace( );
     void erase( );
-    int& getDuplicationCount( );
+    int getDuplicationCount( );
+    void setDuplicationCount( int count );
 };
 }

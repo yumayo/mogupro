@@ -17,6 +17,7 @@
 #include <Shader/cShadowManager.h>
 #include <Node/renderer.hpp>
 #include <Node/action.hpp>
+#include <Network/cMatchingMemberManager.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -51,22 +52,34 @@ void cGameMain::setup( )
     Game::cFieldManager::getInstance( )->setup( );
     Game::cStrategyManager::getInstance( )->setup( );
 
-	
 	//プレイヤーの人数
 	int player_numbers = 8;
+
 	//自分が何Pなのか
-	const int active_player_id = 1;
+	const int active_player_id = Network::cMatchingMemberManager::getInstance( )->mPlayerID;
+
+	std::vector<int> teams;
+
+    //プレイヤー達の位置
+    std::vector<ci::vec3> positions;
+
 	for (int i = 0; i < player_numbers; i++) {
 		positions.push_back(ci::vec3(0, 20, i * 2));
+        teams.emplace_back( 0 );
 	}
-    Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id);
+    for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
+    {
+        teams.push_back( o.teamNum );
+    }
+
+    Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id, teams);
 
 	int seed = 20171031;
-	//GemManager->setUp(vec3(-30,-15,-30),vec3(30,30,60),1,1,100,seed);
+	GemManager->setUp(vec3(-30,-15,-30),vec3(30,30,60),1,1,100,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
-    Network::cUDPClientManager::getInstance( )->open( );
-    Network::cUDPServerManager::getInstance( )->open( );
-    Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
+    //Network::cUDPClientManager::getInstance( )->open( );
+    //Network::cUDPServerManager::getInstance( )->open( );
+    //Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
 
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
@@ -87,24 +100,27 @@ void cGameMain::update( float deltaTime )
         Game::cClientAdapter::getInstance( )->update( );
         Game::cServerAdapter::getInstance( )->update( );
         n->entry_update( deltaTime );
-        Shader::cShadowManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
+        //Shader::cShadowManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
         Game::cFieldManager::getInstance( )->update( deltaTime );
         ENV->padUpdate( );
         ENV->padProcessEvent( );
         Game::cPlayerManager::getInstance( )->update( deltaTime );
         Game::cStrategyManager::getInstance( )->update( deltaTime );
         Collision::cCollisionManager::getInstance( )->update( );
-        //GemManager->update( );
+        GemManager->update( );
     }
 }
 
 void cGameMain::draw( )
 {
-    Shader::cShadowManager::getInstance( )->draw( std::bind( &cGameMain::drawShadow, this ) );
+    drawShadow( );
+    //Shader::cShadowManager::getInstance( )->draw( std::bind( &cGameMain::drawShadow, this ) );
 }
 
 void cGameMain::drawShadow( )
 {
+    gl::enableDepthRead( );
+    gl::enableDepthWrite( );
     Game::cPlayerManager::getInstance( )->draw( );
     Game::cFieldManager::getInstance( )->draw( );
     Game::cStrategyManager::getInstance( )->draw( );
@@ -118,7 +134,7 @@ void cGameMain::draw2D( )
     gl::disableDepthRead( );
     gl::disableDepthWrite( );
     //gl::draw( TEX->get( "sky_dome" ), ci::Rectf( 0, 300, 300, 0 ) );
-	//GemManager->drawFbo();
+	GemManager->drawFbo();
     n->entry_render( mat4( ) );
 }
 

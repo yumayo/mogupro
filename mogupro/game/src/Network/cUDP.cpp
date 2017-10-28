@@ -26,15 +26,19 @@ void cUDP::write( cNetworkHandle const& networkHandle, size_t sendDataByteNumber
         // 送信できない時に呼ばれます。
         // ネットワークデバイスが向こうになっているときや、
         // ネットワークにつながっていないときに呼ばれます。
-        Utility::MessageBoxOk( e.message( ), [ ] { } );
+        MES_ERR( e.message( ),
+                 [ ] { } );
     }
 }
 void cUDP::close( )
 {
     mIsPause = true;
     mIoService.stop( );
-    mUpdateIoService.join( );
     mUdpSocket.close( );
+    if ( mUpdateIoService.joinable( ) )
+    {
+        mUpdateIoService.join( );
+    }
 }
 void cUDP::open( )
 {
@@ -50,13 +54,15 @@ void cUDP::open( int port )
         if ( e )
         {
             // openできなかった時
-            Utility::MessageBoxOk( e.message( ), [ ] { } );
+            MES_ERR( e.message( ),
+                     [ ] { } );
         }
         mUdpSocket.bind( udp::endpoint( udp::v4( ), port ), e );
         if ( e )
         {
             // bindできなかった時
-            Utility::MessageBoxOk( e.message( ), [ ] { } );
+            MES_ERR( e.message( ),
+                     [ ] { } );
         }
     }
     mUpdateIoService = std::thread( [ this ]
@@ -98,7 +104,8 @@ void cUDP::receive( )
             // 受信できなかった時に呼ばれます。
             // ※パケットロスとかの判断はここでは出来ません。
             // というかここが呼ばれたところを見たことがないです。
-            Utility::MessageBoxOk( e.message( ), [ ] { } );
+            MES_ERR( e.message( ),
+                     [ ] { } );
         }
         else
         {
