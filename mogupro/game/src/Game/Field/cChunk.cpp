@@ -44,6 +44,11 @@ void cChunk::draw()
     }
 }
 
+ci::ivec3 cChunk::getCell()
+{
+    return mChunkCell;
+}
+
 cBlock & cChunk::getBlock( int x, int y, int z )
 {
     return getBlock( ci::ivec3( x, y, z ) );
@@ -53,8 +58,8 @@ cBlock & cChunk::getBlock( ci::ivec3 c )
 {
     if ( isOutOfRange( c ) )
     {
-        //auto world_pos = toWorldPosition( c );
-        return cBlock(); //mUnderGround->getBlock( world_pos );
+        auto world_pos = toWorldPosition( c );
+        return mUnderGround->getBlock( world_pos );
     }
     return mBlocks[getIndex( c )];
 }
@@ -64,11 +69,22 @@ std::array<cBlock, CHUNK_VOLUME> & cChunk::getBlocks()
     return mBlocks;
 }
 
+cChunk & cChunk::getChunk( ci::ivec3 block_cell )
+{
+    if ( isOutOfRange( block_cell ) )
+    {
+        auto world_pos = toWorldPosition( block_cell );
+        return mUnderGround->getChunk( world_pos );
+    }
+    return *this;
+}
+
 void cChunk::setBlock( ci::ivec3 c, cBlock block )
 {
     if ( isOutOfRange( c ) )
     {
-        return;
+        auto world_pos = toWorldPosition( c );
+        mUnderGround->setBlock( world_pos, block );
     }
     mBlocks[getIndex( c )] = block;
 }
@@ -102,15 +118,18 @@ void cChunk::addFace( const std::array<GLfloat, 12>& block_face,
     mIndicesIndex += 4;
 }
 
-void cChunk::breakBlock( ci::ivec3 c )
+cChunk& cChunk::breakBlock( ci::ivec3 c )
 {
     auto& block = getBlock( c );
+    auto& chunk = getChunk( c );
     if ( block.mIsActive == false )
-        return;
+        return *this;
     block.mIsActive = false;
     block.toBreak();
 
-    mIsBlockBroken = true;
+    chunk.mIsBlockBroken = true;
+
+    return chunk;
 
     // Vbo‚ðŠÛ‚²‚Æ\’z‚·‚é‚Ì‚Åindex‘‚«Š·‚¦‚Í‚µ‚È‚­‚È‚Á‚Ä‚µ‚Ü‚Á‚½B
     // d‚­‚È‚Á‚½‚ç—vŒŸ“¢
@@ -125,6 +144,7 @@ void cChunk::breakBlock( ci::ivec3 c )
     //auto vbo = mVbo->getIndexVbo();
     //// VboRef‚Ì’†‚ÅIndices‚ª4”{‚³‚ê‚é‚Ì‚ÅA•ÏX‰ÓŠ‚ð4”{‚·‚é
     //vbo->bufferSubData( block.mIndicesNum[0] * 4, block.mIndicesNum.size() * 4, &indices[0] );
+
 }
 
 void cChunk::reBuildStart()
@@ -221,13 +241,14 @@ void cChunk::createBlocks()
 void cChunk::clearMesh()
 {
     mIndicesIndex = 0;
-    if ( mMesh != nullptr )
-        mMesh->clear();
+    if ( mVbo != nullptr )
+        if ( mMesh != nullptr )
+            mMesh->clear();
 }
 
 ci::ivec3 cChunk::toWorldPosition( ci::ivec3 c )const
 {
-    return mChunkCell * CHUNK_SIZE + c;
+    return  mChunkCell * CHUNK_SIZE + c;
 }
 
 bool cChunk::isOutOfRange( ci::ivec3 c )
