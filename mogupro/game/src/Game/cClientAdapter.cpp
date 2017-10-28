@@ -110,7 +110,7 @@ void cClientAdapter::recvAllBreakBlocks( )
     {
         for ( auto& o : packet->mBreakPositions )
         {
-            Game::cFieldManager::getInstance( )->blockBreak(
+            Game::cFieldManager::getInstance( )->blockBreakNetwork(
                 o
             );
         }
