@@ -7,6 +7,7 @@
 #include <Scene/Member/cMatching.h>
 #include <Scene/Member/cMatchingServer.h>
 #include <Scene/cSceneManager.h>
+#include <Network.hpp>
 using namespace Node::Action;
 namespace Scene
 {
@@ -71,7 +72,12 @@ void cTitle::setup( )
         f->set_scale( glm::vec2( 1, -1 ) );
         toGameMain->add_child( f );
     }
-    mScenes.emplace_back( [ ] { cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( ); } );
+    mScenes.emplace_back( [ ] { 
+		Network::cUDPClientManager::getInstance()->open();
+		Network::cUDPServerManager::getInstance()->open();
+		Network::cUDPClientManager::getInstance()->connectOfflineServer();
+		cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( ); 
+	} );
 
     mRoot->get_child_by_tag( mSelectTag )->run_action(
         repeat_forever::create(
