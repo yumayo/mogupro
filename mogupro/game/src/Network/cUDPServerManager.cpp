@@ -178,8 +178,8 @@ cUDPServerManager::cClientInfo::cClientInfo( ubyte1 idCount )
 {
     if ( idCount == 255 )
     {
-        Utility::MessageBoxOk( "クライアントの数が上限に達しました。",
-                               [ ] { exit( 0 ); } );
+        MES_ERR( "クライアントの数が上限に達しました。",
+                 [ ] { exit( 0 ); } );
     }
     else
     {
