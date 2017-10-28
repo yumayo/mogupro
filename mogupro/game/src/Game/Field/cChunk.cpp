@@ -49,12 +49,12 @@ ci::ivec3 cChunk::getCell()
     return mChunkCell;
 }
 
-cBlock & cChunk::getBlock( int x, int y, int z )
+std::shared_ptr<cBlock> cChunk::getBlock( int x, int y, int z )
 {
     return getBlock( ci::ivec3( x, y, z ) );
 }
 
-cBlock & cChunk::getBlock( ci::ivec3 c )
+std::shared_ptr<cBlock> cChunk::getBlock( ci::ivec3 c )
 {
     if ( isOutOfRange( c ) )
     {
@@ -62,11 +62,6 @@ cBlock & cChunk::getBlock( ci::ivec3 c )
         return mUnderGround->getBlock( world_pos );
     }
     return mBlocks[getIndex( c )];
-}
-
-std::array<cBlock, CHUNK_VOLUME> & cChunk::getBlocks()
-{
-    return mBlocks;
 }
 
 cChunk & cChunk::getChunk( ci::ivec3 block_cell )
@@ -79,7 +74,7 @@ cChunk & cChunk::getChunk( ci::ivec3 block_cell )
     return *this;
 }
 
-void cChunk::setBlock( ci::ivec3 c, cBlock block )
+void cChunk::setBlock( ci::ivec3 c, std::shared_ptr<cBlock> block )
 {
     if ( isOutOfRange( c ) )
     {
@@ -122,10 +117,10 @@ cChunk& cChunk::breakBlock( ci::ivec3 c )
 {
     auto& block = getBlock( c );
     auto& chunk = getChunk( c );
-    if ( block.mIsActive == false )
+    if ( block->mIsActive == false )
         return *this;
-    block.mIsActive = false;
-    block.toBreak();
+    block->mIsActive = false;
+    block->toBreak();
 
     chunk.mIsBlockBroken = true;
 
@@ -213,7 +208,7 @@ bool cChunk::createMainCall()
 
     mVbo = gl::VboMesh::create( *mMesh );
     for ( auto& block : mBlocks )
-        block.setup();
+        block->setup();
 
     cTimeMeasurement::getInstance()->make();
     auto t = cTimeMeasurement::getInstance()->deltaTime();
@@ -232,7 +227,8 @@ void cChunk::createBlocks()
                 vec3 position = vec3( x * BLOCK_SIZE,
                                       y * BLOCK_SIZE,
                                       z * BLOCK_SIZE ) + offset;// +OFFSET_POSITION;
-                cBlock block = cBlock( position, (float) BLOCK_SIZE, id++ );
+                std::shared_ptr<cBlock> block =
+                    std::make_shared<cBlock>( position, (float) BLOCK_SIZE, id++ );
 
                 mBlocks[getIndex( x, y, z )] = block;
             }
