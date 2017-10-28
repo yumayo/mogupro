@@ -49,7 +49,7 @@ void cServerAdapter::sendPlayersPosition( )
     auto eventPack = new Network::Packet::Event::cEvePlayers( );
     for ( auto& player : mPlayersPosition )
     {
-        eventPack->mPlayerFormats.emplace_back( player.second, cinder::quat( ) );
+        eventPack->mPlayerFormats.emplace_back( player.first, player.second, cinder::quat( ) );
     }
     Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
 }

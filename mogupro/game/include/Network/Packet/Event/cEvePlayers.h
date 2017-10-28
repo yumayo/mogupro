@@ -19,12 +19,14 @@ public:
         {
 
         }
-        PlayerFormat( cinder::vec3 const& position, cinder::quat const& rotation )
-            : mPosition( position )
+        PlayerFormat( ubyte1 playerId, cinder::vec3 const& position, cinder::quat const& rotation )
+            : mPlayerId( playerId )
+            , mPosition( position )
             , mRotation( rotation )
         {
 
         }
+        ubyte1 mPlayerId;
         cinder::vec3 mPosition;
         cinder::quat mRotation;
     };

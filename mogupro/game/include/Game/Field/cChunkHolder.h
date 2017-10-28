@@ -22,6 +22,7 @@ public:
     void setChunk( const int& x, const int& y, const int& z );
 
     bool createChunk( cChunk& chunk );
+    bool isExistsChunk( const ci::ivec3 & cell );
     bool isExistsChunk( const int& x, const int& y, const int& z );
     bool cellIsOutOfBounds( const int & x, const int & y, const int & z );
 
