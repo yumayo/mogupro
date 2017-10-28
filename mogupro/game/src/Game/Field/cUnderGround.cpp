@@ -24,7 +24,7 @@ cUnderGround::~cUnderGround()
 {
 }
 
-int cr = 2;
+int cr = 4;
 
 void cUnderGround::setup()
 {
@@ -32,9 +32,9 @@ void cUnderGround::setup()
 
     cTimeMeasurement::getInstance()->make();
 
-    for ( int z = -cr; z < cr; z++ )
+    for ( int z = 0; z < cr; z++ )
     {
-        for ( int x = -cr; x < cr; x++ )
+        for ( int x = 0; x < cr; x++ )
         {
             mChunkHolder.setChunk( x, 0, z );
         }
@@ -114,9 +114,9 @@ bool cUnderGround::chunkMeshReLoaded()
 {
     while ( mIsRunning )
     {
-        for ( int z = -cr; z < cr; z++ )
+        for ( int z = 0; z < cr; z++ )
         {
-            for ( int x = -cr; x < cr; x++ )
+            for ( int x = 0; x < cr; x++ )
             {
                 std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
                 auto & chunk = mChunkHolder.getChunk( x, z );
@@ -132,9 +132,9 @@ bool cUnderGround::calcChunks()
 {
     while ( mIsRunning )
     {
-        for ( int z = -cr; z < cr; z++ )
+        for ( int z = 0; z < cr; z++ )
         {
-            for ( int x = -cr; x < cr; x++ )
+            for ( int x = 0; x < cr; x++ )
             {
                 std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
                 auto & chunk = mChunkHolder.getChunk( x, z );
@@ -148,57 +148,55 @@ bool cUnderGround::calcChunks()
 
 ci::ivec3 cUnderGround::getChunkCellFromPosition( const ci::vec3 & position )
 {
-    vec3 abs_p = vec3( std::abs( position.x ), std::abs( position.y ), std::abs( position.z ) );
-    ivec3 cell = ( ivec3( abs_p ) / CHUNK_SIZE );
-    if ( position.x < 0 )
-    {
-        cell.x *= -1;
-        cell.x -= 1;
-    }
-    if ( position.y < 0 )
-    {
-        cell.y *= -1;
-        cell.y -= 1;
-    }
-    if ( position.z < 0 )
-    {
-        cell.z *= -1;
-        cell.z -= 1;
-    }
-    return cell;
+    return ivec3( position ) / CHUNK_SIZE;
 }
 
 ci::ivec3 cUnderGround::getBlockCellFromPosition( const ci::vec3 & position )
 {
-    ivec3 c = ivec3( position ) % CHUNK_SIZE;
-    if ( c.x < 0 )
-        c.x += CHUNK_SIZE;
-    if ( c.z < 0 )
-        c.z += CHUNK_SIZE;
-    return ivec3( std::abs( c.x ), std::abs( c.y ), std::abs( c.z ) );
+    return ivec3( position ) % CHUNK_SIZE;
 }
 
-cBlock cUnderGround::getBlock( ci::ivec3 position )
+cBlock& cUnderGround::getBlock( const ci::ivec3& position )
 {
-    auto block_cell = getBlockCellFromPosition( position );
     auto chunk_cell = getChunkCellFromPosition( position );
+    auto block_cell = getBlockCellFromPosition( position );
+
+    if ( mChunkHolder.isExistsChunk( chunk_cell ) )
+        return cBlock();
+    if ( mChunkHolder.cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
+        return cBlock();
 
     return mChunkHolder.getChunk( chunk_cell ).getBlock( block_cell );
 }
 
-void cUnderGround::setBlock( ci::ivec3 position, cBlock block )
+void cUnderGround::setBlock( const ci::ivec3& position, const cBlock& block )
 {
-    if ( position.y <= 0 )
+    if ( position.y < 0 )
         return;
-    auto block_cell = getBlockCellFromPosition( position );
     auto chunk_cell = getChunkCellFromPosition( position );
+    auto block_cell = getBlockCellFromPosition( position );
+
+    if ( mChunkHolder.isExistsChunk( chunk_cell ) )
+        return;
+    if ( mChunkHolder.cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
+        return;
 
     mChunkHolder.getChunk( chunk_cell ).setBlock( block_cell, block );
 }
 
+cChunk & cUnderGround::getChunk( const ci::ivec3 & position )
+{
+    auto chunk_cell = getChunkCellFromPosition( position );
+
+    if ( mChunkHolder.isExistsChunk( chunk_cell ) )
+        return cChunk();
+
+    return mChunkHolder.getChunk( chunk_cell );
+}
+
 bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 {
-    if ( blockBreakNetwork( position , radius ) )
+    if ( blockBreakNetwork( position, radius ) )
         cClientAdapter::getInstance()->sendBreakBlock( position );
     return true;
 }
@@ -210,23 +208,64 @@ bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & r
 
     if ( mChunkHolder.isExistsChunk( chunk_cell.x, chunk_cell.y, chunk_cell.z ) )
         return false;
+    if ( mChunkHolder.cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
+        return false;
 
-    auto & chunk = mChunkHolder.getChunk( chunk_cell );
+    auto & break_chunk = mChunkHolder.getChunk( chunk_cell );
 
     auto r = ivec3( int( radius / BLOCK_SIZE ) );
     auto s = block_cell - r;
     auto e = block_cell + r;
 
+    // Œ@‚ç‚ê‚½ƒ`ƒƒƒ“ƒN‚ð“o˜^‚·‚é
+    std::vector<cChunk*> chunks;
     for ( int z = s.z; z < e.z; z++ )
         for ( int y = s.y; y < e.y; y++ )
             for ( int x = s.x; x < e.x; x++ )
             {
-                chunk.breakBlock( ivec3( x, y, z ) );
+                auto & c = break_chunk.breakBlock( ivec3( x, y, z ) );
+                if ( std::any_of( chunks.begin(), chunks.end(),
+                                  [&]( cChunk* t ) { return t == &c; } ) )
+                    continue;
+                chunks.push_back( &c );
             }
 
-    // ‚±‚±‚Åbreakblock‚ªŒÄ‚Î‚ê‚½ƒ`ƒƒƒ“ƒN‚ðÄ\¬‚·‚éƒtƒ‰ƒO‚ð—§‚Ä‚é
-    chunk.reBuildStart();
+    // Œ@‚ç‚ê‚½ƒ`ƒƒƒ“ƒN‚ÌŽü‚è‚à“o˜^‚·‚é
+    std::vector<cChunk*> temp_chunks;
+    for ( auto break_chunk : chunks )
+    {
+        for ( int i = 0; i < 4; i++ )
+        {
+            auto cell = break_chunk->getCell();
+            switch ( i )
+            {
+                case 0: cell.x += 1; break;
+                case 1: cell.x -= 1; break;
+                case 2: cell.z += 1; break;
+                case 3: cell.z -= 1; break;
+            }
 
+            if ( mChunkHolder.isExistsChunk( cell ) )
+                continue;
+            if ( std::any_of( chunks.begin(), chunks.end(),
+                              [&]( cChunk* t ) { return t->getCell() == cell; } ) )
+                continue;
+
+            auto temp_chunk = &mChunkHolder.getChunk( cell );
+            temp_chunk->mIsBlockBroken = true;
+            temp_chunks.push_back( temp_chunk );
+        }
+    }
+
+    std::copy( temp_chunks.begin(), temp_chunks.end(), std::back_inserter( chunks ) );
+
+    for ( auto c : chunks )
+    {
+        c->reBuildStart();
+    }
+
+    chunks.clear();
+    temp_chunks.clear();
     return true;
 }
 

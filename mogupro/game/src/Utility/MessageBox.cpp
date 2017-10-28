@@ -27,6 +27,10 @@ void MessageBoxOk( std::string const & message, std::function<void( )> const & c
         break;
     }
 }
+void MessageBoxError( std::string const & message, std::string const & fileName, int line, std::function<void( )> const & calledOk )
+{
+    MessageBoxOk( message + "\n" + fileName + " : " + std::to_string( line ), calledOk );
+}
 void MessageAssetNothing( std::string const & underAssetsPath )
 {
     std::stringstream message;

@@ -20,10 +20,11 @@ public:
     void draw();
 
 
-    ci::ivec3 getCell() { return mChunkCell; }
+    ci::ivec3 getCell();
     cBlock& getBlock( int x, int y, int z );
     cBlock& getBlock( ci::ivec3 c );
     std::array<cBlock, CHUNK_VOLUME>& getBlocks();
+    cChunk& getChunk( ci::ivec3 block_cell );
 
     void setBlock( ci::ivec3 c, cBlock block );
 
@@ -32,7 +33,7 @@ public:
                   const ci::ivec3 & chunk_position,
                   const ci::vec3 & block_position );
 
-    void breakBlock( ci::ivec3 c );
+    cChunk& breakBlock( ci::ivec3 c );
 
     void buildMesh();
     void reBuildStart();
