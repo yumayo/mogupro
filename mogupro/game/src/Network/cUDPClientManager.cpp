@@ -8,7 +8,7 @@
 #include <Utility/MessageBox.h>
 #include <Network/cUDPManager.h>
 #include <Scene/cSceneManager.h>
-#include <Scene/Member/cMatching.h>
+#include <Scene/Member/cTitle.h>
 #include <Node/action.hpp>
 #include <Network/IpHost.h>
 namespace Network
@@ -104,10 +104,8 @@ void cUDPClientManager::connection( )
         if ( mConnectSecond < cinder::app::getElapsedSeconds( ) )
         {
             close( );
-            Utility::MessageBoxOk( "サーバーからの応答がありません。", [ ]
-            {
-                cSceneManager::getInstance( )->change<Scene::Member::cMatching>( );
-            } );
+            MES_ERR( "サーバーからの応答がありません。",
+                     [ ] { cSceneManager::getInstance( )->change<Scene::Member::cTitle>( ); } );
         }
     }
 }
@@ -122,10 +120,8 @@ void cUDPClientManager::ping( )
         if (mCloseSecond < cinder::app::getElapsedSeconds())
         {
             close();
-            Utility::MessageBoxOk("サーバーとの接続が切れました。", []
-            {
-                cSceneManager::getInstance()->change<Scene::Member::cMatching>();
-            });
+            MES_ERR( "サーバーとの接続が切れました。",
+                     [ ] { cSceneManager::getInstance( )->change<Scene::Member::cTitle>( ); } );
         }
     }
 }
@@ -134,10 +130,8 @@ void cUDPClientManager::sendDataBufferAdd( cPacketBuffer const & packetBuffer )
     if ( !isConnected( ) )
     {
         close( );
-        Utility::MessageBoxOk( "connectが成立する前に通信をしないでください。", [ ]
-        {
-            cSceneManager::getInstance( )->change<Scene::Member::cMatching>( );
-        } );
+        MES_ERR( "connectが成立する前に通信をしないでください。",
+                 [ ] { cSceneManager::getInstance( )->change<Scene::Member::cTitle>( ); } );
     }
 
     auto& buf = mSendDataBuffer;
