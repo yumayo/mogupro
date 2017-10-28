@@ -180,7 +180,7 @@ namespace Scene
 				while (auto eveTeamMember = cEventManager::getInstance()->getEveTeamMember())
 				{
 					cMatchingMemberManager::getInstance()->addPlayerDatas(
-						eveTeamMember->mNameStr,eveTeamMember->mTeamNum,eveTeamMember->mPlayerID);
+						eveTeamMember->mNameStr,eveTeamMember->mTeamNum,eveTeamMember->mPlayerID,cNetworkHandle("",0));
 				}
 			}
 
