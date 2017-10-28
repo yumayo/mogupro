@@ -126,7 +126,6 @@ void Game::Player::cPlayer::update(const float & delta_time)
 	if (drilling) {
 		Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition() + ci::vec3(0,-2,0), 2);
 	}
-    cClientAdapter::getInstance( )->sendPlayerFormat( mPos, cinder::quat() );
 }
 
 void Game::Player::cPlayer::draw()

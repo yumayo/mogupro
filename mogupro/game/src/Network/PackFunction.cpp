@@ -155,7 +155,7 @@ namespace Network
         float result;
         result = value >> 7;
         result += static_cast<float>( value & 0x007F ) / 100.0F;
-        return ubyte2( );
+        return result;
     }
 
     // ˆÈ‰ºyumayo
