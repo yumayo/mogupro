@@ -152,7 +152,7 @@ void cUDPServerManager::ping( )
         auto itr = mHandle.find( p->mNetworkHandle );
         if ( itr != mHandle.end( ) )
         {
-            itr->second.closeSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
+            itr->second.closeSecond = cinder::app::getElapsedSeconds( ) + 60.0F;
         }
     }
 
@@ -163,6 +163,8 @@ void cUDPServerManager::ping( )
         {
             if ( itr->second.closeSecond < cinder::app::getElapsedSeconds( ) )
             {
+                cinder::app::console( ) << itr->first.ipAddress << ":" << itr->first.port << "—";
+                cinder::app::console( ) << "cUDPServerManager: " << "disconnect" << itr->second.id << std::endl;
                 mRoot->remove_action_by_tag( itr->second.id );
                 mHandle.erase( itr++ );
                 continue;
@@ -172,7 +174,7 @@ void cUDPServerManager::ping( )
     }
 }
 cUDPServerManager::cClientInfo::cClientInfo( ubyte1 idCount )
-    : closeSecond( cinder::app::getElapsedSeconds( ) + 5.0F )
+    : closeSecond( cinder::app::getElapsedSeconds( ) + 60.0F )
 {
     if ( idCount == 255 )
     {
