@@ -5,6 +5,8 @@
 #include <Scene/Member/cGameMain.h>
 #include <Scene/cSceneManager.h>
 #include <CameraManager/cCameraManager.h>
+#include <Utility/cInput.h>
+#include <Game/cServerAdapter.h>
 using namespace Network;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
@@ -23,6 +25,7 @@ namespace Scene
 			using namespace Node::Action;
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mOpenRoom = false;
+            mIsGameUpdate = false;
 			font = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 20);
 			font->set_text(u8"‚Ê‚í‚ ‚ ‚Ÿ‚Ÿ‚Ÿ‚Ÿ‚ñ");
 			font->set_scale(glm::vec2(1, -1));
@@ -49,6 +52,14 @@ namespace Scene
 
 		void cMatchingServer::update(float deltaTime)
 		{
+            if ( ENV->pushKey( ci::app::KeyEvent::KEY_1 ) )
+            {
+                mIsGameUpdate = true;
+            }
+            if ( mIsGameUpdate )
+            {
+                Game::cServerAdapter::getInstance( )->update( );
+            }
 			cUDPServerManager::getInstance()->update(deltaTime);
 			n->entry_update(deltaTime);
 			checkReqMakeRoom();

@@ -31,6 +31,7 @@ private:
 	PhaseState mPhaseState;
 	int mRoomID;
 	bool mOpenRoom;
+    bool mIsGameUpdate;
 	Utility::hardptr<Node::node> n;
 	Utility::hardptr<Node::Renderer::label> font;
 };

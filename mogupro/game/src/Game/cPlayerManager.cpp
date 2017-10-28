@@ -181,7 +181,7 @@ void Game::cPlayerManager::update(const float& delta_time)
 		it->update(delta_time);
 	}
 	playerMove(delta_time);
-    cClientAdapter::getInstance( )->sendPlayerFormat( active_player->getPos(), ci::quat() );
+    cClientAdapter::getInstance( )->sendPlayer( active_player->getPos(), ci::quat() );
 }
 
 void Game::cPlayerManager::draw()
