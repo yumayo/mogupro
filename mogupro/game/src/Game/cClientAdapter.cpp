@@ -47,12 +47,15 @@ void cClientAdapter::recvAllQuarrys( )
     auto res = Network::cResponseManager::getInstance( );
     while ( auto packet = res->getResCheckSetQuarry( ) )
     {
-        Game::cStrategyManager::getInstance( )->CreateDrill(
-            packet->mPosition,
-            packet->mDrillId,
-            static_cast<Game::Strategy::cDrill::DrillType>( packet->mType ),
-            true
-        );
+        if ( packet->mIsSucceeded )
+        {
+            Game::cStrategyManager::getInstance( )->CreateDrill(
+                packet->mPosition,
+                packet->mDrillId,
+                static_cast<Game::Strategy::cDrill::DrillType>( packet->mType ),
+                true
+            );
+        }
     }
     auto eve = Network::cEventManager::getInstance( );
     while ( auto packet = eve->getEveSetQuarry( ) )
