@@ -24,17 +24,15 @@ cUnderGround::~cUnderGround()
 {
 }
 
-int cr = 4;
-
 void cUnderGround::setup()
 {
     TEX->set( "dirt", "dirt.jpg" );
 
     cTimeMeasurement::getInstance()->make();
 
-    for ( int z = 0; z < cr; z++ )
+    for ( int z = 0; z < CHUNK_RANGE_Z; z++ )
     {
-        for ( int x = 0; x < cr; x++ )
+        for ( int x = 0; x < CHUNK_RANGE_X; x++ )
         {
             mChunkHolder.setChunk( x, 0, z );
         }
@@ -114,9 +112,9 @@ bool cUnderGround::chunkMeshReLoaded()
 {
     while ( mIsRunning )
     {
-        for ( int z = 0; z < cr; z++ )
+        for ( int z = 0; z < CHUNK_RANGE_Z; z++ )
         {
-            for ( int x = 0; x < cr; x++ )
+            for ( int x = 0; x < CHUNK_RANGE_X; x++ )
             {
                 std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
                 auto & chunk = mChunkHolder.getChunk( x, z );
@@ -132,9 +130,9 @@ bool cUnderGround::calcChunks()
 {
     while ( mIsRunning )
     {
-        for ( int z = 0; z < cr; z++ )
+        for ( int z = 0; z < CHUNK_RANGE_Z; z++ )
         {
-            for ( int x = 0; x < cr; x++ )
+            for ( int x = 0; x < CHUNK_RANGE_X; x++ )
             {
                 std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
                 auto & chunk = mChunkHolder.getChunk( x, z );
@@ -146,9 +144,9 @@ bool cUnderGround::calcChunks()
 
     while ( mIsRunning )
     {
-        for ( int z = 0; z < cr; z++ )
+        for ( int z = 0; z < CHUNK_RANGE_Z; z++ )
         {
-            for ( int x = 0; x < cr; x++ )
+            for ( int x = 0; x < CHUNK_RANGE_X; x++ )
             {
                 std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
                 auto & chunk = mChunkHolder.getChunk( x, z );
@@ -170,20 +168,20 @@ ci::ivec3 cUnderGround::getBlockCellFromPosition( const ci::vec3 & position )
     return ivec3( position ) % CHUNK_SIZE;
 }
 
-cBlock& cUnderGround::getBlock( const ci::ivec3& position )
+std::shared_ptr<cBlock> cUnderGround::getBlock( const ci::ivec3& position )
 {
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
 
     if ( mChunkHolder.isExistsChunk( chunk_cell ) )
-        return cBlock();
+        return std::move( std::make_shared<cBlock>() );
     if ( mChunkHolder.cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
-        return cBlock();
+        return std::move( std::make_shared<cBlock>() );
 
     return mChunkHolder.getChunk( chunk_cell ).getBlock( block_cell );
 }
 
-void cUnderGround::setBlock( const ci::ivec3& position, const cBlock& block )
+void cUnderGround::setBlock( const ci::ivec3& position, const std::shared_ptr<cBlock>& block )
 {
     if ( position.y < 0 )
         return;
@@ -272,7 +270,6 @@ bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & r
     }
 
     std::copy( temp_chunks.begin(), temp_chunks.end(), std::back_inserter( chunks ) );
-
     for ( auto c : chunks )
     {
         c->reBuildStart();
@@ -301,7 +298,7 @@ ci::vec3 cUnderGround::getBlockHighestPosition( const ci::vec3 & target_position
         return ivec3( 0 );
 
     auto & chunk = mChunkHolder.getChunk( chunk_cell );
-    auto block_pos = chunk.getBlock( block_cell ).mPosition;
+    auto block_pos = chunk.getBlock( block_cell )->mPosition;
     block_pos.y += ( BLOCK_SIZE / 2.0f );
     return block_pos;
 }
