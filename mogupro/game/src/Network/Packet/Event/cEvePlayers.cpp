@@ -11,10 +11,11 @@ void cEvePlayers::packetImport( cNetworkHandle networkHandle, ubyte2 transferred
     cImporter imp( data );
     for ( int i = 0; i < transferredBytes / ( sizeof( cinder::vec3 ) + sizeof( cinder::quat ) ); ++i )
     {
+        ubyte1 playerId;
         cinder::vec3 position;
         cinder::quat rotation;
-        imp >> position >> rotation;
-        mPlayerFormats.emplace_back( position, rotation );
+        imp >> playerId >> position >> rotation;
+        mPlayerFormats.emplace_back( playerId, position, rotation );
     }
 }
 ubyte2 cEvePlayers::packetExport( char* const data )
@@ -22,7 +23,7 @@ ubyte2 cEvePlayers::packetExport( char* const data )
     cExporter exp( data );
     for ( auto& o : mPlayerFormats )
     {
-        exp << o.mPosition << o.mRotation;
+        exp << o.mPlayerId << o.mPosition << o.mRotation;
     }
     return exp;
 }

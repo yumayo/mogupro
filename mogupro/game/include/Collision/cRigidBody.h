@@ -17,6 +17,9 @@ public:
     void update( );
     void lateUpdate( );
     bool isLanding( );
+    bool isGravity( );
+    void gravityOn( );
+    void gravityOff( );
     cinder::vec3 const& getSpeed( );
     void setSpeed( cinder::vec3 value );
     void calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase* targetCollider );
@@ -26,6 +29,7 @@ private:
     cinder::vec3 mSpeed;
 private:
     bool mIsLanding;
+    bool mIsGravity;
     float mMinValue;
 private:
     static cinder::vec3 calcWallScratchVector( cinder::vec3 speed, cinder::vec3 normal );

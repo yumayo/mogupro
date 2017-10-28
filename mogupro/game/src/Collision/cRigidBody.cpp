@@ -9,6 +9,8 @@ cRigidBody::cRigidBody( cColliderBase& collider, cinder::vec3 speed )
     : mCollider( collider )
     , mSpeed( speed )
     , mMinValue( std::numeric_limits<float>::max( ) )
+    , mIsGravity(true)
+    , mIsLanding(false)
 {
 }
 cRigidBody::~cRigidBody( )
@@ -35,8 +37,11 @@ void cRigidBody::update( )
     mMinValue = std::numeric_limits<float>::max( );
     mIsLanding = false;
 
-    if ( mSpeed.y > -10.0F )
-        mSpeed.y += -0.98F / 60.0F;
+    if ( mIsGravity )
+    {
+        if ( mSpeed.y > -10.0F )
+            mSpeed.y += -0.98F / 60.0F;
+    }
 
     mCollider.update( this );
 }
@@ -50,6 +55,18 @@ void cRigidBody::lateUpdate( )
 bool cRigidBody::isLanding( )
 {
     return mIsLanding;
+}
+bool cRigidBody::isGravity( )
+{
+    return mIsGravity;
+}
+void cRigidBody::gravityOn( )
+{
+    mIsGravity = true;
+}
+void cRigidBody::gravityOff( )
+{
+    mIsGravity = false;
 }
 cinder::vec3 const & cRigidBody::getSpeed( )
 {
