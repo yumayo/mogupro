@@ -27,12 +27,14 @@ namespace Game
 		ci::gl::enableDepthWrite();
 		ci::gl::enableDepthRead();
 		ci::gl::enableAlphaBlending();
+		mesh = ci::TriMesh::create();
 	}
 
 	void cGemManager::draw()
 	{
 
-
+		//mesh->appendIndices();
+		//mesh->appendPosition();
 		for (int i = 0; i < mDrawNum; i++)
 		{
 			mGemsptr[i]->draw();
@@ -117,6 +119,14 @@ namespace Game
 
 			mGemsptr.push_back(std::make_shared<Gem::cGem>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type));
 			mGemsptr.push_back(std::make_shared<Gem::cGem>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type));
+			mStaticGem.push_back(std::make_shared<Gem::cGem>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type));
+			mStaticGem.push_back(std::make_shared<Gem::cGem>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type));
+			int offset = 0;
+			for each (auto g in mStaticGem)
+			{
+				g->setIndices(offset);
+				offset + 8;
+			}
 		}
 	};
 

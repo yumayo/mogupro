@@ -51,6 +51,10 @@ namespace Game
 
 		const int mDrawNum = 10;
 
+		std::vector<std::shared_ptr<Gem::cGem>> mStaticGem;
+		std::vector<std::shared_ptr<Gem::cGem>> mActiveGem;
+		ci::TriMeshRef mesh;
+
 		std::vector<std::shared_ptr<Gem::cGem>> mGemsptr;
 		std::map<Gem::GemType, int> mTeamGems[2];
 		ci::vec3 mPosition;

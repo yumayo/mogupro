@@ -43,6 +43,7 @@ namespace Game
 			void setPutPos(ci::vec3 pos) { mPutPosition = pos; }
 			void setSinRotate(float rotate) { mSinrotate = rotate; }
 			void setIsDrillhit(bool ishit) { misdrillhit = ishit; }
+			void setIndices(int offset) { for (int i = 0; i < 8; i++) indices.push_back(i + offset); }
 			hardptr<Node::node> root;
 			
 		private:
@@ -54,6 +55,7 @@ namespace Game
 			ci::vec3 mRotation;
 			ci::Color mColor;
 			GemType mType;
+			std::vector<int> indices;
 			int mMoney;
 			float mSinrotate;
 			bool misdrillhit = false;
