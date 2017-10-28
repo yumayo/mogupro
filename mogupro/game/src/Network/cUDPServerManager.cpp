@@ -152,7 +152,7 @@ void cUDPServerManager::ping( )
         auto itr = mHandle.find( p->mNetworkHandle );
         if ( itr != mHandle.end( ) )
         {
-            itr->second.closeSecond = cinder::app::getElapsedSeconds( ) + 60.0F;
+            itr->second.closeSecond = cinder::app::getElapsedSeconds( ) + HOLD_SECOND;
         }
     }
 
@@ -174,7 +174,7 @@ void cUDPServerManager::ping( )
     }
 }
 cUDPServerManager::cClientInfo::cClientInfo( ubyte1 idCount )
-    : closeSecond( cinder::app::getElapsedSeconds( ) + 60.0F )
+    : closeSecond( cinder::app::getElapsedSeconds( ) + HOLD_SECOND )
 {
     if ( idCount == 255 )
     {
