@@ -32,11 +32,11 @@ namespace Scene
 			n->run_action(repeat_forever::create(sequence::create(delay::create(1.5f),
 				call_func::create([this]
 			{
-				for each(auto m in cMatchingMemberManager::getInstance()->mRoomMembers)
+				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
 				{
 					for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
 					{
-						cUDPServerManager::getInstance()->send(m.first,
+						cUDPServerManager::getInstance()->send(m.networkHandle,
 							new cEveTeamMember(p.teamNum, p.nameStr, p.playerID));
 					}
 				}
@@ -75,7 +75,6 @@ namespace Scene
 				cMatchingMemberManager::getInstance()->mMasterHandle = mReqMakeRoom->mNetworkHandle;
 				cUDPServerManager::getInstance()->send(mReqMakeRoom->mNetworkHandle, new cResMakeRoom(true));
 				cMatchingMemberManager::getInstance()->addRoomMembers(mReqMakeRoom->mNetworkHandle);
-				cMatchingMemberManager::getInstance()->addPlayerDatas("Mogura" + mReqMakeRoom->mNetworkHandle.ipAddress, -1);
 				mPhaseState = PhaseState::IN_ROOM;
 			}
 		}
@@ -91,7 +90,6 @@ namespace Scene
 					continue;
 				}
 				cUDPServerManager::getInstance()->send(reqInRoom->mNetworkHandle, new cResInRoom(true));
-				cMatchingMemberManager::getInstance()->addPlayerDatas("Mogura" + reqInRoom->mNetworkHandle.ipAddress, -1);
 			}
 
 		}
@@ -100,14 +98,13 @@ namespace Scene
 		{
 			while (auto reqWantTeamIn = cRequestManager::getInstance()->getReqWantTeamIn())
 			{
-				if (cMatchingMemberManager::getInstance()->checkTeamIn(reqWantTeamIn->mTeamNum,
+				if (cMatchingMemberManager::getInstance()->changeTeamNum(reqWantTeamIn->mTeamNum,
 					reqWantTeamIn->mNetworkHandle) != true)
 				{
 					cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle, new cResWantTeamIn(0, reqWantTeamIn->mTeamNum));
 					continue;
 				}
 				cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle, new cResWantTeamIn(1, reqWantTeamIn->mTeamNum));
-				cMatchingMemberManager::getInstance()->addPlayerDatas("Mogura" + reqWantTeamIn->mNetworkHandle.ipAddress, reqWantTeamIn->mTeamNum);
 			}
 		}
 
@@ -120,14 +117,14 @@ namespace Scene
 					continue;
 			
 				mPhaseState = PhaseState::BEGIN_GAME;
-				for each(auto m in cMatchingMemberManager::getInstance()->mRoomMembers)
+				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
 				{
 					for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
 					{
-						cUDPServerManager::getInstance()->send(m.first,
+						cUDPServerManager::getInstance()->send(m.networkHandle,
 							new cEveTeamMember(p.teamNum, p.nameStr, p.playerID));
 					}
-					cUDPServerManager::getInstance()->send(m.first, new cResCheckBeginGame(m.second));
+					cUDPServerManager::getInstance()->send(m.networkHandle, new cResCheckBeginGame(m.playerID));
 				}
 			}
 		}
@@ -140,19 +137,11 @@ namespace Scene
 		void cMatchingServer::draw2D()
 		{
 			int c = 0;
-			for each(auto m in cMatchingMemberManager::getInstance()->mRoomMembers)
-			{
-				font->set_text(u8"" + m.first.ipAddress + " : " + std::to_string(m.first.port));
-				font->set_position_3d(glm::vec3(0, c * 50, 0));
-				n->entry_render(ci::mat4());
-				c++;
-			}
-
-			c = 0;
 			for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
 			{
-				font->set_text(u8"" + m.nameStr + " : " + std::to_string(m.teamNum));
-				font->set_position_3d(glm::vec3(200, c * 50, 0));
+				font->set_text(u8"" + m.networkHandle.ipAddress 
+					+ " playerID : " + std::to_string(m.playerID) + " taemNum : " + std::to_string(m.teamNum));
+				font->set_position_3d(glm::vec3(0, c * 50, 0));
 				n->entry_render(ci::mat4());
 				c++;
 			}

@@ -16,13 +16,14 @@ namespace Network
 		ubyte1 teamNum;
 		std::string nameStr;
 		ubyte1 playerID;
-		
+		cNetworkHandle networkHandle;
 		PlayerData()
 		{
 
 		}
-		PlayerData(ubyte1 _teamNum,std::string _nameStr,ubyte1 _playerID) : 
-			teamNum(_teamNum),nameStr(_nameStr),playerID(_playerID)
+
+		PlayerData(ubyte1 _teamNum, std::string _nameStr, ubyte1 _playerID) :
+			teamNum(_teamNum), nameStr(_nameStr), playerID(_playerID)
 		{
 
 		}
@@ -37,13 +38,13 @@ public:
 	bool addRoomMembers(Network::cNetworkHandle addMember);
 	//メンバーにいるかどうか (知らない奴からの通信はじくため)
 	bool checkInMembers(Network::cNetworkHandle member);
-	//Teamにメンバー追加 コードが汚いからリファクタリング必要
-	bool checkTeamIn(int teamNum,Network::cNetworkHandle addMember);
+	//チーム番号の変更
+	bool changeTeamNum(int teamNum, Network::cNetworkHandle member);
+	//マスターかどうかの判断
 	bool checkMaster(cNetworkHandle masterHandle);
 	void addPlayerDatas(std::string playerStr,ubyte1 teamNum);
 	void addPlayerDatas(std::string playerStr, ubyte1 teamNum, ubyte1 playerID);
 	cNetworkHandle mMasterHandle;
-	std::map<cNetworkHandle, int> mRoomMembers;
 	std::vector<PlayerData> mPlayerDatas;
     int mPlayerID = 0;
 };

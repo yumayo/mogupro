@@ -1,7 +1,7 @@
 #include <Network/cMatchingMemberManager.h>
 namespace Network
 {
-cMatchingMemberManager::cMatchingMemberManager( ) :mMasterHandle("",0)
+cMatchingMemberManager::cMatchingMemberManager( )
 {
 
 }
@@ -13,46 +13,48 @@ cMatchingMemberManager::~cMatchingMemberManager( )
 
 bool cMatchingMemberManager::addRoomMembers(Network::cNetworkHandle addMember)
 {
-	if ((int)mRoomMembers.size() > 8)return false;
+	if ((int)mPlayerDatas.size() > 8)return false;
 
-	for each(auto member in mRoomMembers)
+	for each(auto member in mPlayerDatas)
 	{
-		if (member.first == addMember)
+		if (member.networkHandle == addMember)
 			return false;
 	}
 
-	mRoomMembers.insert(std::make_pair(addMember,mRoomMembers.size()));
+	mPlayerDatas.push_back(PlayerData(-1,"Mogura" + addMember.ipAddress, mPlayerDatas.size()));
 	return true;
+}
+
+bool cMatchingMemberManager::changeTeamNum(int teamNum, Network::cNetworkHandle member)
+{
+	int teamNums[2];
+	teamNums[0] = 0;
+	teamNums[1] = 0;
+	for each(auto p in mPlayerDatas)
+	{
+		if (p.teamNum == 0 || p.teamNum == 1)
+			teamNums[p.teamNum]++;
+	}
+	if (teamNums[teamNum] > 3)
+		return false;
+
+	for (int i = 0; i < mPlayerDatas.size(); ++i)
+	{
+		if (mPlayerDatas[i].networkHandle != member)
+			continue;
+
+		mPlayerDatas[i].teamNum = teamNum;
+		return true;
+	}
+	return false;
 }
 
 bool cMatchingMemberManager::checkInMembers(Network::cNetworkHandle member)
 {
-	for each(auto m in mRoomMembers)
+	for each(auto m in mPlayerDatas)
 	{
-		if (m.first == member)
+		if (m.networkHandle == member)
 			return true;
-	}
-	return false;
-}
-bool cMatchingMemberManager::checkTeamIn(int teamNum, Network::cNetworkHandle addMember)
-{
-	auto m = mRoomMembers.find(addMember);
-
-	int teamNums[2];
-	teamNums[0] = 0;
-	teamNums[1] = 0;
-	for each(auto m in mRoomMembers)
-	{
-		if (m.second != 100)
-			teamNums[m.second]++;
-	}
-
-	if (m != mRoomMembers.end())
-	{
-		if (teamNums[teamNum] > 3)
-			return false;
-		m->second = teamNum;
-		return true;
 	}
 	return false;
 }
