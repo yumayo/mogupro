@@ -43,7 +43,7 @@ void cUDPClientManager::connect( std::string const& ipAddress )
         packet->createPacket( packetBuffer );
         mSocket.write( cNetworkHandle( ipAddress, 25565 ), packetBuffer.transferredBytes, packetBuffer.buffer.data( ) );
         delete packet;
-        mConnectSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
+        mConnectSecond = cinder::app::getElapsedSeconds( ) + 60.0F;
     } ) ), 3 ) );
 }
 void cUDPClientManager::connectOfflineServer( )
@@ -89,7 +89,7 @@ void cUDPClientManager::connection( )
     {
         mConnectServerHandle = p->mNetworkHandle;
 
-        mCloseSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
+        mCloseSecond = cinder::app::getElapsedSeconds( ) + 60.0F;
 
         using namespace Node::Action;
         auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
@@ -115,7 +115,7 @@ void cUDPClientManager::ping( )
 {
     while ( auto p = cEventManager::getInstance( )->getEvePing( ) )
     {
-        mCloseSecond = cinder::app::getElapsedSeconds( ) + 50000.0F;
+        mCloseSecond = cinder::app::getElapsedSeconds( ) + 60.0F;
     }
     if (mConnectServerHandle.ipAddress != Network::getLocalIpAddressHost())
     {
