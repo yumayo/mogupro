@@ -10,14 +10,14 @@ namespace Game
 cServerAdapter::cServerAdapter( )
 {
     mQuarryId = 0;
-    mPlayersPosition[0] = cinder::vec3( 30, 10, 20 );
-    mPlayersPosition[1] = cinder::vec3( 32, 10, 20 );
-    mPlayersPosition[2] = cinder::vec3( 34, 10, 20 );
-    mPlayersPosition[3] = cinder::vec3( 36, 10, 20 );
-    mPlayersPosition[4] = cinder::vec3( 30, 10, 30 );
-    mPlayersPosition[5] = cinder::vec3( 30, 10, 32 );
-    mPlayersPosition[6] = cinder::vec3( 30, 10, 34 );
-    mPlayersPosition[7] = cinder::vec3( 30, 10, 36 );
+    mPlayersPosition[0] = cinder::vec3( 30, 30, 20 );
+    mPlayersPosition[1] = cinder::vec3( 32, 30, 20 );
+    mPlayersPosition[2] = cinder::vec3( 34, 30, 20 );
+    mPlayersPosition[3] = cinder::vec3( 36, 30, 20 );
+    mPlayersPosition[4] = cinder::vec3( 30, 30, 30 );
+    mPlayersPosition[5] = cinder::vec3( 30, 30, 32 );
+    mPlayersPosition[6] = cinder::vec3( 30, 30, 34 );
+    mPlayersPosition[7] = cinder::vec3( 30, 30, 36 );
 }
 cServerAdapter::~cServerAdapter( )
 {
@@ -25,13 +25,13 @@ cServerAdapter::~cServerAdapter( )
 }
 void cServerAdapter::update( )
 {
-    sendPlayersPosition( );
+    sendPlayers( );
     sendSetQuarry( );
     sendGetGemPlayer( );
     sendGetGemQuarry( );
     sendBreakBlocks( );
 }
-void cServerAdapter::sendPlayersPosition( )
+void cServerAdapter::sendPlayers( )
 {
     auto dli = Network::cDeliverManager::getInstance( );
     while ( auto packet = dli->getDliPlayer( ) )
@@ -142,10 +142,13 @@ void cServerAdapter::sendBreakBlocks( )
     auto breakBlocksPacket = new Network::Packet::Event::cEveBreakBlocks( );
     while ( auto packet = dli->getDliBreakBlocks( ) )
     {
-        std::copy( packet->mBreakPositions.begin( ),
-                   packet->mBreakPositions.end( ),
-                   std::back_inserter( breakBlocksPacket->mBreakPositions ) );
+        std::copy( packet->mBreakFormats.begin( ),
+                   packet->mBreakFormats.end( ),
+                   std::back_inserter( breakBlocksPacket->mBreakFormats ) );
     }
-    Network::cUDPServerManager::getInstance( )->broadcast( breakBlocksPacket );
+    if ( !breakBlocksPacket->mBreakFormats.empty( ) )
+    {
+        Network::cUDPServerManager::getInstance( )->broadcast( breakBlocksPacket );
+    }
 }
 }

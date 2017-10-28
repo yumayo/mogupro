@@ -208,8 +208,7 @@ cChunk & cUnderGround::getChunk( const ci::ivec3 & position )
 
 bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
 {
-    if ( blockBreakNetwork( position, radius ) )
-        cClientAdapter::getInstance()->sendBreakBlock( position );
+    cClientAdapter::getInstance()->sendBreakBlock( position, radius );
     return true;
 }
 

@@ -6,10 +6,6 @@ namespace Packet
 {
 namespace Deliver
 {
-cDliBreakBlocks::cDliBreakBlocks( )
-{
-
-}
 void cDliBreakBlocks::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
     mNetworkHandle = networkHandle;
@@ -23,18 +19,21 @@ void cDliBreakBlocks::packetImport( cNetworkHandle networkHandle, ubyte2 transfe
             imp >> src;
             p[n] = convertFloat( src );
         }
-        mBreakPositions.emplace_back( p[0], p[1], p[2] );
+        ubyte2 radius;
+        imp >> radius;
+        mBreakFormats.emplace_back( cinder::vec3( p[0], p[1], p[2] ), convertFloat( radius ) );
     }
 }
 ubyte2 cDliBreakBlocks::packetExport( char* const data )
 {
     cExporter exp( data );
-    for ( auto& o : mBreakPositions )
+    for ( auto& o : mBreakFormats )
     {
         for ( int n = 0; n < 3; ++n )
         {
-            exp << convertFixedpoint( o[n] );
+            exp << convertFixedpoint( o.position[n] );
         }
+        exp << convertFixedpoint( o.radius );
     }
     return exp;
 }

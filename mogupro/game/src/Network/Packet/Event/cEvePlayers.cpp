@@ -23,7 +23,7 @@ ubyte2 cEvePlayers::packetExport( char* const data )
     cExporter exp( data );
     for ( auto& o : mPlayerFormats )
     {
-        exp << o.mPlayerId << o.mPosition << o.mRotation;
+        exp << o.playerId << o.position << o.rotation;
     }
     return exp;
 }
