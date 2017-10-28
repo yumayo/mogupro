@@ -47,14 +47,24 @@ void cClientAdapter::recvAllPlayersFormat( )
 }
 void cClientAdapter::recvAllQuarrys( )
 {
-    auto m = ::Network::cEventManager::getInstance( );
-    while ( auto packet = m->getEveSetQuarry( ) )
+    auto res = Network::cResponseManager::getInstance( );
+    while ( auto packet = res->getResCheckSetQuarry( ) )
     {
         Game::cStrategyManager::getInstance( )->CreateDrill(
             packet->mPosition,
             packet->mDrillId,
             static_cast<Game::Strategy::cDrill::DrillType>( packet->mType ),
-            packet->mTeamId == 0 // TODO: ƒ`[ƒ€ID‚Æ”äŠr‚·‚éB
+            true
+        );
+    }
+    auto eve = Network::cEventManager::getInstance( );
+    while ( auto packet = eve->getEveSetQuarry( ) )
+    {
+        Game::cStrategyManager::getInstance( )->CreateDrill(
+            packet->mPosition,
+            packet->mDrillId,
+            static_cast<Game::Strategy::cDrill::DrillType>( packet->mType ),
+            packet->mTeamId == Game::cPlayerManager::getInstance()->getActivePlayerTeamId( )
         );
     }
 }
@@ -121,6 +131,7 @@ void cClientAdapter::sendSetQuarry( cinder::vec3 const & position, Network::ubyt
     auto packet = new Network::Packet::Request::cReqCheckSetQuarry( );
     packet->mPosition = position;
     packet->mType = drillType;
+    packet->mTeamId = cPlayerManager::getInstance( )->getActivePlayerTeamId( );
     Network::cUDPClientManager::getInstance( )->send( packet );
 }
 void cClientAdapter::sendPlayerFormat( cinder::vec3 const & position, cinder::quat const & rotation )
@@ -136,7 +147,7 @@ void cClientAdapter::sendGetGemPlayer( Network::ubyte2 gemId )
     packet->mGemId = gemId;
     Network::cUDPClientManager::getInstance( )->send( packet );
 }
-void cClientAdapter::sendGetGemQuarry( Network::ubyte1 drillId, Network::ubyte2 gemId )
+void cClientAdapter::sendGetGemQuarry( Network::ubyte2 drillId, Network::ubyte2 gemId )
 {
     auto packet = new Network::Packet::Request::cReqCheckGetJemQuarry( );
     packet->mDrillId = drillId;

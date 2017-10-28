@@ -16,8 +16,17 @@ void cRecursionUsableMutex::erase( )
     mIds.erase( std::this_thread::get_id( ) );
     mOwnIds.unlock( );
 }
-int & cRecursionUsableMutex::getDuplicationCount( )
+int cRecursionUsableMutex::getDuplicationCount( )
 {
-    return mIds.at( std::this_thread::get_id( ) );
+    mOwnIds.lock( );
+    auto count = mIds.at( std::this_thread::get_id( ) );
+    mOwnIds.unlock( );
+    return count;
+}
+void cRecursionUsableMutex::setDuplicationCount( int count )
+{
+    mOwnIds.lock( );
+    mIds.at( std::this_thread::get_id( ) ) = count;
+    mOwnIds.unlock( );
 }
 }

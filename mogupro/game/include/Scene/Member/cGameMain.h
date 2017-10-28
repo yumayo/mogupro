@@ -19,8 +19,6 @@ public:
 private:
     cinder::vec3 pos;
     cinder::vec3 size;
-	//プレイヤー達の位置
-	std::vector<ci::vec3> positions;
     Game::SkyDome::cSkyDome skydome;
     hardptr<Node::node> n;
 };

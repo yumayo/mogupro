@@ -34,9 +34,8 @@ namespace Scene
 	{
 		void cMatching::setup()
 		{
-
 			Network::cUDPClientManager::getInstance()->open();
-			cUDPClientManager::getInstance()->connect("10.25.34.217");
+			cUDPClientManager::getInstance()->connect("10.25.36.137");
 			mClassState = ClassState::NOT;
 			mWaitClassState = ClassState::NOT;
 			mPhaseState = PhaseState::NOT_IN_ROOM;
@@ -45,7 +44,17 @@ namespace Scene
 			CAMERA->followingCamera(&pos, 30);
 			CAMERA->setup();
 			ENV->padSetup();
-			//mFont = ci::Font("timesi.ttf",20);
+			using namespace Node::Action;
+			mPhaseState = PhaseState::NOT_IN_ROOM;
+			font = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 40);
+			font->set_text(u8"");
+			font->set_scale(glm::vec2(1, -1));
+			smallFont = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 20);
+			smallFont->set_text(u8"");
+			smallFont->set_scale(glm::vec2(1, -1));
+			n = Node::node::create();
+			n->add_child(font);
+			n->add_child(smallFont);
 		}
 
 		void cMatching::shutDown()
@@ -68,10 +77,8 @@ namespace Scene
 
 			if (mWaitClassState == ClassState::NOT)
 			{
-				while (!cResponseManager::getInstance()->mResMakeRoom.empty())
+				while (auto resMakeRoom = cResponseManager::getInstance()->getResMakeRoom())
 				{
-					auto resMakeRoom = cResponseManager::getInstance()->mResMakeRoom.top();
-					cResponseManager::getInstance()->mResMakeRoom.pop();
 					continue;
 				}
 
@@ -91,10 +98,9 @@ namespace Scene
 			}
 			else if (mWaitClassState == ClassState::CLIENT)
 			{
-				while (!cResponseManager::getInstance()->mResInRoom.empty())
+				while (auto resInRoom = cResponseManager::getInstance()->getResInRoom())
 				{
-					auto resMakeRoom = cResponseManager::getInstance()->mResInRoom.top();
-					if (resMakeRoom.mFlag = false)
+					if (resInRoom->mFlag = false)
 					{
 						mWaitClassState = ClassState::NOT;
 						mCanSend = true;
@@ -105,34 +111,31 @@ namespace Scene
 					mWaitClassState = ClassState::NOT;
 					mCanSend = true;
 					mClassState = ClassState::CLIENT;
-					cResponseManager::getInstance()->mResInRoom.pop();
-					continue;
+					mPhaseState = PhaseState::IN_ROOM;
 				}
 			}
 
 			else if (mWaitClassState == ClassState::MASTER)
 			{
-				while (!cResponseManager::getInstance()->mResMakeRoom.empty())
+				while (auto resMakeRoom = cResponseManager::getInstance()->getResMakeRoom())
 				{
-					auto resMakeRoom = cResponseManager::getInstance()->mResMakeRoom.top();
-					if (resMakeRoom.mFlag == false)
+					if (resMakeRoom->mFlag == false)
 					{
 						mWaitClassState = ClassState::NOT;
 						mCanSend = true;
-						cResponseManager::getInstance()->mResMakeRoom.pop();
 						continue;
 					}
 
 					mWaitClassState = ClassState::NOT;
 					mCanSend = true;
 					mClassState = ClassState::MASTER;
-					cResponseManager::getInstance()->mResMakeRoom.pop();
-					continue;
+					mPhaseState = PhaseState::IN_ROOM;
 				}
 			}
 		}
 		void cMatching::inRoom()
 		{
+			if (mPhaseState != PhaseState::IN_ROOM)return;
 
 			if (mClassState == ClassState::CLIENT
 				|| mClassState == ClassState::MASTER)
@@ -141,22 +144,21 @@ namespace Scene
 				if (mCanSend == true)
 				{
 					//1P・2Pのどっちに入るのかの選択
-					if (ENV->pushKey(ci::app::KeyEvent::KEY_1))
+					if (ENV->pushKey(ci::app::KeyEvent::KEY_z))
 					{
 						cUDPClientManager::getInstance()->send(new cReqWantTeamIn(0));
 						mCanSend = false;
 					}
 
-					else if (ENV->pushKey(ci::app::KeyEvent::KEY_2))
+					else if (ENV->pushKey(ci::app::KeyEvent::KEY_x))
 					{
 						cUDPClientManager::getInstance()->send(new cReqWantTeamIn(1));
 						mCanSend = false;
 					}
 				}
-				while (!cResponseManager::getInstance()->mResWantTeamIn.empty())
+				while (auto resWantTeamIn = cResponseManager::getInstance()->getResWantTeamIn())
 				{
-					auto resWantTeamIn = cResponseManager::getInstance()->mResWantTeamIn.top();
-					if (resWantTeamIn.mFlag == true)
+					if (resWantTeamIn->mFlag == true)
 					{
 						mCanSend = true;
 					}
@@ -164,38 +166,32 @@ namespace Scene
 					{
 						mCanSend = true;
 					}
-					cResponseManager::getInstance()->mResWantTeamIn.pop();
 				}
 				
-				while (!cResponseManager::getInstance()->mResCheckBeginGame.empty())
-				{
-					auto resWantTeamIn = cResponseManager::getInstance()->mResCheckBeginGame.top();
-					cRequestManager::getInstance()->mReqWantTeamIn.pop();
-					shutDown();
+				while (auto resCheckBeginGame = cResponseManager::getInstance()->getResCheckBeginGame())
+				{	
+                    cMatchingMemberManager::getInstance( )->mPlayerID = resCheckBeginGame->mPlayerID;
+                    shutDown();
 					cSceneManager::getInstance()->change<Scene::Member::cGameMain>();
 					cSceneManager::getInstance()->now().setup();
 					continue;
 				}
 
-				while (!cEventManager::getInstance()->mEveTeamMember.empty())
+				while (auto eveTeamMember = cEventManager::getInstance()->getEveTeamMember())
 				{
-					auto eveTeamMember = cEventManager::getInstance()->mEveTeamMember.top();
 					cMatchingMemberManager::getInstance()->addPlayerDatas(
-						eveTeamMember.mNameStr,eveTeamMember.mTeamNum,eveTeamMember.mPlayerID);
-					cEventManager::getInstance()->mEveTeamMember.pop();
+						eveTeamMember->mNameStr,eveTeamMember->mTeamNum,eveTeamMember->mPlayerID);
 				}
 			}
 
 			if (mClassState == ClassState::MASTER)
 			{
-				if (ENV->pushKey(ci::app::KeyEvent::KEY_3))
+				if (ENV->pushKey(ci::app::KeyEvent::KEY_c))
 				{
 					cUDPClientManager::getInstance()->send(new cReqCheckBeginGame());
 					mCanSend = false;
 				}
 			}
-
-
 		}
 
 		void cMatching::draw()
@@ -207,12 +203,31 @@ namespace Scene
 			switch (mPhaseState)
 			{
 			case PhaseState::NOT_IN_ROOM:
-				drawRect(ci::vec2(-300, -100), ci::vec2(200, 200), ci::ColorA(1, 0, 0, 1));
-				drawRect(ci::vec2(300, -100), ci::vec2(200, 200), ci::ColorA(1, 0, 0, 1));
+				drawRect(ci::vec2(-300, 0), ci::vec2(300, 300), ci::ColorA(0, 1, 0, 1));
+				font->set_text(u8"ルームを作る");
+				font->set_position_3d(glm::vec3(-300, 0, 0));
+				ci::gl::pushModelView();
+				n->entry_render(ci::mat4());
+				ci::gl::popModelView();
+				font->set_text(u8"Z key");
+				font->set_position_3d(glm::vec3(-300, -50, 0));
+				ci::gl::pushModelView();
+				n->entry_render(ci::mat4());
+				ci::gl::popModelView();
+				drawRect(ci::vec2(300, 0), ci::vec2(300, 300), ci::ColorA(0, 0, 1, 1));
+				font->set_text(u8"ルームに入る");
+				font->set_position_3d(glm::vec3(300, 0, 0));
+				ci::gl::pushModelView();
+				n->entry_render(ci::mat4());
+				ci::gl::popModelView();
+				font->set_text(u8"X key");
+				font->set_position_3d(glm::vec3(300, -50, 0));
+				ci::gl::pushModelView();
+				n->entry_render(ci::mat4());
+				ci::gl::popModelView();
 				break;
 			case PhaseState::IN_ROOM:
-
-
+			
 				break;
 			}
 		}

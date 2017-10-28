@@ -16,7 +16,7 @@ cScopedMutex::cScopedMutex( cRecursionUsableMutex & mutex )
 }
 cScopedMutex::~cScopedMutex( )
 {
-    auto& duplication_count = mMutex.getDuplicationCount( );
+    auto duplication_count = mMutex.getDuplicationCount( );
     if ( duplication_count == 0 )
     {
         mMutex.unlock( );
@@ -24,7 +24,7 @@ cScopedMutex::~cScopedMutex( )
     }
     else
     {
-        --duplication_count;
+        mMutex.setDuplicationCount( --duplication_count );
     }
 }
 }

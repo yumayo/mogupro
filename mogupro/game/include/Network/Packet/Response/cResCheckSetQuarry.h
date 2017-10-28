@@ -18,6 +18,7 @@ public:
     cinder::vec3 mPosition;
     ubyte1 mType;
     ubyte2 mDrillId;
+    ubyte1 mTeamId;
 };
 }
 }

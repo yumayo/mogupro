@@ -7,6 +7,7 @@
 #include "cinder/gl/Texture.h"
 #include "CameraManager\cCameraManager.h"
 #include "Utility\cTimeMeasurement.h"
+#include "cPlayerManager.h"
 #include <Utility/cSingletonAble.h>
 #include <memory>
 #include <cinder/Rand.h>
@@ -45,6 +46,10 @@ namespace Game
 		std::shared_ptr<Gem::cGem> FindGem(int id);
 
 	private:
+
+		void sort();
+
+		const int mDrawNum = 10;
 
 		std::vector<std::shared_ptr<Gem::cGem>> mGemsptr;
 		std::map<Gem::GemType, int> mTeamGems[2];

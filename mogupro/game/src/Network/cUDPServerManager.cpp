@@ -15,6 +15,8 @@ cUDPServerManager::cUDPServerManager( )
     : mRoot( Node::node::create( ) )
 {
     mRoot->set_schedule_update( );
+    mIsAccept = false;
+    mIdCount = 0;
 }
 void cUDPServerManager::close( )
 {
@@ -88,8 +90,8 @@ void cUDPServerManager::updateRecv( )
 }
 void cUDPServerManager::sendDataBufferAdd( cNetworkHandle const & networkHandle, cPacketBuffer const & packetBuffer )
 {
-    auto itr = mHandle.find(networkHandle);
-    if (itr == mHandle.end()) return;
+    auto itr = mHandle.find( networkHandle );
+    if ( itr == mHandle.end( ) ) return;
 
     auto& buf = itr->second.buffer;
 
@@ -113,49 +115,66 @@ void cUDPServerManager::connection( )
     {
         if ( !mIsAccept ) continue;
 
-        auto itr = mHandle.insert( std::make_pair( p->mNetworkHandle, std::move( cClientInfo( ) ) ) );
-        send( p->mNetworkHandle, new Packet::Response::cResConnect( ) );
+        cinder::app::console( ) << p->mNetworkHandle.ipAddress << ":" << p->mNetworkHandle.port << "＠";
+        cinder::app::console( ) << "cUDPServerManager: " << "connecting..." << (int)mIdCount << std::endl;
 
-        using namespace Node::Action;
-        auto networkHandle = p->mNetworkHandle;
-        auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ networkHandle, this ]
+        auto itr = mHandle.insert( std::make_pair( p->mNetworkHandle, std::move( cClientInfo( mIdCount ) ) ) );
+        if ( itr.second )
         {
-            send( networkHandle, new Packet::Event::cEvePing( ) );
-        } ) ) );
-        act->set_tag( itr.first->second.id );
-        mRoot->run_action( act );
+            cinder::app::console( ) << p->mNetworkHandle.ipAddress << ":" << p->mNetworkHandle.port << "＠";
+            cinder::app::console( ) << "cUDPServerManager: " << "connect success!! " << (int)mIdCount << std::endl;
+
+            mIdCount += 1;
+
+            send( p->mNetworkHandle, new Packet::Response::cResConnect( ) );
+
+            using namespace Node::Action;
+            auto networkHandle = p->mNetworkHandle;
+            auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ networkHandle, this ]
+            {
+                send( networkHandle, new Packet::Event::cEvePing( ) );
+                cinder::app::console( ) << "cUDPServerManager: " << "ping to " << (int)getPlayerId( networkHandle ) << std::endl;
+            } ) ) );
+            act->set_tag( itr.first->second.id );
+            mRoot->run_action( act );
+        }
+        else
+        {
+            cinder::app::console( ) << p->mNetworkHandle.ipAddress << ":" << p->mNetworkHandle.port << "＠";
+            cinder::app::console( ) << "cUDPServerManager: " << "connect faild " << (int)mIdCount << std::endl;
+        }
     }
 }
 void cUDPServerManager::ping( )
 {
     while ( auto p = cDeliverManager::getInstance( )->getDliPing( ) )
     {
-        auto itr = mHandle.find(p->mNetworkHandle);
-        if (itr != mHandle.end())
+        auto itr = mHandle.find( p->mNetworkHandle );
+        if ( itr != mHandle.end( ) )
         {
-            itr->second.closeSecond = cinder::app::getElapsedSeconds() + 5.0F;
+            itr->second.closeSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
         }
     }
+
     for ( auto itr = mHandle.begin( ); itr != mHandle.end( ); )
     {
         // ローカルの場合はカウントダウンをしません。
-        if (itr->first.ipAddress != Network::getLocalIpAddressHost())
+        if ( itr->first.ipAddress != Network::getLocalIpAddressHost( ) )
         {
-            if (itr->second.closeSecond < cinder::app::getElapsedSeconds())
+            if ( itr->second.closeSecond < cinder::app::getElapsedSeconds( ) )
             {
-                mRoot->remove_action_by_tag(itr->second.id);
-                mHandle.erase(itr);
+                mRoot->remove_action_by_tag( itr->second.id );
+                mHandle.erase( itr++ );
                 continue;
             }
         }
         itr++;
     }
 }
-cUDPServerManager::cClientInfo::cClientInfo( )
+cUDPServerManager::cClientInfo::cClientInfo( ubyte1 idCount )
     : closeSecond( cinder::app::getElapsedSeconds( ) + 5.0F )
 {
-    // とりあえず9人以上は入れません。
-    if ( idCount == 8 )
+    if ( idCount == 255 )
     {
         Utility::MessageBoxOk( "クライアントの数が上限に達しました。",
                                [ ] { exit( 0 ); } );
@@ -164,7 +183,5 @@ cUDPServerManager::cClientInfo::cClientInfo( )
     {
         id = idCount;
     }
-    idCount += 1;
 }
-ubyte1 cUDPServerManager::cClientInfo::idCount = 0U;
 }

@@ -33,8 +33,11 @@ void cUDP::close( )
 {
     mIsPause = true;
     mIoService.stop( );
-    mUpdateIoService.join( );
     mUdpSocket.close( );
+    if ( mUpdateIoService.joinable( ) )
+    {
+        mUpdateIoService.join( );
+    }
 }
 void cUDP::open( )
 {

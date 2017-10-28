@@ -32,11 +32,11 @@ namespace Game
 	void cGemManager::draw()
 	{
 
-		for each (auto g in mGemsptr)
-		{
-			g->draw();
-		}
 
+		for (int i = 0; i < mDrawNum; i++)
+		{
+			mGemsptr[i]->draw();
+		}
 		ci::gl::color(ci::Color(1, 1, 1));
 	};
 
@@ -66,6 +66,7 @@ namespace Game
 
 	void cGemManager::update()
 	{
+		sort();
 		ci::gl::ScopedFramebuffer fbScp(mGemBuffer);
 		ci::gl::ScopedViewport scpVp2(ci::ivec2(0), mGemBuffer->getSize());
 
@@ -73,9 +74,9 @@ namespace Game
 		ci::gl::ScopedGlslProg shaderScp(ci::gl::getStockShader(ci::gl::ShaderDef().color()));
 		ci::gl::clear(ci::ColorA(0,0,0,0));
 
-		for each (auto g in mGemsptr)
+		for (int i = 0; i < mDrawNum; i++)
 		{
-			g->draw();
+			mGemsptr[i]->draw();
 		}
 		ci::gl::color(ci::Color(1, 1, 1));
 	};
@@ -171,4 +172,11 @@ namespace Game
 		ci::app::console() << "This is no Gem that has that " << id << std::endl;
 		return nullptr;
 	}
+
+	void cGemManager::sort()
+	{
+		ci::vec3 pPos = Game::cPlayerManager::getInstance()->getActivePlayer()->getPos();
+		std::sort(mGemsptr.begin(), mGemsptr.end(), [&](const std::shared_ptr<Gem::cGem> a, const std::shared_ptr<Gem::cGem> b) { return glm::distance(pPos, a->getPos()) < glm::distance(pPos, b->getPos()); });
+
+    }
 }

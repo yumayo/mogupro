@@ -35,12 +35,16 @@ bool cUDPClientManager::isConnected( )
 }
 void cUDPClientManager::connect( std::string const& ipAddress )
 {
-    auto packet = new Packet::Request::cReqConnect( );
-    cPacketBuffer packetBuffer;
-    packet->createPacket( packetBuffer );
-    mSocket.write( cNetworkHandle( ipAddress, 25565 ), packetBuffer.transferredBytes, packetBuffer.buffer.data( ) );
-    delete packet;
-    mConnectSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
+    using namespace Node::Action;
+    mRoot->run_action( repeat_times::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this, ipAddress ]
+    {
+        auto packet = new Packet::Request::cReqConnect( );
+        cPacketBuffer packetBuffer;
+        packet->createPacket( packetBuffer );
+        mSocket.write( cNetworkHandle( ipAddress, 25565 ), packetBuffer.transferredBytes, packetBuffer.buffer.data( ) );
+        delete packet;
+        mConnectSecond = cinder::app::getElapsedSeconds( ) + 5.0F;
+    } ) ), 3 ) );
 }
 void cUDPClientManager::connectOfflineServer( )
 {

@@ -7,6 +7,9 @@
 #include <CameraManager/cCameraManager.h>
 #include <Utility/cInput.h>
 #include <Utility/cTimeMeasurement.h>
+#include <Scene/Member/cMatching.h>
+#include <Scene/Member/cMatchingServer.h>
+#include <Scene/Member/cTitle.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -26,11 +29,12 @@ public:
     void keyUp( KeyEvent event )       override;
     void update( ) override;
     void draw( ) override;
+    void cleanup( ) override;
 };
 
 void gameApp::setup( )
 {
-    cSceneManager::getInstance( )->change<Scene::Member::cGameMain>( );
+    cSceneManager::getInstance( )->change<Scene::Member::cTitle>( );
     cSceneManager::getInstance( )->now( ).setup( );
 }
 
@@ -86,6 +90,11 @@ void gameApp::draw( )
     CAMERA->unBind2D( );
 
     ENV->flashInput( );
+}
+
+void gameApp::cleanup()
+{
+    cSceneManager::getInstance()->now().shutDown();
 }
 
 CINDER_APP( gameApp, RendererGl, [ ] ( App::AppBase::Settings* s ) { s->setWindowSize( 1600, 900 ); } )

@@ -55,15 +55,15 @@ public:
     }
     bool operator==( cNetworkHandle const& other ) const noexcept
     {
-        return other.ipAddress == this->ipAddress && other.port == this->port;
+        return other.ipAddress == this->ipAddress;
     }
     bool operator!=( cNetworkHandle const& other ) const noexcept
     {
-        return !( other.ipAddress == this->ipAddress && other.port == this->port );
+        return !( other.ipAddress == this->ipAddress );
     }
     bool operator<( cNetworkHandle const& other ) const noexcept
     {
-        return other.ipAddress < this->ipAddress && other.port < this->port;
+        return other.ipAddress < this->ipAddress;
     }
     std::string const ipAddress;
     int const port;

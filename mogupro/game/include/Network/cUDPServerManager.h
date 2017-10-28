@@ -85,17 +85,16 @@ private:
     class cClientInfo
     {
     public:
-        cClientInfo( );
+        cClientInfo( ubyte1 idCount );
     public:
         std::vector<char> buffer;
         float closeSecond;
         ubyte1 id;
-    private:
-        static ubyte1 idCount;
     };
     cUDP mSocket;
     std::map<cNetworkHandle, cClientInfo> mHandle;
     hardptr<Node::node> mRoot;
     bool mIsAccept;
+    ubyte1 mIdCount;
 };
 }
