@@ -22,8 +22,11 @@ public:
     void update( cRigidBody* rigidbody );
     void setLeafs( std::vector<std::set<cColliderBase*>*>&& leafs );
     std::vector<std::set<cColliderBase*>*> const& getLeafs( );
-    void calc( cinder::vec3 position );
+    void setPosition( cinder::vec3 const& position );
+    void setLayer( unsigned int layer );
+    unsigned int getLayer( );
 protected:
+    unsigned int mLayer;
     Type mType;
     cinder::vec3 mPosition;
     std::vector<std::set<cColliderBase*>*> mLeafs;

@@ -4,26 +4,43 @@
 using namespace cinder;
 namespace Collision
 {
-bool hitCubeToCube( cinder::vec3 * const result, cinder::vec3 aPos, cinder::vec3 aSpeed, cinder::vec3 aSize, cinder::vec3 bPos, cinder::vec3 bSize )
+void hitRayToCube( cinder::Ray const & ray, unsigned int layer, cColliderBase * bCollider, float & calcMin, cinder::Ray & calcRay, cinder::AxisAlignedBox & calcBoundingBox, cColliderBase ** targetCollider )
 {
-    auto aPrevPos = aPos - aSpeed;
-    auto direction = aPos - aPrevPos;
-    Ray ray( aPrevPos, direction );
+    if ( ( bCollider->getLayer( ) & layer ) != layer ) 
+        return;
 
-    AxisAlignedBox boundingBox( -aSize * 0.5F + bSize * 0.5F, aSize * ( 1.0F - 0.5F ) + bSize * ( 1.0F - 0.5F ) );
-    boundingBox.transform( translate( mat4( ), bPos ) );
+    if ( bCollider->getType( ) == cColliderBase::Type::AABB )
+    {
+        hitRayToCube( ray,
+                      dynamic_cast<cAABBCollider*>( bCollider ),
+                      calcMin, calcRay, calcBoundingBox, targetCollider );
+    }
+}
+void hitRayToCube( cinder::Ray const & ray, cAABBCollider * bCollider, float & calcMin, cinder::Ray & calcRay, cinder::AxisAlignedBox & calcBoundingBox, cColliderBase ** targetCollider )
+{
+    AxisAlignedBox boundingBox( cinder::vec3( 0.0F ) + -bCollider->getSize( ) * bCollider->getAnchor( ),
+                                cinder::vec3( 0.0F ) + bCollider->getSize( ) * ( 1.0F - bCollider->getAnchor( ) ) );
+    boundingBox.transform( translate( mat4( ), bCollider->getPosition( ) ) );
 
     float min = 0.0F, max = 0.0F;
-    int isHit = boundingBox.intersect( ray, &min, &max );
-    if ( isHit == 0 ) return false;
-    else
+    if ( boundingBox.intersect( ray, &min, &max ) != 0 )
     {
-        *result = ray.calcPosition( min );
-        return true;
+        if ( min >= 0.0F && min <= 1.0F )
+        {
+            if ( min < calcMin )
+            {
+                calcMin = min;
+                calcRay = ray;
+                calcBoundingBox = boundingBox;
+                *targetCollider = bCollider;
+            }
+        }
     }
 }
 void hitCubeToCube( cColliderBase * aCollider, cRigidBody * aRigidBody, cColliderBase * bCollider, float& min, cinder::Ray& ray, cinder::AxisAlignedBox& boundingBox, cColliderBase** targetCollider )
 {
+    if ( ( bCollider->getLayer( ) & aCollider->getLayer( ) ) != aCollider->getLayer( ) ) return;
+
     if ( aCollider == bCollider ) return;
     if ( aCollider->getType( ) == cColliderBase::Type::AABB &&
          bCollider->getType( ) == cColliderBase::Type::AABB )

@@ -125,6 +125,6 @@ void cRigidBody::calc( float minValue, cinder::Ray const& ray, cinder::AxisAlign
 
     auto position = intersectPoint + mSpeed;
 
-    mCollider.calc( position );
+    mCollider.setPosition( position );
 }
 }
