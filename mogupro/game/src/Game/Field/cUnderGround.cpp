@@ -141,6 +141,20 @@ bool cUnderGround::calcChunks()
                 mChunkHolder.createChunk( chunk );
             }
         }
+        break;
+    }
+
+    while ( mIsRunning )
+    {
+        for ( int z = 0; z < cr; z++ )
+        {
+            for ( int x = 0; x < cr; x++ )
+            {
+                std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
+                auto & chunk = mChunkHolder.getChunk( x, z );
+                mChunkHolder.createChunkMesh( chunk );
+            }
+        }
         return true;
     }
     return true;
@@ -263,9 +277,6 @@ bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & r
     {
         c->reBuildStart();
     }
-
-    chunks.clear();
-    temp_chunks.clear();
     return true;
 }
 

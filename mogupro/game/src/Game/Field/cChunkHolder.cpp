@@ -51,10 +51,14 @@ bool cChunkHolder::createChunk( cChunk& chunk )
     if ( chunk.mIsLoaded )
         return false;
     chunk.mIsLoaded = true;
-
     chunk.createBlocks();
-    chunk.buildMesh();
     return chunk.mIsDone = true;
+}
+
+bool cChunkHolder::createChunkMesh( cChunk & chunk )
+{
+    chunk.buildMesh();
+    return true;
 }
 
 bool cChunkHolder::isExistsChunk( const ci::ivec3 & cell )
