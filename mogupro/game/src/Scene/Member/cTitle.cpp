@@ -32,6 +32,11 @@ void cTitle::setup( )
     mRoot = Node::node::create( );
     mRoot->set_schedule_update( );
 
+    auto logo = Node::Renderer::sprite::create( "titleLogo.png" );
+    logo->set_position( ci::vec2(0, 256) );
+    logo->set_scale( ci::vec2( 1, -1 ) );
+    mRoot->add_child( logo );
+
     auto toMatching = Node::Renderer::rect::create( ci::vec2( 200, 200 ) );
     toMatching->set_position( ci::vec2( -250, 0 ) );
     toMatching->set_color( ci::ColorA( 1, 0, 0 ) );
