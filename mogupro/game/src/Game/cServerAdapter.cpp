@@ -66,14 +66,18 @@ void cServerAdapter::sendSetQuarry( )
         quarryPack->mPosition = packet->mPosition;
         quarryPack->mType = packet->mType;
         quarryPack->mTeamId = packet->mTeamId;
-        Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, quarryPack );
+        
+        if ( quarryPack->mIsSucceeded )
+        {
+            auto eventPack = new Network::Packet::Event::cEveSetQuarry( );
+            eventPack->mDrillId = quarryPack->mDrillId;
+            eventPack->mPosition = quarryPack->mPosition;
+            eventPack->mType = quarryPack->mType;
+            eventPack->mTeamId = quarryPack->mTeamId;
+            Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
+        }
 
-        auto eventPack = new Network::Packet::Event::cEveSetQuarry( );
-        eventPack->mDrillId = quarryPack->mDrillId;
-        eventPack->mPosition = quarryPack->mPosition;
-        eventPack->mType = quarryPack->mType;
-        eventPack->mTeamId = quarryPack->mTeamId;
-        Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
+        Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, quarryPack );
     }
 }
 void cServerAdapter::sendGetGemPlayer( )
@@ -90,8 +94,7 @@ void cServerAdapter::sendGetGemPlayer( )
             resPack->mPlayerId = playerId;
             resPack->mGemId = packet->mGemId;
             resPack->mIsSuccessed = isSuccess;
-            Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, resPack );
-
+            
             // 成功なら他の人に俺、宝石採ったぜアピールをします。
             if ( isSuccess )
             {
@@ -100,6 +103,8 @@ void cServerAdapter::sendGetGemPlayer( )
                 eventPack->mGemId = packet->mGemId;
                 Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
             }
+
+            Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, resPack );
         }
         catch ( std::runtime_error e )
         {
@@ -118,7 +123,6 @@ void cServerAdapter::sendGetGemQuarry( )
         resPack->mDrillId = packet->mDrillId;
         resPack->mGemId = packet->mGemId;
         resPack->mIsSuccessed = isSuccess;
-        Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, resPack );
 
         // 成功なら他の人に俺の掘削機、宝石採ったぜアピールをします。
         if ( isSuccess )
@@ -128,6 +132,8 @@ void cServerAdapter::sendGetGemQuarry( )
             eventPack->mGemId = packet->mGemId;
             Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
         }
+
+        Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, resPack );
     }
 }
 void cServerAdapter::sendBreakBlocks( )
