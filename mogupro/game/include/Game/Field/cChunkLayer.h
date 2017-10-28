@@ -10,11 +10,8 @@ class cChunkLayer
 public:
     cChunkLayer();
     ~cChunkLayer();
-
-
-
 public:
-
+    
     //std::array<cBlock, CHUNK_VOLUME> mBlocks;
 
 };
