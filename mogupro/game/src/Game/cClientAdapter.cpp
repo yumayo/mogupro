@@ -35,13 +35,10 @@ void cClientAdapter::recvAllPlayersFormat( )
     auto m = ::Network::cEventManager::getInstance( );
     while ( auto packet = m->getEvePlayers( ) )
     {
+        auto players = Game::cPlayerManager::getInstance( )->getPlayers( );
         for ( auto& o : packet->mPlayerFormats )
         {
-            auto players = Game::cPlayerManager::getInstance( )->getPlayers( );
-            for ( auto& player : players )
-            {
-                player->setPos( o.mPosition );
-            }
+            players[o.mPlayerId]->setPos( o.mPosition );
         }
     }
 }
