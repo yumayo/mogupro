@@ -21,7 +21,7 @@ bool cMatchingMemberManager::addRoomMembers(Network::cNetworkHandle addMember)
 			return false;
 	}
 
-	mPlayerDatas.push_back(PlayerData(-1,"Mogura" + addMember.ipAddress, mPlayerDatas.size()));
+	mPlayerDatas.push_back(PlayerData(-1,"Mogura" + addMember.ipAddress, mPlayerDatas.size(),addMember));
 	return true;
 }
 
@@ -67,7 +67,7 @@ bool cMatchingMemberManager::checkMaster(cNetworkHandle masterHandle)
 	return false;
 }
 
-void cMatchingMemberManager::addPlayerDatas(std::string playerStr, ubyte1 teamNum)
+void cMatchingMemberManager::addPlayerDatas(std::string playerStr, ubyte1 teamNum,cNetworkHandle networkHandle)
 {
 	for (int i = 0; i < mPlayerDatas.size(); ++i)
 	{
@@ -77,11 +77,11 @@ void cMatchingMemberManager::addPlayerDatas(std::string playerStr, ubyte1 teamNu
 			return;
 		}
 	}
-	mPlayerDatas.push_back(PlayerData(teamNum,playerStr, mPlayerDatas.size()));
+	mPlayerDatas.push_back(PlayerData(teamNum,playerStr, mPlayerDatas.size(),networkHandle));
 }
 
 
-void cMatchingMemberManager::addPlayerDatas(std::string playerStr, ubyte1 teamNum, ubyte1 playerID)
+void cMatchingMemberManager::addPlayerDatas(std::string playerStr, ubyte1 teamNum, ubyte1 playerID, cNetworkHandle networkHandle)
 {
 	for (int i = 0; i < mPlayerDatas.size(); ++i)
 	{
@@ -92,6 +92,6 @@ void cMatchingMemberManager::addPlayerDatas(std::string playerStr, ubyte1 teamNu
 		}
 	}
 
-	mPlayerDatas.push_back(PlayerData(teamNum, playerStr, playerID));
+	mPlayerDatas.push_back(PlayerData(teamNum, playerStr, playerID,networkHandle));
 }
 }
