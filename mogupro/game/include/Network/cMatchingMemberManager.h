@@ -22,8 +22,8 @@ namespace Network
 
 		}
 
-		PlayerData(ubyte1 _teamNum, std::string _nameStr, ubyte1 _playerID) :
-			teamNum(_teamNum), nameStr(_nameStr), playerID(_playerID)
+		PlayerData(ubyte1 _teamNum, std::string _nameStr, ubyte1 _playerID, cNetworkHandle _networkHandle) :
+			teamNum(_teamNum), nameStr(_nameStr), playerID(_playerID),networkHandle(_networkHandle)
 		{
 
 		}
@@ -42,8 +42,8 @@ public:
 	bool changeTeamNum(int teamNum, Network::cNetworkHandle member);
 	//マスターかどうかの判断
 	bool checkMaster(cNetworkHandle masterHandle);
-	void addPlayerDatas(std::string playerStr,ubyte1 teamNum);
-	void addPlayerDatas(std::string playerStr, ubyte1 teamNum, ubyte1 playerID);
+	void addPlayerDatas(std::string playerStr,ubyte1 teamNum, cNetworkHandle networkHandle);
+	void addPlayerDatas(std::string playerStr, ubyte1 teamNum, ubyte1 playerID,cNetworkHandle networkHandle);
 	cNetworkHandle mMasterHandle;
 	std::vector<PlayerData> mPlayerDatas;
     int mPlayerID = 0;
