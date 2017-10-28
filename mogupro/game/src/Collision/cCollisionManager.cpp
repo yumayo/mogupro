@@ -111,6 +111,41 @@ void cCollisionManager::update( )
 void cCollisionManager::draw( )
 {
 }
+cinder::vec3 cCollisionManager::calcNearestPoint( cinder::Ray const & ray, unsigned int layer )
+{
+    cinder::AxisAlignedBox aabb;
+    aabb.include( ray.getOrigin( ) );
+    aabb.include( ray.getOrigin( ) + ray.getDirection( ) );
+    auto&& minMax = std::move( fitWorldSpaceMinMax( aabb ) );
+    ivec3 min = std::get<0>( minMax );
+    ivec3 max = std::get<1>( minMax );
+
+    float calcMin = std::numeric_limits<float>::max( );
+    cinder::Ray calcRay;
+    cinder::AxisAlignedBox calcBoundingBox;
+    cColliderBase* targetCollider = nullptr;
+
+    for ( int x = min.x; x <= max.x; ++x )
+    {
+        for ( int y = min.y; y <= max.y; ++y )
+        {
+            for ( int z = min.z; z <= max.z; ++z )
+            {
+                auto& colliders = mWorld[x][y][z];
+                for ( auto& collider : colliders )
+                {
+                    hitRayToCube( ray, layer, collider, calcMin, calcRay, calcBoundingBox, &targetCollider );
+                }
+            }
+        }
+    }
+
+    if ( targetCollider != nullptr )
+    {
+        return calcRay.calcPosition( calcMin );
+    }
+    return ray.calcPosition( 1.0F );
+}
 bool cCollisionManager::isRange( int x, int y, int z )
 {
     return 0 <= x && 0 <= y && 0 <= z &&

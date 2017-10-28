@@ -113,6 +113,7 @@ void Game::Player::cPlayer::jump(bool flag)
 
 void Game::Player::cPlayer::setup()
 {
+    mCollider.setLayer( 1 << 0 );
 	mCollider.addWorld();
 	mRigidbody.addWorld();
 	

@@ -2,6 +2,7 @@
 #include <random>
 #include <cinder/gl/gl.h>
 #include <Utility/cInput.h>
+#include <Collision/cCollisionManager.h>
 namespace CameraManager
 {
 void cCameraManager::shakeCamera( const float & scatter, const float & seconds )
@@ -52,7 +53,12 @@ void cCameraManager::update( const float& delta_time ) {
 
     looking_position = pos - looking_point;
 
-    camera.lookAt( looking_position, pos + ci::vec3( my_scatter.x, my_scatter.y, 0 ) );
+    auto origin = pos + ci::vec3( my_scatter.x, my_scatter.y, 0 );
+    auto target = looking_position;
+    auto direction = target - origin;
+    cinder::Ray ray( origin, direction );
+    target = Collision::cCollisionManager::getInstance( )->calcNearestPoint( ray, 1 << 1 );
+    camera.lookAt( target, origin );
 
 }
 
