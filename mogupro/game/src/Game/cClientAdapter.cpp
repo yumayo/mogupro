@@ -132,13 +132,15 @@ void cClientAdapter::sendSetQuarry( cinder::vec3 const & position, Network::ubyt
 void cClientAdapter::sendPlayer( cinder::vec3 const & position, cinder::quat const & rotation )
 {
     auto packet = new Network::Packet::Deliver::cDliPlayer( );
-    packet->mPosition = position;
-    packet->mRotation = rotation;
+    packet->mFormat.playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
+    packet->mFormat.position = position;
+    packet->mFormat.rotation = rotation;
     Network::cUDPClientManager::getInstance( )->send( packet );
 }
 void cClientAdapter::sendGetGemPlayer( Network::ubyte2 gemId )
 {
     auto packet = new Network::Packet::Request::cReqCheckGetJemPlayer( );
+    packet->mPlayerId = cPlayerManager::getInstance( )->getActivePlayerId( );
     packet->mGemId = gemId;
     Network::cUDPClientManager::getInstance( )->send( packet );
 }

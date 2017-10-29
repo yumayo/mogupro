@@ -38,8 +38,8 @@ void cServerAdapter::sendPlayers( )
     {
         try
         {
-            auto id = Network::cUDPServerManager::getInstance( )->getPlayerId( packet->mNetworkHandle );
-            mPlayersPosition[id] = packet->mPosition;
+            auto id = packet->mFormat.playerId;
+            mPlayersPosition[id] = packet->mFormat.position;
         }
         catch ( std::runtime_error e )
         {
@@ -88,10 +88,9 @@ void cServerAdapter::sendGetGemPlayer( )
         try
         {
             auto resPack = new Network::Packet::Response::cResCheckGetJemPlayer( );
-            auto playerId = Network::cUDPServerManager::getInstance( )->getPlayerId( packet->mNetworkHandle );
             auto isSuccess = mGems.insert( packet->mGemId ).second;
 
-            resPack->mPlayerId = playerId;
+            resPack->mPlayerId = packet->mPlayerId;
             resPack->mGemId = packet->mGemId;
             resPack->mIsSuccessed = isSuccess;
             
@@ -99,7 +98,7 @@ void cServerAdapter::sendGetGemPlayer( )
             if ( isSuccess )
             {
                 auto eventPack = new Network::Packet::Event::cEveGetJemPlayer( );
-                eventPack->mPlayerId = playerId;
+                eventPack->mPlayerId = packet->mPlayerId;
                 eventPack->mGemId = packet->mGemId;
                 Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
             }
