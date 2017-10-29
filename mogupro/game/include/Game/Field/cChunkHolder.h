@@ -14,15 +14,15 @@ public:
     cChunkHolder( cUnderGround* under_ground );
     ~cChunkHolder();
 
-    cChunk& getChunk( const int& x, const int& z );
-    cChunk& getChunk( const ci::ivec3& c );
+    cChunk* getChunk( const int& x, const int& z );
+    cChunk* getChunk( const ci::ivec3& c );
     ChunkMap& getChunks();
 
-    void setChunk( cChunk& chunk );
+    void setChunk( cChunkRef& chunk );
     void setChunk( const int& x, const int& y, const int& z );
 
-    bool createChunk( cChunk& chunk );
-    bool createChunkMesh( cChunk& chunk );
+    bool createChunk( cChunk* chunk );
+    bool createChunkMesh( cChunk* chunk );
     bool isExistsChunk( const ci::ivec3 & cell );
     bool isExistsChunk( const int& x, const int& y, const int& z );
     bool cellIsOutOfBounds( const int & x, const int & y, const int & z );

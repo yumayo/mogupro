@@ -39,9 +39,7 @@ void cChunk::update()
 void cChunk::draw()
 {
     if ( mVbo != nullptr )
-    {
         gl::draw( mVbo );
-    }
 }
 
 ci::ivec3 cChunk::getCell()
@@ -49,39 +47,39 @@ ci::ivec3 cChunk::getCell()
     return mChunkCell;
 }
 
-std::shared_ptr<cBlock> cChunk::getBlock( int x, int y, int z )
+cBlock* cChunk::getBlock( int x, int y, int z )
 {
     return getBlock( ci::ivec3( x, y, z ) );
 }
 
-std::shared_ptr<cBlock> cChunk::getBlock( ci::ivec3 c )
+cBlock* cChunk::getBlock( ci::ivec3 c )
 {
     if ( isOutOfRange( c ) )
     {
         auto world_pos = toWorldPosition( c );
         return mUnderGround->getBlock( world_pos );
     }
-    return mBlocks[getIndex( c )];
+    return mBlocks[getIndex( c )].get();
 }
 
-cChunk & cChunk::getChunk( ci::ivec3 block_cell )
+cChunk* cChunk::getChunk( ci::ivec3 block_cell )
 {
     if ( isOutOfRange( block_cell ) )
     {
         auto world_pos = toWorldPosition( block_cell );
         return mUnderGround->getChunk( world_pos );
     }
-    return *this;
+    return this;
 }
 
-void cChunk::setBlock( ci::ivec3 c, std::shared_ptr<cBlock> block )
+void cChunk::setBlock( ci::ivec3 c, cBlock& block )
 {
     if ( isOutOfRange( c ) )
     {
         auto world_pos = toWorldPosition( c );
         mUnderGround->setBlock( world_pos, block );
     }
-    mBlocks[getIndex( c )] = block;
+    mBlocks[getIndex( c )] = std::make_shared<cBlock>( block );
 }
 
 void cChunk::addFace( const std::array<GLfloat, 12>& block_face,
@@ -113,33 +111,18 @@ void cChunk::addFace( const std::array<GLfloat, 12>& block_face,
     mIndicesIndex += 4;
 }
 
-cChunk& cChunk::breakBlock( ci::ivec3 c )
+cChunk* cChunk::breakBlock( ci::ivec3 c )
 {
-    auto& block = getBlock( c );
-    auto& chunk = getChunk( c );
+    auto block = getBlock( c );
+    auto chunk = getChunk( c );
     if ( block->mIsActive == false )
-        return *this;
+        return this;
     block->mIsActive = false;
     block->toBreak();
 
-    chunk.mIsBlockBroken = true;
+    chunk->mIsBlockBroken = true;
 
     return chunk;
-
-    // Vboを丸ごと構築するのでindex書き換えはしなくなってしまった。
-    // 重くなったら要検討
-
-    //auto id = block.mId;
-    //auto indices = std::vector<uint>( block.mIndicesNum.size() * 4 );
-    //for ( uint i = 0; i < block.mIndicesNum.size(); i++ )
-    //{
-    //    auto k = block.mIndicesNum[i];
-    //    mIndices[k] = 0;
-    //}
-    //auto vbo = mVbo->getIndexVbo();
-    //// VboRefの中でIndicesが4倍されるので、変更箇所を4倍する
-    //vbo->bufferSubData( block.mIndicesNum[0] * 4, block.mIndicesNum.size() * 4, &indices[0] );
-
 }
 
 void cChunk::reBuildStart()
@@ -210,9 +193,6 @@ bool cChunk::createMainCall()
     for ( auto& block : mBlocks )
         block->setup();
 
-    cTimeMeasurement::getInstance()->make();
-    auto t = cTimeMeasurement::getInstance()->deltaTime();
-
     return true;
 }
 
@@ -227,8 +207,7 @@ void cChunk::createBlocks()
                 vec3 position = vec3( x * BLOCK_SIZE,
                                       y * BLOCK_SIZE,
                                       z * BLOCK_SIZE ) + offset;// +OFFSET_POSITION;
-                std::shared_ptr<cBlock> block =
-                    std::make_shared<cBlock>( position, (float) BLOCK_SIZE, id++ );
+                cBlockRef block = std::make_shared<cBlock>( position, (float) BLOCK_SIZE, id++ );
 
                 mBlocks[getIndex( x, y, z )] = block;
             }
