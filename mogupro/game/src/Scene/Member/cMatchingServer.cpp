@@ -173,6 +173,8 @@ namespace Scene
 			cMatchingMemberManager::getInstance()->mPlayerDatas.clear();
 			cMatchingMemberManager::getInstance()->mMasterHandle = cNetworkHandle();
 			mCanUpdateServerAdapter = false;
+			cUDPServerManager::getInstance()->close();
+			cUDPServerManager::getInstance()->open();
 		}
 		void cMatchingServer::draw()
 		{
