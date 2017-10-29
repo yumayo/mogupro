@@ -225,13 +225,17 @@ bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & r
         return false;
 
     auto break_chunk = mChunkHolder.getChunk( chunk_cell );
+    std::vector<cChunk*> chunks;
+
+    // •K‚¸ˆêƒ}ƒX‚ÍŒ@‚é
+    auto first_chunk = break_chunk->breakBlock( block_cell );
+    chunks.push_back( first_chunk );
 
     auto r = ivec3( int( radius / BLOCK_SIZE ) );
     auto s = block_cell - r;
     auto e = block_cell + r;
 
     // Œ@‚ç‚ê‚½ƒ`ƒƒƒ“ƒN‚ð“o˜^‚·‚é
-    std::vector<cChunk*> chunks;
     for ( int z = s.z; z < e.z; z++ )
         for ( int y = s.y; y < e.y; y++ )
             for ( int x = s.x; x < e.x; x++ )
