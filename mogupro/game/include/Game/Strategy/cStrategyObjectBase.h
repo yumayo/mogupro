@@ -9,7 +9,6 @@ class cStrategyObjectBase : public Game::cObjectBase
 public:
     cStrategyObjectBase();
     virtual ~cStrategyObjectBase();
-    ci::vec3 getPos();
     ci::vec3 getScale();
 	int getId();
     virtual void setup() = 0;
@@ -20,7 +19,6 @@ public:
 	virtual void HitGem(const int _gemid) = 0;
 	bool ismyobject;
 protected:
-    ci::vec3 pos;
     ci::vec3 scale;
 	int id;
 	bool issetting = false;

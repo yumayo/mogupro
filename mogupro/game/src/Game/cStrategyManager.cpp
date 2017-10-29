@@ -54,7 +54,7 @@ void cStrategyManager::update(const float & deltatime)
 	deleteObject();
 	if (ENV->pushKey(KeyEvent::KEY_p)) {
 
-		//cClientAdapter::getInstance()->sendSetQuarry(vec3(randInt(0, 10), 15, randInt(0, 10)),Strategy::cDrill::DrillType::Level1);
+		cClientAdapter::getInstance()->sendSetQuarry(vec3(randInt(0, 10), 15, randInt(0, 10)),Strategy::cDrill::DrillType::Level1);
 
 		//drills.insert(std::make_pair(testcount, std::make_shared<Game::Strategy::cDrill>(vec3(randInt(0, 10), 15, randInt(0, 10)), testcount, Strategy::cDrill::DrillType::Level1, true)));
 
