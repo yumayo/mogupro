@@ -80,7 +80,7 @@ void cGameMain::setup( )
     //Network::cUDPClientManager::getInstance( )->open( );
     //Network::cUDPServerManager::getInstance( )->open( );
     //Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
-
+	Network::cUDPClientManager::getInstance()->send(new Network::Packet::Request::cReqEndGamemainSetup());
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
 }

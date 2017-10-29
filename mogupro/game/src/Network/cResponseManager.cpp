@@ -240,5 +240,22 @@ void cResponseManager::ungetResCheckMember( Packet::Response::cResCheckMember&& 
 {
     mResCheckMember.push( std::move( data ) );
 }
+boost::optional<Packet::Response::cResEndGamemainSetup> cResponseManager::getResEndGamemainSetup( )
+{
+    if ( mResEndGamemainSetup.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResEndGamemainSetup.top( );
+        mResEndGamemainSetup.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResEndGamemainSetup( Packet::Response::cResEndGamemainSetup&& data )
+{
+    mResEndGamemainSetup.push( std::move( data ) );
+}
 // P=====END=====P
 }

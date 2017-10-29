@@ -260,6 +260,13 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             cRequestManager::getInstance( )->ungetReqCheckMember( std::move( data ) );
             break;
         }
+        case Network::Packet::PacketId::REQ_END_GAMEMAIN_SETUP:
+        {
+            Packet::Request::cReqEndGamemainSetup data;
+            data.onReceive( networkHandle, bufferSize, bufferData );
+            cRequestManager::getInstance( )->ungetReqEndGamemainSetup( std::move( data ) );
+            break;
+        }
         case Network::Packet::PacketId::RES_STRING:
         {
             Packet::Response::cResString data;
@@ -356,6 +363,13 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             Packet::Response::cResCheckMember data;
             data.onReceive( networkHandle, bufferSize, bufferData );
             cResponseManager::getInstance( )->ungetResCheckMember( std::move( data ) );
+            break;
+        }
+        case Network::Packet::PacketId::RES_END_GAMEMAIN_SETUP:
+        {
+            Packet::Response::cResEndGamemainSetup data;
+            data.onReceive( networkHandle, bufferSize, bufferData );
+            cResponseManager::getInstance( )->ungetResEndGamemainSetup( std::move( data ) );
             break;
         }
         // P=====END=====P
