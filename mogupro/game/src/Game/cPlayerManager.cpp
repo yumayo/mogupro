@@ -170,13 +170,13 @@ void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& pla
 {
 	playerInstance(positions, player_number, active_player_id,teams);
 	//ポジションの参照とカメラのズームを設定
-	CAMERA->followingCamera(&active_player->getReferencePos(), 6);
 	for (auto& it : players) {
 		it->setup();
 	}
 }
 void Game::cPlayerManager::update(const float& delta_time)
 {
+    CAMERA->refPosition = active_player->getPos( );
 	for (auto& it : players) {
 		it->update(delta_time);
 	}

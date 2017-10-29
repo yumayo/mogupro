@@ -13,10 +13,7 @@ void cCameraManager::shakeCamera( const float & scatter, const float & seconds )
 
 void cCameraManager::setup( ) {
     camera.setAspectRatio( ci::app::getWindowAspectRatio( ) );
-    if ( reference_pos != nullptr )
-    {
-        camera.lookAt( *reference_pos, ci::vec3( 0 ), ci::vec3( 0, 1, 0 ) );
-    }
+    camera.lookAt( refPosition, ci::vec3( 0 ), ci::vec3( 0, 1, 0 ) );
     camera.setFarClip( 10000 );
     auto size = ci::app::getWindowSize( );
     camera_2d.setOrtho( -size.x / 2, size.x / 2, -size.y / 2, size.y / 2, 0.125F, 5.0F );
@@ -26,10 +23,7 @@ void cCameraManager::setup( ) {
 //Šµ«‚Â‚«ƒJƒƒ‰ˆÚ“®
 void cCameraManager::MovingCamera( )
 {
-    if ( reference_pos != nullptr )
-    {
-        buf_pos = *reference_pos - pos;
-    }
+    buf_pos = refPosition - pos;
     buf_pos *= 0.8f;
     pos += buf_pos;
 }
@@ -67,7 +61,7 @@ void cCameraManager::update( const float& delta_time ) {
     cinder::Ray ray( origin, direction );
     target = Collision::cCollisionManager::getInstance( )->calcNearestPoint( ray, 1 << 1 );
 
-    
+
     camera.lookAt( target, origin );
 
 }

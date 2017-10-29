@@ -27,10 +27,7 @@ namespace Member
 {
 void cGameMain::setup( )
 {
-    pos = vec3( 0 );
-    size = vec3( 2 );
     skydome.setup( );
-    CAMERA->followingCamera( &pos, 30 );
     CAMERA->setup( );
     ENV->padSetup( );
 

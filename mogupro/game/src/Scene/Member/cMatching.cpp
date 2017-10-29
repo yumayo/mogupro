@@ -40,8 +40,6 @@ namespace Scene
 			mWaitClassState = ClassState::NOT;
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mCanSend = true;
-			ci::vec3 pos = ci::vec3(0);
-			CAMERA->followingCamera(&pos, 30);
 			CAMERA->setup();
 			ENV->padSetup();
 			using namespace Node::Action;

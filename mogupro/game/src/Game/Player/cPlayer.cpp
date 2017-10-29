@@ -74,7 +74,7 @@ Game::Player::cPlayer::cPlayer(
 	//プレイヤーのステータス
 	status.attack = 10;
 	status.drill_range = 1;
-	status.jump_force = 0.3F;
+	status.jump_force = 0.6F;
 	status.speed = DEFAULT_SPEED;
 	//設置位置
 	installation_position = ci::vec3(0,0,2);
