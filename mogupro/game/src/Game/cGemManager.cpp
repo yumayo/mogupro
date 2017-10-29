@@ -47,12 +47,11 @@ namespace Game
 
 		auto rect = ci::Rectf(-ci::app::getWindowSize()/2, ci::app::getWindowSize()/2);
 	    ci::gl::VboMeshRef vboRect = ci::gl::VboMesh::create(ci::geom::Rect(rect));
+        ci::gl::ScopedGlslProg glsl( mHShader );
 		batch = ci::gl::Batch::create(vboRect,mHShader);
-		ci::gl::Texture2dRef tex = mGemBuffer->getColorTexture();
+        ci::gl::ScopedTextureBind tex( mGemBuffer->getColorTexture( ) );
 		float uAlpha = 0.8 - 0.6f*std::abs(std::sinf(cTimeMeasurement::getInstance()->totalTime()));
 		cTimeMeasurement::getInstance()->make();
-		tex->bind();
-		mHShader->bind();
 		mHShader->uniform("uTex0", 0);
 		mHShader->uniform("uColor", ci::vec4(1, 1, 1, 1));
 		mHShader->uniform("uWindowSize", ci::vec2(ci::app::getWindowSize()/2));
@@ -60,7 +59,6 @@ namespace Game
 
 
 		ci::gl::drawSolidRect(rect);
-		tex->unbind();
 
 		//batch->draw();
 

@@ -36,7 +36,7 @@ namespace Game
 			root->set_position_3d(beginpos);
 
 
-			//TEX->set("drill.png", "drill.png");
+			TEX->set("drill.png", "drill.png");
 		}
 		cDrill::~cDrill()
 		{
@@ -47,6 +47,7 @@ namespace Game
 		}
 		void cDrill::draw()
 		{
+            ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef( ).color( ) ) );
 
 			drawBasket();
 
@@ -62,8 +63,6 @@ namespace Game
 			drawCube(pos, vec3(rate*3.f, rate*1.f, rate*3.f), vec3(0, drillslopes.rotate*3.f, 0), ColorA(1, 0, 0, 1));
 			drawCube(pos + vec3(0, 1, 0)*rate, vec3(rate*4.f, rate*1.f, rate*4.f), vec3(0, drillslopes.rotate*3.f, 0), ColorA(0, 0, 0, 1));
 			drawCube(pos + vec3(0, 2, 0)*rate, vec3(rate*4.f, rate*1.f, rate*4.f), vec3(0, drillslopes.rotate*-3.f, 0), ColorA(1, 1, 0, 1));
-
-			gl::color(ColorA(1, 1, 1, 1));
 		}
 
 		void cDrill::update(const float & delta_time)
@@ -323,11 +322,9 @@ namespace Game
 
 		void cDrill::drawMachine()
 		{
-			//cinder::gl::ScopedTextureBind a(TEX->get());
-			//gl::ScopedGlslProg shader(gl::getStockShader(gl::ShaderDef().uniformBasedPosAndTexCoord().color().texture(TEX->get("skydome"))));
-			//TEX->get("drill.png")->bind();
+			cinder::gl::ScopedTextureBind a(TEX->get( "drill.png" ));
+			gl::ScopedGlslProg shader(gl::getStockShader(gl::ShaderDef().texture()));
 			drawCube(beginpos, machinescale, vec3(0, 0, 0), ColorA(1, 1, 1, 1));
-			//Resource::TextureManager::getInstance()->get("drill.png")->unbind();
 		}
 
 		ci::vec3 cDrill::getNextEasingPos()

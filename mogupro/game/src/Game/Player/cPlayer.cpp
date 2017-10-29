@@ -131,15 +131,14 @@ void Game::Player::cPlayer::update(const float & delta_time)
 
 void Game::Player::cPlayer::draw()
 {
+    ci::gl::ScopedColor col( color );
+    ci::gl::ScopedTextureBind tex( TEX->get( "mogura" ) );
+    ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef( ).texture( ) ) );
+
 	ci::gl::pushModelView();
 	ci::gl::translate(mPos - ci::vec3(0, 1, 0));
 	ci::gl::scale(ci::vec3(0.01f) + ci::vec3(0.01f, 0, 0.01f));
 	playerRotation();
-	ci::gl::color(color);
-	TEX->get("mogura")->bind();
-	ci::gl::ScopedGlslProg sgp(ci::gl::getStockShader(ci::gl::ShaderDef().texture().lambert()));
 	ci::gl::draw(mesh);
-	Resource::TextureManager::getInstance()->get("mogura")->unbind();
-	ci::gl::color(1, 1, 1, 1);
 	ci::gl::popModelView();
 }

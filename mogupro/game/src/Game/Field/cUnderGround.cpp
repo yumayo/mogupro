@@ -84,14 +84,15 @@ void cUnderGround::draw()
     ScopedVao vaoScp( ctx->getDrawTextureVao() );
     ScopedBuffer vboScp( ctx->getDrawTextureVbo() );
     ScopedTextureBind texBindScope( texture );
+    ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef( ).texture( ) ) );
 
-    auto glsl = getStockShader( ShaderDef().uniformBasedPosAndTexCoord().color().texture( texture ) );
-    ScopedGlslProg glslScp( glsl );
-    glsl->uniform( "uTex0", 0 );
-    glsl->uniform( "uPositionOffset", vec2( 0 ) );
-    glsl->uniform( "uPositionScale", vec2( 1 ) );
-    glsl->uniform( "uTexCoordOffset", texRect.getUpperLeft() );
-    glsl->uniform( "uTexCoordScale", texRect.getSize() );
+    //auto glsl = getStockShader( ShaderDef().uniformBasedPosAndTexCoord().color().texture( texture ) );
+    //ScopedGlslProg glslScp( glsl );
+    //glsl->uniform( "uTex0", 0 );
+    //glsl->uniform( "uPositionOffset", vec2( 0 ) );
+    //glsl->uniform( "uPositionScale", vec2( 1 ) );
+    //glsl->uniform( "uTexCoordOffset", texRect.getUpperLeft() );
+    //glsl->uniform( "uTexCoordScale", texRect.getSize() );
 
     ChunkMap& chunks = mChunkHolder.getChunks();
     for ( auto& chunk : chunks )
