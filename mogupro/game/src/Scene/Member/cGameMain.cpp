@@ -106,7 +106,7 @@ void cGameMain::update( float deltaTime )
         ENV->padProcessEvent( );
         Game::cPlayerManager::getInstance( )->update( deltaTime );
         Game::cStrategyManager::getInstance( )->update( deltaTime );
-        Collision::cCollisionManager::getInstance( )->update( );
+        Collision::cCollisionManager::getInstance( )->update( deltaTime );
         GemManager->update( );
     }
 }

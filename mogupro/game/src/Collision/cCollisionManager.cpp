@@ -50,7 +50,7 @@ void cCollisionManager::remove( cRigidBody & rigidBody )
 void cCollisionManager::setup( )
 {
 }
-void cCollisionManager::update( )
+void cCollisionManager::update( float delta )
 {
     if ( ENV->pushKey( cinder::app::KeyEvent::KEY_u ) )
     {
@@ -62,7 +62,7 @@ void cCollisionManager::update( )
     }
     for ( auto& rigidBody : mRigidBodys )
     {
-        rigidBody->update( );
+        rigidBody->update( delta );
     }
     for ( auto& rigidBody : mRigidBodys )
     {
@@ -96,16 +96,18 @@ void cCollisionManager::update( )
 
         if ( targetCollider != nullptr )
         {
-            rigidBody->calc( length, ray, boundingBox, targetCollider );
-            if ( cinder::length( ray.getDirection() ) > 0.01F )
+            if ( cinder::length( ray.getDirection( ) ) < 0.01F )
             {
-                goto recalc;
+                rigidBody->mCollider.setPosition( rigidBody->mCollider.getPosition( ) - rigidBody->getSpeed( ) );
+                continue;
             }
+            rigidBody->calc( length, ray, boundingBox, targetCollider );
+            goto recalc;
         }
     }
     for ( auto& rigidBody : mRigidBodys )
     {
-        rigidBody->lateUpdate( );
+        rigidBody->lateUpdate( delta );
     }
 }
 void cCollisionManager::draw( )

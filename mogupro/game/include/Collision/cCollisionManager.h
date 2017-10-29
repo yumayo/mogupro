@@ -27,7 +27,7 @@ public:
     void add( cRigidBody& rigidBody );
     void remove( cRigidBody& rigidBody );
     void setup( );
-    void update( );
+    void update( float delta );
     void draw( );
     cinder::vec3 calcNearestPoint( cinder::Ray const& ray, unsigned int layer );
     static constexpr size_t WORLD_X = 160;

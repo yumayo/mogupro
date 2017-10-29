@@ -14,8 +14,8 @@ public:
     void addWorld( );
     void removeWorld( );
     cinder::AxisAlignedBox createAABB( ) const;
-    void update( );
-    void lateUpdate( );
+    void update( float delta );
+    void lateUpdate( float delta );
     bool isLanding( );
     bool isGravity( );
     void gravityOn( );
