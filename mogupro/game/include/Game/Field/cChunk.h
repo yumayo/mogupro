@@ -7,7 +7,7 @@ namespace Game
 namespace Field
 {
 class cUnderGround;
-class cChunk
+class cChunk : public std::enable_shared_from_this<cChunk>
 {
 public:
 
@@ -21,18 +21,18 @@ public:
 
 
     ci::ivec3 getCell();
-    std::shared_ptr<cBlock> getBlock( int x, int y, int z );
-    std::shared_ptr<cBlock> getBlock( ci::ivec3 c );
-    cChunk& getChunk( ci::ivec3 block_cell );
+    cBlock* getBlock( int x, int y, int z );
+    cBlock* getBlock( ci::ivec3 c );
+    cChunk* getChunk( ci::ivec3 block_cell );
 
-    void setBlock( ci::ivec3 c, std::shared_ptr<cBlock> block );
+    void setBlock( ci::ivec3 c, cBlock& block );
 
     void addFace( const std::array<GLfloat, 12>& block_face,
                   const std::array<ci::vec2, 4>& texture_coords,
                   const ci::ivec3 & chunk_position,
                   const ci::vec3 & block_position );
 
-    cChunk& breakBlock( ci::ivec3 c );
+    cChunk* breakBlock( ci::ivec3 c );
 
     void buildMesh();
     void reBuildStart();
@@ -65,7 +65,7 @@ private:
 
     ci::ivec3 mChunkCell;
     uint mIndicesIndex = 0;
-    std::array<std::shared_ptr<cBlock>, CHUNK_VOLUME> mBlocks;
+    std::array<cBlockRef, CHUNK_VOLUME > mBlocks;
     cUnderGround* mUnderGround;
 };
 }

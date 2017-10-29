@@ -5,9 +5,6 @@ namespace Game
 namespace Field
 {
 
-class cBlock;
-class cChunk;
-
 class cChunkMeshBuilder
 {
 public:

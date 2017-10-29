@@ -12,7 +12,9 @@ class cChunk;
 
 using uint = uint32_t;
 // tuple‰»ŒŸ“¢
-using ChunkMap = std::unordered_map<ci::ivec3, Game::Field::cChunk>;
+using cChunkRef = std::shared_ptr<Game::Field::cChunk>;
+using ChunkMap = std::unordered_map<ci::ivec3, cChunkRef>;
+using cBlockRef = std::shared_ptr<Game::Field::cBlock>;
 
 constexpr int
 BLOCK_SIZE = 1,
