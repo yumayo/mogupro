@@ -78,6 +78,11 @@ public:
     void ungetResCheckMember( Packet::Response::cResCheckMember&& data );
 public:
     std::stack<Packet::Response::cResCheckMember> mResCheckMember;
+public:
+    boost::optional<Packet::Response::cResEndGamemainSetup> getResEndGamemainSetup( );
+    void ungetResEndGamemainSetup( Packet::Response::cResEndGamemainSetup&& data );
+public:
+    std::stack<Packet::Response::cResEndGamemainSetup> mResEndGamemainSetup;
     // P=====END=====P
 };
 }

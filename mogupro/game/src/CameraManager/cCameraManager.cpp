@@ -2,6 +2,7 @@
 #include <random>
 #include <cinder/gl/gl.h>
 #include <Utility/cInput.h>
+#include <Collision/cCollisionManager.h>
 namespace CameraManager
 {
 void cCameraManager::shakeCamera( const float & scatter, const float & seconds )
@@ -12,7 +13,7 @@ void cCameraManager::shakeCamera( const float & scatter, const float & seconds )
 
 void cCameraManager::setup( ) {
     camera.setAspectRatio( ci::app::getWindowAspectRatio( ) );
-    camera.lookAt( ci::vec3( ( *reference_pos )->x, ( *reference_pos )->y, ( *reference_pos )->z ), ci::vec3( 0 ), ci::vec3( 0, 1, 0 ) );
+    camera.lookAt( refPosition, ci::vec3( 0 ), ci::vec3( 0, 1, 0 ) );
     camera.setFarClip( 10000 );
     auto size = ci::app::getWindowSize( );
     camera_2d.setOrtho( -size.x / 2, size.x / 2, -size.y / 2, size.y / 2, 0.125F, 5.0F );
@@ -22,7 +23,7 @@ void cCameraManager::setup( ) {
 //慣性つきカメラ移動
 void cCameraManager::MovingCamera( )
 {
-    buf_pos = ci::vec3( ( *reference_pos )->x, ( *reference_pos )->y, ( *reference_pos )->z ) - pos;
+    buf_pos = refPosition - pos;
     buf_pos *= 0.8f;
     pos += buf_pos;
 }
@@ -39,6 +40,7 @@ void cCameraManager::ScatterCamera( )
 
 }
 void cCameraManager::update( const float& delta_time ) {
+
     //ブレるカメラの秒数をデルタタイムで引く
     seconds -= delta_time;
 
@@ -52,7 +54,15 @@ void cCameraManager::update( const float& delta_time ) {
 
     looking_position = pos - looking_point;
 
-    camera.lookAt( looking_position, pos + ci::vec3( my_scatter.x, my_scatter.y, 0 ) );
+    auto origin = pos;
+    auto target = looking_position;
+
+    auto direction = target - origin;
+    cinder::Ray ray( origin, direction );
+    target = Collision::cCollisionManager::getInstance( )->calcNearestPoint( ray, 1 << 1 );
+
+
+    camera.lookAt( target, origin );
 
 }
 

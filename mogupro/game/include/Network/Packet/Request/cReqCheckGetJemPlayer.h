@@ -14,6 +14,7 @@ public:
     ubyte2 packetExport( char* const data ) override;
 public:
     cNetworkHandle mNetworkHandle;
+    ubyte1 mPlayerId;
     ubyte2 mGemId;
 };
 }

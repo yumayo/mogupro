@@ -27,12 +27,14 @@ namespace Game
 		ci::gl::enableDepthWrite();
 		ci::gl::enableDepthRead();
 		ci::gl::enableAlphaBlending();
+		mesh = ci::TriMesh::create();
 	}
 
 	void cGemManager::draw()
 	{
 
-
+		//mesh->appendIndices();
+		//mesh->appendPosition();
 		for (int i = 0; i < mDrawNum; i++)
 		{
 			mGemsptr[i]->draw();
@@ -45,12 +47,11 @@ namespace Game
 
 		auto rect = ci::Rectf(-ci::app::getWindowSize()/2, ci::app::getWindowSize()/2);
 	    ci::gl::VboMeshRef vboRect = ci::gl::VboMesh::create(ci::geom::Rect(rect));
+        ci::gl::ScopedGlslProg glsl( mHShader );
 		batch = ci::gl::Batch::create(vboRect,mHShader);
-		ci::gl::Texture2dRef tex = mGemBuffer->getColorTexture();
+        ci::gl::ScopedTextureBind tex( mGemBuffer->getColorTexture( ) );
 		float uAlpha = 0.8 - 0.6f*std::abs(std::sinf(cTimeMeasurement::getInstance()->totalTime()));
 		cTimeMeasurement::getInstance()->make();
-		tex->bind();
-		mHShader->bind();
 		mHShader->uniform("uTex0", 0);
 		mHShader->uniform("uColor", ci::vec4(1, 1, 1, 1));
 		mHShader->uniform("uWindowSize", ci::vec2(ci::app::getWindowSize()/2));
@@ -58,7 +59,6 @@ namespace Game
 
 
 		ci::gl::drawSolidRect(rect);
-		tex->unbind();
 
 		//batch->draw();
 
@@ -117,6 +117,14 @@ namespace Game
 
 			mGemsptr.push_back(std::make_shared<Gem::cGem>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type));
 			mGemsptr.push_back(std::make_shared<Gem::cGem>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type));
+			mStaticGem.push_back(std::make_shared<Gem::cGem>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type));
+			mStaticGem.push_back(std::make_shared<Gem::cGem>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type));
+			int offset = 0;
+			for each (auto g in mStaticGem)
+			{
+				g->setIndices(offset);
+				offset + 8;
+			}
 		}
 	};
 

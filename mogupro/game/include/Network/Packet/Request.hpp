@@ -13,3 +13,4 @@
 #include<Network/Packet/Request/cReqWantTeamIn.h>
 #include<Network/Packet/Request/cReqCheckBeginGame.h>
 #include<Network/Packet/Request/cReqCheckMember.h>
+#include<Network/Packet/Request/cReqEndGamemainSetup.h>

@@ -6,6 +6,7 @@ namespace Collision
 cColliderBase::cColliderBase( Type type, cinder::vec3 position )
     : mType( type )
     , mPosition( position )
+    , mLayer( 0xFFFFFFFF )
 {
 }
 cColliderBase::Type cColliderBase::getType( )
@@ -30,10 +31,18 @@ std::vector<std::set<cColliderBase*>*> const & cColliderBase::getLeafs( )
 {
     return mLeafs;
 }
-void cColliderBase::calc( cinder::vec3 position )
+void cColliderBase::setPosition( cinder::vec3 const& position )
 {
     cCollisionManager::getInstance( )->remove( *this );
     mPosition = position;
     cCollisionManager::getInstance( )->add( *this );
+}
+void cColliderBase::setLayer( unsigned int layer )
+{
+    mLayer = layer;
+}
+unsigned int cColliderBase::getLayer( )
+{
+    return mLayer;
 }
 }

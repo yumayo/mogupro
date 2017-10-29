@@ -5,6 +5,8 @@
 #include <Scene/Member/cGameMain.h>
 #include <Scene/cSceneManager.h>
 #include <CameraManager/cCameraManager.h>
+#include <Utility/cInput.h>
+#include <Game/cServerAdapter.h>
 using namespace Network;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
@@ -16,13 +18,12 @@ namespace Scene
 	{
 		void cMatchingServer::setup()
 		{
-			ci::vec3 pos(0, 0, 0);
-			CAMERA->followingCamera(&pos, 30);
 			CAMERA->setup();
 			cUDPServerManager::getInstance()->open();
 			using namespace Node::Action;
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mOpenRoom = false;
+            mIsGameUpdate = false;
 			font = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 20);
 			font->set_text(u8"‚Ê‚í‚ ‚ ‚Ÿ‚Ÿ‚Ÿ‚Ÿ‚ñ");
 			font->set_scale(glm::vec2(1, -1));
@@ -41,6 +42,7 @@ namespace Scene
 					}
 				}
 			}))));
+			mCanUpdateServerAdapter = false;
 		}
 		void cMatchingServer::shutDown()
 		{
@@ -50,11 +52,43 @@ namespace Scene
 		void cMatchingServer::update(float deltaTime)
 		{
 			cUDPServerManager::getInstance()->update(deltaTime);
+			updateServer(deltaTime);
 			n->entry_update(deltaTime);
 			checkReqMakeRoom();
 			checkReqInRoom();
 			checkTeamIn();
 			checkBeginGame();
+			resetMember();
+		}
+
+		void cMatchingServer::updateServer(float deltaTime)
+		{
+
+			if (mCanUpdateServerAdapter == false)
+			{
+				while (auto reqEndGamemainSetup = cRequestManager::getInstance()->getReqEndGamemainSetup())
+				{
+					for (int i = 0; i < cMatchingMemberManager::getInstance()->mPlayerDatas.size(); ++i)
+					{
+						if (reqEndGamemainSetup->mNetworkHandle
+							!= cMatchingMemberManager::getInstance()->mPlayerDatas[i].networkHandle)
+							continue;
+						cMatchingMemberManager::getInstance()->mPlayerDatas[i].canUpdate = true;
+					}
+				}
+
+				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				{
+					if (m.canUpdate == false)
+						return;
+				}
+				mCanUpdateServerAdapter = true;
+				mIsGameUpdate = true;
+			}
+			if (mIsGameUpdate)
+			{
+				Game::cServerAdapter::getInstance()->update();
+			}
 		}
 
 		void cMatchingServer::checkReqMakeRoom()
@@ -129,6 +163,19 @@ namespace Scene
 			}
 		}
 
+		void cMatchingServer::resetMember()
+		{
+			if (!ENV->pushKey(ci::app::KeyEvent::KEY_SPACE))return;
+			
+			mPhaseState = PhaseState::NOT_IN_ROOM;
+			mOpenRoom = false;
+			mIsGameUpdate = false;
+			cMatchingMemberManager::getInstance()->mPlayerDatas.clear();
+			cMatchingMemberManager::getInstance()->mMasterHandle = cNetworkHandle();
+			mCanUpdateServerAdapter = false;
+			cUDPServerManager::getInstance()->close();
+			cUDPServerManager::getInstance()->open();
+		}
 		void cMatchingServer::draw()
 		{
 

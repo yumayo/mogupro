@@ -21,15 +21,13 @@ void Game::SkyDome::cSkyDome::setup()
 
 void Game::SkyDome::cSkyDome::draw()
 {
-	
+    ci::gl::ScopedTextureBind tex( Resource::TextureManager::getInstance( )->get( "sky_dome" ) );
 	//‰æ‘œ‚ğƒoƒCƒ“ƒh
-	Resource::TextureManager::getInstance()->get("sky_dome")->bind();
 	ci::gl::pushModelView();
 	ci::gl::translate(CAMERA->getPos());
 	ci::gl::scale(size);
 	mSphere->draw();
 	ci::gl::popModelView();
-	Resource::TextureManager::getInstance()->get("sky_dome")->unbind();
 
 
 }

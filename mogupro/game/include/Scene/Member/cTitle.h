@@ -8,7 +8,6 @@ namespace Member
 class cTitle final : public cSceneBase
 {
     hardptr<Node::node> mRoot;
-    ci::vec3 mCamPos;
     int mSelectTag;
     std::vector<std::function<void( )>> mScenes;
 public:

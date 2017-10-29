@@ -12,25 +12,30 @@
 namespace Network
 {
 cUDPServerManager::cUDPServerManager( )
-    : mRoot( Node::node::create( ) )
 {
+    mRoot = Node::node::create( );
     mRoot->set_schedule_update( );
     mIsAccept = false;
     mIdCount = 0;
 }
 void cUDPServerManager::close( )
 {
+    mRoot.reset( );
     mSocket.close( );
-    mIsAccept = false;
+    closeAccepter( );
 }
 void cUDPServerManager::open( )
 {
+    mRoot = Node::node::create( );
+    mRoot->set_schedule_update( );
     mSocket.open( 25565 );
-    mIsAccept = true;
+    openAccepter( );
 }
 void cUDPServerManager::closeAccepter( )
 {
     mIsAccept = false;
+    mIdCount = 0;
+    mHandle.clear( );
 }
 void cUDPServerManager::openAccepter( )
 {
@@ -152,7 +157,7 @@ void cUDPServerManager::ping( )
         auto itr = mHandle.find( p->mNetworkHandle );
         if ( itr != mHandle.end( ) )
         {
-            itr->second.closeSecond = cinder::app::getElapsedSeconds( ) + 60.0F;
+            itr->second.closeSecond = cinder::app::getElapsedSeconds( ) + HOLD_SECOND;
         }
     }
 
@@ -174,7 +179,7 @@ void cUDPServerManager::ping( )
     }
 }
 cUDPServerManager::cClientInfo::cClientInfo( ubyte1 idCount )
-    : closeSecond( cinder::app::getElapsedSeconds( ) + 60.0F )
+    : closeSecond( cinder::app::getElapsedSeconds( ) + HOLD_SECOND )
 {
     if ( idCount == 255 )
     {

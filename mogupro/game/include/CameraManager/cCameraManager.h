@@ -13,14 +13,14 @@ enum WINDOW_SIZE {
 };
 class cCameraManager : public Utility::cSingletonAble<cCameraManager>
 {
+public:
+    ci::vec3 refPosition;
 private:
     ci::CameraPersp camera;
     ci::CameraOrtho camera_2d;
     ci::vec3 pos;
     //滑らかに目的座標に追従するためのbuf
     ci::vec3 buf_pos;
-    //目標のposの参照
-    std::shared_ptr<ci::vec3*> reference_pos;
 
     //目標と対照的なカメラの位置
     ci::vec3 looking_point;
@@ -95,11 +95,6 @@ public:
 	ci::vec3 getCameraLook() {
 		return ci::vec3(looking_point.x/10, looking_point.y / 10, looking_point.z / 10);
 	}
-
-    void followingCamera( ci::vec3* pos, const float& camera_farZ ) {
-        reference_pos = std::make_shared<ci::vec3*>( pos );
-        this->camera_far = camera_farZ;
-    }
 
     //カメラを揺らす関数
     //scattar =　ブレ幅、　seconds　＝　秒数

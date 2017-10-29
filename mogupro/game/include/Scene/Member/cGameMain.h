@@ -17,10 +17,9 @@ public:
     void draw2D( );
     void resize( );
 private:
-    cinder::vec3 pos;
-    cinder::vec3 size;
     Game::SkyDome::cSkyDome skydome;
     hardptr<Node::node> n;
+	bool sendEndSetup;
 };
 }
 }

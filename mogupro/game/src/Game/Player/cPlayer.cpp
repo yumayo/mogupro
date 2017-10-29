@@ -59,7 +59,7 @@ Game::Player::cPlayer::cPlayer(
 	const bool& is_active_user,
 	const Game::Player::Team& team)
 	: cObjectBase(pos),
-	mCollider(mPos, ci::vec3(1.5, 2.3, 1.5)),
+	mCollider(mPos, ci::vec3(0.8, 1.7, 0.8)),
 	mRigidbody(mCollider)
 {
 	size = ci::vec3(1);
@@ -74,7 +74,7 @@ Game::Player::cPlayer::cPlayer(
 	//プレイヤーのステータス
 	status.attack = 10;
 	status.drill_range = 1;
-	status.jump_force = 1;
+	status.jump_force = 0.6F;
 	status.speed = DEFAULT_SPEED;
 	//設置位置
 	installation_position = ci::vec3(0,0,2);
@@ -105,7 +105,7 @@ void Game::Player::cPlayer::jump(bool flag)
 
 	if (jump_flag == true) {
 		if (mRigidbody.isLanding()) {
-			velocity.y = -(status.jump_force/6);
+			velocity.y = -status.jump_force;
 			jump_flag = false;
 		}
 	}
@@ -113,6 +113,7 @@ void Game::Player::cPlayer::jump(bool flag)
 
 void Game::Player::cPlayer::setup()
 {
+    mCollider.setLayer( 1 << 0 );
 	mCollider.addWorld();
 	mRigidbody.addWorld();
 	
@@ -124,21 +125,20 @@ void Game::Player::cPlayer::setup()
 void Game::Player::cPlayer::update(const float & delta_time)
 {
 	if (drilling) {
-		Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition() + ci::vec3(0,-2,0), 2);
+		Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition() + ci::vec3(0, -1,0), 1);
 	}
 }
 
 void Game::Player::cPlayer::draw()
 {
+    ci::gl::ScopedColor col( color );
+    ci::gl::ScopedTextureBind tex( TEX->get( "mogura" ) );
+    ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef( ).texture( ) ) );
+
 	ci::gl::pushModelView();
 	ci::gl::translate(mPos - ci::vec3(0, 1, 0));
-	ci::gl::scale(ci::vec3(0.01f) + ci::vec3(0.01f, 0, 0.01f));
 	playerRotation();
-	ci::gl::color(color);
-	TEX->get("mogura")->bind();
-	ci::gl::ScopedGlslProg sgp(ci::gl::getStockShader(ci::gl::ShaderDef().texture().lambert()));
+	ci::gl::scale(ci::vec3(0.01f, 0.01f, 0.012f));
 	ci::gl::draw(mesh);
-	Resource::TextureManager::getInstance()->get("mogura")->unbind();
-	ci::gl::color(1, 1, 1, 1);
 	ci::gl::popModelView();
 }

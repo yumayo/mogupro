@@ -27,10 +27,7 @@ namespace Member
 {
 void cGameMain::setup( )
 {
-    pos = vec3( 0 );
-    size = vec3( 2 );
     skydome.setup( );
-    CAMERA->followingCamera( &pos, 30 );
     CAMERA->setup( );
     ENV->padSetup( );
 
@@ -75,12 +72,12 @@ void cGameMain::setup( )
     Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id, teams);
 
 	int seed = 20171031;
-	GemManager->setUp(vec3(-30,-15,-30),vec3(30,30,60),1,1,100,seed);
+	GemManager->setUp(vec3(0,-15,0),vec3(30,30,60),1,1,100,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
     //Network::cUDPClientManager::getInstance( )->open( );
     //Network::cUDPServerManager::getInstance( )->open( );
     //Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
-
+	sendEndSetup = false;
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
 }
@@ -97,6 +94,12 @@ void cGameMain::update( float deltaTime )
 
     if ( Network::cUDPClientManager::getInstance( )->isConnected( ) )
     {
+		if (sendEndSetup == false)
+		{
+			Network::cUDPClientManager::getInstance()->send(new Network::Packet::Request::cReqEndGamemainSetup());
+			sendEndSetup = true;
+		}
+
         Game::cClientAdapter::getInstance( )->update( );
         Game::cServerAdapter::getInstance( )->update( );
         n->entry_update( deltaTime );
@@ -106,7 +109,7 @@ void cGameMain::update( float deltaTime )
         ENV->padProcessEvent( );
         Game::cPlayerManager::getInstance( )->update( deltaTime );
         Game::cStrategyManager::getInstance( )->update( deltaTime );
-        Collision::cCollisionManager::getInstance( )->update( );
+        Collision::cCollisionManager::getInstance( )->update( deltaTime );
         GemManager->update( );
     }
 }
@@ -124,7 +127,7 @@ void cGameMain::drawShadow( )
     Game::cPlayerManager::getInstance( )->draw( );
     Game::cFieldManager::getInstance( )->draw( );
     Game::cStrategyManager::getInstance( )->draw( );
-	//GemManager->draw();
+	GemManager->draw();
     skydome.draw( );
 }
 

@@ -14,6 +14,7 @@
 #include <Collision/cFallBlockSimple.h>
 #include <Collision/cStaticBlockSimple.h>
 #include <Utility/cUserPointer.hpp>
+#include <cinder/Ray.h>
 namespace Collision
 {
 class cCollisionManager : public Utility::cSingletonAble<cCollisionManager>
@@ -26,8 +27,9 @@ public:
     void add( cRigidBody& rigidBody );
     void remove( cRigidBody& rigidBody );
     void setup( );
-    void update( );
+    void update( float delta );
     void draw( );
+    cinder::vec3 calcNearestPoint( cinder::Ray const& ray, unsigned int layer );
     static constexpr size_t WORLD_X = 160;
     static constexpr size_t WORLD_Y = 60;
     static constexpr size_t WORLD_Z = 160;

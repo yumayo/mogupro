@@ -23,8 +23,6 @@ cTitle::~cTitle( )
 }
 void cTitle::setup( )
 {
-    mCamPos = ci::vec3( 0 );
-    CAMERA->followingCamera( &mCamPos, 100 );
     CAMERA->setup( );
 
     mSelectTag = 0;

@@ -25,7 +25,7 @@ public:
     void update( );
 private:
     // 全てのプレイヤーの座標を行う。
-    void recvAllPlayersFormat( );
+    void recvAllPlayers( );
     // 全ての掘削機の設置イベントを行う。
     void recvAllQuarrys( );
     // 全てのジェム採取イベントを行う。
@@ -34,13 +34,11 @@ private:
     void recvAllBreakBlocks( );
 public:
     // ブロックを破壊したら呼んでください。
-    void sendBreakBlock( cinder::vec3 const& position );
-    // まとめてブロックを破壊したら呼んでください。
-    void sendBreakBlocks( std::vector<cinder::vec3> const& positions );
+    void sendBreakBlock( cinder::vec3 const& position, float radius );
     // 掘削機を設置したら呼んでください。
     void sendSetQuarry( cinder::vec3 const& position, Network::ubyte1 drillType );
     // プレイヤーの位置情報をサーバーに送りますので呼んでください。
-    void sendPlayerFormat( cinder::vec3 const& position, cinder::quat const& rotation );
+    void sendPlayer( cinder::vec3 const& position, cinder::quat const& rotation );
     // プレイヤーがジェムを取得したら呼んでください。
     void sendGetGemPlayer( Network::ubyte2 gemId );
     // 掘削機がジェムを取得したら呼んでください。

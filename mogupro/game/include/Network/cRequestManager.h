@@ -78,6 +78,11 @@ public:
     void ungetReqCheckMember( Packet::Request::cReqCheckMember&& data );
 public:
     std::stack<Packet::Request::cReqCheckMember> mReqCheckMember;
+public:
+    boost::optional<Packet::Request::cReqEndGamemainSetup> getReqEndGamemainSetup( );
+    void ungetReqEndGamemainSetup( Packet::Request::cReqEndGamemainSetup&& data );
+public:
+    std::stack<Packet::Request::cReqEndGamemainSetup> mReqEndGamemainSetup;
     // P=====END=====P
 };
 }

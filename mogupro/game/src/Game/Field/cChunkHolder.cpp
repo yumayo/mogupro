@@ -18,14 +18,14 @@ cChunkHolder::~cChunkHolder()
 
 }
 
-cChunk & cChunkHolder::getChunk( const int& x, const int& z )
+cChunk* cChunkHolder::getChunk( const int& x, const int& z )
 {
     return getChunk( ci::ivec3( x, 0, z ) );
 }
 
-cChunk & cChunkHolder::getChunk( const ci::ivec3& c )
+cChunk* cChunkHolder::getChunk( const ci::ivec3& c )
 {
-    return mChunks.at( c );
+    return mChunks.at( c ).get();
 }
 
 ChunkMap& cChunkHolder::getChunks()
@@ -33,9 +33,9 @@ ChunkMap& cChunkHolder::getChunks()
     return mChunks;
 }
 
-void cChunkHolder::setChunk( cChunk&  chunk )
+void cChunkHolder::setChunk( cChunkRef&  chunk )
 {
-    auto cell = chunk.getCell();
+    auto cell = chunk->getCell();
     mChunks[cell] = chunk;
 }
 
@@ -43,21 +43,21 @@ void cChunkHolder::setChunk( const int& x, const int& y, const int& z )
 {
     if ( isExistsChunk( x, y, z ) == false )
         return;
-    mChunks[ivec3( x, y, z )] = cChunk( x, z, mUnderGround );
+    mChunks[ivec3( x, y, z )] = std::make_shared<cChunk>( x, z, mUnderGround );
 }
 
-bool cChunkHolder::createChunk( cChunk& chunk )
+bool cChunkHolder::createChunk( cChunk* chunk )
 {
-    if ( chunk.mIsLoaded )
+    if ( chunk->mIsLoaded )
         return false;
-    chunk.mIsLoaded = true;
-    chunk.createBlocks();
-    return chunk.mIsDone = true;
+    chunk->mIsLoaded = true;
+    chunk->createBlocks();
+    return chunk->mIsDone = true;
 }
 
-bool cChunkHolder::createChunkMesh( cChunk & chunk )
+bool cChunkHolder::createChunkMesh( cChunk* chunk )
 {
-    chunk.buildMesh();
+    chunk->buildMesh();
     return true;
 }
 

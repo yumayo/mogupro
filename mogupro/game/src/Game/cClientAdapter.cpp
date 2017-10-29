@@ -25,12 +25,12 @@ void cClientAdapter::update( )
 
     // サーバーから受信したものがあった場合は取り出して、
     // 各マネージャーに伝えます。
-    recvAllPlayersFormat( );
+    recvAllPlayers( );
     recvAllQuarrys( );
     recvAllGems( );
     recvAllBreakBlocks( );
 }
-void cClientAdapter::recvAllPlayersFormat( )
+void cClientAdapter::recvAllPlayers( )
 {
     auto m = ::Network::cEventManager::getInstance( );
     while ( auto packet = m->getEvePlayers( ) )
@@ -38,7 +38,7 @@ void cClientAdapter::recvAllPlayersFormat( )
         auto players = Game::cPlayerManager::getInstance( )->getPlayers( );
         for ( auto& o : packet->mPlayerFormats )
         {
-            players[o.mPlayerId]->setPos( o.mPosition );
+            players[o.playerId]->setPos( o.position );
         }
     }
 }
@@ -108,23 +108,18 @@ void cClientAdapter::recvAllBreakBlocks( )
     auto eve = ::Network::cEventManager::getInstance( );
     while ( auto packet = eve->getEveBreakBlocks( ) )
     {
-        for ( auto& o : packet->mBreakPositions )
+        for ( auto& o : packet->mBreakFormats )
         {
             Game::cFieldManager::getInstance( )->blockBreakNetwork(
-                o
+                o.position, o.radius
             );
         }
     }
 }
-void cClientAdapter::sendBreakBlock( cinder::vec3 const & position )
+void cClientAdapter::sendBreakBlock( cinder::vec3 const & position, float radius )
 {
     // ブロック破壊は一旦バッファに詰めておきます。
-    mBreakBlocksPecket->mBreakPositions.emplace_back( position );
-}
-void cClientAdapter::sendBreakBlocks( std::vector<cinder::vec3> const & positions )
-{
-    // ブロック破壊は一旦バッファに詰めておきます。
-    std::copy( positions.begin( ), positions.end( ), std::back_inserter( mBreakBlocksPecket->mBreakPositions ) );
+    mBreakBlocksPecket->mBreakFormats.emplace_back( position, radius );
 }
 void cClientAdapter::sendSetQuarry( cinder::vec3 const & position, Network::ubyte1 drillType )
 {
@@ -134,16 +129,18 @@ void cClientAdapter::sendSetQuarry( cinder::vec3 const & position, Network::ubyt
     packet->mTeamId = cPlayerManager::getInstance( )->getActivePlayerTeamId( );
     Network::cUDPClientManager::getInstance( )->send( packet );
 }
-void cClientAdapter::sendPlayerFormat( cinder::vec3 const & position, cinder::quat const & rotation )
+void cClientAdapter::sendPlayer( cinder::vec3 const & position, cinder::quat const & rotation )
 {
     auto packet = new Network::Packet::Deliver::cDliPlayer( );
-    packet->mPosition = position;
-    packet->mRotation = rotation;
+    packet->mFormat.playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
+    packet->mFormat.position = position;
+    packet->mFormat.rotation = rotation;
     Network::cUDPClientManager::getInstance( )->send( packet );
 }
 void cClientAdapter::sendGetGemPlayer( Network::ubyte2 gemId )
 {
     auto packet = new Network::Packet::Request::cReqCheckGetJemPlayer( );
+    packet->mPlayerId = cPlayerManager::getInstance( )->getActivePlayerId( );
     packet->mGemId = gemId;
     Network::cUDPClientManager::getInstance( )->send( packet );
 }
@@ -156,7 +153,7 @@ void cClientAdapter::sendGetGemQuarry( Network::ubyte2 drillId, Network::ubyte2 
 }
 void cClientAdapter::sendBreakBlocks( )
 {
-    if ( !mBreakBlocksPecket->mBreakPositions.empty( ) )
+    if ( !mBreakBlocksPecket->mBreakFormats.empty( ) )
     {
         Network::cUDPClientManager::getInstance( )->send( mBreakBlocksPecket );
         mBreakBlocksPecket = new Network::Packet::Deliver::cDliBreakBlocks( );

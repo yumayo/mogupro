@@ -13,3 +13,4 @@
 #include<Network/Packet/Response/cResWantTeamIn.h>
 #include<Network/Packet/Response/cResCheckBeginGame.h>
 #include<Network/Packet/Response/cResCheckMember.h>
+#include<Network/Packet/Response/cResEndGamemainSetup.h>

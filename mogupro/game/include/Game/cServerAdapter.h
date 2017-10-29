@@ -14,7 +14,7 @@ public:
 public:
     void update( );
 private:
-    void sendPlayersPosition( );
+    void sendPlayers( );
     void sendSetQuarry( );
     void sendGetGemPlayer( );
     void sendGetGemQuarry( );
