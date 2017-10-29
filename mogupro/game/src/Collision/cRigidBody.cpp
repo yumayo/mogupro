@@ -9,8 +9,8 @@ cRigidBody::cRigidBody( cColliderBase& collider, cinder::vec3 speed )
     : mCollider( collider )
     , mSpeed( speed )
     , mMinValue( std::numeric_limits<float>::max( ) )
-    , mIsGravity(true)
-    , mIsLanding(false)
+    , mIsGravity( true )
+    , mIsLanding( false )
 {
 }
 cRigidBody::~cRigidBody( )
@@ -32,7 +32,7 @@ cinder::AxisAlignedBox cRigidBody::createAABB( ) const
     return aabb;
 }
 
-void cRigidBody::update( )
+void cRigidBody::update( float delta )
 {
     mMinValue = std::numeric_limits<float>::max( );
     mIsLanding = false;
@@ -40,16 +40,16 @@ void cRigidBody::update( )
     if ( mIsGravity )
     {
         if ( mSpeed.y > -10.0F )
-            mSpeed.y += -0.98F / 60.0F;
+            mSpeed.y += -0.98F * delta;
     }
 
     mCollider.update( this );
 }
-void cRigidBody::lateUpdate( )
+void cRigidBody::lateUpdate( float delta )
 {
     if ( mMinValue != std::numeric_limits<float>::max( ) )
     {
-        mSpeed *= 0.9F;
+        mSpeed *= ( 1.0F - 0.08 ) * delta;
     }
 }
 bool cRigidBody::isLanding( )
