@@ -21,6 +21,7 @@ private:
     cinder::vec3 size;
     Game::SkyDome::cSkyDome skydome;
     hardptr<Node::node> n;
+	bool sendEndSetup;
 };
 }
 }

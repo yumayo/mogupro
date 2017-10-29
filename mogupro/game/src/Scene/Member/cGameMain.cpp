@@ -80,7 +80,7 @@ void cGameMain::setup( )
     //Network::cUDPClientManager::getInstance( )->open( );
     //Network::cUDPServerManager::getInstance( )->open( );
     //Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
-	Network::cUDPClientManager::getInstance()->send(new Network::Packet::Request::cReqEndGamemainSetup());
+	sendEndSetup = false;
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
 }
@@ -97,6 +97,12 @@ void cGameMain::update( float deltaTime )
 
     if ( Network::cUDPClientManager::getInstance( )->isConnected( ) )
     {
+		if (sendEndSetup == false)
+		{
+			Network::cUDPClientManager::getInstance()->send(new Network::Packet::Request::cReqEndGamemainSetup());
+			sendEndSetup = true;
+		}
+
         Game::cClientAdapter::getInstance( )->update( );
         Game::cServerAdapter::getInstance( )->update( );
         n->entry_update( deltaTime );
