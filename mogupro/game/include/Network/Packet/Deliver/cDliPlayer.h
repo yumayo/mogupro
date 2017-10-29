@@ -1,8 +1,7 @@
 #pragma once
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
-#include <cinder/Vector.h>
-#include <cinder/Quaternion.h>
+#include <Network/Packet/StructureDefines.h>
 namespace Network
 {
 namespace Packet
@@ -17,8 +16,7 @@ public:
     ubyte2 packetExport( char* const data ) override;
 public:
     cNetworkHandle mNetworkHandle;
-    cinder::vec3 mPosition;
-    cinder::quat mRotation;
+    PlayerFormat mFormat;
 };
 }
 }
