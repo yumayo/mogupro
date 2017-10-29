@@ -17,6 +17,8 @@ public:
 	void checkReqInRoom();
 	void checkTeamIn();
 	void checkBeginGame();
+	void resetMember();
+	void updateServer(float deltaTime);
 	void draw();
 	void draw2D();
 	void resize();
@@ -34,6 +36,7 @@ private:
     bool mIsGameUpdate;
 	Utility::hardptr<Node::node> n;
 	Utility::hardptr<Node::Renderer::label> font;
+	bool mCanUpdateServerAdapter;
 };
 }
 }

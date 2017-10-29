@@ -92,7 +92,8 @@ enum class PacketId : ubyte1
 	REQ_CHECK_BEGIN_GAME,
 	//自分がルームにいることの送信
 	REQ_CHECK_MEMBER,
-
+	//GameMainのSetupが終わったことの通知
+	REQ_END_GAMEMAIN_SETUP,
     //=========================================================//
     //                        Response                         //
     //=========================================================//
@@ -126,6 +127,8 @@ enum class PacketId : ubyte1
 	RES_CHECK_BEGIN_GAME,
 	//自分がルームにいることの送信してもらう
 	RES_CHECK_MEMBER,
+	//GameMainのSetupが終わったことの通知を受けそれに対しServerAdapterのUpdate開始を通知するかも用
+	RES_END_GAMEMAIN_SETUP,
 };
 }
 }

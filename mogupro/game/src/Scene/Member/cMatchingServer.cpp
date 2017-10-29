@@ -44,6 +44,7 @@ namespace Scene
 					}
 				}
 			}))));
+			mCanUpdateServerAdapter = false;
 		}
 		void cMatchingServer::shutDown()
 		{
@@ -52,20 +53,44 @@ namespace Scene
 
 		void cMatchingServer::update(float deltaTime)
 		{
-            if ( ENV->pushKey( ci::app::KeyEvent::KEY_1 ) )
-            {
-                mIsGameUpdate = true;
-            }
-            if ( mIsGameUpdate )
-            {
-                Game::cServerAdapter::getInstance( )->update( );
-            }
 			cUDPServerManager::getInstance()->update(deltaTime);
+			updateServer(deltaTime);
 			n->entry_update(deltaTime);
 			checkReqMakeRoom();
 			checkReqInRoom();
 			checkTeamIn();
 			checkBeginGame();
+			resetMember();
+		}
+
+		void cMatchingServer::updateServer(float deltaTime)
+		{
+
+			if (mCanUpdateServerAdapter == false)
+			{
+				while (auto reqEndGamemainSetup = cRequestManager::getInstance()->getReqEndGamemainSetup())
+				{
+					for (int i = 0; i < cMatchingMemberManager::getInstance()->mPlayerDatas.size(); ++i)
+					{
+						if (reqEndGamemainSetup->mNetworkHandle
+							!= cMatchingMemberManager::getInstance()->mPlayerDatas[i].networkHandle)
+							continue;
+						cMatchingMemberManager::getInstance()->mPlayerDatas[i].canUpdate = true;
+					}
+				}
+
+				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				{
+					if (m.canUpdate == false)
+						return;
+				}
+				mCanUpdateServerAdapter = true;
+				mIsGameUpdate = true;
+			}
+			if (mIsGameUpdate)
+			{
+				Game::cServerAdapter::getInstance()->update();
+			}
 		}
 
 		void cMatchingServer::checkReqMakeRoom()
@@ -140,6 +165,17 @@ namespace Scene
 			}
 		}
 
+		void cMatchingServer::resetMember()
+		{
+			if (!ENV->pushKey(ci::app::KeyEvent::KEY_SPACE))return;
+			
+			mPhaseState = PhaseState::NOT_IN_ROOM;
+			mOpenRoom = false;
+			mIsGameUpdate = false;
+			cMatchingMemberManager::getInstance()->mPlayerDatas.clear();
+			cMatchingMemberManager::getInstance()->mMasterHandle = cNetworkHandle();
+			mCanUpdateServerAdapter = false;
+		}
 		void cMatchingServer::draw()
 		{
 

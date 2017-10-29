@@ -240,5 +240,22 @@ void cRequestManager::ungetReqCheckMember( Packet::Request::cReqCheckMember&& da
 {
     mReqCheckMember.push( std::move( data ) );
 }
+boost::optional<Packet::Request::cReqEndGamemainSetup> cRequestManager::getReqEndGamemainSetup( )
+{
+    if ( mReqEndGamemainSetup.empty( ) )
+    {
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqEndGamemainSetup.top( );
+        mReqEndGamemainSetup.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqEndGamemainSetup( Packet::Request::cReqEndGamemainSetup&& data )
+{
+    mReqEndGamemainSetup.push( std::move( data ) );
+}
 // P=====END=====P
 }
