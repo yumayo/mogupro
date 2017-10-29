@@ -9,7 +9,7 @@ namespace Event
 void cEveBreakBlocks::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
     cImporter imp( data );
-    for ( int i = 0; i < transferredBytes / ( sizeof( ubyte2 ) * 3 ); ++i )
+    for ( int i = 0; i < transferredBytes / ( sizeof( ubyte2 ) * 4 ); ++i )
     {
         float p[3];
         for ( int n = 0; n < 3; ++n )
