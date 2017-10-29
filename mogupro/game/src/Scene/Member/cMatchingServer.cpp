@@ -18,8 +18,6 @@ namespace Scene
 	{
 		void cMatchingServer::setup()
 		{
-			ci::vec3 pos(0, 0, 0);
-			CAMERA->followingCamera(&pos, 30);
 			CAMERA->setup();
 			cUDPServerManager::getInstance()->open();
 			using namespace Node::Action;
