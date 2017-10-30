@@ -6,7 +6,7 @@ namespace Collision
 {
 void hitRayToCube( cinder::Ray const & ray, unsigned int layer, cColliderBase const* const bCollider, float & calcMin, cinder::Ray & calcRay, cinder::AxisAlignedBox & calcBoundingBox, cColliderBase const** targetCollider )
 {
-    if ( ( bCollider->getLayer( ) & layer ) != layer ) 
+    if ( ( bCollider->getLayer( ) & layer ) != layer )
         return;
 
     if ( bCollider->getType( ) == cColliderBase::Type::AABB )
@@ -76,10 +76,10 @@ void hitCubeToCube( cAABBCollider const* const aAABB, cRigidBody const* const aR
                                     aAABB->getSize( ) * ( 1.0F - aAABB->getAnchor( ) ) + bAABB->getSize( ) * ( 1.0F - bAABB->getAnchor( ) ) );
     calcBoundingBox.transform( translate( mat4( ), bAABB->getPosition( ) ) );
 
-    float calcMin = 0.0F, calcMax = 0.0F;
+    float calcMin = std::numeric_limits<float>::max( ), calcMax = std::numeric_limits<float>::max( );
     if ( calcBoundingBox.intersect( calcRay, &calcMin, &calcMax ) != 0 )
     {
-        if ( calcMin >= 0.0F && calcMin <= 1.0F )
+        if ( calcMin > 0.0F - 0.005F && calcMin < 1.0F + 0.005F )
         {
             if ( calcMin < min )
             {
