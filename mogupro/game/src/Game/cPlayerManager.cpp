@@ -9,7 +9,6 @@
 
 void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
-	
 	//ê∂ê¨
 	for (int i = 0; i < player_number; i++) {
 		//í êMÇ≈ë„ì¸

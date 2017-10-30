@@ -42,7 +42,7 @@ Utility::cInputAll::cInputAll()
 }
 
 void mouseCursolFixed(const ci::app::MouseEvent& event, ci::vec2& inc_pos,
-	ci::vec2& mouse_pos, bool& cursor_captured, POINT& last_cursor_pos) {
+	ci::vec2& mouse_vec, bool& cursor_captured, POINT& last_cursor_pos) {
 
 	
 	if (cursor_captured) {
@@ -63,8 +63,8 @@ void mouseCursolFixed(const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 		SetCursorPos(ci::app::getWindowPos().x + (ci::app::getWindowSize().x / 2),
 			ci::app::getWindowPos().y + (ci::app::getWindowSize().y / 2));
 		GetCursorPos(&last_cursor_pos);
-		mouse_pos.x = last_cursor_pos.x;
-		mouse_pos.y = last_cursor_pos.y;
+		mouse_vec.x = last_cursor_pos.x;
+		mouse_vec.y = last_cursor_pos.y;
 		cursor_captured = true;
 	}
 }
@@ -175,17 +175,24 @@ void Utility::cInputAll::keyUp(const ci::app::KeyEvent& event)
 	press.erase(event.getCode());
 }
 
+void setMousePos(ci::vec2& pos) {
+	POINT pt;
+	GetCursorPos(&pt);
+	pos.x = pt.x;
+	pos.y = pt.y;
+}
 
 void Utility::cInputAll::mouseMove(const ci::app::MouseEvent & event)
 {
+	setMousePos(mouse_pos);
 	if (!mouse_active) return;
-	mouseCursolFixed(event, inc_pos, mouse_pos, cursor_captured, last_cursor_pos);
+	mouseCursolFixed(event, inc_pos, mouse_vec, cursor_captured, last_cursor_pos);
 }
 
 void Utility::cInputAll::mouseDrag(const ci::app::MouseEvent & event)
 {
 	if (!mouse_active) return;
-	mouseCursolFixed(event, inc_pos, mouse_pos, cursor_captured, last_cursor_pos);
+	mouseCursolFixed(event, inc_pos, mouse_vec, cursor_captured, last_cursor_pos);
 }
 
 void Utility::cInputAll::mouseDown(const ci::app::MouseEvent& event)
@@ -264,8 +271,6 @@ void onButtonDown(struct Gamepad_device * device, unsigned int buttonID, double 
 {
 	if (verbose)
 	{
-		//console() << "Button " << buttonID << " down on device " << device->deviceID << " at " << timestamp << " with context " << context << std::endl;
-
 		ENV->setPadPush(buttonID);
 		ENV->setPadPress(buttonID);
 	}
@@ -275,8 +280,6 @@ void onButtonUp(struct Gamepad_device * device, unsigned int buttonID, double ti
 {
 	if (verbose)
 	{
-		//console() << "Button " << buttonID << " up on device " << device->deviceID << " at " << timestamp << " with context " << context << std::endl;
-
 		ENV->setPadPull(buttonID);
 		ENV->erasePadPress(buttonID);
 	}
@@ -286,7 +289,6 @@ void onAxisMoved(struct Gamepad_device * device, unsigned int axisID, float valu
 {
 	if (verbose && (value < 0.3f || value > 0.3f)) // reduce the output noise by making a dead zone
 	{
-		ci::app::console() << "Axis " << axisID << " moved from " << lastValue << " to " << value << " on device " << device->deviceID << " at " << timestamp << " with context " << context << std::endl;
 		ENV->setPadAxis(axisID, value);
 	}
 }
