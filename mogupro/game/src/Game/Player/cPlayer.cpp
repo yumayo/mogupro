@@ -93,7 +93,7 @@ Game::Player::cPlayer::cPlayer(
 	//プレイヤーのステータス
 	status.attack = 10;
 	status.drill_range = 1;
-	status.jump_force = 0.6F;
+	status.jump_force = 1.0F;
 	status.speed = DEFAULT_SPEED;
 	//設置位置
 	installation_position = ci::vec3(0,0,2);
@@ -110,6 +110,15 @@ void Game::Player::cPlayer::move(const ci::vec3 & velocity)
 	//プレイヤーの移動ベクトル保存
 	this->velocity = velocity;
 
+	if (active_user) {
+		//地面の中で掘削中なら重力をなくす
+		if (mPos.y <= 16.0f && drilling) {
+			mRigidbody.gravityOff();
+		}
+		else {
+			mRigidbody.gravityOn();
+		}
+	}
 
 	mRigidbody.setSpeed(ci::vec3(0,speed.y,0) + velocity);
 	//プレイヤーの移動

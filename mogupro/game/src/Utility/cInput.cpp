@@ -44,7 +44,7 @@ Utility::cInputAll::cInputAll()
 void mouseCursolFixed(const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 	ci::vec2& mouse_vec, bool& cursor_captured, POINT& last_cursor_pos) {
 
-	
+	//‚PƒtƒŒ[ƒ€–ÚˆÈ~
 	if (cursor_captured) {
 		POINT pt;
 
@@ -58,6 +58,7 @@ void mouseCursolFixed(const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 			CAMERA->setCameraAngle(ci::vec2(-delta.x, -delta.y) * 0.005f);
 		}
 	}
+	//‚PƒtƒŒ[ƒ€–Ú‚Í‰½‚à‚µ‚È‚¢
 	else {
 
 		SetCursorPos(ci::app::getWindowPos().x + (ci::app::getWindowSize().x / 2),
