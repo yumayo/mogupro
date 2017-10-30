@@ -59,7 +59,7 @@ Game::Player::cPlayer::cPlayer(
 	const bool& is_active_user,
 	const Game::Player::Team& team)
 	: cObjectBase(pos),
-	mCollider(mPos, ci::vec3(0.8, 1.7, 0.8)),
+	mCollider(mPos, ci::vec3(0.8f, 0.8f, 0.8f)),
 	mRigidbody(mCollider)
 {
 	size = ci::vec3(1);
@@ -116,6 +116,9 @@ void Game::Player::cPlayer::setup()
     mCollider.setLayer( 1 << 0 );
 	mCollider.addWorld();
 	mRigidbody.addWorld();
+	//自分以外は通信で位置が送られてくるので
+	//重力をかける必要がない
+	if (!active_user)mRigidbody.gravityOff();
 	
 	mesh = Resource::cObjectManager::getInstance()->findObject("montamogura/moguraHontai.obj");
 	TEX->set("mogura", "OBJ/montamogura/moguraHontai.png");
@@ -136,7 +139,7 @@ void Game::Player::cPlayer::draw()
     ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef( ).texture( ) ) );
 
 	ci::gl::pushModelView();
-	ci::gl::translate(mPos - ci::vec3(0, 1, 0));
+	ci::gl::translate(mPos - ci::vec3(0, 0.5f, 0));
 	playerRotation();
 	ci::gl::scale(ci::vec3(0.01f, 0.01f, 0.012f));
 	ci::gl::draw(mesh);

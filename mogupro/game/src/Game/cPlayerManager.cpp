@@ -180,6 +180,7 @@ void Game::cPlayerManager::update(const float& delta_time)
 	for (auto& it : players) {
 		it->update(delta_time);
 	}
+	
 	playerMove(delta_time);
     cClientAdapter::getInstance( )->sendPlayer( active_player->getPos(), ci::quat() );
 }
