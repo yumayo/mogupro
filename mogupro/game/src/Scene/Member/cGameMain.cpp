@@ -130,6 +130,7 @@ void cGameMain::drawShadow( )
     Game::cFieldManager::getInstance( )->draw( );
     Game::cStrategyManager::getInstance( )->draw( );
 	GemManager->draw();
+    Collision::cCollisionManager::getInstance( )->draw( );
     skydome.draw( );
 	CAMERA->unBind3D();
 

@@ -76,39 +76,39 @@ void cCollisionManager::update( float delta )
     }
     for ( auto& rigidBody : mRigidBodys )
     {
-    recalc:
-        auto&& aabb = std::move( rigidBody->createAABB( ) );
-        auto&& minMax = std::move( fitWorldSpaceMinMax( aabb ) );
-        ivec3 min = std::get<0>( minMax );
-        ivec3 max = std::get<1>( minMax );
-        float length = std::numeric_limits<float>::max( );
-        cinder::Ray ray;
-        cinder::AxisAlignedBox boundingBox;
-        cColliderBase const* targetCollider = nullptr;
-        for ( int x = min.x; x <= max.x; ++x )
+        int i = 0;
+        for ( ; i < 10; ++i )
         {
-            for ( int y = min.y; y <= max.y; ++y )
+            auto&& aabb = std::move( rigidBody->createAABB( ) );
+            auto&& minMax = std::move( fitWorldSpaceMinMax( aabb ) );
+            ivec3 min = std::get<0>( minMax );
+            ivec3 max = std::get<1>( minMax );
+            float length = std::numeric_limits<float>::max( );
+            cinder::Ray ray;
+            cinder::AxisAlignedBox boundingBox;
+            cColliderBase const* targetCollider = nullptr;
+            for ( int x = min.x; x <= max.x; ++x )
             {
-                for ( int z = min.z; z <= max.z; ++z )
+                for ( int y = min.y; y <= max.y; ++y )
                 {
-                    auto const& rigidCollider = rigidBody->mCollider;
-                    auto const& colliders = mWorld[x][y][z];
-                    for ( auto const& collider : colliders )
+                    for ( int z = min.z; z <= max.z; ++z )
                     {
-                        hitCubeToCube( &rigidCollider, rigidBody, collider, length, ray, boundingBox, &targetCollider );
+                        auto const& rigidCollider = rigidBody->mCollider;
+                        auto const& colliders = mWorld[x][y][z];
+                        for ( auto const& collider : colliders )
+                        {
+                            hitCubeToCube( &rigidCollider, rigidBody, collider, length, ray, boundingBox, &targetCollider );
+                        }
                     }
                 }
             }
-        }
-        if ( targetCollider != nullptr )
-        {
-            if ( cinder::length( ray.getDirection( ) ) < 0.01F )
-            {
-                rigidBody->mCollider.setPosition( rigidBody->mCollider.getPosition( ) - rigidBody->getSpeed( ) );
-                continue;
-            }
+            if ( targetCollider == nullptr ) break;
             rigidBody->calc( length, ray, boundingBox, targetCollider );
-            goto recalc;
+        }
+        // 10‰ñˆÈãŒJ‚è•Ô‚µ‚½ê‡‚Íundo‚µ‚Ä•Ô‚µ‚Ü‚·B
+        if ( i == 10 )
+        {
+            rigidBody->mCollider.setPosition( rigidBody->mCollider.getPosition( ) - rigidBody->getSpeed( ) );
         }
     }
     for ( auto& rigidBody : mRigidBodys )
@@ -126,7 +126,7 @@ void cCollisionManager::draw( )
     mDebugRay.clear( );
     if ( !mDebugDraw ) return;
 
-    cinder::gl::ScopedColor col1( Color( 1, 1, 1 ) );
+    cinder::gl::ScopedColor white( Color( 1, 1, 1 ) );
     for ( auto const& rigidBody : mRigidBodys )
     {
         switch ( rigidBody->mCollider.getType( ) )
@@ -141,21 +141,7 @@ void cCollisionManager::draw( )
             break;
         }
     }
-    cinder::gl::ScopedColor col2( Color( 1, 0, 0 ) );
-    for ( auto const& rigidBody : mRigidBodys )
-    {
-        switch ( rigidBody->mCollider.getType( ) )
-        {
-        case cColliderBase::Type::AABB:
-        {
-            cAABBCollider const* aabbCo = dynamic_cast<cAABBCollider const*>( &rigidBody->mCollider );
-            cinder::gl::drawStrokedCube( std::move( rigidBody->createAABB( ) ) );
-        }
-        break;
-        default:
-            break;
-        }
-    }
+    cinder::gl::ScopedColor red( Color( 1, 0, 0 ) );
     for ( auto const& ray : mDebugRay )
     {
         cinder::gl::drawLine( ray.getOrigin( ), ray.getOrigin( ) + ray.getDirection( ) );
