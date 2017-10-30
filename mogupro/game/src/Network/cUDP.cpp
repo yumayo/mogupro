@@ -24,7 +24,7 @@ void cUDP::write( cNetworkHandle const& networkHandle, size_t sendDataByteNumber
     catch ( boost::system::error_code& e )
     {
         // 送信できない時に呼ばれます。
-        // ネットワークデバイスが向こうになっているときや、
+        // ネットワークデバイスが無効になっているときや、
         // ネットワークにつながっていないときに呼ばれます。
         MES_ERR( e.message( ),
                  [ ] { } );
@@ -33,12 +33,9 @@ void cUDP::write( cNetworkHandle const& networkHandle, size_t sendDataByteNumber
 void cUDP::close( )
 {
     mIsPause = true;
-    mIoService.stop( );
     mUdpSocket.close( );
-    if ( mUpdateIoService.joinable( ) )
-    {
-        mUpdateIoService.join( );
-    }
+    mIoService.stop( );
+    mThreadIoService.join( );
 }
 void cUDP::open( )
 {
@@ -65,7 +62,7 @@ void cUDP::open( int port )
                      [ ] { } );
         }
     }
-    mUpdateIoService = std::thread( [ this ]
+    mThreadIoService = std::thread( [ this ]
     {
         while ( !mIsPause )
         {
@@ -77,24 +74,25 @@ void cUDP::open( int port )
 }
 void cUDP::clearChunk( )
 {
-    Utility::cScopedMutex m( mMutex );
-    mChacheEndpoints.clear( );
-    mChacheEndpoints.shrink_to_fit( );
+    Utility::cScopedMutex m( mDataMutex );
+    mCacheEndpoints.clear( );
+    mCacheEndpoints.shrink_to_fit( );
 }
 bool cUDP::emptyChunk( )
 {
-    Utility::cScopedMutex m( mMutex );
-    return mChacheEndpoints.empty( );
+    Utility::cScopedMutex m( mDataMutex );
+    return mCacheEndpoints.empty( );
 }
 cPacketChunk cUDP::popChunk( )
 {
-    Utility::cScopedMutex m( mMutex );
-    auto front = mChacheEndpoints.front( );
-    mChacheEndpoints.pop_front( );
+    Utility::cScopedMutex m( mDataMutex );
+    auto front = mCacheEndpoints.front( );
+    mCacheEndpoints.pop_front( );
     return front;
 }
 void cUDP::receive( )
 {
+    Utility::cScopedMutex m( mDataMutex );
     mUdpSocket.async_receive_from( boost::asio::buffer( mRemoteBuffer ),
                                    mRemoteEndpoint,
                                    [ this ] ( const boost::system::error_code& e, size_t transferredBytes )
@@ -102,15 +100,14 @@ void cUDP::receive( )
         if ( e )
         {
             // 受信できなかった時に呼ばれます。
-            // ※パケットロスとかの判断はここでは出来ません。
-            // というかここが呼ばれたところを見たことがないです。
+            // 外側からソケットを閉じられたときなど。
             MES_ERR( e.message( ),
                      [ ] { } );
         }
         else
         {
-            Utility::cScopedMutex m( mMutex );
-            mChacheEndpoints.emplace_back( mRemoteEndpoint.address( ).to_string( ), mRemoteEndpoint.port( ), transferredBytes, mRemoteBuffer );
+            Utility::cScopedMutex m( mDataMutex );
+            mCacheEndpoints.emplace_back( mRemoteEndpoint.address( ).to_string( ), mRemoteEndpoint.port( ), transferredBytes, mRemoteBuffer );
             std::fill_n( mRemoteBuffer.begin( ), transferredBytes, 0 );
         }
     } );

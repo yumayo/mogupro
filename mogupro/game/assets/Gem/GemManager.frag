@@ -1,9 +1,8 @@
 #version 150 core
 
 uniform vec4		uColor;
-uniform float       uAlpha;
+//uniform float       uAlpha;
 uniform sampler2D	uTex0;
-uniform float        time;
 
 in vec2				TexCoord0;
 out vec4			oColor;
@@ -27,6 +26,4 @@ void main( void ) {
 	}
 
 	oColor = calcColor;
-	if(calcColor.a > 0.6)
-	oColor.a = uAlpha;
 }

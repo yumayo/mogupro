@@ -63,7 +63,6 @@ namespace Scene
 
 		void cMatchingServer::updateServer(float deltaTime)
 		{
-
 			if (mCanUpdateServerAdapter == false)
 			{
 				while (auto reqEndGamemainSetup = cRequestManager::getInstance()->getReqEndGamemainSetup())
@@ -180,7 +179,7 @@ namespace Scene
 		{
 
 		}
-
+		
 		void cMatchingServer::draw2D()
 		{
 			int c = 0;

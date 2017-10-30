@@ -3,11 +3,15 @@
 #include "cinder/gl/gl.h"
 #include "Node\node.h"
 #include "Node/action.hpp"
+#include "../cPlayerManager.h"
+#include "Utility\cTimeMeasurement.h"
 
 namespace Game
 {
 	namespace Gem
 	{
+		const float visibleRange = 20;
+
 		enum GemType
 		{
 			Dia,
@@ -24,11 +28,13 @@ namespace Game
 			// scale       大きさ
 			// color       カラー（ここは本来Texture）
 			// type        Gemの種類(これ入れたらtexture引数にいらないかも)
-			cGem(int id,ci::vec3 postion, ci::vec3 scale, ci::Color color, GemType type) : mId(id),mPosition(postion), mScale(scale), mColor(color), mType(type) {};
+			cGem(int id,ci::vec3 postion, ci::vec3 scale, ci::Color color, GemType type, float delay)
+				: mId(id),mPosition(postion), mScale(scale), mColor(color), mType(type), mDelay(delay) {};
 			~cGem() {};
 
-			void setUp(ci::vec3 postion, ci::vec3 scale, ci::Color color, GemType type);
+			void setUp(ci::vec3 postion, ci::vec3 scale, ci::Color color, GemType type, float delay);
 			void draw();
+			void drawFbo();
 			void update();
 
 			int getId() { return mId; }
@@ -39,14 +45,17 @@ namespace Game
 			ci::Color getColor() { return mColor; }
 			float getSinRotate() { return mSinrotate; }
 			bool getIsDrillhit() { return misdrillhit; }
+			std::vector<uint32_t> getIndices() { return indices; }
 			void setPos(ci::vec3 pos) { mPosition = pos; }
 			void setPutPos(ci::vec3 pos) { mPutPosition = pos; }
 			void setSinRotate(float rotate) { mSinrotate = rotate; }
 			void setIsDrillhit(bool ishit) { misdrillhit = ishit; }
-			void setIndices(int offset) { for (int i = 0; i < 8; i++) indices.push_back(i + offset); }
+			void setIndices(int offset) { for (int i = 0; i < 36; i++) indices.push_back(i + offset); }
 			hardptr<Node::node> root;
 			
 		private:
+
+			
 
 			int mId;
 			ci::vec3 mPosition;
@@ -54,8 +63,9 @@ namespace Game
 			ci::vec3 mScale;
 			ci::vec3 mRotation;
 			ci::Color mColor;
+			float mDelay;
 			GemType mType;
-			std::vector<int> indices;
+			std::vector<uint32_t> indices;
 			int mMoney;
 			float mSinrotate;
 			bool misdrillhit = false;

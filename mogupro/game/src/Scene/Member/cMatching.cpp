@@ -3,14 +3,17 @@
 #include <Utility/cInput.h>
 #include <string>
 #include <Network.hpp>
-#include <CameraManager/cCameraManager.h>
 #include <Scene/Member/cGameMain.h>
 #include <Scene/cSceneManager.h>
 #include <Network/cMatchingMemberManager.h>
+#include <Node/renderer.hpp>
+#include <Node/action.hpp>
+
 using namespace Network;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
 using namespace Network::Packet::Response;
+using namespace Node::Action;
 void drawRect(const ci::vec2& pos, const ci::vec2& size, const ci::ColorA& color)
 {
 	ci::gl::color(color);
@@ -35,24 +38,88 @@ namespace Scene
 		void cMatching::setup()
 		{
 			Network::cUDPClientManager::getInstance()->open();
-			cUDPClientManager::getInstance()->connect("192.168.3.2");
+			cUDPClientManager::getInstance()->connect("10.25.34.217");
 			mClassState = ClassState::NOT;
 			mWaitClassState = ClassState::NOT;
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mCanSend = true;
-			CAMERA->setup();
 			ENV->padSetup();
-			using namespace Node::Action;
 			mPhaseState = PhaseState::NOT_IN_ROOM;
-			font = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 40);
-			font->set_text(u8"");
-			font->set_scale(glm::vec2(1, -1));
-			smallFont = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 20);
-			smallFont->set_text(u8"");
-			smallFont->set_scale(glm::vec2(1, -1));
-			n = Node::node::create();
-			n->add_child(font);
-			n->add_child(smallFont);
+			mSelectTag = 0;
+			mRoot = Node::node::create();
+			mRoot->set_schedule_update();
+
+			auto makeRoom = Node::Renderer::rect::create(ci::vec2(300, 300));
+			makeRoom->set_position(ci::vec2(-250, 0));
+			makeRoom->set_color(ci::ColorA(1, 0, 0));
+			makeRoom->set_tag(0);
+			makeRoom->set_schedule_update();
+			mRoot->add_child(makeRoom);
+			{
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				f->set_text(u8"部屋を作る");
+				f->set_scale(glm::vec2(1, -1));
+				makeRoom->add_child(f);
+			}
+			outRoomFunc.emplace_back(
+				[this] {
+				mCanSend = false;
+				cUDPClientManager::getInstance()->send(new cReqMakeRoom(100));
+				mWaitClassState = ClassState::MASTER;
+			});
+
+			auto inRoom = Node::Renderer::rect::create(ci::vec2(300, 300));
+			inRoom->set_position(ci::vec2(250, 0));
+			inRoom->set_color(ci::ColorA(0, 1, 0));
+			inRoom->set_tag(1);
+			inRoom->set_schedule_update();
+			mRoot->add_child(inRoom);
+			{
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				f->set_text(u8"部屋に入る");
+				f->set_scale(glm::vec2(1, -1));
+				inRoom->add_child(f);
+			}
+			outRoomFunc.emplace_back(
+				[this] {
+				cUDPClientManager::getInstance()->send(new cReqInRoom(100));
+				mCanSend = false;
+				mWaitClassState = ClassState::CLIENT;
+			});
+			mRoot->get_child_by_tag(mSelectTag)->run_action(
+				repeat_forever::create(
+					sequence::create(
+						ease<ci::EaseInOutCirc>::create(scale_by::create(0.26F, ci::vec2(0.2F))),
+						ease<ci::EaseInOutCirc>::create(scale_by::create(0.26F, ci::vec2(-0.2F)))
+					)
+				)
+			);
+
+			inRoomFunc.emplace_back(
+				[this] {
+				cUDPClientManager::getInstance()->send(new cReqWantTeamIn(0));
+				mCanSend = false;
+			});
+
+			inRoomFunc.emplace_back(
+				[this] {
+				cUDPClientManager::getInstance()->send(new cReqWantTeamIn(1));
+				mCanSend = false;
+			});
+
+			inRoomFunc.emplace_back(
+				[this] {
+				if (mClassState == ClassState::MASTER)
+				{
+					cUDPClientManager::getInstance()->send(new cReqCheckBeginGame());
+					mCanSend = false;
+				}
+			});
+
+			mMemberRoot = Node::node::create();
+			mMemberRoot->set_schedule_update();
+			mAddMember = false;
+			mTeamNum = -1;
 		}
 
 		void cMatching::shutDown()
@@ -62,11 +129,39 @@ namespace Scene
 
 		void cMatching::update(float deltaTime)
 		{
-
+			int prevSelectTag = mSelectTag;
+			mRoot->entry_update(deltaTime);
 			Network::cUDPClientManager::getInstance()->update(deltaTime);
 			if (cUDPClientManager::getInstance()->isConnected() == false)return;
 			makeRoom();
 			inRoom();
+			ci::app::console() << "HIT" << std::endl;
+			if (prevSelectTag != mSelectTag)
+			{
+				mRoot->get_child_by_tag(prevSelectTag)->remove_all_actions();
+				mRoot->get_child_by_tag(prevSelectTag)->set_scale(ci::vec2(1.0F));
+				mRoot->get_child_by_tag(mSelectTag)->run_action(
+					repeat_forever::create(
+						sequence::create(
+							ease<ci::EaseInOutCirc>::create(scale_by::create(0.26F, ci::vec2(0.2F))),
+							ease<ci::EaseInOutCirc>::create(scale_by::create(0.26F, ci::vec2(-0.2F)))
+						)
+					)
+				);
+			}
+
+			if (mPhaseState == PhaseState::IN_ROOM && mClassState == ClassState::CLIENT
+				|| mClassState == ClassState::MASTER)
+			{
+				while (auto resCheckBeginGame = cResponseManager::getInstance()->getResCheckBeginGame())
+				{
+					cMatchingMemberManager::getInstance()->mPlayerID = resCheckBeginGame->mPlayerID;
+					shutDown();
+					cSceneManager::getInstance()->change<Scene::Member::cGameMain>();
+					cSceneManager::getInstance()->now().setup();
+					continue;
+				}
+			}
 		}
 
 		void cMatching::makeRoom()
@@ -80,19 +175,21 @@ namespace Scene
 					continue;
 				}
 
-				if (ENV->pushKey(ci::app::KeyEvent::KEY_z))
+				if (ENV->pushKey(ci::app::KeyEvent::KEY_RIGHT))
 				{
-					mCanSend = false;
-					cUDPClientManager::getInstance()->send(new cReqMakeRoom(100));
-					mWaitClassState = ClassState::MASTER;
+					mSelectTag = std::min(mSelectTag + 1, 1);
 				}
 
-				else if (ENV->pushKey(ci::app::KeyEvent::KEY_x))
+				if (ENV->pushKey(ci::app::KeyEvent::KEY_LEFT))
 				{
-                    cUDPClientManager::getInstance()->send(new cReqInRoom(100));
-					mCanSend = false;
-					mWaitClassState = ClassState::CLIENT;
+					mSelectTag = std::max(mSelectTag - 1, 0);
 				}
+
+				if (ENV->pushKey(ci::app::KeyEvent::KEY_RETURN) && mCanSend)
+				{
+					outRoomFunc[mSelectTag]();
+				}
+
 			}
 			else if (mWaitClassState == ClassState::CLIENT)
 			{
@@ -110,6 +207,8 @@ namespace Scene
 					mCanSend = true;
 					mClassState = ClassState::CLIENT;
 					mPhaseState = PhaseState::IN_ROOM;
+					mRoot->remove_all_children();
+					addInRoomUI();
 				}
 			}
 
@@ -128,67 +227,112 @@ namespace Scene
 					mCanSend = true;
 					mClassState = ClassState::MASTER;
 					mPhaseState = PhaseState::IN_ROOM;
+					mRoot->remove_all_children();
+					addInRoomUI();
 				}
 			}
 		}
 		void cMatching::inRoom()
 		{
 			if (mPhaseState != PhaseState::IN_ROOM)return;
+			mAddMember = false;
 
 			if (mClassState == ClassState::CLIENT
 				|| mClassState == ClassState::MASTER)
 			{
-
-				if (mCanSend == true)
+				if (ENV->pushKey(ci::app::KeyEvent::KEY_RIGHT))
 				{
-					//1P・2Pのどっちに入るのかの選択
-					if (ENV->pushKey(ci::app::KeyEvent::KEY_z))
-					{
-						cUDPClientManager::getInstance()->send(new cReqWantTeamIn(0));
-						mCanSend = false;
-					}
-
-					else if (ENV->pushKey(ci::app::KeyEvent::KEY_x))
-					{
-						cUDPClientManager::getInstance()->send(new cReqWantTeamIn(1));
-						mCanSend = false;
-					}
+					if (mClassState == ClassState::MASTER)
+						mSelectTag = std::min(mSelectTag + 1, 2);
+					else
+						mSelectTag = std::min(mSelectTag + 1, 1);
 				}
+
+				if (ENV->pushKey(ci::app::KeyEvent::KEY_LEFT))
+				{
+					mSelectTag = std::max(mSelectTag - 1, 0);
+				}
+
+				if (ENV->pushKey(ci::app::KeyEvent::KEY_RETURN) && mCanSend)
+				{
+					inRoomFunc[mSelectTag]();
+				}
+
 				while (auto resWantTeamIn = cResponseManager::getInstance()->getResWantTeamIn())
 				{
-					if (resWantTeamIn->mFlag == true)
+					if (resWantTeamIn->mFlag == 1)
 					{
 						mCanSend = true;
+						mTeamNum = resWantTeamIn->mTeamNum;
 					}
 					else
 					{
 						mCanSend = true;
 					}
 				}
-				
-				while (auto resCheckBeginGame = cResponseManager::getInstance()->getResCheckBeginGame())
-				{	
-                    cMatchingMemberManager::getInstance( )->mPlayerID = resCheckBeginGame->mPlayerID;
-                    shutDown();
-					cSceneManager::getInstance()->change<Scene::Member::cGameMain>();
-					cSceneManager::getInstance()->now().setup();
-					continue;
-				}
 
 				while (auto eveTeamMember = cEventManager::getInstance()->getEveTeamMember())
 				{
 					cMatchingMemberManager::getInstance()->addPlayerDatas(
-						eveTeamMember->mNameStr,eveTeamMember->mTeamNum,eveTeamMember->mPlayerID,cNetworkHandle("",0));
+						eveTeamMember->mNameStr, eveTeamMember->mTeamNum, eveTeamMember->mPlayerID, cNetworkHandle("", 0));
+					mAddMember = true;
 				}
 			}
+		}
 
-			if (mClassState == ClassState::MASTER)
+		void cMatching::addInRoomUI()
+		{
+			auto san = Node::Renderer::rect::create(ci::vec2(150, 150));
+			san->set_position(ci::vec2(100, -200));
+			san->set_color(ci::ColorA(1, 0, 0));
+			san->set_tag(0);
+			san->set_schedule_update();
+			mRoot->add_child(san);
 			{
-				if (ENV->pushKey(ci::app::KeyEvent::KEY_c))
-				{
-					cUDPClientManager::getInstance()->send(new cReqCheckBeginGame());
-					mCanSend = false;
-				}
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				f->set_text(u8"赤組に入る");
+				f->set_scale(glm::vec2(1, -1));
+				san->add_child(f);
+			}
+
+			auto moon = Node::Renderer::rect::create(ci::vec2(150, 150));
+			moon->set_position(ci::vec2(300, -200));
+			moon->set_color(ci::ColorA(1, 1, 1));
+			moon->set_tag(1);
+			moon->set_schedule_update();
+			mRoot->add_child(moon);
+			{
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				f->set_color(ci::ColorA(0, 0, 0));
+				f->set_text(u8"白組に入る");
+				f->set_scale(glm::vec2(1, -1));
+				moon->add_child(f);
+			}
+
+			mSelectTag = 0;
+			mRoot->get_child_by_tag(mSelectTag)->run_action(
+				repeat_forever::create(
+					sequence::create(
+						ease<ci::EaseInOutCirc>::create(scale_by::create(0.26F, ci::vec2(0.2F))),
+						ease<ci::EaseInOutCirc>::create(scale_by::create(0.26F, ci::vec2(-0.2F)))
+					)
+				)
+			);
+
+			if (mClassState != ClassState::MASTER)
+				return;
+
+			auto start = Node::Renderer::rect::create(ci::vec2(150, 150));
+			start->set_position(ci::vec2(500, -200));
+			start->set_color(ci::ColorA(0, 1, 0));
+			start->set_tag(2);
+			start->set_schedule_update();
+			mRoot->add_child(start);
+			{
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				f->set_text(u8"ゲーム開始");
+				f->set_scale(glm::vec2(1, -1));
+				start->add_child(f);
 			}
 		}
 
@@ -196,39 +340,80 @@ namespace Scene
 		{
 
 		}
+
 		void cMatching::draw2D()
 		{
-			switch (mPhaseState)
+			mRoot->entry_render(cinder::mat4());
+
+			if (mPhaseState == PhaseState::IN_ROOM)
 			{
-			case PhaseState::NOT_IN_ROOM:
-				drawRect(ci::vec2(-300, 0), ci::vec2(300, 300), ci::ColorA(0, 1, 0, 1));
-				font->set_text(u8"ルームを作る");
-				font->set_position_3d(glm::vec3(-300, 0, 0));
-				ci::gl::pushModelView();
-				n->entry_render(ci::mat4());
-				ci::gl::popModelView();
-				font->set_text(u8"Z key");
-				font->set_position_3d(glm::vec3(-300, -50, 0));
-				ci::gl::pushModelView();
-				n->entry_render(ci::mat4());
-				ci::gl::popModelView();
-				drawRect(ci::vec2(300, 0), ci::vec2(300, 300), ci::ColorA(0, 0, 1, 1));
-				font->set_text(u8"ルームに入る");
-				font->set_position_3d(glm::vec3(300, 0, 0));
-				ci::gl::pushModelView();
-				n->entry_render(ci::mat4());
-				ci::gl::popModelView();
-				font->set_text(u8"X key");
-				font->set_position_3d(glm::vec3(300, -50, 0));
-				ci::gl::pushModelView();
-				n->entry_render(ci::mat4());
-				ci::gl::popModelView();
-				break;
-			case PhaseState::IN_ROOM:
-			
-				break;
+				if (mAddMember == true)
+				{
+					mMemberRoot->remove_all_children();
+					{
+						auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+						f->set_color(ci::ColorA(1, 0, 0));
+						f->set_position(ci::vec2(-350, 250));
+						f->set_text(u8"赤チーム");
+						f->set_scale(glm::vec2(1, -1));
+						mMemberRoot->add_child(f);
+					}
+					{
+						auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+						f->set_color(ci::ColorA(0, 1, 1));
+						f->set_position(ci::vec2(0, 250));
+						f->set_text(u8"チームなし");
+						f->set_scale(glm::vec2(1, -1));
+						mMemberRoot->add_child(f);
+					}
+					{
+						auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+						f->set_position(ci::vec2(350, 250));
+						f->set_text(u8"白チーム");
+						f->set_scale(glm::vec2(1, -1));
+						mMemberRoot->add_child(f);
+					}
+					int noTeamCount = 0;
+					int team1Count = 0;
+					int team2Count = 0;
+					for each (auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+					{
+						auto nameTag = Node::Renderer::rect::create(ci::vec2(300, 50));
+						auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+						if (m.teamNum == 0)
+						{
+							nameTag->set_color(ci::ColorA(1, 0, 0));
+							nameTag->set_position(ci::vec2(-350, 200 - 60 * team1Count));
+							team1Count++;
+						}
+
+						else if(m.teamNum == 1)
+						{
+							nameTag->set_color(ci::ColorA(1, 1, 1));
+							nameTag->set_position(ci::vec2(350, 200 - 60 * team2Count));
+							team2Count++;
+							f->set_color(ci::ColorA(0, 0, 0));
+						}
+
+						else
+						{
+							nameTag->set_color(ci::ColorA(0, 1, 0));
+							nameTag->set_position(ci::vec2(0, 200 - 60 * noTeamCount));
+							noTeamCount++;
+							f->set_color(ci::ColorA(0, 0, 0));
+						}
+
+						mMemberRoot->add_child(nameTag);
+						f->set_text(u8"" + m.nameStr);
+						f->set_scale(glm::vec2(1, -1));
+						nameTag->add_child(f);
+					}
+				}
 			}
+
+			mMemberRoot->entry_render(cinder::mat4());
 		}
+
 		void cMatching::resize()
 		{
 

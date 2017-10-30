@@ -19,6 +19,7 @@
 #define GemManager Game::cGemManager::getInstance()
 
 
+
 namespace Game
 {
 	class cGemManager : public Utility::cSingletonAble<cGemManager>
@@ -49,7 +50,7 @@ namespace Game
 
 		void sort();
 
-		const int mDrawNum = 10;
+		const int mDrawNum = 100;
 
 		std::vector<std::shared_ptr<Gem::cGem>> mStaticGem;
 		std::vector<std::shared_ptr<Gem::cGem>> mActiveGem;

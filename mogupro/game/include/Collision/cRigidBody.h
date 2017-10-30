@@ -16,13 +16,13 @@ public:
     cinder::AxisAlignedBox createAABB( ) const;
     void update( float delta );
     void lateUpdate( float delta );
-    bool isLanding( );
-    bool isGravity( );
+    bool isLanding( ) const;
+    bool isGravity( ) const;
     void gravityOn( );
     void gravityOff( );
-    cinder::vec3 const& getSpeed( );
+    cinder::vec3 const& getSpeed( ) const;
     void setSpeed( cinder::vec3 value );
-    void calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase* targetCollider );
+    void calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase const* targetCollider );
 public:
     cColliderBase& mCollider;
 private:

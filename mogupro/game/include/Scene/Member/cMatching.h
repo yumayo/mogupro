@@ -1,7 +1,6 @@
 #pragma once
 #include <Scene/cSceneBase.h>
 #include <Node/node.h>
-#include <Node/renderer.hpp>
 
 namespace Scene
 {
@@ -15,6 +14,7 @@ public:
 	void update(float deltaTime);
 	void makeRoom();
 	void inRoom();
+	void addInRoomUI();
 	void draw();
 	void draw2D();
 	void resize();
@@ -38,9 +38,14 @@ private:
 	PhaseState mPhaseState;
 
 	bool mCanSend;
-	Utility::hardptr<Node::node> n;
-	Utility::hardptr<Node::Renderer::label> font;
-	Utility::hardptr<Node::Renderer::label> smallFont;
+	hardptr<Node::node> mRoot;
+	hardptr<Node::node> mMemberRoot;
+	bool mAddMember;
+	int mTeamNum;
+	ci::vec3 mCamPos;
+	int mSelectTag;
+	std::vector<std::function<void()>> outRoomFunc;
+	std::vector<std::function<void()>> inRoomFunc;
 };
 }
 }

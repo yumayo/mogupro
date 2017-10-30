@@ -133,7 +133,9 @@ void cTitle::update( float deltaTime )
 }
 void cTitle::draw( )
 {
+
 }
+
 void cTitle::draw2D( )
 {
     ci::gl::enableFaceCulling( false );

@@ -18,7 +18,6 @@ namespace Game
 			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Iron, 0));
 			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Coal, 0));
 		}
-		create();
 
 		ci::gl::Fbo::Format format;
 		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth()/2, ci::app::getWindowHeight()/2, true);
@@ -28,17 +27,17 @@ namespace Game
 		ci::gl::enableDepthRead();
 		ci::gl::enableAlphaBlending();
 		mesh = ci::TriMesh::create();
+		create();
 	}
 
 	void cGemManager::draw()
 	{
 
-		//mesh->appendIndices();
-		//mesh->appendPosition();
-		for (int i = 0; i < mDrawNum; i++)
+		for each(auto g in mStaticGem)
 		{
-			mGemsptr[i]->draw();
+			g->draw();
 		}
+		//ci::gl::draw(*mesh);
 		ci::gl::color(ci::Color(1, 1, 1));
 	};
 
@@ -50,12 +49,12 @@ namespace Game
         ci::gl::ScopedGlslProg glsl( mHShader );
 		batch = ci::gl::Batch::create(vboRect,mHShader);
         ci::gl::ScopedTextureBind tex( mGemBuffer->getColorTexture( ) );
-		float uAlpha = 0.8 - 0.6f*std::abs(std::sinf(cTimeMeasurement::getInstance()->totalTime()));
+		//float uAlpha = 0.8 - 0.6f*std::abs(std::sinf(cTimeMeasurement::getInstance()->totalTime()));
 		cTimeMeasurement::getInstance()->make();
 		mHShader->uniform("uTex0", 0);
 		mHShader->uniform("uColor", ci::vec4(1, 1, 1, 1));
 		mHShader->uniform("uWindowSize", ci::vec2(ci::app::getWindowSize()/2));
-		mHShader->uniform("uAlpha", uAlpha);
+		//mHShader->uniform("uAlpha", uAlpha);
 
 
 		ci::gl::drawSolidRect(rect);
@@ -76,7 +75,7 @@ namespace Game
 
 		for (int i = 0; i < mDrawNum; i++)
 		{
-			mGemsptr[i]->draw();
+			mGemsptr[i]->drawFbo();
 		}
 		ci::gl::color(ci::Color(1, 1, 1));
 	};
@@ -92,6 +91,7 @@ namespace Game
 			int x = ci::randInt(0, mRandomRange.x - 1);
 			int y = ci::randInt(0, mRandomRange.y - 1);
 			int z = ci::randInt(0, mRandomRange.z - 1);
+			float delay = ci::randFloat(0, 20);
 			Game::Gem::GemType type = Game::Gem::GemType(ci::randInt(0, Game::Gem::GemType::Coal + 1));
 
 			
@@ -115,17 +115,33 @@ namespace Game
 				break;
 			}
 
-			mGemsptr.push_back(std::make_shared<Gem::cGem>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type));
-			mGemsptr.push_back(std::make_shared<Gem::cGem>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type));
-			mStaticGem.push_back(std::make_shared<Gem::cGem>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type));
-			mStaticGem.push_back(std::make_shared<Gem::cGem>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type));
-			int offset = 0;
-			for each (auto g in mStaticGem)
-			{
-				g->setIndices(offset);
-				offset + 8;
-			}
+			mGemsptr.push_back(std::make_shared<Gem::cGem>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type,delay));
+			mGemsptr.push_back(std::make_shared<Gem::cGem>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type,delay));
+			mStaticGem.push_back(std::make_shared<Gem::cGem>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type, delay));
+			mStaticGem.push_back(std::make_shared<Gem::cGem>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type, delay));
 		}
+
+		//int offset = 0;
+		//for each (auto g in mStaticGem)
+		//{
+		//	g->setIndices(offset);
+		//	offset += 36;
+		//}
+		//for(int i = 0; i < mStaticGem.size(); i++)
+		//{
+		//	auto indices = mStaticGem[i]->getIndices();
+		//	mesh->appendIndices(&indices[0], indices.size());
+		//	ci::vec3 pos = mStaticGem[i]->getPos();
+		//	ci::vec3 scale = mStaticGem[i]->getScale();
+		//	mesh->appendPosition(pos + ci::vec3(scale.x / 2, scale.y / 2, scale.z / 2));
+		//	mesh->appendPosition(pos + ci::vec3(-scale.x / 2, scale.y / 2, scale.z / 2));
+		//	mesh->appendPosition(pos + ci::vec3(-scale.x / 2, scale.y / 2, -scale.z / 2));
+		//	mesh->appendPosition(pos + ci::vec3(scale.x / 2, scale.y / 2, -scale.z / 2));
+		//	mesh->appendPosition(pos + ci::vec3(scale.x / 2, -scale.y / 2, scale.z / 2));
+		//	mesh->appendPosition(pos + ci::vec3(-scale.x / 2, -scale.y / 2, scale.z / 2));
+		//	mesh->appendPosition(pos + ci::vec3(-scale.x / 2, -scale.y / 2, -scale.z / 2));
+		//	mesh->appendPosition(pos + ci::vec3(scale.x / 2, -scale.y / 2, -scale.z / 2));
+		//}
 	};
 
 
