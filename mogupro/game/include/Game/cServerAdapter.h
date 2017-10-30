@@ -3,7 +3,7 @@
 #include <Network/NetworkDefines.h>
 #include <map>
 #include <set>
-#include <cinder/Vector.h>
+#include <Network/Packet/StructureDefines.h>
 namespace Game
 {
 class cServerAdapter : public Utility::cSingletonAble<cServerAdapter>
@@ -20,7 +20,7 @@ private:
     void sendGetGemQuarry( );
     void sendBreakBlocks( );
 private:
-    std::map<Network::ubyte1, cinder::vec3> mPlayersPosition;
+    std::map<Network::ubyte1, Network::Packet::PlayerFormat> mPlayerFormats;
     std::set<Network::ubyte2> mQuarrys;
     Network::ubyte2 mQuarryId;
     std::set<Network::ubyte2> mGems;
