@@ -45,6 +45,9 @@ private:
 private:
     bool mIsUpdate = false;
 private:
+    bool mDebugDraw = false;
+    std::vector<cinder::Ray> mDebugRay;
+private:
     struct UpdateThread
     {
         std::thread thread;

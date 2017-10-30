@@ -118,21 +118,62 @@ void cCollisionManager::update( float delta )
 }
 void cCollisionManager::draw( )
 {
+    if ( ENV->pressKey( ci::app::KeyEvent::KEY_F3 ) && ENV->pushKey( ci::app::KeyEvent::KEY_b ) )
+    {
+        mDebugDraw = !mDebugDraw;
+    }
+
+    mDebugRay.clear( );
+    if ( !mDebugDraw ) return;
+
+    cinder::gl::ScopedColor col1( Color( 1, 1, 1 ) );
+    for ( auto const& rigidBody : mRigidBodys )
+    {
+        switch ( rigidBody->mCollider.getType( ) )
+        {
+        case cColliderBase::Type::AABB:
+        {
+            cAABBCollider const* aabbCo = dynamic_cast<cAABBCollider const*>( &rigidBody->mCollider );
+            cinder::gl::drawStrokedCube( rigidBody->mCollider.getPosition( ), aabbCo->getSize( ) );
+        }
+        break;
+        default:
+            break;
+        }
+    }
+    cinder::gl::ScopedColor col2( Color( 1, 0, 0 ) );
+    for ( auto const& rigidBody : mRigidBodys )
+    {
+        switch ( rigidBody->mCollider.getType( ) )
+        {
+        case cColliderBase::Type::AABB:
+        {
+            cAABBCollider const* aabbCo = dynamic_cast<cAABBCollider const*>( &rigidBody->mCollider );
+            cinder::gl::drawStrokedCube( std::move( rigidBody->createAABB( ) ) );
+        }
+        break;
+        default:
+            break;
+        }
+    }
+    for ( auto const& ray : mDebugRay )
+    {
+        cinder::gl::drawLine( ray.getOrigin( ), ray.getOrigin( ) + ray.getDirection( ) );
+    }
 }
 cinder::vec3 cCollisionManager::calcNearestPoint( cinder::Ray const & ray, unsigned int layer )
 {
-    cinder::AxisAlignedBox aabb;
-    aabb.include( ray.getOrigin( ) );
-    aabb.include( ray.getOrigin( ) + ray.getDirection( ) );
+    mDebugRay.emplace_back( ray );
+    auto rayMin = ray.getOrigin( );
+    auto rayMax = ray.getOrigin( ) + ray.getDirection( );
+    cinder::AxisAlignedBox aabb( rayMin, rayMax );
     auto&& minMax = std::move( fitWorldSpaceMinMax( aabb ) );
     ivec3 min = std::get<0>( minMax );
     ivec3 max = std::get<1>( minMax );
-
     float calcMin = std::numeric_limits<float>::max( );
     cinder::Ray calcRay;
     cinder::AxisAlignedBox calcBoundingBox;
     cColliderBase const* targetCollider = nullptr;
-
     for ( int x = min.x; x <= max.x; ++x )
     {
         for ( int y = min.y; y <= max.y; ++y )
