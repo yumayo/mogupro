@@ -348,41 +348,50 @@ namespace Scene
 		{
 			mRoot->entry_render(cinder::mat4());
 
-			/*if (mPhaseState == PhaseState::IN_ROOM)
+			if (mPhaseState == PhaseState::IN_ROOM)
 			{
 				if (mAddMember == true)
 				{
 					mMemberRoot->remove_all_children();
+					int noTeamCount = 0;
 					int team1Count = 0;
 					int team2Count = 0;
 					for each (auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
 					{
-						auto nameTag = Node::Renderer::rect::create(ci::vec2(300, 300));
+						auto nameTag = Node::Renderer::rect::create(ci::vec2(300, 120));
 						auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
 						if (m.teamNum == 0)
 						{
 							nameTag->set_color(ci::ColorA(1, 0, 0));
-							nameTag->set_position(ci::vec2(-400, 200 - 150 * team1Count));
+							nameTag->set_position(ci::vec2(-350, 200 - 150 * team1Count));
 							team1Count++;
 						}
-						else
+
+						else if(m.teamNum == 1)
 						{
 							nameTag->set_color(ci::ColorA(1, 1, 1));
-							nameTag->set_position(ci::vec2(400, 200 - 150 * team2Count));
+							nameTag->set_position(ci::vec2(350, 200 - 150 * team2Count));
 							team2Count++;
-							f->set_color(ci::ColorA(1, 1, 1));
+							f->set_color(ci::ColorA(0, 0, 0));
+						}
+
+						else
+						{
+							nameTag->set_color(ci::ColorA(0, 1, 0));
+							nameTag->set_position(ci::vec2(0, 200 - 150 * noTeamCount));
+							noTeamCount++;
+							f->set_color(ci::ColorA(0, 0, 0));
 						}
 
 						mMemberRoot->add_child(nameTag);
-						{
-							f->set_text(u8"" + m.nameStr);
-							f->set_scale(glm::vec2(1, -1));
-							nameTag->add_child(f);
-						}
+						f->set_text(u8"" + m.nameStr);
+						f->set_scale(glm::vec2(1, -1));
+						nameTag->add_child(f);
 					}
 				}
-				}*/
+			}
 
+			mMemberRoot->entry_render(cinder::mat4());
 		}
 
 		void cMatching::resize()
