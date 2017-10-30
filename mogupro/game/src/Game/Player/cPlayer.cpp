@@ -24,6 +24,25 @@ void Game::Player::cPlayer::playerRotation()
 	//回転軸
 	ci::vec3 quataxis = glm::cross(rotateaxis, targetvec);
 
+	//同じベクトルを向いた状態だとクォータニオンが
+	//０になる。
+	//最初のベクトルとの外積を取っているので、０
+	//になるのはZと並行なベクトルの時だけ。
+	//なのでZが０の時と１の時だけ例外として角度
+	//を与えなければならない
+	if (quataxis == ci::vec3(0)) {
+		if (velocity.z > 0.0f) {
+			ci::gl::rotate(0, ci::vec3(0, 1, 0));
+			save_rotate = 0;
+		}
+		if (velocity.z < 0.0f) {
+			ci::gl::rotate(M_PI, ci::vec3(0, 1, 0));
+			save_rotate = M_PI;
+		}
+
+		return;
+	}
+
 	float rotation = atan2f(velocity.x, velocity.z);
 
 	//回転
