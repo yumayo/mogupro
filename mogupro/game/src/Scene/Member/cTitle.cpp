@@ -133,6 +133,12 @@ void cTitle::update( float deltaTime )
 }
 void cTitle::draw( )
 {
+
+}
+
+void cTitle::drawFBO()
+{
+
 }
 void cTitle::draw2D( )
 {
