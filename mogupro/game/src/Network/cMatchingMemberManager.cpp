@@ -92,6 +92,9 @@ void cMatchingMemberManager::addPlayerDatas(std::string playerStr, ubyte1 teamNu
 		}
 	}
 
+	if (mPlayerDatas.size() > 8)
+		return;
+
 	mPlayerDatas.push_back(PlayerData(teamNum, playerStr, playerID,networkHandle));
 }
 }
