@@ -5,6 +5,8 @@
 #include <vector>
 #include <set>
 #include <tuple>
+#include <thread>
+#include <chrono>
 #include <cinder/Vector.h>
 #include <Collision/cRigidBody.h>
 #include <cinder/AxisAlignedBox.h>
@@ -35,10 +37,22 @@ public:
     static constexpr size_t WORLD_Z = 160;
 private:
     bool isRange( int x, int y, int z );
-    std::tuple<cinder::ivec3, cinder::ivec3> fitWorldSpaceMinMax( cinder::AxisAlignedBox const& aabb );
+    std::tuple<cinder::ivec3, cinder::ivec3> fitWorldSpaceMinMax( cinder::AxisAlignedBox const& aabb ) const;
+    std::mutex mWorldMutex;
     std::array<std::array<std::array<std::set<cColliderBase*>, WORLD_X>, WORLD_Y>, WORLD_Z> mWorld;
+    std::mutex mRigidMutex;
     std::set<cRigidBody*> mRigidBodys;
 private:
     bool mIsUpdate = false;
+private:
+    bool mDebugDraw = false;
+    std::vector<cinder::Ray> mDebugRay;
+private:
+    struct UpdateThread
+    {
+        std::thread thread;
+        Utility::cRecursionUsableMutex mutex;
+    };
+    std::array<UpdateThread, 4U> mUpdateThreads;
 };
 }

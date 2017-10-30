@@ -52,11 +52,11 @@ void cRigidBody::lateUpdate( float delta )
         mSpeed *= ( 1.0F - 0.08 ) * delta;
     }
 }
-bool cRigidBody::isLanding( )
+bool cRigidBody::isLanding( ) const
 {
     return mIsLanding;
 }
-bool cRigidBody::isGravity( )
+bool cRigidBody::isGravity( ) const
 {
     return mIsGravity;
 }
@@ -68,7 +68,7 @@ void cRigidBody::gravityOff( )
 {
     mIsGravity = false;
 }
-cinder::vec3 const & cRigidBody::getSpeed( )
+cinder::vec3 const & cRigidBody::getSpeed( ) const
 {
     return mSpeed;
 }
@@ -111,7 +111,7 @@ cinder::vec3 cRigidBody::calcWallScratchVector( cinder::vec3 spd, cinder::vec3 n
     float t = -( nor.x * spd.x + nor.y * spd.y + nor.z * spd.z ) / ( nor.x * nor.x + nor.y * nor.y + nor.z * nor.z );
     return cinder::vec3( spd.x + t * nor.x, spd.y + t * nor.y, spd.z + t * nor.z );
 }
-void cRigidBody::calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase* targetCollider )
+void cRigidBody::calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase const* targetCollider )
 {
     auto intersectPoint = ray.calcPosition( minValue - 0.005F );
     auto normal = getNormal( intersectPoint, aabb );

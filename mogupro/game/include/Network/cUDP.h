@@ -27,14 +27,19 @@ public:
     cPacketChunk popChunk( );
 private:
     void receive( );
+
 private:
     // 受信部は別スレッドで動かします。
     bool mIsPause = false;
-    std::thread mUpdateIoService;
-    Utility::cRecursionUsableMutex mMutex;
+    std::thread mThreadIoService;
 
     boost::asio::io_service mIoService;
     boost::asio::ip::udp::socket mUdpSocket;
+
+private:
+
+    // 受信データのMutex。
+    Utility::cRecursionUsableMutex mDataMutex;
 
     // データを送って来た相手のipaddressやportが入ります。
     boost::asio::ip::udp::endpoint mRemoteEndpoint;
@@ -44,6 +49,6 @@ private:
     cBuffer mRemoteBuffer;
     
     // 送られてきたデータや、送って来た相手の情報を保存しておきます。
-    std::deque<cPacketChunk> mChacheEndpoints;
+    std::deque<cPacketChunk> mCacheEndpoints;
 };
 }
