@@ -379,7 +379,7 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
         headerOffset += packetHeader.mPacketByte;
         if ( headerOffset > transferredBytes )
         {
-            throw std::exception( "Ç‚ÇŒÇ¢ÅB" );
+            throw std::runtime_error( "Ç‚ÇŒÇ¢ÅB" );
         }
     } while ( headerOffset != transferredBytes );
 }

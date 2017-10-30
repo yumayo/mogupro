@@ -22,11 +22,18 @@ cUDPClientManager::cUDPClientManager( )
     mRoot->set_schedule_update( );
 	 mOnFoundMatchingServer = [ this ](std::string const& addr)
 	 {
-		 if ( !mFoundMatchingServer )
+		 if ( addr == "null" )
 		 {
-			 connect( addr );
+			 MES_ERR( "マッチングサーバーが見つかりませんでした。", [ ] { } );
 		 }
-		 mFoundMatchingServer = true;
+		 else
+		 {
+			 if ( !mFoundMatchingServer )
+			 {
+				 connect( addr );
+			 }
+			 mFoundMatchingServer = true;
+		 }
 	 };
 }
 void cUDPClientManager::close( )
@@ -47,12 +54,16 @@ void cUDPClientManager::connectMatchingServer( )
 {
 	// yuamyo.netにマッチングサーバーが誰だと聞く。
 	using namespace Node::Action;
-	mRoot->run_action( repeat_times::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
+	mRoot->run_action( sequence::create( repeat_times::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
 	{
 		char s_mes [ ] = "whois";
 		auto networkHandle = cNetworkHandle( "yumayo.net", 58632 );
 		mSocket.write( networkHandle, sizeof( s_mes ), s_mes );
-	} ) ), 3 ) );
+	} ) ), 3 ), call_func::create( [ this ] 
+	{
+		if( !mFoundMatchingServer )
+			MES_ERR( "マッチングサーバーが見つかりませんでした。", [ ] { } );
+	} ) ) );
 }
 void cUDPClientManager::connect( std::string const& ipAddress )
 {
