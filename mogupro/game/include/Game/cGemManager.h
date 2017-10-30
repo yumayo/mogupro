@@ -19,6 +19,7 @@
 #define GemManager Game::cGemManager::getInstance()
 
 
+
 namespace Game
 {
 	class cGemManager : public Utility::cSingletonAble<cGemManager>
