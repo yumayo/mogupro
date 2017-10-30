@@ -17,6 +17,7 @@
 #include <Collision/cStaticBlockSimple.h>
 #include <Utility/cUserPointer.hpp>
 #include <cinder/Ray.h>
+#include <Game/Field/FieldData.h>
 namespace Collision
 {
 class cCollisionManager : public Utility::cSingletonAble<cCollisionManager>
@@ -32,12 +33,12 @@ public:
     void update( float delta );
     void draw( );
     cinder::vec3 calcNearestPoint( cinder::Ray const& ray, unsigned int layer );
-    static constexpr size_t WORLD_X = 160;
-    static constexpr size_t WORLD_Y = 60;
-    static constexpr size_t WORLD_Z = 160;
+    static constexpr size_t WORLD_X = Game::Field::CHUNK_RANGE_X * Game::Field::CHUNK_SIZE;
+    static constexpr size_t WORLD_Y = Game::Field::CHUNK_RANGE_Y * Game::Field::CHUNK_SIZE;
+    static constexpr size_t WORLD_Z = Game::Field::CHUNK_RANGE_Z * Game::Field::CHUNK_SIZE;
 private:
     bool isRange( int x, int y, int z );
-    std::tuple<cinder::ivec3, cinder::ivec3> fitWorldSpaceMinMax( cinder::AxisAlignedBox const& aabb ) const;
+    void fitWorldSpaceMinMax( cinder::ivec3& min, cinder::ivec3& max, cinder::AxisAlignedBox const& aabb ) const;
     std::mutex mWorldMutex;
     std::array<std::array<std::array<std::set<cColliderBase*>, WORLD_X>, WORLD_Y>, WORLD_Z> mWorld;
     std::mutex mRigidMutex;

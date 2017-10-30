@@ -16,9 +16,8 @@ void cCollisionManager::add( cColliderBase& collider )
 {
     std::vector<std::set<cColliderBase*>*> leafs;
     auto&& aabb = std::move( collider.createAABB( collider.getPosition( ) ) );
-    auto&& minMax = std::move( fitWorldSpaceMinMax( aabb ) );
-    ivec3 min = std::get<0>( minMax );
-    ivec3 max = std::get<1>( minMax );
+    ivec3 min, max;
+    fitWorldSpaceMinMax( min, max, aabb );
     for ( int x = min.x; x <= max.x; ++x )
     {
         for ( int y = min.y; y <= max.y; ++y )
@@ -80,9 +79,8 @@ void cCollisionManager::update( float delta )
         for ( ; i < 10; ++i )
         {
             auto&& aabb = std::move( rigidBody->createAABB( ) );
-            auto&& minMax = std::move( fitWorldSpaceMinMax( aabb ) );
-            ivec3 min = std::get<0>( minMax );
-            ivec3 max = std::get<1>( minMax );
+            ivec3 min, max;
+            fitWorldSpaceMinMax( min, max, aabb );
             float length = std::numeric_limits<float>::max( );
             cinder::Ray ray;
             cinder::AxisAlignedBox boundingBox;
@@ -153,9 +151,8 @@ cinder::vec3 cCollisionManager::calcNearestPoint( cinder::Ray const & ray, unsig
     auto rayMin = ray.getOrigin( );
     auto rayMax = ray.getOrigin( ) + ray.getDirection( );
     cinder::AxisAlignedBox aabb( rayMin, rayMax );
-    auto&& minMax = std::move( fitWorldSpaceMinMax( aabb ) );
-    ivec3 min = std::get<0>( minMax );
-    ivec3 max = std::get<1>( minMax );
+    ivec3 min, max;
+    fitWorldSpaceMinMax( min, max, aabb );
     float calcMin = std::numeric_limits<float>::max( );
     cinder::Ray calcRay;
     cinder::AxisAlignedBox calcBoundingBox;
@@ -186,18 +183,16 @@ bool cCollisionManager::isRange( int x, int y, int z )
     return 0 <= x && 0 <= y && 0 <= z &&
         x < WORLD_X && y < WORLD_Y && z < WORLD_Z;
 }
-std::tuple<cinder::ivec3, cinder::ivec3> cCollisionManager::fitWorldSpaceMinMax( cinder::AxisAlignedBox const& aabb ) const
+void cCollisionManager::fitWorldSpaceMinMax( cinder::ivec3& min, cinder::ivec3& max, cinder::AxisAlignedBox const& aabb ) const
 {
-    ivec3 min = floor( aabb.getMin( ) );
-    vec3 ceilMax = floor( aabb.getMax( ) );
+    min = floor( aabb.getMin( ) );
+    vec3 floorMax = floor( aabb.getMax( ) );
     vec3 defaultMax = aabb.getMax( );
 
     // maxÇÃè¨êîì_à»â∫Ç™0ÇÃèÍçá8Ç¬ï™ìoò^Ç≥ÇÍÇƒÇµÇ‹Ç§ÇÃÇ≈ÇªÇÍÇñhÇÆÅB
-    ivec3 max = ceilMax == defaultMax ? ceilMax - 1.0F : ceilMax;
+    max = floorMax == defaultMax ? floorMax - 1.0F : floorMax;
 
     min = clamp( min, ivec3( 0 ), ivec3( WORLD_X - 1, WORLD_Y - 1, WORLD_Z - 1 ) );
     max = clamp( max, ivec3( 0 ), ivec3( WORLD_X - 1, WORLD_Y - 1, WORLD_Z - 1 ) );
-
-    return std::make_tuple( min, max );
 }
 }
