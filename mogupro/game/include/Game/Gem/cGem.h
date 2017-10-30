@@ -29,6 +29,7 @@ namespace Game
 
 			void setUp(ci::vec3 postion, ci::vec3 scale, ci::Color color, GemType type);
 			void draw();
+			void drawFbo();
 			void update();
 
 			int getId() { return mId; }

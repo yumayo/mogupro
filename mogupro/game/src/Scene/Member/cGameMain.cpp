@@ -128,20 +128,32 @@ void cGameMain::drawShadow( )
 {
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
-    Game::cPlayerManager::getInstance( )->draw( );
     Game::cFieldManager::getInstance( )->draw( );
     Game::cStrategyManager::getInstance( )->draw( );
 	GemManager->draw();
     skydome.draw( );
+	CAMERA->unBind3D();
+
+	//プレイヤーより後ろの2D描画
+	CAMERA->bind2D();
+	gl::disableDepthRead();
+	gl::disableDepthWrite();
+	GemManager->drawFbo();
+	CAMERA->unBind2D();
+
+	CAMERA->bind3D();
+	gl::enableDepthRead();
+	gl::enableDepthWrite();
+    Game::cPlayerManager::getInstance( )->draw( );
 }
 
 void cGameMain::draw2D( )
 {
+	//プレイヤーより前の2D描画
     gl::enableFaceCulling( false );
     gl::disableDepthRead( );
     gl::disableDepthWrite( );
-    //gl::draw( TEX->get( "sky_dome" ), ci::Rectf( 0, 300, 300, 0 ) );
-	GemManager->drawFbo();
+	
     n->entry_render( mat4( ) );
 }
 
