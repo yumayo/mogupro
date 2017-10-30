@@ -1,6 +1,7 @@
 #pragma once
 #include <Collision/cColliderBase.h>
 #include <cinder/Vector.h>
+#include <mutex>
 namespace Collision
 {
 class cAABBCollider final : public cColliderBase
@@ -11,8 +12,8 @@ public:
     void addWorld( );
     void removeWorld( );
     cinder::AxisAlignedBox createAABB( cinder::vec3 calcedPosition ) const override;
-    cinder::vec3 const& getSize( );
-    cinder::vec3 const& getAnchor( );
+    cinder::vec3 const& getSize( ) const;
+    cinder::vec3 const& getAnchor( ) const;
 private:
     cinder::vec3 mSize;
     cinder::vec3 mAnchor;

@@ -17,14 +17,14 @@ public:
     cColliderBase( Type colliderType, cinder::vec3 position );
     virtual ~cColliderBase( ) { }
     virtual cinder::AxisAlignedBox createAABB( cinder::vec3 calcedPosition ) const = 0;
-    Type getType( );
-    cinder::vec3 const& getPosition( );
+    Type getType( ) const;
+    cinder::vec3 const& getPosition( ) const;
     void update( cRigidBody* rigidbody );
     void setLeafs( std::vector<std::set<cColliderBase*>*>&& leafs );
-    std::vector<std::set<cColliderBase*>*> const& getLeafs( );
+    std::vector<std::set<cColliderBase*>*> const& getLeafs( ) const;
     void setPosition( cinder::vec3 const& position );
     void setLayer( unsigned int layer );
-    unsigned int getLayer( );
+    unsigned int getLayer( ) const;
 protected:
     unsigned int mLayer;
     Type mType;

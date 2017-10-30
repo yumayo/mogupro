@@ -26,11 +26,11 @@ cinder::AxisAlignedBox cAABBCollider::createAABB( cinder::vec3 calcedPosition ) 
     aabb.transform( translate( cinder::mat4( ), calcedPosition ) );
     return aabb;
 }
-cinder::vec3 const & cAABBCollider::getSize( )
+cinder::vec3 const & cAABBCollider::getSize( ) const
 {
     return mSize;
 }
-cinder::vec3 const & cAABBCollider::getAnchor( )
+cinder::vec3 const & cAABBCollider::getAnchor( ) const
 {
     return mAnchor;
 }

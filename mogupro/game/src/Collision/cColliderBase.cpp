@@ -9,11 +9,11 @@ cColliderBase::cColliderBase( Type type, cinder::vec3 position )
     , mLayer( 0xFFFFFFFF )
 {
 }
-cColliderBase::Type cColliderBase::getType( )
+cColliderBase::Type cColliderBase::getType( ) const
 {
     return mType;
 }
-cinder::vec3 const & cColliderBase::getPosition( )
+cinder::vec3 const & cColliderBase::getPosition( ) const
 {
     return mPosition;
 }
@@ -27,7 +27,7 @@ void cColliderBase::setLeafs( std::vector<std::set<cColliderBase*>*>&& leafs )
 {
     mLeafs = std::move( leafs );
 }
-std::vector<std::set<cColliderBase*>*> const & cColliderBase::getLeafs( )
+std::vector<std::set<cColliderBase*>*> const & cColliderBase::getLeafs( ) const
 {
     return mLeafs;
 }
@@ -41,7 +41,7 @@ void cColliderBase::setLayer( unsigned int layer )
 {
     mLayer = layer;
 }
-unsigned int cColliderBase::getLayer( )
+unsigned int cColliderBase::getLayer( ) const
 {
     return mLayer;
 }

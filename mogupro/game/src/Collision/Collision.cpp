@@ -4,7 +4,7 @@
 using namespace cinder;
 namespace Collision
 {
-void hitRayToCube( cinder::Ray const & ray, unsigned int layer, cColliderBase * bCollider, float & calcMin, cinder::Ray & calcRay, cinder::AxisAlignedBox & calcBoundingBox, cColliderBase ** targetCollider )
+void hitRayToCube( cinder::Ray const & ray, unsigned int layer, cColliderBase const* const bCollider, float & calcMin, cinder::Ray & calcRay, cinder::AxisAlignedBox & calcBoundingBox, cColliderBase const** targetCollider )
 {
     if ( ( bCollider->getLayer( ) & layer ) != layer ) 
         return;
@@ -12,11 +12,11 @@ void hitRayToCube( cinder::Ray const & ray, unsigned int layer, cColliderBase * 
     if ( bCollider->getType( ) == cColliderBase::Type::AABB )
     {
         hitRayToCube( ray,
-                      dynamic_cast<cAABBCollider*>( bCollider ),
+                      dynamic_cast<cAABBCollider const*>( bCollider ),
                       calcMin, calcRay, calcBoundingBox, targetCollider );
     }
 }
-void hitRayToCube( cinder::Ray const & ray, cAABBCollider * bCollider, float & calcMin, cinder::Ray & calcRay, cinder::AxisAlignedBox & calcBoundingBox, cColliderBase ** targetCollider )
+void hitRayToCube( cinder::Ray const & ray, cAABBCollider const* const bCollider, float & calcMin, cinder::Ray & calcRay, cinder::AxisAlignedBox & calcBoundingBox, cColliderBase const** targetCollider )
 {
     AxisAlignedBox boundingBox( cinder::vec3( 0.0F ) + -bCollider->getSize( ) * bCollider->getAnchor( ),
                                 cinder::vec3( 0.0F ) + bCollider->getSize( ) * ( 1.0F - bCollider->getAnchor( ) ) );
@@ -37,20 +37,21 @@ void hitRayToCube( cinder::Ray const & ray, cAABBCollider * bCollider, float & c
         }
     }
 }
-void hitCubeToCube( cColliderBase * aCollider, cRigidBody * aRigidBody, cColliderBase * bCollider, float& min, cinder::Ray& ray, cinder::AxisAlignedBox& boundingBox, cColliderBase** targetCollider )
+void hitCubeToCube( cColliderBase const* const aCollider, cRigidBody const* const aRigidBody, cColliderBase const* const bCollider, float& min, cinder::Ray& ray, cinder::AxisAlignedBox& boundingBox, cColliderBase const** targetCollider )
 {
-    if ( ( bCollider->getLayer( ) & aCollider->getLayer( ) ) != aCollider->getLayer( ) ) return;
+    if ( ( bCollider->getLayer( ) & aCollider->getLayer( ) ) != aCollider->getLayer( ) )
+        return;
 
     if ( aCollider == bCollider ) return;
     if ( aCollider->getType( ) == cColliderBase::Type::AABB &&
          bCollider->getType( ) == cColliderBase::Type::AABB )
     {
-        hitCubeToCube( dynamic_cast<cAABBCollider*>( aCollider ), aRigidBody,
-                       dynamic_cast<cAABBCollider*>( bCollider ),
+        hitCubeToCube( dynamic_cast<cAABBCollider const*>( aCollider ), aRigidBody,
+                       dynamic_cast<cAABBCollider const*>( bCollider ),
                        min, ray, boundingBox, targetCollider );
     }
 }
-void hitCubeToCube( cAABBCollider * aAABB, cRigidBody * aRigidBody, cAABBCollider * bAABB, float& min, cinder::Ray& ray, cinder::AxisAlignedBox& boundingBox, cColliderBase** targetCollider )
+void hitCubeToCube( cAABBCollider const* const aAABB, cRigidBody const* const aRigidBody, cAABBCollider const* const bAABB, float& min, cinder::Ray& ray, cinder::AxisAlignedBox& boundingBox, cColliderBase const** targetCollider )
 {
     auto aPrevPos = aAABB->getPosition( ) - aRigidBody->getSpeed( );
     auto direction = aAABB->getPosition( ) - aPrevPos;
