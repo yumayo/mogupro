@@ -9,7 +9,6 @@
 
 void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
-	
 	//ê∂ê¨
 	for (int i = 0; i < player_number; i++) {
 		//í êMÇ≈ë„ì¸
@@ -180,6 +179,7 @@ void Game::cPlayerManager::update(const float& delta_time)
 	for (auto& it : players) {
 		it->update(delta_time);
 	}
+	
 	playerMove(delta_time);
     cClientAdapter::getInstance( )->sendPlayer( active_player->getPos(), ci::quat() );
 }

@@ -72,6 +72,12 @@ namespace Game {
 			ci::vec3 getSize() {
 				return size;
 			}
+			void setPos(const ci::vec3 pos) {
+				velocity = pos - mPos;
+				mRigidbody.setSpeed(velocity);
+				//ƒvƒŒƒCƒ„[‚ÌˆÚ“®
+				mPos = mCollider.getPosition();
+			}
 			ci::vec3 getInstallationPosition() {
 				return installation_position;
 			}
@@ -92,6 +98,10 @@ namespace Game {
 
 			int getPlayerId() {
 				return player_id;
+			}
+
+			bool getActiveUser() {
+				return active_user;
 			}
 			
 			//Œ@í’†‚È‚çtrue‚ğ“ü‚ê‚é

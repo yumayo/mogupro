@@ -5,10 +5,6 @@
 #include <unordered_map>
 #include <Utility/cSingletonAble.h>
 
-//Jsonì«Ç›çûÇ›óp
-//static std::string loadString(std::string const& relative_path) {
-//	return std::string(static_cast<char*>(ci::app::loadAsset(relative_path)->getBuffer()->getData()));
-//}
 
 #define TEX Resource::TextureManager::getInstance()
 
@@ -34,9 +30,6 @@ namespace Resource {
 				auto img = ci::loadImage(ci::app::loadAsset(path));
 				texture[name] = ci::gl::Texture::create(img);
 			}
-		}
-		void setup() {
-			font = ci::Font(ci::app::loadAsset("CP Font.ttf"), 100);
 		}
 		ci::gl::TextureRef get(std::string name) {
 			return texture[name];
