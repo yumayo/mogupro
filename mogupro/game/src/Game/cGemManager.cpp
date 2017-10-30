@@ -50,12 +50,12 @@ namespace Game
         ci::gl::ScopedGlslProg glsl( mHShader );
 		batch = ci::gl::Batch::create(vboRect,mHShader);
         ci::gl::ScopedTextureBind tex( mGemBuffer->getColorTexture( ) );
-		float uAlpha = 0.8 - 0.6f*std::abs(std::sinf(cTimeMeasurement::getInstance()->totalTime()));
+		//float uAlpha = 0.8 - 0.6f*std::abs(std::sinf(cTimeMeasurement::getInstance()->totalTime()));
 		cTimeMeasurement::getInstance()->make();
 		mHShader->uniform("uTex0", 0);
 		mHShader->uniform("uColor", ci::vec4(1, 1, 1, 1));
 		mHShader->uniform("uWindowSize", ci::vec2(ci::app::getWindowSize()/2));
-		mHShader->uniform("uAlpha", uAlpha);
+		//mHShader->uniform("uAlpha", uAlpha);
 
 
 		ci::gl::drawSolidRect(rect);
@@ -76,7 +76,7 @@ namespace Game
 
 		for (int i = 0; i < mDrawNum; i++)
 		{
-			mGemsptr[i]->draw();
+			mGemsptr[i]->drawFbo();
 		}
 		ci::gl::color(ci::Color(1, 1, 1));
 	};
