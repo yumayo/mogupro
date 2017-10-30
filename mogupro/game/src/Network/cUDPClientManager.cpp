@@ -17,13 +17,23 @@ cUDPClientManager::cUDPClientManager( )
     : mCloseSecond( std::numeric_limits<float>::max( ) )
     , mRoot( Node::node::create( ) )
     , mConnectSecond( std::numeric_limits<float>::max( ) )
+	 , mFoundMatchingServer( false )
 {
     mRoot->set_schedule_update( );
+	 mOnFoundMatchingServer = [ this ](std::string const& addr)
+	 {
+		 if ( !mFoundMatchingServer )
+		 {
+			 connect( addr );
+		 }
+		 mFoundMatchingServer = true;
+	 };
 }
 void cUDPClientManager::close( )
 {
     mSocket.close( );
     mRoot->remove_action_by_name( "ping" );
+	 mFoundMatchingServer = false;
 }
 void cUDPClientManager::open( )
 {
@@ -32,6 +42,17 @@ void cUDPClientManager::open( )
 bool cUDPClientManager::isConnected( )
 {
     return mConnectServerHandle;
+}
+void cUDPClientManager::connectMatchingServer( )
+{
+	// yuamyo.netにマッチングサーバーが誰だと聞く。
+	using namespace Node::Action;
+	mRoot->run_action( repeat_times::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
+	{
+		char s_mes [ ] = "whois";
+		auto networkHandle = cNetworkHandle( "yumayo.net", 58632 );
+		mSocket.write( networkHandle, sizeof( s_mes ), s_mes );
+	} ) ), 3 ) );
 }
 void cUDPClientManager::connect( std::string const& ipAddress )
 {
@@ -73,15 +94,28 @@ void cUDPClientManager::updateSend( )
 }
 void cUDPClientManager::updateRecv( )
 {
-    // 受信したものがあればバッファーから取り出してパケットの分別を行う。
-    while ( !mSocket.emptyChunk( ) )
-    {
-        auto chunk = mSocket.popChunk( );
-        cUDPManager::getInstance( )->onReceive( chunk );
-    }
-
-    connection( );
-    ping( );
+	// 受信したものがあればバッファーから取り出してパケットの分別を行う。
+	while ( !mSocket.emptyChunk( ) )
+	{
+		auto chunk = mSocket.popChunk( );
+		try
+		{
+			cUDPManager::getInstance( )->onReceive( chunk );
+		}
+		catch ( std::runtime_error e )
+		{
+			// yumayo.netとの通信。
+			if ( std::string( chunk.packetBuffer.buffer.data( ), sizeof( "addr: " ) - 1 ) == "addr: " )
+			{
+				std::string addr( chunk.packetBuffer.buffer.data( ) + sizeof( "addr: " ) - 1, chunk.packetBuffer.transferredBytes - ( sizeof( "addr: " ) - 1 ) );
+				mOnFoundMatchingServer( addr );
+				cinder::app::console( ) << "マッチングサーバーのアドレスは、" + addr + "です。" << std::endl;
+			}
+		}
+	}
+	
+	connection( );
+	ping( );
 }
 void cUDPClientManager::connection( )
 {

@@ -38,7 +38,7 @@ namespace Scene
 		void cMatching::setup()
 		{
 			Network::cUDPClientManager::getInstance()->open();
-			cUDPClientManager::getInstance()->connect("10.25.34.217");
+			cUDPClientManager::getInstance()->connectMatchingServer();
 			mClassState = ClassState::NOT;
 			mWaitClassState = ClassState::NOT;
 			mPhaseState = PhaseState::NOT_IN_ROOM;

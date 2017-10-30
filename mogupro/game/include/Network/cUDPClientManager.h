@@ -30,6 +30,7 @@ public:
     void close( );
     void open( );
     bool isConnected( );
+	 void connectMatchingServer( );
     void connect( std::string const& ipAddress );
     void connectOfflineServer( );
     void update( float delta );
@@ -57,5 +58,8 @@ private:
     // サーバーに接続できたかを保証します。
     // 5秒以上応答がない場合は切断します。
     float mConnectSecond;
+
+	 bool mFoundMatchingServer;
+	 std::function<void( std::string const& )> mOnFoundMatchingServer;
 };
 }

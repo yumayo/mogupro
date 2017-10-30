@@ -36,10 +36,30 @@ void cUDPServerManager::closeAccepter( )
     mIsAccept = false;
     mIdCount = 0;
     mHandle.clear( );
+	 mRoot->remove_action_by_name( "yumayo.net" );
 }
 void cUDPServerManager::openAccepter( )
 {
     mIsAccept = true;
+
+	 using namespace Node::Action;
+
+	 // yuamyo.netに自分がマッチングサーバーであることを送信する。
+	 auto networkHandle = cNetworkHandle( "yumayo.net", 58632 );
+	 mRoot->run_action( repeat_times::create( sequence::create( delay::create( 1.5F ), call_func::create( [ networkHandle, this ]
+	 {
+		 char s_mes [ ] = "connect";
+		 mSocket.write( networkHandle, sizeof( s_mes ), s_mes );
+	 } ) ), 3 ) );
+	 
+	 auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ networkHandle, this ]
+	 {
+		 char s_mes [ ] = "ping";
+		 mSocket.write( networkHandle, sizeof( s_mes ), s_mes );
+		 cinder::app::console( ) << "cUDPServerManager: " << "ping to " << "yumayo.net" << std::endl;
+	 } ) ) );
+	 act->set_name( "yumayo.net" );
+	 mRoot->run_action( act );
 }
 void cUDPServerManager::update( float delta )
 {
@@ -75,23 +95,34 @@ void cUDPServerManager::updateSend( )
 }
 void cUDPServerManager::updateRecv( )
 {
-    // 受信したものがあればバッファーから取り出してパケットの分別を行う。
-    while ( !mSocket.emptyChunk( ) )
-    {
-        auto chunk = mSocket.popChunk( );
-        if ( cUDPManager::getInstance( )->isConnectPacket( chunk ) ||
-            ( mHandle.find( chunk.networkHandle ) != mHandle.end( ) ) )
-        {
-            cUDPManager::getInstance( )->onReceive( chunk );
-        }
-        else
-        {
-            // コネクションを確立しないまま送信してきた場合。
-        }
-    }
-
-    connection( );
-    ping( );
+	// 受信したものがあればバッファーから取り出してパケットの分別を行う。
+	while ( !mSocket.emptyChunk( ) )
+	{
+		auto chunk = mSocket.popChunk( );
+		try
+		{
+			if ( cUDPManager::getInstance( )->isConnectPacket( chunk ) ||
+				( mHandle.find( chunk.networkHandle ) != mHandle.end( ) ) )
+			{
+				cUDPManager::getInstance( )->onReceive( chunk );
+			}
+			else
+			{
+				// コネクションを確立しないまま送信してきた場合。
+			}
+		}
+		catch ( std::runtime_error e )
+		{
+			// yumayo.netとの通信。
+			if ( std::string( chunk.packetBuffer.buffer.data( ), sizeof( "addr: " ) - 1 ) == "addr: " )
+			{
+				std::string addr( chunk.packetBuffer.buffer.data( ) + sizeof( "addr: " ) - 1, chunk.packetBuffer.transferredBytes - ( sizeof( "addr: " ) - 1 ) );
+				cinder::app::console( ) << "マッチングサーバーのアドレスは、" + addr + "です。" << std::endl;
+			}
+		}
+	}
+	connection( );
+	ping( );
 }
 void cUDPServerManager::sendDataBufferAdd( cNetworkHandle const & networkHandle, cPacketBuffer const & packetBuffer )
 {
