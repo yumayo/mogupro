@@ -72,7 +72,10 @@ void cGameMain::setup( )
     Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id, teams);
 
 	int seed = 20171031;
-	GemManager->setUp(vec3(0,-15,0),vec3(30,30,60),1,1,100,seed);
+	GemManager->setUp(vec3(0,0,0),
+		              vec3(Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_X /2,
+						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Y,
+						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Z),1,1,100,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
     //Network::cUDPClientManager::getInstance( )->open( );
     //Network::cUDPServerManager::getInstance( )->open( );
