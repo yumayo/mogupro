@@ -13,6 +13,7 @@ public:
     void shutDown( );
     void update(float deltaTime);
     void draw( );
+	void drawFBO();
     void drawShadow( );
     void draw2D( );
     void resize( );
