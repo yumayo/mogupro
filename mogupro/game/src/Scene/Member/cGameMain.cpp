@@ -119,10 +119,6 @@ void cGameMain::draw( )
     drawShadow( );
     //Shader::cShadowManager::getInstance( )->draw( std::bind( &cGameMain::drawShadow, this ) );
 }
-void cGameMain::drawFBO()
-{
-
-}
 
 void cGameMain::drawShadow( )
 {

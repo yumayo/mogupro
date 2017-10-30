@@ -16,7 +16,6 @@ public:
 	void inRoom();
 	void addInRoomUI();
 	void draw();
-	void drawFBO();
 	void draw2D();
 	void resize();
 private:

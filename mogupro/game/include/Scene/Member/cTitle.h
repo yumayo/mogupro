@@ -18,7 +18,6 @@ public:
     void resize( );
     void update( float deltaTime );
     void draw( );
-	void drawFBO();
     void draw2D( );
 };
 }
