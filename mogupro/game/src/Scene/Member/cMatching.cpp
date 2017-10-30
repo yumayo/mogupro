@@ -340,10 +340,7 @@ namespace Scene
 		{
 
 		}
-		void cMatching::drawFBO()
-		{
 
-		}
 		void cMatching::draw2D()
 		{
 			mRoot->entry_render(cinder::mat4());

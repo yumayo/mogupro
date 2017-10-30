@@ -20,7 +20,6 @@ public:
 	void resetMember();
 	void updateServer(float deltaTime);
 	void draw();
-	void drawFBO();
 	void draw2D();
 	void resize();
 private:

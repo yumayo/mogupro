@@ -19,8 +19,6 @@ public:
 	
 	virtual void draw() = 0;
 
-	virtual void drawFBO() = 0;
-
 	virtual void draw2D() = 0;
 	//サイズ変更時に呼びたいとき
 	virtual void resize() = 0;

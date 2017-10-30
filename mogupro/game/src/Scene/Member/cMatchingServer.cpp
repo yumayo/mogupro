@@ -179,10 +179,7 @@ namespace Scene
 		{
 
 		}
-		void cMatchingServer::drawFBO()
-		{
-
-		}
+		
 		void cMatchingServer::draw2D()
 		{
 			int c = 0;
