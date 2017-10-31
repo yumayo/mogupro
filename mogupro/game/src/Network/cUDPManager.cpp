@@ -33,7 +33,7 @@ bool cUDPManager::isConnectPacket( cPacketChunk const & packetChunk )
         headerOffset += packetHeader.mPacketByte;
         if ( headerOffset > transferredBytes )
         {
-            throw std::exception( "やばい。" );
+            throw std::runtime_error( "やばい。" );
         }
     
     } while ( headerOffset != transferredBytes );
@@ -379,7 +379,7 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
         headerOffset += packetHeader.mPacketByte;
         if ( headerOffset > transferredBytes )
         {
-            throw std::exception( "やばい。" );
+            throw std::runtime_error( "やばい。" );
         }
     } while ( headerOffset != transferredBytes );
 }
