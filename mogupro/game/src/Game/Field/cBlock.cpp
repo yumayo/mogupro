@@ -30,7 +30,8 @@ cBlock::~cBlock()
 }
 void cBlock::setup()
 {
-    mCollider.addWorld();
+    if ( mIsActive )
+        mCollider.addWorld();
 }
 void cBlock::clear()
 {

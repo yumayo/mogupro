@@ -35,7 +35,6 @@ public: // Player,Strategy Ç≈égÇ§ä÷êî
 public: // Field ì‡Ç≈égÇ§ä÷êî
 
     cBlock* getBlock( const ci::ivec3& position );
-    void setBlock( const ci::ivec3& position, cBlock& block );
     cChunk* getChunk( const ci::ivec3& position );
 
 private: // Method

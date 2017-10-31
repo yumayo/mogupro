@@ -9,6 +9,7 @@ namespace Field
 {
 class cBlock;
 class cChunk;
+class cChunkLayer;
 
 using uint = uint32_t;
 // tuple‰»ŒŸ“¢
@@ -21,7 +22,7 @@ BLOCK_SIZE = 1,
 CHUNK_SIZE = 16,
 CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE,
 CHUNK_VOLUME = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE,
-CHUNK_RANGE_X = 4, CHUNK_RANGE_Y = 1, CHUNK_RANGE_Z = 4;
+CHUNK_RANGE_X = 4, CHUNK_RANGE_Y = 4, CHUNK_RANGE_Z = 4;
 constexpr float
 OFFSET_POSITION = 0.5f;
 
