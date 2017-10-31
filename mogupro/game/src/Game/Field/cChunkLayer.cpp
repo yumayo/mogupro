@@ -72,7 +72,7 @@ cChunkLayer* cChunkLayer::getChunkLayer( const int & height )
     return this;
 }
 
-ci::ivec3 cChunkLayer::getCell()
+ci::ivec3 cChunkLayer::getChunkCell()
 {
     auto c = mChunk->getCell();
     return ivec3( c.x, mHeight, c.z );
@@ -215,7 +215,7 @@ void cChunkLayer::createBlocks()
                 block = std::make_shared<cBlock>( position, (float) BLOCK_SIZE, id++ );
 
                 // 一番上のレイヤーはブロックを生成しない
-                if ( mHeight >= CHUNK_RANGE_Y - 1 )
+                if ( mHeight >= CHUNK_RANGE_Y)
                     block->mIsActive = false;
 
                 // Colider生成
@@ -234,7 +234,7 @@ void cChunkLayer::clearMesh()
 
 ci::ivec3 cChunkLayer::toWorldPosition( ci::ivec3 c )
 {
-    return getCell() * CHUNK_SIZE + c;
+    return getChunkCell() * CHUNK_SIZE + c;
 }
 
 bool cChunkLayer::outOfBounds( const int & v )const

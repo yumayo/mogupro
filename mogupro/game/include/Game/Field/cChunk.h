@@ -25,7 +25,6 @@ public:
     ci::ivec3 getCell();
     cBlock* getBlock( const int& x, const int& y, const int& z );
     cBlock* getBlock( const ci::ivec3& c );
-    cChunk* getChunk( const ci::ivec3& block_cell );
     cChunkLayer* getChunkLayer( const int& height );
 
     void buildMesh();
