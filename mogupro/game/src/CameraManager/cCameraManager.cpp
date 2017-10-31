@@ -18,14 +18,27 @@ void cCameraManager::setup( ) {
     auto size = ci::app::getWindowSize( );
     camera_2d.setOrtho( -size.x / 2, size.x / 2, -size.y / 2, size.y / 2, 0.125F, 5.0F );
     camera_2d.lookAt( ci::vec3( 0, 0, 1.0F ), ci::vec3( 0, 0, 0.0F ), ci::vec3( 0, 1, 0 ) );
+	camera_angle.y = -0.25f;
 }
 
 //Šµ«‚Â‚«ƒJƒƒ‰ˆÚ“®
 void cCameraManager::MovingCamera( )
 {
-    buf_pos = refPosition - pos;
-    buf_pos *= 0.8f;
-    pos += buf_pos;
+	//ƒJƒƒ‰‚ª‹ß‚·‚¬‚½‚ç‚»‚ÌˆÊ’u‚É‚·‚é
+	if (refPosition.x - pos.x <  1.0f||
+		refPosition.x - pos.x > -1.0f&&
+		refPosition.y - pos.y <  1.0f ||
+		refPosition.y - pos.y > -1.0f &&
+		refPosition.z - pos.z <  1.0f ||
+		refPosition.z - pos.z > -1.0f) {
+		pos = refPosition;
+	}
+	//‰“‚¢‚È‚çŠµ«ˆÚ“®
+	else {
+		buf_pos = refPosition - pos;
+		buf_pos *= 0.8f;
+		pos += buf_pos;
+	}
 }
 void cCameraManager::ScatterCamera( )
 {

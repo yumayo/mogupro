@@ -33,6 +33,10 @@ private:
     std::map<int, float> pad_stick_axis_value;
     void padAxisSetup();
 
+	//前のフレームと今のフレームのマウスのベクトル
+	ci::vec2 mouse_vec;
+	//マウスの位置
+	ci::vec2 mouse_pos;
 
 public:
     cInputAll();
@@ -78,7 +82,7 @@ public:
 
     };
 
-	ci::vec2 mouse_pos;
+	
 
     //キーボード
     void keyDown( const ci::app::KeyEvent& event );
@@ -93,6 +97,12 @@ public:
     {
         mouse_active = flag;
     }
+	ci::vec2 getMouseVec() {
+		return mouse_vec;
+	}
+	ci::vec2 getMousePos() {
+		return mouse_pos;
+	}
 
     bool pressKey( const int& pressed_key );
     bool pushKey( const int& pressed_key );

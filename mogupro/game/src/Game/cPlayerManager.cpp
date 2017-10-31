@@ -9,7 +9,6 @@
 
 void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
-	
 	//ê∂ê¨
 	for (int i = 0; i < player_number; i++) {
 		//í êMÇ≈ë„ì¸
@@ -82,8 +81,6 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 	//å@çÌã@ê›íu
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_o)) {
 		auto drill_pos = Game::cFieldManager::getInstance()->getBlockTopPosition(active_player->getPos() + active_player->getInstallationPosition());
-		//Game::cStrategyManager::getInstance()->CreateDrill(drill_pos, 0,Game::Strategy::cDrill::DrillType::Level1, 0);
-		//ci::app::console() << drill_pos << std::endl;
         cClientAdapter::getInstance( )->sendSetQuarry( drill_pos, Game::Strategy::cDrill::DrillType::Level1 );
 	}
 	
@@ -176,10 +173,11 @@ void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& pla
 }
 void Game::cPlayerManager::update(const float& delta_time)
 {
-    CAMERA->refPosition = active_player->getPos( );
+    CAMERA->refPosition = active_player->getPos( ) + ci::vec3(0,0.7f,0);
 	for (auto& it : players) {
 		it->update(delta_time);
 	}
+	
 	playerMove(delta_time);
     cClientAdapter::getInstance( )->sendPlayer( active_player->getPos(), ci::quat() );
 }
