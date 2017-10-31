@@ -8,7 +8,7 @@ namespace Field
 class cChunkMeshBuilder
 {
 public:
-    cChunkMeshBuilder( cChunk& chunk );
+    cChunkMeshBuilder( cChunkLayer& chunk_layer );
     ~cChunkMeshBuilder();
 
     bool buildMesh();
@@ -20,12 +20,11 @@ private:
                            const ci::ivec3 & block_facing );
 
     void addFace( const std::array<GLfloat, 12>& block_face,
-                  const ci::ivec3 & chunk_position,
                   const ci::vec3 & block_position );
 
 private:
 
-    cChunk* mChunk;
+    cChunkLayer* mChunkLayer;
 
 };
 }

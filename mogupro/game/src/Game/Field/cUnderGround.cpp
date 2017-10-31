@@ -13,9 +13,9 @@ namespace Game
 {
 namespace Field
 {
-
 cBlock none_block;
 cChunk none_chunk;
+
 cUnderGround::cUnderGround() :
     mChunkHolder( this )
 {
@@ -180,22 +180,9 @@ cBlock* cUnderGround::getBlock( const ci::ivec3& position )
     if ( mChunkHolder.cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
         return &none_block;
 
-    return mChunkHolder.getChunk( chunk_cell )->getBlock( block_cell );
-}
+    auto height = ivec3( 0, chunk_cell.y * CHUNK_SIZE, 0 );
 
-void cUnderGround::setBlock( const ci::ivec3& position, cBlock& block )
-{
-    if ( position.y < 0 )
-        return;
-    auto chunk_cell = getChunkCellFromPosition( position );
-    auto block_cell = getBlockCellFromPosition( position );
-
-    if ( mChunkHolder.isExistsChunk( chunk_cell ) )
-        return;
-    if ( mChunkHolder.cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
-        return;
-
-    mChunkHolder.getChunk( chunk_cell )->setBlock( block_cell, block );
+    return mChunkHolder.getChunk( chunk_cell )->getBlock( block_cell + height );
 }
 
 cChunk* cUnderGround::getChunk( const ci::ivec3 & position )
@@ -219,93 +206,30 @@ bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & r
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
 
-    if ( mChunkHolder.isExistsChunk( chunk_cell.x, chunk_cell.y, chunk_cell.z ) )
-        return false;
-    if ( mChunkHolder.cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
-        return false;
-
-    auto break_chunk = mChunkHolder.getChunk( chunk_cell );
-    std::vector<cChunk*> chunks;
-
-    // •K‚¸ˆêƒ}ƒX‚ÍŒ@‚é
-    auto first_chunk = break_chunk->breakBlock( block_cell );
-    chunks.push_back( first_chunk );
-
-    auto r = ivec3( int( radius / BLOCK_SIZE ) );
-    auto s = block_cell - r;
-    auto e = block_cell + r;
-
-    // Œ@‚ç‚ê‚½ƒ`ƒƒƒ“ƒN‚ð“o˜^‚·‚é
-    for ( int z = s.z; z < e.z; z++ )
-        for ( int y = s.y; y < e.y; y++ )
-            for ( int x = s.x; x < e.x; x++ )
-            {
-                auto  c = break_chunk->breakBlock( ivec3( x, y, z ) );
-                if ( std::any_of( chunks.begin(), chunks.end(),
-                                  [&]( cChunk* t ) { return t == c; } ) )
-                    continue;
-                chunks.push_back( c );
-            }
-
-    // Œ@‚ç‚ê‚½ƒ`ƒƒƒ“ƒN‚ÌŽü‚è‚à“o˜^‚·‚é
-    std::vector<cChunk*> temp_chunks;
-    for ( auto& break_chunk : chunks )
-    {
-        for ( int i = 0; i < 4; i++ )
-        {
-            auto& cell = break_chunk->getCell();
-            switch ( i )
-            {
-                case 0: cell.x += 1; break;
-                case 1: cell.x -= 1; break;
-                case 2: cell.z += 1; break;
-                case 3: cell.z -= 1; break;
-            }
-
-            if ( mChunkHolder.isExistsChunk( cell ) )
-                continue;
-            if ( std::any_of( chunks.begin(), chunks.end(),
-                              [&]( cChunk* t ) { return t->getCell() == cell; } ) )
-                continue;
-
-            auto temp_chunk = mChunkHolder.getChunk( cell );
-            temp_chunk->mIsBlockBroken = true;
-            temp_chunks.push_back( temp_chunk );
-        }
-    }
-
-    std::copy( temp_chunks.begin(), temp_chunks.end(), std::back_inserter( chunks ) );
-    for ( auto& c : chunks )
-    {
-        c->reBuildStart();
-    }
-    return true;
+    return mChunkHolder.breakBlock( chunk_cell, block_cell, radius );
 }
 
 ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
 {
     auto chunk_cell = getChunkCellFromPosition( target_position );
     auto block_cell = getBlockCellFromPosition( target_position );
+    chunk_cell *= CHUNK_SIZE;
+    block_cell.y = ( CHUNK_RANGE_Y - 1 )  * CHUNK_SIZE;
+    block_cell.y += BLOCK_SIZE;
+    block_cell += chunk_cell;
 
-    auto p = ( block_cell * BLOCK_SIZE ) + ( chunk_cell * CHUNK_SIZE );
-    p.y = CHUNK_SIZE + (int) ( BLOCK_SIZE / 2.0f );
-
-    return p;
+    return block_cell;
 }
 
 ci::vec3 cUnderGround::getBlockHighestPosition( const ci::vec3 & target_position )
 {
     auto chunk_cell = getChunkCellFromPosition( target_position );
-    auto block_cell = getBlockCellFromPosition( target_position );
-    block_cell.y = CHUNK_SIZE - 1;
-
-    if ( mChunkHolder.isExistsChunk( chunk_cell.x, chunk_cell.y, chunk_cell.z ) )
-        return ivec3( 0 );
-
-    auto  chunk = mChunkHolder.getChunk( chunk_cell );
-    auto block_pos = chunk->getBlock( block_cell )->mPosition;
-    block_pos.y += ( BLOCK_SIZE / 2.0f );
-    return block_pos;
+    vec3 block_cell = getBlockCellFromPosition( target_position );
+    chunk_cell *= CHUNK_SIZE;
+    block_cell.y = ( CHUNK_RANGE_Y - 1 )  * CHUNK_SIZE;
+    block_cell.y += BLOCK_SIZE / 2.0f;
+    block_cell += chunk_cell;
+    return block_cell;
 }
 
 ci::ivec3 cUnderGround::getBlockMaxCell()
