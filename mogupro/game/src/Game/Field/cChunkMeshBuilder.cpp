@@ -82,8 +82,8 @@ struct AdjacentBlockPositions
     ci::ivec3 back;
 };
 
-cChunkMeshBuilder::cChunkMeshBuilder( cChunk& chunk ) :
-    mChunk( &chunk )
+cChunkMeshBuilder::cChunkMeshBuilder( cChunkLayer& chunk_layer ) :
+    mChunkLayer( &chunk_layer )
 {
 
 }
@@ -102,7 +102,7 @@ bool cChunkMeshBuilder::buildMesh()
         {
             for ( int x = 0; x < CHUNK_SIZE; x++ )
             {
-                auto block = mChunk->getBlock( ivec3( x, y, z ) );
+                auto block = mChunkLayer->getBlock( ivec3( x, y, z ) );
 
                 if ( block->mIsActive == false )
                     continue;
@@ -111,7 +111,7 @@ bool cChunkMeshBuilder::buildMesh()
 
                 directions.update( x, y, z );
 
-                if ( mChunk->getCell().y != 0 || y != 0 )
+                if ( mChunkLayer->getCell().y != 0 || y != 0 )
                     tryAddFaceToMesh( bottom_face, position, directions.down );
                 tryAddFaceToMesh( top_face, position, directions.up );
                 tryAddFaceToMesh( left_face, position, directions.left );
@@ -128,19 +128,17 @@ void cChunkMeshBuilder::tryAddFaceToMesh( const std::array<GLfloat, 12>& block_f
                                           const ci::vec3 & position,
                                           const ci::ivec3 & block_facing )
 {
-    auto block = mChunk->getBlock( block_facing );
+    auto block = mChunkLayer->getBlock( block_facing );
     if ( block->mIsActive == false )
-        addFace( block_face, mChunk->getCell(), position );
+        addFace( block_face, position );
 }
 
 void cChunkMeshBuilder::addFace( const std::array<GLfloat, 12>& block_face,
-                                 const ci::ivec3 & chunk_position,
                                  const ci::vec3 & block_position )
 {
-    mChunk->addFace( block_face,
-                     texture_coords,
-                     chunk_position,
-                     block_position );
+    mChunkLayer->addFace( block_face,
+                          texture_coords,
+                          block_position );
 }
 
 }

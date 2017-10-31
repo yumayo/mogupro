@@ -5,6 +5,7 @@
 #include"cinder\Rand.h"
 #include<algorithm>
 #include"Game\cClientAdapter.h"
+#include"Game\cFieldManager.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -22,43 +23,39 @@ cStrategyManager::~cStrategyManager( )
 
 void cStrategyManager::setup()
 {
+	///////ƒLƒƒƒmƒ“ì‚è‚Ü‚·
+	float x_max = Field::CHUNK_RANGE_X * Field::CHUNK_SIZE;
+	float y_max = Field::CHUNK_RANGE_Y * Field::CHUNK_SIZE;
+	float z_max = Field::CHUNK_RANGE_Z * Field::CHUNK_SIZE;
 
+	CreateCannon(vec3(x_max / 2.f, y_max +4.f - 0.5f, 4-0.5),1.f, true);
+	CreateCannon(vec3(x_max / 2.f, y_max + 4.f-0.5f, z_max-4-0.5),-1.f, false);
+	///////ƒLƒƒƒmƒ“ì‚è‚Ü‚·
 }
 void cStrategyManager::draw()
 {
 	for (auto it : drills) {
 		it.second->draw();
 	}
+	for (auto it :cannons) {
+		it.second->draw();
+	}
 }
 void cStrategyManager::update(const float & deltatime)
 {
-	//using namespace Network;
-	//using namespace Network::Packet::Response;
-	//auto& p = cResponseManager::getInstance()->mResCheckGetJem;
-	//while (!p.empty())
-	//{
-	//	auto t = p.top();
-	//	p.pop();
-
-	//	if (t.mFlag)
-	//	{
-	//		HitDrillToGem(t.mDrillID, t.mGemID);
-	//	}
-	//}
 
 	for (auto& it : drills) {
 		it.second->update(deltatime);
 	}
-
+	for (auto& it : cannons) {
+		it.second->update(deltatime);
+	}
 
 	deleteObject();
-	if (ENV->pushKey(KeyEvent::KEY_p)) {
 
+	if (ENV->pushKey(KeyEvent::KEY_p)) {
 		cClientAdapter::getInstance()->sendSetQuarry(vec3(randInt(0, 10), 15, randInt(0, 10)),Strategy::cDrill::DrillType::Level1);
 
-		//drills.insert(std::make_pair(testcount, std::make_shared<Game::Strategy::cDrill>(vec3(randInt(0, 10), 15, randInt(0, 10)), testcount, Strategy::cDrill::DrillType::Level1, true)));
-
-		testcount++;
 	}
 
 
@@ -71,6 +68,15 @@ void cStrategyManager::deleteObject()
 		itr != drills.end();) {
 		if (itr->second->DeleteThis()) {
 			itr = drills.erase(itr);
+		}
+		else {
+			itr++;
+		}
+	}
+	for (auto itr = cannons.begin();
+		itr != cannons.end();) {
+		if (itr->second->DeleteThis()) {
+			itr = cannons.erase(itr);
 		}
 		else {
 			itr++;
@@ -106,6 +112,22 @@ void cStrategyManager::HitDrillToGem(const int _objectid, const int _gemid)
 void cStrategyManager::CreateDrill(const ci::vec3 _pos, const int _id, const Strategy::cDrill::DrillType _type, const bool _ismyobject)
 {
 	drills.insert(std::make_pair(_id, std::make_shared<Game::Strategy::cDrill>(_pos, _id, _type, _ismyobject)));
+}
+void cStrategyManager::CreateCannon(const ci::vec3 _pos, const float _direction, const bool _ismyobject)
+{
+	cannons.insert(std::make_pair(_ismyobject, std::make_shared<Game::Strategy::cCannon>(_pos,_direction, _ismyobject)));
+}
+void cStrategyManager::drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color)
+{
+		gl::pushModelView();
+		gl::translate(pos);
+		gl::rotate(rotate.x, vec3(1, 0, 0));
+		gl::rotate(rotate.y, vec3(0, 1, 0));
+		gl::rotate(rotate.z, vec3(0, 0, 1));
+		gl::scale(size);
+		gl::color(color);
+		gl::drawCube(vec3(0, 0, 0), vec3(1, 1, 1));
+		gl::popModelView();
 }
 }
 

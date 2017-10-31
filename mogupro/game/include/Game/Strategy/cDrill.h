@@ -22,7 +22,7 @@ public:
     void setup() override;
     bool DeleteThis() override;
 	void setField(const ci::vec3 pos) override;
-	void HitGem (const int _gemid)override;
+	void HitGem(const int _gemid);
 	DrillType drilltype;
 private:
 	enum DrillState{
