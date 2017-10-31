@@ -10,9 +10,9 @@ namespace Field
 {
 cBlock::cBlock() :
     mPosition( vec3( 0 ) )
-    , mScale( BLOCK_SIZE )
+    , mScale( (float) BLOCK_SIZE )
     , mIsActive( false )
-    , mCollider( mPosition, vec3( BLOCK_SIZE ), vec3( 0.5f ) )
+    , mCollider( mPosition, vec3( (float) BLOCK_SIZE ), vec3( 0.5f ) )
 {
 
 }
@@ -30,7 +30,8 @@ cBlock::~cBlock()
 }
 void cBlock::setup()
 {
-    mCollider.addWorld();
+    if ( mIsActive )
+        mCollider.addWorld();
 }
 void cBlock::clear()
 {

@@ -22,6 +22,7 @@ namespace Game
 		{
 			drilltype = type;
 			ismyobject = _ismyobject;
+			mIsActive = false;
 			setScale(drilltype);
 			machinescale = scale + vec3(2, 2, 2);
 			mPos = _pos + vec3(0, machinescale.y / 2.f, 0);
@@ -32,7 +33,6 @@ namespace Game
 			createDrills();
 			root = Node::node::create();
 			root->set_schedule_update();
-
 			root->set_position_3d(beginpos);
 
 
@@ -49,7 +49,7 @@ namespace Game
 		{
             ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef( ).color( ) ) );
 
-			drawBasket();
+			//drawBasket();
 
 			drawMachine();
 
@@ -151,6 +151,7 @@ namespace Game
 				scale = vec3(5, 5, 5);
 				break;
 			default:
+				scale = vec3(1, 1, 1);
 				break;
 			}
 		}
@@ -186,14 +187,9 @@ namespace Game
 				if (STRM->isAABB(drill_aabb, gem_aabb))
 				{
 					cClientAdapter::getInstance()->sendGetGemQuarry(id, GemManager->getGems()[i]->getId());
-
-					//HitGem(GemManager->getGems()[i]->getId());
-				
-					//Network::cUDPManager::getInstance()->send(Network::cNetworkHandle("10.25.32.240", 25565), new Network::Packet::Request::cReqCheckGetJem(id, GemManager->getGems()[i]->getId()));
 				}
 			}
 
-			//GemManager->gemCountUp(GemManager->getGems()[i]);
 		}
 		void cDrill::drawBasket()
 		{
@@ -324,7 +320,7 @@ namespace Game
 		{
 			cinder::gl::ScopedTextureBind a(TEX->get( "drill.png" ));
 			gl::ScopedGlslProg shader(gl::getStockShader(gl::ShaderDef().texture()));
-			drawCube(beginpos, machinescale, vec3(0, 0, 0), ColorA(1, 1, 1, 1));
+			drawCube(beginpos,vec3(machinescale.x*1.1f, machinescale.y, machinescale.z*1.1f), vec3(0, 0, 0), ColorA(1, 1, 1, 1));
 		}
 
 		ci::vec3 cDrill::getNextEasingPos()

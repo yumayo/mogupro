@@ -1,5 +1,6 @@
 #pragma once
 #include <Game/Field/cBlock.h>
+#include <Game/Field/cChunkLayer.h>
 #include <Game/Field/FieldData.h>
 
 namespace Game
@@ -19,20 +20,12 @@ public:
     void update();
     void draw();
 
+public:
 
     ci::ivec3 getCell();
-    cBlock* getBlock( int x, int y, int z );
-    cBlock* getBlock( ci::ivec3 c );
-    cChunk* getChunk( ci::ivec3 block_cell );
-
-    void setBlock( ci::ivec3 c, cBlock& block );
-
-    void addFace( const std::array<GLfloat, 12>& block_face,
-                  const std::array<ci::vec2, 4>& texture_coords,
-                  const ci::ivec3 & chunk_position,
-                  const ci::vec3 & block_position );
-
-    cChunk* breakBlock( ci::ivec3 c );
+    cBlock* getBlock( const int& x, const int& y, const int& z );
+    cBlock* getBlock( const ci::ivec3& c );
+    cChunkLayer* getChunkLayer( const int& height );
 
     void buildMesh();
     void reBuildStart();
@@ -43,30 +36,14 @@ public:
 
 private:
 
-    void clearMesh();
-    ci::ivec3 toWorldPosition( ci::ivec3 c )const;
     bool isOutOfRange( ci::ivec3 c );
-    int getIndex( ci::ivec3 c );
-    int getIndex( int x, int y, int z );
-
-public:
-
-    bool mIsBlockBroken = false;
-    bool mHasBuild = false;
-    bool mIsLoading = false;
-    bool mHasBuildCompleted = false;
-
-    bool mIsLoaded = false;
-    bool mIsDone = false;
-    ci::TriMeshRef mMesh;
-    ci::gl::VboMeshRef mVbo;
 
 private:
 
     ci::ivec3 mChunkCell;
-    uint mIndicesIndex = 0;
-    std::array<cBlockRef, CHUNK_VOLUME > mBlocks;
+    std::vector<cChunkLayer> mChunkLayers;
     cUnderGround* mUnderGround;
+
 };
 }
 }

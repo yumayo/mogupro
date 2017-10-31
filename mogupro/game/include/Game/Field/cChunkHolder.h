@@ -16,16 +16,21 @@ public:
 
     cChunk* getChunk( const int& x, const int& z );
     cChunk* getChunk( const ci::ivec3& c );
+    cChunkLayer* getChunkLayer( const ci::ivec3& cell );
     ChunkMap& getChunks();
 
     void setChunk( cChunkRef& chunk );
     void setChunk( const int& x, const int& y, const int& z );
 
+    bool breakBlock( const ci::ivec3& chunk_cell,
+                     const ci::ivec3& block_cell_,
+                     const float & radius );
     bool createChunk( cChunk* chunk );
     bool createChunkMesh( cChunk* chunk );
     bool isExistsChunk( const ci::ivec3 & cell );
     bool isExistsChunk( const int& x, const int& y, const int& z );
     bool cellIsOutOfBounds( const int & x, const int & y, const int & z );
+    int getHighestCell();
 
     void clear();
 
