@@ -61,7 +61,6 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
         return false;
 
     auto break_chunk_layer = getChunkLayer( chunk_cell );
-    std::vector<cChunkLayer*> build_chunk_layers;
 
     // •K‚¸ˆêƒ}ƒX‚ÍŒ@‚é
     auto first_layer = break_chunk_layer->breakBlock( block_cell );
@@ -74,8 +73,10 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
     auto e = block_cell + r;
 
     // Œ@‚ç‚ê‚½ƒ`ƒƒƒ“ƒN‚ð“o˜^‚·‚é
+    std::vector<cChunkLayer*> build_chunk_layers;
     if ( first_layer != nullptr )
         build_chunk_layers.push_back( first_layer );
+
     for ( int z = s.z; z < e.z; z++ )
         for ( int y = s.y; y < e.y; y++ )
             for ( int x = s.x; x < e.x; x++ )
@@ -95,7 +96,7 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
     {
         for ( int i = 0; i < 6; i++ )
         {
-            auto cell = break_layer->getCell();
+            auto cell = break_layer->getChunkCell();
             switch ( i )
             {
                 case 0: cell.x += 1; break;
@@ -108,10 +109,10 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
 
             if ( isExistsChunk( cell.x, 0, cell.z ) )
                 continue;
-            if ( cell.y >= getHighestCell() || cell.y < 0 )
+            if ( cell.y > getHighestCell() || cell.y < 0 )
                 continue;
             if ( std::any_of( build_chunk_layers.begin(), build_chunk_layers.end(),
-                              [&]( cChunkLayer* t ) { return t->getCell() == cell; } ) )
+                              [&]( cChunkLayer* t ) { return t->getChunkCell() == cell; } ) )
                 continue;
 
             auto temp_layer = getChunkLayer( cell );

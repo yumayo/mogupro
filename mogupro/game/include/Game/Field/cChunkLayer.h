@@ -25,7 +25,7 @@ public:
     cChunkLayer* getChunkLayer( const int& height );
 
     int getHeight() { return mHeight; }
-    ci::ivec3 getCell();
+    ci::ivec3 getChunkCell();
 
     void addFace( const std::array<GLfloat, 12>& block_face,
                   const std::array<ci::vec2, 4>& texture_coords,
