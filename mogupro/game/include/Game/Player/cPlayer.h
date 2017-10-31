@@ -74,6 +74,7 @@ namespace Game {
 			}
 			void setPos(const ci::vec3 pos) {
 				if(active_user) return;
+				velocity = pos - mPos;
 				mCollider.setPosition(pos);
 			}
 			ci::vec3 getInstallationPosition() {
