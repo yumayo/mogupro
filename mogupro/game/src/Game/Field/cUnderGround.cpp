@@ -29,18 +29,9 @@ void cUnderGround::setup()
 {
     TEX->set( "dirt", "dirt.jpg" );
 
-    cTimeMeasurement::getInstance()->make();
-
     for ( int z = 0; z < CHUNK_RANGE_Z; z++ )
-    {
         for ( int x = 0; x < CHUNK_RANGE_X; x++ )
-        {
             mChunkHolder.setChunk( x, 0, z );
-        }
-    }
-    cTimeMeasurement::getInstance()->make();
-
-    //console() << "Chunk set time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 
     for ( size_t i = 0; i < 1; i++ )
     {
@@ -212,12 +203,12 @@ bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & r
 ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
 {
     auto chunk_cell = getChunkCellFromPosition( target_position );
-    auto block_cell = getBlockCellFromPosition( target_position );
+    vec3 block_cell = getBlockCellFromPosition( target_position );
     chunk_cell *= CHUNK_SIZE;
-    block_cell.y = ( CHUNK_RANGE_Y - 1 )  * CHUNK_SIZE;
-    block_cell.y += BLOCK_SIZE;
+    chunk_cell.y = 0;
+    block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE;
+    block_cell.y += BLOCK_SIZE / 2.0f;
     block_cell += chunk_cell;
-
     return block_cell;
 }
 
@@ -226,7 +217,8 @@ ci::vec3 cUnderGround::getBlockHighestPosition( const ci::vec3 & target_position
     auto chunk_cell = getChunkCellFromPosition( target_position );
     vec3 block_cell = getBlockCellFromPosition( target_position );
     chunk_cell *= CHUNK_SIZE;
-    block_cell.y = ( CHUNK_RANGE_Y - 1 )  * CHUNK_SIZE;
+    chunk_cell.y = 0;
+    block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE;
     block_cell.y += BLOCK_SIZE / 2.0f;
     block_cell += chunk_cell;
     return block_cell;

@@ -28,7 +28,7 @@ cChunk::~cChunk()
 
 void cChunk::setup()
 {
-    for ( int y = 0; y < CHUNK_RANGE_Y; y++ )
+    for ( int y = 0; y < CHUNK_RANGE_Y + 1; y++ )
         mChunkLayers.push_back( cChunkLayer( y, this, mUnderGround ) );
 }
 
@@ -59,16 +59,9 @@ cBlock* cChunk::getBlock( const ci::ivec3& c )
     return layer.getBlock( c.x, y, c.z );
 }
 
-cChunk* cChunk::getChunk( const ci::ivec3& block_cell )
-{
-    //if ( isOutOfRange( block_cell ) )
-    //    return &none_chunk;
-    return this;
-}
-
 cChunkLayer* cChunk::getChunkLayer( const int & height )
 {
-    if ( height >= mChunkLayers.size() )
+    if ( height >= (int) mChunkLayers.size() )
         return &mChunkLayers[mChunkLayers.size() - 1];
     return &mChunkLayers[height];
 }
@@ -129,7 +122,7 @@ bool cChunk::isOutOfRange( ci::ivec3 c )
         return true;
     if ( c.x < 0 || c.y < 0 || c.z < 0 )
         return true;
-    if ( c.y >= ( CHUNK_RANGE_Y - 1 ) * CHUNK_SIZE )
+    if ( c.y >= CHUNK_RANGE_Y  * CHUNK_SIZE )
         return true;
     return false;
 }

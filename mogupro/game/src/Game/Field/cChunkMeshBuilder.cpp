@@ -111,7 +111,7 @@ bool cChunkMeshBuilder::buildMesh()
 
                 directions.update( x, y, z );
 
-                if ( mChunkLayer->getCell().y != 0 || y != 0 )
+                if ( mChunkLayer->getChunkCell().y != 0 || y != 0 )
                     tryAddFaceToMesh( bottom_face, position, directions.down );
                 tryAddFaceToMesh( top_face, position, directions.up );
                 tryAddFaceToMesh( left_face, position, directions.left );
