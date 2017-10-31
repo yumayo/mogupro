@@ -16,7 +16,6 @@ public:
     virtual void draw() = 0;
     virtual bool DeleteThis() = 0;
 	virtual void setField(const ci::vec3 pos) = 0;
-	virtual void HitGem(const int _gemid) = 0;
 	bool ismyobject;
 protected:
     ci::vec3 scale;
