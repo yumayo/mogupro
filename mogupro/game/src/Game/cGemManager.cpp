@@ -33,7 +33,7 @@ namespace Game
 	void cGemManager::draw()
 	{
 
-		for each(auto g in mStaticGem)
+		for each(auto g in mGemsptr)
 		{
 			g->draw();
 		}
