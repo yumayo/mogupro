@@ -59,9 +59,9 @@ void cGameMain::setup( )
 
     //プレイヤー達の位置
     std::vector<ci::vec3> positions;
-
+	float get_map_top_pos = Game::cFieldManager::getInstance()->getBlockTopPosition(ci::vec3(0,0,0)).y;
 	for (int i = 0; i < player_numbers; i++) {
-		positions.push_back(ci::vec3(0, 20, i * 2));
+		positions.push_back(ci::vec3(0, get_map_top_pos, i * 2));
         teams.emplace_back( 0 );
 	}
     for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
@@ -113,6 +113,7 @@ void cGameMain::update( float deltaTime )
         Game::cPlayerManager::getInstance( )->update( deltaTime );
         Game::cStrategyManager::getInstance( )->update( deltaTime );
         Collision::cCollisionManager::getInstance( )->update( deltaTime );
+		Game::cPlayerManager::getInstance()->playerCollisionUpdate();
         GemManager->update( );
     }
 }

@@ -163,6 +163,14 @@ void Game::cPlayerManager::setPlayersPosition(std::vector<ci::vec3> positions)
 		players[i]->move(vec);
 	}
 }
+//プレイヤーのコリジョンスピードはコリジョンマネージャの
+//後に呼ぶ
+void Game::cPlayerManager::playerCollisionUpdate()
+{
+	for (auto& it : players) {
+		it->setColliderSpeed();
+	}
+}
 void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
 	playerInstance(positions, player_number, active_player_id,teams);

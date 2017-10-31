@@ -93,7 +93,7 @@ Game::Player::cPlayer::cPlayer(
 	//プレイヤーのステータス
 	status.attack = 10;
 	status.drill_range = 1;
-	status.jump_force = 1.0F;
+	status.jump_force = 0.6F;
 	status.speed = DEFAULT_SPEED;
 	//設置位置
 	installation_position = ci::vec3(0,0,2);
@@ -112,7 +112,7 @@ void Game::Player::cPlayer::move(const ci::vec3 & velocity)
 
 	if (active_user) {
 		//地面の中で掘削中なら重力をなくす
-		if (mPos.y <= 16.0f && drilling) {
+		if (mPos.y <= Game::cFieldManager::getInstance()->getBlockTopPosition(mPos).y && drilling) {
 			mRigidbody.gravityOff();
 		}
 		else {
@@ -121,9 +121,6 @@ void Game::Player::cPlayer::move(const ci::vec3 & velocity)
 	}
 
 	mRigidbody.setSpeed(ci::vec3(0,speed.y,0) + velocity);
-	//プレイヤーの移動
-	mPos = mCollider.getPosition();
-
 }
 
 void Game::Player::cPlayer::jump(bool flag)
@@ -144,6 +141,13 @@ void Game::Player::cPlayer::setup()
     mCollider.setLayer( 1 << 0 );
 	mCollider.addWorld();
 	mRigidbody.addWorld();
+
+	//最初に角度を設定するためにほんの少し動かす
+	move(ci::vec3(0,0, 0.01f));
+	mCollider.setPosition(mPos + ci::vec3(0, 0, 0.01f));
+	//プレイヤーの移動
+	mPos = mCollider.getPosition();
+
 	//自分以外は通信で位置が送られてくるので
 	//重力をかける必要がない
 	if (!active_user)mRigidbody.gravityOff();

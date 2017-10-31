@@ -73,16 +73,18 @@ namespace Game {
 				return size;
 			}
 			void setPos(const ci::vec3 pos) {
-				velocity = pos - mPos;
-				mRigidbody.setSpeed(velocity);
-				//プレイヤーの移動
-				mPos = mCollider.getPosition();
+				if(active_user) return;
+				mCollider.setPosition(pos);
 			}
 			ci::vec3 getInstallationPosition() {
 				return installation_position;
 			}
 			Team getWhichTeam() {
 				return team;
+			}
+			//プレイヤーの移動
+			void setColliderSpeed() {
+				mPos = mCollider.getPosition();
 			}
 
 			float getSpeed() {
