@@ -54,17 +54,6 @@ cBlock* cChunkLayer::getBlock( const ci::ivec3& c )
     return mBlocks[getIndex( c )].get();
 }
 
-cChunk* cChunkLayer::getChunk( const ci::ivec3 & block_cell )
-{
-    if ( outOfBounds( block_cell.x ) ||
-         outOfBounds( block_cell.z ) )
-    {
-        auto world_pos = toWorldPosition( block_cell );
-        return mUnderGround->getChunk( world_pos );
-    }
-    return mChunk;
-}
-
 cChunkLayer* cChunkLayer::getChunkLayer( const int & height )
 {
     if ( height != mHeight )
@@ -89,17 +78,27 @@ int cChunkLayer::getIndex( const int& x, const  int& y, const int& z )
 }
 
 void cChunkLayer::addFace( const std::array<GLfloat, 12>& block_face,
+                           const std::array<GLfloat, 12>& block_normal,
                            const std::array<ci::vec2, 4> &texture_coords,
                            const ci::vec3 & block_position )
 {
     mMesh->appendTexCoords0( &texture_coords[0], 4 );
     for ( int i = 0, index = 0; i < 4; i++ )
     {
-        vec3 vertex;
+        vec3 vertex( 0 );
         vertex.x += block_face[index++] + block_position.x;
         vertex.y += block_face[index++] + block_position.y;
         vertex.z += block_face[index++] + block_position.z;
         mMesh->appendPosition( vertex );
+    }
+
+    for ( int i = 0, index = 0; i < 4; i++ )
+    {
+        vec3 normal( 0 );
+        normal.x += block_normal[index++];
+        normal.x += block_normal[index++];
+        normal.x += block_normal[index++];
+        mMesh->appendNormal( normal );
     }
 
     auto & indices = mMesh->getIndices();
@@ -214,7 +213,7 @@ void cChunkLayer::createBlocks()
             {
                 vec3 position = vec3( x * BLOCK_SIZE,
                                       y * BLOCK_SIZE,
-                                      z * BLOCK_SIZE ) + offset;// +OFFSET_POSITION;
+                                      z * BLOCK_SIZE ) + offset;
                 cBlockRef block;
                 block = std::make_shared<cBlock>( position, BLOCK_SIZE, id++ );
 

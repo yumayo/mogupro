@@ -176,18 +176,10 @@ cBlock* cUnderGround::getBlock( const ci::vec3& position )
         return &none_block;
 
     auto height = ivec3( 0, chunk_cell.y * CHUNK_SIZE, 0 );
+    if( (height.y / CHUNK_SIZE) > CHUNK_RANGE_Y )
+        return &none_block;
 
     return mChunkHolder.getChunk( chunk_cell )->getBlock( block_cell + height );
-}
-
-cChunk* cUnderGround::getChunk( const ci::vec3 & position )
-{
-    auto chunk_cell = getChunkCellFromPosition( position );
-
-    if ( mChunkHolder.isExistsChunk( chunk_cell ) )
-        return &none_chunk;
-
-    return mChunkHolder.getChunk( chunk_cell );
 }
 
 bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
