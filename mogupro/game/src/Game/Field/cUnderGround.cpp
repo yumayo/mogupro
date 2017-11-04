@@ -76,7 +76,7 @@ void cUnderGround::draw()
     ScopedVao vaoScp( ctx->getDrawTextureVao() );
     ScopedBuffer vboScp( ctx->getDrawTextureVbo() );
     ScopedTextureBind texBindScope( texture );
-    ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef().texture() ) );
+    //ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef().texture() ) );
 
     //auto glsl = getStockShader( ShaderDef().uniformBasedPosAndTexCoord().color().texture( texture ) );
     //ScopedGlslProg glslScp( glsl );

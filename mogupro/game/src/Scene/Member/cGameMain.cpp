@@ -27,6 +27,9 @@ namespace Member
 {
 void cGameMain::setup( )
 {
+	glsl = cinder::gl::GlslProg::create( cinder::app::loadAsset( "Shader/world.vert" ), 
+										 cinder::app::loadAsset( "Shader/world.frag" ) );
+
     skydome.setup( );
     CAMERA->setup( );
     ENV->padSetup( );
@@ -126,6 +129,10 @@ void cGameMain::draw( )
 
 void cGameMain::drawShadow( )
 {
+	ci::gl::ScopedGlslProg scpGlsl( glsl );
+	glsl->uniform( "uAmb", ColorA( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
+	ci::gl::ScopedColor scpCol( ColorA( 1.0F, 1.0F, 1.0F, 1.0F ) );
+
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
     Game::cFieldManager::getInstance( )->draw( );

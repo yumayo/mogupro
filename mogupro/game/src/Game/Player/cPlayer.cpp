@@ -166,9 +166,9 @@ void Game::Player::cPlayer::update(const float & delta_time)
 
 void Game::Player::cPlayer::draw()
 {
-    ci::gl::ScopedColor col( color );
+    //ci::gl::ScopedColor col( color );
     ci::gl::ScopedTextureBind tex( TEX->get( "mogura" ) );
-    ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef( ).texture( ) ) );
+    //ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef( ).texture( ) ) );
 
 	ci::gl::pushModelView();
 	ci::gl::translate(mPos - ci::vec3(0, 0.5f, 0));

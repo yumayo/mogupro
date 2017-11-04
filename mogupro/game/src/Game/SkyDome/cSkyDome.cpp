@@ -5,7 +5,7 @@
 void Game::SkyDome::cSkyDome::setup()
 {
 	//‰æ‘œ‚ÌƒoƒCƒ“ƒh
-	TEX->set("sky_dome","SkyDome/Skydome151004y.jpg");
+	TEX->set("sky_dome","SkyDome/skydome_1.bmp");
 
 	size = ci::vec3(5000, 5000, 5000);
 	
