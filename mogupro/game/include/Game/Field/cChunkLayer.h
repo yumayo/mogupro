@@ -21,13 +21,13 @@ public:
 
     cBlock* getBlock( const ci::ivec3& c );
     cBlock* getBlock( const int& x, const  int& y, const int& z );
-    cChunk* getChunk( const ci::ivec3& block_cell );
     cChunkLayer* getChunkLayer( const int& height );
 
     int getHeight() { return mHeight; }
     ci::ivec3 getChunkCell();
 
     void addFace( const std::array<GLfloat, 12>& block_face,
+                  const std::array<GLfloat, 12>& block_normal,
                   const std::array<ci::vec2, 4>& texture_coords,
                   const ci::vec3 & block_position );
 public:
