@@ -51,6 +51,12 @@ ci::vec3 cFieldManager::getBlockTopPosition( const ci::vec3 & target_position )
 {
     return mUnderGround->getBlockTopPosition( target_position );
 }
+void cFieldManager::setPointLight( ci::gl::GlslProgRef shader, ci::vec3 position )
+{
+}
+void cFieldManager::erasePointLight( ci::vec3 position )
+{
+}
 void cFieldManager::shutdown()
 {
     mUnderGround->shutdown();

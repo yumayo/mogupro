@@ -13,45 +13,45 @@ namespace Field
 
 const std::array<GLfloat, 12> front_face
 {
-    -0.5f,  -0.5f, 0.5f,
-    0.5f, -0.5f, 0.5f,
-    0.5f,  0.5f, 0.5f,
-    -0.5f,  0.5f, 0.5f,
+    -BLOCK_SIZE / 2,  -BLOCK_SIZE / 2, BLOCK_SIZE / 2,
+    BLOCK_SIZE / 2, -BLOCK_SIZE / 2, BLOCK_SIZE / 2,
+    BLOCK_SIZE / 2,  BLOCK_SIZE / 2, BLOCK_SIZE / 2,
+    -BLOCK_SIZE / 2,  BLOCK_SIZE / 2, BLOCK_SIZE / 2,
 };
 const std::array<GLfloat, 12> back_face
 {
-    0.5f, -0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
-    -0.5f,  0.5f, -0.5f,
-    0.5f,  0.5f, -0.5f,
+    BLOCK_SIZE / 2, -BLOCK_SIZE / 2, -BLOCK_SIZE / 2,
+    -BLOCK_SIZE / 2, -BLOCK_SIZE / 2, -BLOCK_SIZE / 2,
+    -BLOCK_SIZE / 2,  BLOCK_SIZE / 2, -BLOCK_SIZE / 2,
+    BLOCK_SIZE / 2,  BLOCK_SIZE / 2, -BLOCK_SIZE / 2,
 };
 const std::array<GLfloat, 12> left_face
 {
-    -0.5f, -0.5f, -0.5f,
-    -0.5f, -0.5f,  0.5f,
-    -0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f, -0.5f,
+    -BLOCK_SIZE / 2, -BLOCK_SIZE / 2, -BLOCK_SIZE / 2,
+    -BLOCK_SIZE / 2, -BLOCK_SIZE / 2,  BLOCK_SIZE / 2,
+    -BLOCK_SIZE / 2,  BLOCK_SIZE / 2,  BLOCK_SIZE / 2,
+    -BLOCK_SIZE / 2,  BLOCK_SIZE / 2, -BLOCK_SIZE / 2,
 };
 const std::array<GLfloat, 12> right_face
 {
-    0.5f, -0.5f,  0.5f,
-    0.5f, -0.5f, -0.5f,
-    0.5f,  0.5f, -0.5f,
-    0.5f,  0.5f,  0.5f,
+    BLOCK_SIZE / 2, -BLOCK_SIZE / 2,  BLOCK_SIZE / 2,
+    BLOCK_SIZE / 2, -BLOCK_SIZE / 2, -BLOCK_SIZE / 2,
+    BLOCK_SIZE / 2,  BLOCK_SIZE / 2, -BLOCK_SIZE / 2,
+    BLOCK_SIZE / 2,  BLOCK_SIZE / 2,  BLOCK_SIZE / 2,
 };
 const std::array<GLfloat, 12> top_face
 {
-    -0.5f, 0.5f,  0.5f,
-    0.5f, 0.5f,  0.5f,
-    0.5f, 0.5f, -0.5f,
-    -0.5f, 0.5f, -0.5f,
+    -BLOCK_SIZE / 2, BLOCK_SIZE / 2,  BLOCK_SIZE / 2,
+    BLOCK_SIZE / 2, BLOCK_SIZE / 2,  BLOCK_SIZE / 2,
+    BLOCK_SIZE / 2, BLOCK_SIZE / 2, -BLOCK_SIZE / 2,
+    -BLOCK_SIZE / 2, BLOCK_SIZE / 2, -BLOCK_SIZE / 2,
 };
 const std::array<GLfloat, 12> bottom_face
 {
-    -0.5f, -0.5f, -0.5f,
-    0.5f, -0.5f, -0.5f,
-    0.5f, -0.5f,  0.5f,
-    -0.5f, -0.5f,  0.5f,
+    -BLOCK_SIZE / 2, -BLOCK_SIZE / 2, -BLOCK_SIZE / 2,
+    BLOCK_SIZE / 2, -BLOCK_SIZE / 2, -BLOCK_SIZE / 2,
+    BLOCK_SIZE / 2, -BLOCK_SIZE / 2,  BLOCK_SIZE / 2,
+    -BLOCK_SIZE / 2, -BLOCK_SIZE / 2,  BLOCK_SIZE / 2,
 };
 
 const std::array<ci::vec2, 4> texture_coords

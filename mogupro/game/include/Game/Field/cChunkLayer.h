@@ -43,7 +43,8 @@ public:
 public:
 
     void clearMesh();
-    ci::ivec3 toWorldPosition( ci::ivec3 c );
+    // もらったセルをワールド座標に変換する
+    ci::vec3 toWorldPosition( ci::ivec3 c );
     bool outOfBounds( const int& v )const;
     int getIndex( const  ci::ivec3& c );
     int getIndex( const int& x, const  int& y, const int& z );

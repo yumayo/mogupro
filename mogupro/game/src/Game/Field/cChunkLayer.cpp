@@ -201,8 +201,12 @@ bool cChunkLayer::createMainCall()
 void cChunkLayer::createBlocks()
 {
     int id = 0;
-    vec3 offset = mChunk->getCell() * CHUNK_SIZE;
-    offset.y = mHeight * CHUNK_SIZE;
+    vec3 offset;
+    vec3 cell = mChunk->getCell();
+    float x = cell.x * CHUNK_SIZE;
+    float z = cell.z * CHUNK_SIZE;
+    float y = mHeight * (float) CHUNK_SIZE;
+    offset = vec3( x, y, z ) * BLOCK_SIZE;
 
     for ( int z = 0; z < CHUNK_SIZE; z++ )
         for ( int y = 0; y < CHUNK_SIZE; y++ )
@@ -212,10 +216,10 @@ void cChunkLayer::createBlocks()
                                       y * BLOCK_SIZE,
                                       z * BLOCK_SIZE ) + offset;// +OFFSET_POSITION;
                 cBlockRef block;
-                block = std::make_shared<cBlock>( position, (float) BLOCK_SIZE, id++ );
+                block = std::make_shared<cBlock>( position, BLOCK_SIZE, id++ );
 
                 // 一番上のレイヤーはブロックを生成しない
-                if ( mHeight >= CHUNK_RANGE_Y)
+                if ( mHeight >= CHUNK_RANGE_Y )
                     block->mIsActive = false;
 
                 // Colider生成
@@ -232,9 +236,12 @@ void cChunkLayer::clearMesh()
             mMesh->clear();
 }
 
-ci::ivec3 cChunkLayer::toWorldPosition( ci::ivec3 c )
+ci::vec3 cChunkLayer::toWorldPosition( ci::ivec3 c )
 {
-    return getChunkCell() * CHUNK_SIZE + c;
+    vec3 cell = getChunkCell() * CHUNK_SIZE;
+    cell += c;
+    cell *= BLOCK_SIZE;
+    return cell;
 }
 
 bool cChunkLayer::outOfBounds( const int & v )const

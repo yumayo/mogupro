@@ -76,7 +76,7 @@ void cUnderGround::draw()
     ScopedVao vaoScp( ctx->getDrawTextureVao() );
     ScopedBuffer vboScp( ctx->getDrawTextureVbo() );
     ScopedTextureBind texBindScope( texture );
-    ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef().texture() ) );
+    //ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef().texture() ) );
 
     //auto glsl = getStockShader( ShaderDef().uniformBasedPosAndTexCoord().color().texture( texture ) );
     //ScopedGlslProg glslScp( glsl );
@@ -153,15 +153,19 @@ bool cUnderGround::calcChunks()
 
 ci::ivec3 cUnderGround::getChunkCellFromPosition( const ci::vec3 & position )
 {
-    return ivec3( position ) / CHUNK_SIZE;
+    // マップチップ番号に直す
+    ivec3 pos = position / BLOCK_SIZE;
+    return pos / CHUNK_SIZE;
 }
 
 ci::ivec3 cUnderGround::getBlockCellFromPosition( const ci::vec3 & position )
 {
-    return ivec3( position ) % CHUNK_SIZE;
+    // マップチップ番号に直す
+    ivec3 pos = position / BLOCK_SIZE;
+    return pos % CHUNK_SIZE;
 }
 
-cBlock* cUnderGround::getBlock( const ci::ivec3& position )
+cBlock* cUnderGround::getBlock( const ci::vec3& position )
 {
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
@@ -176,7 +180,7 @@ cBlock* cUnderGround::getBlock( const ci::ivec3& position )
     return mChunkHolder.getChunk( chunk_cell )->getBlock( block_cell + height );
 }
 
-cChunk* cUnderGround::getChunk( const ci::ivec3 & position )
+cChunk* cUnderGround::getChunk( const ci::vec3 & position )
 {
     auto chunk_cell = getChunkCellFromPosition( position );
 
@@ -196,7 +200,6 @@ bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & r
 {
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
-
     return mChunkHolder.breakBlock( chunk_cell, block_cell, radius );
 }
 
@@ -204,11 +207,11 @@ ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
 {
     auto chunk_cell = getChunkCellFromPosition( target_position );
     vec3 block_cell = getBlockCellFromPosition( target_position );
-    chunk_cell *= CHUNK_SIZE;
+    chunk_cell *= ( CHUNK_SIZE * BLOCK_SIZE );
     chunk_cell.y = 0;
-    block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE;
-    block_cell.y += BLOCK_SIZE / 2.0f;
+    block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE * BLOCK_SIZE;
     block_cell += chunk_cell;
+    block_cell.y += BLOCK_SIZE / 2.0f + 0.1f;
     return block_cell;
 }
 
@@ -216,11 +219,11 @@ ci::vec3 cUnderGround::getBlockHighestPosition( const ci::vec3 & target_position
 {
     auto chunk_cell = getChunkCellFromPosition( target_position );
     vec3 block_cell = getBlockCellFromPosition( target_position );
-    chunk_cell *= CHUNK_SIZE;
+    chunk_cell *= ( CHUNK_SIZE * BLOCK_SIZE );
     chunk_cell.y = 0;
-    block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE;
-    block_cell.y += BLOCK_SIZE / 2.0f;
+    block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE * BLOCK_SIZE;
     block_cell += chunk_cell;
+    block_cell.y += BLOCK_SIZE / 2.0f;
     return block_cell;
 }
 

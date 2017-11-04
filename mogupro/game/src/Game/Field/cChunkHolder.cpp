@@ -65,8 +65,8 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
     // •K‚¸ˆêƒ}ƒX‚ÍŒ@‚é
     auto first_layer = break_chunk_layer->breakBlock( block_cell );
 
-    if ( radius <= 0 )
-        return true;
+    if ( radius < 0 )
+        return false;
 
     auto r = ivec3( int( radius / BLOCK_SIZE ) );
     auto s = block_cell - r;
