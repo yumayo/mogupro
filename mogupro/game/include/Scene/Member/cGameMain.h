@@ -2,6 +2,7 @@
 #include <Scene/cSceneBase.h>
 #include <Game/SkyDome/cSkyDome.h>
 #include <Node/node.h>
+#include <cinder/gl/GlslProg.h>
 namespace Scene
 {
 namespace Member
@@ -17,6 +18,7 @@ public:
     void draw2D( );
     void resize( );
 private:
+	cinder::gl::GlslProgRef glsl;
     Game::SkyDome::cSkyDome skydome;
     hardptr<Node::node> n;
 	bool sendEndSetup;
