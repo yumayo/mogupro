@@ -18,6 +18,7 @@
 #include <Node/renderer.hpp>
 #include <Node/action.hpp>
 #include <Network/cMatchingMemberManager.h>
+#include <Game/cShaderManager.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -83,6 +84,7 @@ void cGameMain::setup( )
     //Network::cUDPClientManager::getInstance( )->open( );
     //Network::cUDPServerManager::getInstance( )->open( );
     //Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
+	Game::cShaderManager::getInstance( )->setup( );
 	sendEndSetup = false;
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
@@ -129,8 +131,7 @@ void cGameMain::draw( )
 
 void cGameMain::drawShadow( )
 {
-	ci::gl::ScopedGlslProg scpGlsl( glsl );
-	glsl->uniform( "uAmb", ColorA( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
+	ci::gl::ScopedGlslProg scpGlsl( Game::cShaderManager::getInstance( )->getScopedGlsl( ) );
 	ci::gl::ScopedColor scpCol( ColorA( 1.0F, 1.0F, 1.0F, 1.0F ) );
 
     gl::enableDepthRead( );
