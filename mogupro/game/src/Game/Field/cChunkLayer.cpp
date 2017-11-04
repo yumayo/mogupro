@@ -96,8 +96,8 @@ void cChunkLayer::addFace( const std::array<GLfloat, 12>& block_face,
     {
         vec3 normal( 0 );
         normal.x += block_normal[index++];
-        normal.x += block_normal[index++];
-        normal.x += block_normal[index++];
+        normal.y += block_normal[index++];
+        normal.z += block_normal[index++];
         mMesh->appendNormal( normal );
     }
 
