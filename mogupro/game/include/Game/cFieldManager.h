@@ -36,6 +36,11 @@ public: //Player, Strategy が使う関数
     // target_position : 対象の位置
     ci::vec3 getBlockTopPosition( const ci::vec3& target_position );
 
+    // 影のシェーダー
+    // チャンク一個一個にシェーダーを作る予定
+    void setPointLight( ci::gl::GlslProgRef shader, ci::vec3 position );
+    void erasePointLight( ci::vec3 position );
+
     // シャットダウン
     void shutdown();
 

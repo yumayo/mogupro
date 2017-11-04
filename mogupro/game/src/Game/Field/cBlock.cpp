@@ -10,9 +10,9 @@ namespace Field
 {
 cBlock::cBlock() :
     mPosition( vec3( 0 ) )
-    , mScale( (float) BLOCK_SIZE )
+    , mScale( BLOCK_SIZE )
     , mIsActive( false )
-    , mCollider( mPosition, vec3( (float) BLOCK_SIZE ), vec3( 0.5f ) )
+    , mCollider( mPosition, vec3( BLOCK_SIZE ), vec3( BLOCK_SIZE / 2.0f ) )
 {
 
 }
@@ -21,7 +21,7 @@ cBlock::cBlock( const ci::vec3& position, const float& scale, const uint & id ) 
     , mScale( scale )
     , mId( id )
     , mIsActive( true )
-    , mCollider( mPosition, vec3( scale ), vec3( 0.5f ) )
+    , mCollider( mPosition, vec3( scale ), vec3( scale / 2.0f ) )
 {
 }
 cBlock::~cBlock()

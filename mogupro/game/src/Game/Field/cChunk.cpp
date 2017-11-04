@@ -30,7 +30,7 @@ void cChunk::setup()
 {
     for ( int y = 0; y < CHUNK_RANGE_Y + 1; y++ )
         mChunkLayers.push_back( cChunkLayer( y, this, mUnderGround ) );
-}
+}                                                    
 
 void cChunk::update()
 {
