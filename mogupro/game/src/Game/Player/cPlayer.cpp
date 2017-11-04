@@ -4,8 +4,7 @@
 #include <CameraManager/cCameraManager.h>
 #include <Resource/cObjectManager.h>
 #include <Resource/TextureManager.h>
-
-
+#include<Game/cGemManager.h>
 void Game::Player::cPlayer::playerRotation()
 {
 	//プレイヤーの前方向
@@ -39,7 +38,6 @@ void Game::Player::cPlayer::playerRotation()
 			ci::gl::rotate(M_PI, ci::vec3(0, 1, 0));
 			save_rotate = M_PI;
 		}
-
 		return;
 	}
 
@@ -47,12 +45,12 @@ void Game::Player::cPlayer::playerRotation()
 
 	//回転
 	// 左回り
-	if (rotation > 0.1f) {
+	if (rotation > 0) {
 		ci::gl::rotate(rotation, quataxis);
 		save_rotate = rotation;
 	}
 	// 右回り
-	else if (rotation < -0.1f) {
+	else if (rotation < 0) {
 		ci::gl::rotate(-rotation, quataxis);
 		save_rotate = rotation;
 	}
@@ -68,6 +66,63 @@ void Game::Player::cPlayer::playerRotation()
 
 }
 
+void Game::Player::cPlayer::getGems(const int& _gemid)
+{
+	//自分の所持しているジェムにプッシュバック
+	getgems.push_back(GemManager->FindGem(_gemid));
+
+	int index = getgems.size() - 1;
+
+	
+	getgems[index]->setPutPos(ci::vec3(begin_pos.x, mPos.y, begin_pos.z));
+
+	getgems[index]->root = Node::node::create();
+	getgems[index]->root->set_schedule_update();
+	getgems[index]->root->set_position_3d(getgems[index]->getPos());
+
+	getgems[index]->root->run_action(Node::Action::move_to::create(2,ci::vec3(100,70,100)));
+
+	//プレイヤーのヒットを作ってもらう
+	//GemManager->getGems()[_gemid]->setIsDrillhit(true);
+}
+
+void Game::Player::cPlayer::collisionGems()
+{
+	//自分のAABBを生成
+	ci::vec3 aabb_begin_pos = mPos - ci::vec3(float(size.x) / 2.f, float(size.y) / 2.f, float(size.z) / 2.f);
+	ci::vec3 aabb_end_pos = mPos + ci::vec3(float(size.x) / 2.f, float(size.y) / 2.f, float(size.z) / 2.f);
+	ci::AxisAlignedBox player_aabb(aabb_begin_pos, aabb_end_pos);
+
+	for (int i = 0; i < int(GemManager->getGems().size()); i++)
+	{
+		if (GemManager->getGems()[i]->getIsDrillhit())continue;
+		ci::vec3 gempos = GemManager->getGems()[i]->getPos();
+		ci::vec3 gemscale = GemManager->getGems()[i]->getScale();
+
+		//ジェムのAABBを生成
+		ci::AxisAlignedBox gem_aabb(gempos - ci::vec3(float(gemscale.x) / 2.f, float(gemscale.y) / 2.f, float(gemscale.z) / 2.f),
+			gempos + ci::vec3(float(gemscale.x) / 2.f, float(gemscale.y) / 2.f, float(gemscale.z) / 2.f));
+
+		//接触していたらidをsend
+		if (player_aabb.intersects(gem_aabb))
+		{
+			//プレイヤー用のパケットを作らないとsendあかんやろ
+			getGems(GemManager->getGems()[i]->getId());
+			//cClientAdapter::getInstance()->sendGetGemQuarry(player_id, GemManager->getGems()[i]->getId());
+		}
+	}
+}
+
+void Game::Player::cPlayer::gemsUpdate(const float& delta_time)
+{
+
+	for (auto& it : getgems) {
+		it->root->entry_update(delta_time);
+		ci::vec3 buf_pos = it->root->get_position_3d();
+		it->setPos(buf_pos);
+	}
+}
+
 
 //コンストラクタで
 //位置と角度と何Pかとどれが自分のプレイヤーかを
@@ -78,10 +133,10 @@ Game::Player::cPlayer::cPlayer(
 	const bool& is_active_user,
 	const Game::Player::Team& team)
 	: cObjectBase(pos),
-	mCollider(mPos, ci::vec3(0.8f, 0.8f, 0.8f)),
+	mCollider(mPos, ci::vec3(DEFAULT_SIZE)),
 	mRigidbody(mCollider)
 {
-	size = ci::vec3(1);
+	size = ci::vec3(DEFAULT_SIZE);
 	color = ci::vec4(1);
 	color = ci::ColorA8u(1, 0, 1, 1);
 	velocity = ci::vec3(0);
@@ -100,6 +155,7 @@ Game::Player::cPlayer::cPlayer(
 
 	player_id = id;
 	active_user = is_active_user;
+
 }
 
 void Game::Player::cPlayer::move(const ci::vec3 & velocity)
@@ -148,6 +204,11 @@ void Game::Player::cPlayer::setup()
 	//プレイヤーの移動
 	mPos = mCollider.getPosition();
 
+	begin_pos = ci::vec3(0);
+	root = Node::node::create();
+	root->set_position_3d(mPos);
+	
+	root->set_schedule_update();
 	//自分以外は通信で位置が送られてくるので
 	//重力をかける必要がない
 	if (!active_user)mRigidbody.gravityOff();
@@ -160,8 +221,11 @@ void Game::Player::cPlayer::setup()
 void Game::Player::cPlayer::update(const float & delta_time)
 {
 	if (drilling) {
-		Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition() + ci::vec3(0, -1,0), 1);
+		Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition(), 3);
+		collisionGems();
 	}
+	gemsUpdate(delta_time);
+	root->entry_update(delta_time);
 }
 
 void Game::Player::cPlayer::draw()
