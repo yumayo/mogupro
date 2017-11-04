@@ -3,7 +3,7 @@
 #include <string>
 #include <array>
 #include <thread>
-#include <Utility/cRecursionUsableMutex.h>
+#include <mutex>
 #include <Network/NetworkDefines.h>
 #include <boost/asio.hpp>
 #include <memory>
@@ -37,9 +37,8 @@ private:
     boost::asio::ip::udp::socket mUdpSocket;
 
 private:
-
     // 受信データのMutex。
-    Utility::cRecursionUsableMutex mDataMutex;
+    std::mutex mDataMutex;
 
     // データを送って来た相手のipaddressやportが入ります。
     boost::asio::ip::udp::endpoint mRemoteEndpoint;
