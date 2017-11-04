@@ -3,7 +3,13 @@
 #include <cinder/gl/gl.h>
 #include <Collision/cAABBCollider.h>
 #include <Collision/cRigidBody.h>
+#include <Node/action.hpp>
+#include <Node/node.h>
+
 namespace Game {
+	namespace Gem {
+		class cGem;
+	}
 	namespace Player {
 
 		struct PlayerStatus {
@@ -20,6 +26,7 @@ namespace Game {
 
 		//基準スピード
 		static const float DEFAULT_SPEED = 5.0f;
+		static const float DEFAULT_SIZE = 0.8f;
 
 		class cPlayer : public Game::cObjectBase {
 		private:
@@ -61,7 +68,16 @@ namespace Game {
 			//画像を貼るためのシェーダー
 			ci::gl::GlslProgRef mGlsl;
 
+
+			//イージング用
+			ci::vec3 begin_pos;
+			Utility::hardptr<Node::node> root;
+			std::vector<std::shared_ptr<Game::Gem::cGem>>getgems;
+
 			void playerRotation();
+			void getGems(const int& _gemid);
+			void collisionGems();
+			void gemsUpdate(const float& delta_time);
 		public:
 			cPlayer(
 				const ci::vec3& pos,
@@ -77,6 +93,11 @@ namespace Game {
 				velocity = pos - mPos;
 				mCollider.setPosition(pos);
 			}
+
+			void resetPos() {
+				mCollider.setPosition(ci::vec3(10,70,10));
+			}
+
 			ci::vec3 getInstallationPosition() {
 				return installation_position;
 			}

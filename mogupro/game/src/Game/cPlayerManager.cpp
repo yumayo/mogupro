@@ -43,7 +43,12 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 	float z_axis = 0;
 	//斜め用スタック
 	int diagonal = 0;
-	
+
+	//リセット
+	if (ENV->pressKey(ci::app::KeyEvent::KEY_r)) {
+		active_player->resetPos();
+	}
+
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_w)) {
 		z_axis = delta_time * active_player->getSpeed();
 		diagonal++;
