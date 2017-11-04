@@ -348,14 +348,14 @@ namespace Network
         strcpy( value._Get_data( )._Myptr( ), mBuffer + mOffset );
         value._Get_data( )._Mysize = strlen( value.c_str( ) );
         value.shrink_to_fit( );
-        mOffset += static_cast<ubyte2>( value.size( ) );
+        mOffset += static_cast<ubyte2>( value.size( ) + 1U );
         return *this;
     }
     template<>
     cExporter& cExporter::operator<<<std::string>( std::string const& value )
     {
         strcpy( mBuffer + mOffset, value.c_str( ) );
-        mOffset += static_cast<ubyte2>( value.size( ) );
+        mOffset += static_cast<ubyte2>( value.size( ) + 1U );
         return *this;
     }
     cImporter::cImporter( char const * const buffer )

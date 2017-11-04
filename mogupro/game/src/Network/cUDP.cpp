@@ -1,5 +1,4 @@
 #include <Network/cUDP.h>
-#include <Utility/cScopedMutex.h>
 #include <boost/lexical_cast.hpp>
 #include <Utility/MessageBox.h>
 using udp = boost::asio::ip::udp;
@@ -74,25 +73,25 @@ void cUDP::open( int port )
 }
 void cUDP::clearChunk( )
 {
-    Utility::cScopedMutex m( mDataMutex );
+	std::lock_guard<std::mutex> m( mDataMutex );
     mCacheEndpoints.clear( );
     mCacheEndpoints.shrink_to_fit( );
 }
 bool cUDP::emptyChunk( )
 {
-    Utility::cScopedMutex m( mDataMutex );
+	std::lock_guard<std::mutex> m( mDataMutex );
     return mCacheEndpoints.empty( );
 }
 cPacketChunk cUDP::popChunk( )
 {
-    Utility::cScopedMutex m( mDataMutex );
+	std::lock_guard<std::mutex> m( mDataMutex );
     auto front = mCacheEndpoints.front( );
     mCacheEndpoints.pop_front( );
     return front;
 }
 void cUDP::receive( )
 {
-    Utility::cScopedMutex m( mDataMutex );
+	std::lock_guard<std::mutex> m( mDataMutex );
     mUdpSocket.async_receive_from( boost::asio::buffer( mRemoteBuffer ),
                                    mRemoteEndpoint,
                                    [ this ] ( const boost::system::error_code& e, size_t transferredBytes )
@@ -106,7 +105,7 @@ void cUDP::receive( )
         }
         else
         {
-            Utility::cScopedMutex m( mDataMutex );
+			  std::lock_guard<std::mutex> m( mDataMutex );
             mCacheEndpoints.emplace_back( mRemoteEndpoint.address( ).to_string( ), mRemoteEndpoint.port( ), transferredBytes, mRemoteBuffer );
             std::fill_n( mRemoteBuffer.begin( ), transferredBytes, 0 );
         }

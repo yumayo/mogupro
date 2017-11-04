@@ -71,9 +71,20 @@ void gameApp::mouseDrag( MouseEvent event )
 
 void gameApp::update( )
 {
-    float delta = app::getElapsedSeconds( ) - prevSeconds;
-    prevSeconds = app::getElapsedSeconds( );
-    cSceneManager::getInstance( )->now( ).update( delta );
+	float elapsedSeconds = app::getElapsedSeconds( );
+    float delta = elapsedSeconds - prevSeconds;
+    prevSeconds = elapsedSeconds;
+
+	 float t = 0.0F;
+	 if ( getAverageFps( ) == 0.0F )
+	 {
+		 t = 1.0F / getFpsSampleInterval( );
+	 }
+	 else
+	 {
+		 t = 1.0F / getAverageFps( );
+	 }
+    cSceneManager::getInstance( )->now( ).update( t );
 	CAMERA->update(delta);
 }
 

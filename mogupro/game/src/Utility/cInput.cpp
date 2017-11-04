@@ -164,16 +164,17 @@ float Utility::cInputAll::getPadAxis(const int & pad_num)
 }
 
 void Utility::cInputAll::keyDown(const ci::app::KeyEvent& event) {
-	
-	if (press.find(event.getCode()) == press.end()) 
-		push.insert(event.getCode());
-	
+	if ( !pressKey( event.getCode( ) ) )
+	{
+		push.insert( event.getCode( ) );
+	}
 	press.insert(event.getCode());
 }
 void Utility::cInputAll::keyUp(const ci::app::KeyEvent& event)
 {
-	pull.insert(event.getCode());
 	press.erase(event.getCode());
+
+	pull.insert(event.getCode());
 }
 
 void setMousePos(ci::vec2& pos) {
@@ -235,26 +236,17 @@ void Utility::cInputAll::mouseUp(const ci::app::MouseEvent& event)
 }
 
 bool Utility::cInputAll::pressKey(const int& pressed_key) {
-	if (press.find(pressed_key) != press.end()) {
-		return true;
-	}
-	return false;
+	return press.find( pressed_key ) != press.end( );
 }
 
 bool Utility::cInputAll::pushKey(const int & pressed_key)
 {
-	if (push.find(pressed_key) == push.end())
-		return false;
-	push.erase(push.find(pressed_key));
-	return true;
+	return push.find( pressed_key ) != push.end( );
 }
 
 bool Utility::cInputAll::pullKey(const int & pressed_key)
 {
-	if (pull.find(pressed_key) == pull.end())
-		return false;
-	pull.erase(pull.find(pressed_key));
-	return true;
+	return pull.find( pressed_key ) != pull.end( );
 }
 
 void Utility::cInputAll::flashInput()
