@@ -17,6 +17,8 @@ cUDPClientManager::cUDPClientManager( )
     : mCloseSecond( std::numeric_limits<float>::max( ) )
     , mRoot( Node::node::create( ) )
     , mConnectSecond( std::numeric_limits<float>::max( ) )
+	, mSequenceId( 0U )
+	, mIsConnected(false)
 {
     mRoot->set_schedule_update( );
 }
@@ -31,20 +33,13 @@ void cUDPClientManager::open( )
 }
 bool cUDPClientManager::isConnected( )
 {
-    return mConnectServerHandle;
+    return mIsConnected;
 }
 void cUDPClientManager::connect( std::string const& ipAddress )
 {
-    using namespace Node::Action;
-    mRoot->run_action( repeat_times::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this, ipAddress ]
-    {
-        auto packet = new Packet::Request::cReqConnect( );
-        cPacketBuffer packetBuffer;
-        packet->createPacket( packetBuffer );
-        mSocket.write( cNetworkHandle( ipAddress, 25565 ), packetBuffer.transferredBytes, packetBuffer.buffer.data( ) );
-        delete packet;
-        mConnectSecond = cinder::app::getElapsedSeconds( ) + HOLD_SECOND;
-    } ) ), 3 ) );
+	mConnectServerHandle = cNetworkHandle( ipAddress, 25565 );
+	send( new Packet::Request::cReqConnect( ), true );
+	mConnectSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
 }
 void cUDPClientManager::connectOfflineServer( )
 {
@@ -58,18 +53,28 @@ void cUDPClientManager::update( float delta )
 }
 void cUDPClientManager::updateSend( )
 {
-    if ( mConnectServerHandle )
-    {
-        // 送信するものがあればバッファーから取り出して送る。
-        auto& buffer = mSendDataBuffer;
-        // 余ってたらパケットを送ります。
-        if ( !buffer.empty( ) )
-        {
-            mSocket.write( mConnectServerHandle, buffer.size( ), buffer.data( ) );
-            buffer.clear( );
-            buffer.shrink_to_fit( );
-        }
-    }
+	if ( !mConnectServerHandle )
+	{
+		close( );
+		MES_ERR( "送信ハンドルが未定義です。",
+				 [ ] { cSceneManager::getInstance( )->change<Scene::Member::cTitle>( ); } );
+	}
+
+	auto& handle = mConnectServerHandle;
+	auto& buf = mSendDataBuffer;
+
+	// リライアブルなデータを詰めます。
+	auto reliableData = mReliableManager.update( );
+	std::copy( reliableData.begin( ), reliableData.end( ), std::back_inserter( buf ) );
+
+	// 送るパケットが存在したら送ります。
+	// TODO: ここも1024を超過する可能性があるので分割して送ること。
+	if ( !buf.empty( ) )
+	{
+		mSocket.write( mConnectServerHandle, buf.size( ), buf.data( ) );
+		buf.clear( );
+		buf.shrink_to_fit( );
+	}
 }
 void cUDPClientManager::updateRecv( )
 {
@@ -87,9 +92,9 @@ void cUDPClientManager::connection( )
 {
     while ( auto p = cResponseManager::getInstance( )->getResConnect( ) )
     {
-        mConnectServerHandle = p->mNetworkHandle;
+		mIsConnected = true;
 
-        mCloseSecond = cinder::app::getElapsedSeconds( ) + HOLD_SECOND;
+        mCloseSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
 
         using namespace Node::Action;
         auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
@@ -113,7 +118,7 @@ void cUDPClientManager::ping( )
 {
     while ( auto p = cEventManager::getInstance( )->getEvePing( ) )
     {
-        mCloseSecond = cinder::app::getElapsedSeconds( ) + HOLD_SECOND;
+        mCloseSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
     }
     if (mConnectServerHandle.ipAddress != Network::getLocalIpAddressHost())
     {
@@ -125,29 +130,32 @@ void cUDPClientManager::ping( )
         }
     }
 }
-void cUDPClientManager::sendDataBufferAdd( cPacketBuffer const & packetBuffer )
+void cUDPClientManager::sendDataBufferAdd( cPacketBuffer const & packetBuffer, bool reliable )
 {
-    if ( !isConnected( ) )
-    {
-        close( );
-        MES_ERR( "connectが成立する前に通信をしないでください。",
-                 [ ] { cSceneManager::getInstance( )->change<Scene::Member::cTitle>( ); } );
-    }
-
-    auto& buf = mSendDataBuffer;
+	auto& buf = mSendDataBuffer;
 
     // パケットが大きくなりそうなら先に送ってしまいます。
     if ( 1024 < buf.size( ) )
     {
-        mSocket.write( mConnectServerHandle, buf.size( ), buf.data( ) );
-        buf.clear( );
-        buf.shrink_to_fit( );
+		mSocket.write( mConnectServerHandle, buf.size(), buf.data() );
+		buf.clear( );
+		buf.shrink_to_fit( );
     }
 
-    ubyte2 const& byte = packetBuffer.transferredBytes;
-    cBuffer const& buffer = packetBuffer.buffer;
+	ubyte2 const& byte = packetBuffer.transferredBytes;
+	cBuffer const& buffer = packetBuffer.buffer;
 
-    buf.resize( buf.size( ) + byte );
-    memcpy( buf.data( ) + buf.size( ) - byte, &buffer, byte );
+	if ( reliable )
+	{
+		std::vector<char> buf;
+		buf.resize( buf.size( ) + byte );
+		memcpy( buf.data( ) + buf.size( ) - byte, &buffer, byte );
+		mReliableManager.append( std::move( buf ) );
+	}
+	else
+	{
+		buf.resize( buf.size( ) + byte );
+		memcpy( buf.data( ) + buf.size( ) - byte, &buffer, byte );
+	}
 }
 }

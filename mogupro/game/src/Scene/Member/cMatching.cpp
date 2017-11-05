@@ -199,7 +199,6 @@ namespace Scene
 					{
 						mWaitClassState = ClassState::NOT;
 						mCanSend = true;
-						cResponseManager::getInstance()->mResInRoom.pop();
 						continue;
 					}
 

@@ -11,6 +11,7 @@ cRigidBody::cRigidBody( cColliderBase& collider, cinder::vec3 speed )
     , mMinValue( std::numeric_limits<float>::max( ) )
     , mIsGravity( true )
     , mIsLanding( false )
+	, mIsHit( false )
 {
 }
 cRigidBody::~cRigidBody( )
