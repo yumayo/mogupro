@@ -140,7 +140,6 @@ void cGameMain::drawShadow( )
 		Game::cFieldManager::getInstance( )->draw( );
 		Game::cStrategyManager::getInstance( )->draw( );
 		GemManager->draw( );
-		Collision::cCollisionManager::getInstance( )->draw( );
 		skydome.draw( );
 		CAMERA->unBind3D( );
 
@@ -156,6 +155,8 @@ void cGameMain::drawShadow( )
 		gl::enableDepthWrite( );
 		Game::cPlayerManager::getInstance( )->draw( );
 	} );
+
+	Collision::cCollisionManager::getInstance( )->draw( );
 }
 
 void cGameMain::draw2D( )
