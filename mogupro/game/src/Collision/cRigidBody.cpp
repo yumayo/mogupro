@@ -12,6 +12,7 @@ cRigidBody::cRigidBody( cColliderBase& collider, cinder::vec3 speed )
     , mIsGravity( true )
     , mIsLanding( false )
 	, mIsHit( false )
+	, mFriction( 0.08F )
 {
 }
 cRigidBody::~cRigidBody( )
@@ -51,7 +52,7 @@ void cRigidBody::lateUpdate( float delta )
 {
     if ( mMinValue != std::numeric_limits<float>::max( ) )
     {
-        mSpeed *= ( 1.0F - 0.08 ) * delta;
+        mSpeed *= ( 1.0F - mFriction ) * delta;
     }
 }
 bool cRigidBody::isLanding( ) const
@@ -81,6 +82,15 @@ cinder::vec3 const & cRigidBody::getSpeed( ) const
 void cRigidBody::setSpeed( cinder::vec3 value )
 {
     mSpeed = value;
+}
+float cRigidBody::getFriction( ) const
+{
+	return mFriction;
+}
+void cRigidBody::setFriction( float value )
+{
+	value = cinder::clamp( value, 0.00F, 1.00F );
+	mFriction = value;
 }
 cinder::vec3 cRigidBody::cardinalAxis( int i )
 {
