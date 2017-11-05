@@ -131,29 +131,31 @@ void cGameMain::draw( )
 
 void cGameMain::drawShadow( )
 {
-	ci::gl::ScopedGlslProg scpGlsl( Game::cShaderManager::getInstance( )->getScopedGlsl( ) );
-	ci::gl::ScopedColor scpCol( ColorA( 1.0F, 1.0F, 1.0F, 1.0F ) );
+	Game::cShaderManager::getInstance( )->draw( [ this ]
+	{
+		ci::gl::ScopedColor scpCol( ColorA( 1.0F, 1.0F, 1.0F, 1.0F ) );
 
-    gl::enableDepthRead( );
-    gl::enableDepthWrite( );
-    Game::cFieldManager::getInstance( )->draw( );
-    Game::cStrategyManager::getInstance( )->draw( );
-	GemManager->draw();
-    Collision::cCollisionManager::getInstance( )->draw( );
-    skydome.draw( );
-	CAMERA->unBind3D();
+		gl::enableDepthRead( );
+		gl::enableDepthWrite( );
+		Game::cFieldManager::getInstance( )->draw( );
+		Game::cStrategyManager::getInstance( )->draw( );
+		GemManager->draw( );
+		Collision::cCollisionManager::getInstance( )->draw( );
+		skydome.draw( );
+		CAMERA->unBind3D( );
 
-	//プレイヤーより後ろの2D描画
-	CAMERA->bind2D();
-	gl::disableDepthRead();
-	gl::disableDepthWrite();
-	GemManager->drawFbo();
-	CAMERA->unBind2D();
+		//プレイヤーより後ろの2D描画
+		CAMERA->bind2D( );
+		gl::disableDepthRead( );
+		gl::disableDepthWrite( );
+		GemManager->drawFbo( );
+		CAMERA->unBind2D( );
 
-	CAMERA->bind3D();
-	gl::enableDepthRead();
-	gl::enableDepthWrite();
-    Game::cPlayerManager::getInstance( )->draw( );
+		CAMERA->bind3D( );
+		gl::enableDepthRead( );
+		gl::enableDepthWrite( );
+		Game::cPlayerManager::getInstance( )->draw( );
+	} );
 }
 
 void cGameMain::draw2D( )
