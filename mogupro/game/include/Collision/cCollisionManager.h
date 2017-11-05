@@ -7,14 +7,10 @@
 #include <tuple>
 #include <thread>
 #include <chrono>
-#include <cinder/Vector.h>
+#include <mutex>
 #include <Collision/cRigidBody.h>
 #include <cinder/AxisAlignedBox.h>
 #include <Collision/cColliderBase.h>
-#include <Utility/cRecursionUsableMutex.h>
-#include <Utility/cScopedMutex.h>
-#include <Collision/cFallBlockSimple.h>
-#include <Collision/cStaticBlockSimple.h>
 #include <Utility/cUserPointer.hpp>
 #include <cinder/Ray.h>
 #include <Game/Field/FieldData.h>
@@ -52,7 +48,7 @@ private:
     struct UpdateThread
     {
         std::thread thread;
-        Utility::cRecursionUsableMutex mutex;
+		std::mutex mutex;
     };
     std::array<UpdateThread, 4U> mUpdateThreads;
 };

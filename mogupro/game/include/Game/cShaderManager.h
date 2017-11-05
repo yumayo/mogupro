@@ -10,6 +10,6 @@ public:
 	cShaderManager( ) { }
 	~cShaderManager( ) { }
 	void setup( );
-	cinder::gl::GlslProgRef getScopedGlsl( );
+	void draw( std::function<void()> render );
 };
 }

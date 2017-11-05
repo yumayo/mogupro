@@ -7,12 +7,12 @@ namespace Game
 {
 void cShaderManager::setup( )
 {
-	mGlsl = cinder::gl::GlslProg::create( cinder::app::loadAsset( "Shader/world.vert" ),
-										  cinder::app::loadAsset( "Shader/world.frag" ) );
+	mGlsl = gl::GlslProg::create( app::loadAsset( "Shader/world.vert" ),
+								  app::loadAsset( "Shader/world.frag" ) );
 }
-cinder::gl::GlslProgRef cShaderManager::getScopedGlsl( )
+void cShaderManager::draw( std::function<void( )> render )
 {
-	ci::gl::ScopedGlslProg scpGlsl( mGlsl );
+	gl::ScopedGlslProg scpGlsl( mGlsl );
 	mGlsl->uniform( "uAmb", ColorA( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
 	std::vector<vec4> lightPositions;
 	std::vector<vec4> lightColors;
@@ -26,6 +26,7 @@ cinder::gl::GlslProgRef cShaderManager::getScopedGlsl( )
 	}
 	mGlsl->uniform( "uModelViewLightPositions", lightPositions.data( ), lightNum );
 	mGlsl->uniform( "uModelViewLightColors", lightColors.data( ), lightNum );
-	return mGlsl;
+
+	render( );
 }
 }
