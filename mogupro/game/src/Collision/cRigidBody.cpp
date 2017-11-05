@@ -36,6 +36,7 @@ void cRigidBody::update( float delta )
 {
     mMinValue = std::numeric_limits<float>::max( );
     mIsLanding = false;
+	mIsHit = false;
 
     if ( mIsGravity )
     {
@@ -59,6 +60,10 @@ bool cRigidBody::isLanding( ) const
 bool cRigidBody::isGravity( ) const
 {
     return mIsGravity;
+}
+bool cRigidBody::isHit( ) const
+{
+	return mIsHit;
 }
 void cRigidBody::gravityOn( )
 {
@@ -117,6 +122,7 @@ void cRigidBody::calc( float minValue, cinder::Ray const& ray, cinder::AxisAlign
     auto normal = getNormal( intersectPoint, aabb );
 
     if ( normal.y == 1.0F ) mIsLanding = true;
+	mIsHit = true;
 
     mSpeed = calcWallScratchVector( mSpeed, normal );
 
