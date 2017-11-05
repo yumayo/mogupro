@@ -13,7 +13,7 @@ bool cUDPManager::isConnectPacket( cPacketChunk const & packetChunk )
     ubyte2 const& transferredBytes = packetBuffer.transferredBytes;
     cBuffer const& buffer = packetBuffer.buffer;
 
-    ubyte2 headerOffset = 0;
+	ubyte2 headerOffset = 0U;
     do
     {
         Packet::PacketHeader packetHeader;
@@ -47,7 +47,7 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
     ubyte2 const& transferredBytes = packetBuffer.transferredBytes;
     cBuffer const& buffer = packetBuffer.buffer;
 
-    ubyte2 headerOffset = 0;
+    ubyte2 headerOffset = 0U;
     do
     {
         Packet::PacketHeader packetHeader;
@@ -59,9 +59,12 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             // P=====BEGIN=====P
         case Network::Packet::PacketId::EVE_STRING:
         {
-            Packet::Event::cEveString data;
-            data.onReceive( networkHandle, bufferSize, bufferData );
-            cEventManager::getInstance( )->ungetEveString( std::move( data ) );
+			if ( cEventManager::getInstance( )->isNewEveString( packetHeader ) )
+			{
+				Packet::Event::cEveString data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				cEventManager::getInstance( )->ungetEveString( std::move( data ) );
+			}
             break;
         }
         case Network::Packet::PacketId::EVE_PING:

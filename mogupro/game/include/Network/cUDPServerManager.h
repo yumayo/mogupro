@@ -19,7 +19,7 @@ private:
     void sendUnsafe( cNetworkHandle const& networkHandle, Packet::cPacketBase<Ty, packetId>* packetBase, bool reliable = false )
     {
         cPacketBuffer packetBuffer;
-        packetBase->createPacket( packetBuffer );
+        packetBase->createPacket( packetBuffer, reliable << 0 );
         sendDataBufferAdd( networkHandle, packetBuffer, reliable );
     }
 public:
@@ -89,6 +89,8 @@ private:
     hardptr<Node::node> mRoot;
     bool mIsAccept;
     ubyte1 mIdCount;
+
+	ubyte4 mSequenceId;
 
 	cReliableManager mReliableManager;
 };

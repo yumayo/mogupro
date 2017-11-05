@@ -13,10 +13,6 @@ namespace Network
 {
 cUDPServerManager::cUDPServerManager( )
 {
-    mRoot = Node::node::create( );
-    mRoot->set_schedule_update( );
-    mIsAccept = false;
-    mIdCount = 0;
 }
 void cUDPServerManager::close( )
 {
@@ -26,6 +22,7 @@ void cUDPServerManager::close( )
 }
 void cUDPServerManager::open( )
 {
+	closeAccepter( );
     mRoot = Node::node::create( );
     mRoot->set_schedule_update( );
     mSocket.open( 25565 );
@@ -33,9 +30,9 @@ void cUDPServerManager::open( )
 }
 void cUDPServerManager::closeAccepter( )
 {
-    mIsAccept = false;
-    mIdCount = 0;
-    mConnections.clear( );
+	mIsAccept = false;
+	mIdCount = 0;
+	mConnections.clear( );
 }
 void cUDPServerManager::openAccepter( )
 {
@@ -69,12 +66,12 @@ void cUDPServerManager::updateSend( )
 
 		// リライアブルなデータを詰めます。
 		auto&& reliableData = std::move( mReliableManager.update( ) );
-		std::copy( reliableData.begin( ), reliableData.end( ), std::back_inserter( buf ) );
+		std::copy( reliableData.begin(), reliableData.end(), std::back_inserter( buf ) );
 
         // 余ってたらパケットを送ります。
         if ( !buf.empty( ) )
         {
-            mSocket.write( handle, buf.size( ), buf.data( ) );
+			mSocket.write( handle, buf.size( ), buf.data( ) );
             buf.clear( );
             buf.shrink_to_fit( );
         }
@@ -148,11 +145,11 @@ void cUDPServerManager::connection( )
 
             mIdCount += 1;
 
-            send( p->mNetworkHandle, new Packet::Response::cResConnect( ) );
+            send( p->mNetworkHandle, new Packet::Response::cResConnect( ), true );
 
+			// pingコルーチンを走らせる。
             using namespace Node::Action;
-            auto networkHandle = p->mNetworkHandle;
-            auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ networkHandle, this ]
+            auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ networkHandle = p->mNetworkHandle, this ]
             {
                 send( networkHandle, new Packet::Event::cEvePing( ) );
                 cinder::app::console( ) << "cUDPServerManager: " << "ping to " << (int)getPlayerId( networkHandle ) << std::endl;
@@ -192,7 +189,7 @@ void cUDPServerManager::ping( )
                 continue;
             }
         }
-        itr++;
+        ++itr;
     }
 }
 }

@@ -18,7 +18,7 @@ public:
         if ( packetBase == nullptr ) return;
 
 		cPacketBuffer packetBuffer;
-		packetBase->createPacket( packetBuffer );
+		packetBase->createPacket( packetBuffer, reliable << 0 );
 		sendDataBufferAdd( packetBuffer, reliable );
 
         delete packetBase;
@@ -50,6 +50,8 @@ private:
 	cReliableManager mReliableManager;
 
     hardptr<Node::node> mRoot;
+
+	ubyte4 mSequenceId;
 
     // サーバーとの接続が維持されているのかを保証します。
     // 5秒以上応答がない場合は切断します。

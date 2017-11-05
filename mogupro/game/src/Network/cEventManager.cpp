@@ -1,4 +1,5 @@
 #include <Network/cEventManager.h>
+#include <cinder/app/App.h>
 namespace Network
 {
 // P=====BEGIN=====P
@@ -6,6 +7,15 @@ boost::optional<Packet::Event::cEveString> cEventManager::getEveString( )
 {
     if ( mEveString.empty( ) )
     {
+		auto it = mEveStringSequenceIds.begin( );
+		while ( it != mEveStringSequenceIds.end( ) ) 
+		{
+			if ( it->second < cinder::app::getElapsedSeconds( ) - 5.0F )
+			{
+				mEveStringSequenceIds.erase( it++ );
+			}
+			else ++it;
+		}
         return boost::none;
     }
     else
@@ -18,6 +28,12 @@ boost::optional<Packet::Event::cEveString> cEventManager::getEveString( )
 void cEventManager::ungetEveString( Packet::Event::cEveString&& data )
 {
     mEveString.push( std::move( data ) );
+}
+bool cEventManager::isNewEveString( Packet::PacketHeader const& header )
+{
+	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
+	auto status = mEveStringSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+	return status.second;
 }
 boost::optional<Packet::Event::cEvePing> cEventManager::getEvePing( )
 {

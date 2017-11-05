@@ -1,6 +1,7 @@
 #pragma once
 #include <Utility/cSingletonAble.h>
 #include <stack>
+#include <map>
 #include <Network/Packet/Event.hpp>
 #include <boost/optional.hpp>
 namespace Network
@@ -11,8 +12,10 @@ class cEventManager : public Utility::cSingletonAble<cEventManager>
 public:
     boost::optional<Packet::Event::cEveString> getEveString( );
     void ungetEveString( Packet::Event::cEveString&& data );
+	bool isNewEveString( Packet::PacketHeader const& header );
 public:
     std::stack<Packet::Event::cEveString> mEveString;
+	std::map<ubyte4, double> mEveStringSequenceIds;
 public:
     boost::optional<Packet::Event::cEvePing> getEvePing( );
     void ungetEvePing( Packet::Event::cEvePing&& data );
