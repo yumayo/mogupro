@@ -18,6 +18,7 @@ public:
     void lateUpdate( float delta );
     bool isLanding( ) const;
     bool isGravity( ) const;
+	bool isHit( ) const;
     void gravityOn( );
     void gravityOff( );
     cinder::vec3 const& getSpeed( ) const;
@@ -30,6 +31,7 @@ private:
 private:
     bool mIsLanding;
     bool mIsGravity;
+	bool mIsHit;
     float mMinValue;
 private:
     static cinder::vec3 calcWallScratchVector( cinder::vec3 speed, cinder::vec3 normal );
