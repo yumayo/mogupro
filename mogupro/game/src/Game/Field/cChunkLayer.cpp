@@ -10,7 +10,8 @@ namespace Game
 {
 namespace Field
 {
-cChunkLayer::cChunkLayer()
+cChunkLayer::cChunkLayer() :
+    mIsActive( true )
 {
 }
 
@@ -18,6 +19,7 @@ cChunkLayer::cChunkLayer( const int& height, cChunk* chunk, cUnderGround* under_
     mHeight( height )
     , mChunk( chunk )
     , mUnderGround( under_ground )
+    , mIsActive( true )
 {
     mMesh = TriMesh::create();
 }
@@ -58,6 +60,18 @@ cChunkLayer* cChunkLayer::getChunkLayer( const int & height )
 {
     if ( height != mHeight )
         return mChunk->getChunkLayer( height );
+    return this;
+}
+
+cChunkLayer * cChunkLayer::getChunkLayer( const ci::ivec3 & cell )
+{
+    if ( outOfBounds( cell.x ) ||
+         outOfBounds( cell.y ) ||
+         outOfBounds( cell.z ) )
+    {
+        auto world_pos = toWorldPosition( cell );
+        return mUnderGround->getChunkLayer( world_pos );
+    }
     return this;
 }
 
@@ -123,9 +137,12 @@ cChunkLayer* cChunkLayer::breakBlock( ci::ivec3 c )
     block->mIsActive = false;
     block->toBreak();
 
-    mIsBlockBroken = true;
+    auto layer = getChunkLayer( c );
+    if ( layer->mIsActive == false )
+        return this;
+    layer->mIsBlockBroken = true;
 
-    return this;
+    return layer;
 }
 
 void cChunkLayer::reBuildStart()
@@ -151,6 +168,11 @@ void cChunkLayer::reBuildMesh()
 
 void cChunkLayer::buildMesh()
 {
+    if ( mIsActive == false )
+    {
+        mHasBuildCompleted = true;
+        return;
+    }
     cChunkMeshBuilder builder( *this );
     mHasBuildCompleted = builder.buildMesh();
 }
@@ -219,9 +241,12 @@ void cChunkLayer::createBlocks()
 
                 // 一番上のレイヤーはブロックを生成しない
                 if ( mHeight >= CHUNK_RANGE_Y )
+                {
+                    block->mPosition = vec3( 0 );
                     block->mIsActive = false;
+                }
 
-                // Colider生成
+                // Collider生成
                 block->setup();
                 mBlocks[getIndex( x, y, z )] = block;
             }
