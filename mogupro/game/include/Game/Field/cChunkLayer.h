@@ -22,6 +22,7 @@ public:
     cBlock* getBlock( const ci::ivec3& c );
     cBlock* getBlock( const int& x, const  int& y, const int& z );
     cChunkLayer* getChunkLayer( const int& height );
+    cChunkLayer* getChunkLayer( const ci::ivec3& cell );
 
     int getHeight() { return mHeight; }
     ci::ivec3 getChunkCell();
@@ -49,7 +50,7 @@ public:
     int getIndex( const  ci::ivec3& c );
     int getIndex( const int& x, const  int& y, const int& z );
 
-public:
+public: // スレッド用フラグ
 
     bool mIsBlockBroken = false;
     bool mHasBuild = false;
@@ -57,6 +58,10 @@ public:
     bool mHasBuildCompleted = false;
     bool mIsLoaded = false;
     bool mIsDone = false;
+
+public:
+
+    bool mIsActive ;
 
 private:
 

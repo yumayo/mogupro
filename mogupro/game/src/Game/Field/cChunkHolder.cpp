@@ -77,9 +77,9 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
     if ( first_layer != nullptr )
         build_chunk_layers.push_back( first_layer );
 
-    for ( int z = s.z; z < e.z; z++ )
-        for ( int y = s.y; y < e.y; y++ )
-            for ( int x = s.x; x < e.x; x++ )
+    for ( int z = s.z; z <= e.z; z++ )
+        for ( int y = s.y; y <= e.y; y++ )
+            for ( int x = s.x; x <= e.x; x++ )
             {
                 auto layer = break_chunk_layer->breakBlock( ivec3( x, y, z ) );
                 if ( layer == nullptr )
@@ -123,8 +123,21 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
 
     std::copy( temp_layers.begin(), temp_layers.end(), std::back_inserter( build_chunk_layers ) );
 
+    ivec3 test;
+    if ( first_layer != nullptr )
+    {
+        test = first_layer->getChunkCell();
+        test.y = first_layer->getHeight();
+        app::console() << "first:" << test << std::endl;
+    }
+
     for ( auto c : build_chunk_layers )
+    {
+        test = c->getChunkCell();
+        test.y = c->getHeight();
+        app::console() << test << std::endl;
         c->reBuildStart();
+    }
     return true;
 }
 

@@ -30,11 +30,11 @@ public: // Player,Strategy Ç≈égÇ§ä÷êî
     bool blockBreakNetwork( const ci::vec3& position, const float & radius );
     ci::vec3 getBlockTopPosition( const ci::vec3& target_position );
     ci::vec3 getBlockHighestPosition( const ci::vec3& target_position );
-    ci::ivec3 getBlockMaxCell();
 
 public: // Field ì‡Ç≈égÇ§ä÷êî
 
     cBlock* getBlock( const ci::vec3& position );
+    cChunkLayer* getChunkLayer( const ci::vec3& position );
 
 private: // Method
 
