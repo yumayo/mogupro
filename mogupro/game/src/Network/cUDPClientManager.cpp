@@ -58,17 +58,22 @@ void cUDPClientManager::update( float delta )
 }
 void cUDPClientManager::updateSend( )
 {
-    if ( mConnectServerHandle )
+    if ( isConnected( ) )
     {
-        // 送信するものがあればバッファーから取り出して送る。
-        auto& buffer = mSendDataBuffer;
-        // 余ってたらパケットを送ります。
-        if ( !buffer.empty( ) )
-        {
-            mSocket.write( mConnectServerHandle, buffer.size( ), buffer.data( ) );
-            buffer.clear( );
-            buffer.shrink_to_fit( );
-        }
+		auto& handle = mConnectServerHandle;
+		auto& buf = mSendDataBuffer;
+
+		// リライアブルなデータを詰めます。
+		auto&& reliableData = std::move( mReliableManager.update( ) );
+		std::copy( reliableData.begin( ), reliableData.end( ), std::back_inserter( buf ) );
+
+		// 余ってたらパケットを送ります。
+		if ( !buf.empty( ) )
+		{
+			mSocket.write( handle, buf.size( ), buf.data( ) );
+			buf.clear( );
+			buf.shrink_to_fit( );
+		}
     }
 }
 void cUDPClientManager::updateRecv( )
@@ -125,7 +130,7 @@ void cUDPClientManager::ping( )
         }
     }
 }
-void cUDPClientManager::sendDataBufferAdd( cPacketBuffer const & packetBuffer )
+void cUDPClientManager::sendDataBufferAdd( cPacketBuffer const & packetBuffer, bool reliable )
 {
     if ( !isConnected( ) )
     {
@@ -133,21 +138,31 @@ void cUDPClientManager::sendDataBufferAdd( cPacketBuffer const & packetBuffer )
         MES_ERR( "connectが成立する前に通信をしないでください。",
                  [ ] { cSceneManager::getInstance( )->change<Scene::Member::cTitle>( ); } );
     }
-
-    auto& buf = mSendDataBuffer;
+	
+	auto& buf = mSendDataBuffer;
 
     // パケットが大きくなりそうなら先に送ってしまいます。
     if ( 1024 < buf.size( ) )
     {
         mSocket.write( mConnectServerHandle, buf.size( ), buf.data( ) );
-        buf.clear( );
-        buf.shrink_to_fit( );
+		buf.clear( );
+		buf.shrink_to_fit( );
     }
 
-    ubyte2 const& byte = packetBuffer.transferredBytes;
-    cBuffer const& buffer = packetBuffer.buffer;
+	ubyte2 const& byte = packetBuffer.transferredBytes;
+	cBuffer const& buffer = packetBuffer.buffer;
 
-    buf.resize( buf.size( ) + byte );
-    memcpy( buf.data( ) + buf.size( ) - byte, &buffer, byte );
+	if ( reliable )
+	{
+		std::vector<char> buf;
+		buf.resize( buf.size( ) + byte );
+		memcpy( buf.data( ) + buf.size( ) - byte, &buffer, byte );
+		mReliableManager.append( std::move( buf ) );
+	}
+	else
+	{
+		buf.resize( buf.size( ) + byte );
+		memcpy( buf.data( ) + buf.size( ) - byte, &buffer, byte );
+	}
 }
 }

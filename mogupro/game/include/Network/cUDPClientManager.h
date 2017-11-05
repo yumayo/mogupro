@@ -3,8 +3,7 @@
 #include <Network/cUDP.h>
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
-#include <cinder/Vector.h>
-#include <cinder/Quaternion.h>
+#include <Network/cReliableManager.h>
 #include <Node/node.h>
 namespace Network
 {
@@ -14,14 +13,13 @@ public:
     cUDPClientManager( );
 public:
     template <class Ty, Packet::PacketId packetId>
-    void send( Packet::cPacketBase<Ty, packetId>* packetBase )
+    void send( Packet::cPacketBase<Ty, packetId>* packetBase, bool reliable = false )
     {
         if ( packetBase == nullptr ) return;
 
-        cPacketBuffer packetBuffer;
-        packetBase->createPacket( packetBuffer );
-
-        sendDataBufferAdd( packetBuffer );
+		cPacketBuffer packetBuffer;
+		packetBase->createPacket( packetBuffer );
+		sendDataBufferAdd( packetBuffer, reliable );
 
         delete packetBase;
         packetBase = nullptr;
@@ -43,11 +41,14 @@ private:
     void connection( );
     void ping( );
 private:
-    void sendDataBufferAdd( cPacketBuffer const& packetBuffer );
+    void sendDataBufferAdd( cPacketBuffer const& packetBuffer, bool reliable );
 private:
     cUDP mSocket;
     std::vector<char> mSendDataBuffer;
     cNetworkHandle mConnectServerHandle;
+
+	cReliableManager mReliableManager;
+
     hardptr<Node::node> mRoot;
 
     // サーバーとの接続が維持されているのかを保証します。

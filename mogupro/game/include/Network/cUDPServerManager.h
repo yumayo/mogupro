@@ -3,6 +3,8 @@
 #include <Network/cUDP.h>
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
+#include <Network/cReliableManager.h>
+#include <Network/cConnectionInfo.h>
 #include <set>
 #include <map>
 #include <Node/node.h>
@@ -14,46 +16,46 @@ public:
     cUDPServerManager( );
 private:
     template <class Ty, Packet::PacketId packetId>
-    void sendUnsafe( cNetworkHandle const& networkHandle, Packet::cPacketBase<Ty, packetId>* packetBase )
+    void sendUnsafe( cNetworkHandle const& networkHandle, Packet::cPacketBase<Ty, packetId>* packetBase, bool reliable = false )
     {
         cPacketBuffer packetBuffer;
         packetBase->createPacket( packetBuffer );
-        sendDataBufferAdd( networkHandle, packetBuffer );
+        sendDataBufferAdd( networkHandle, packetBuffer, reliable );
     }
 public:
     template <class Ty, Packet::PacketId packetId>
-    void send( cNetworkHandle const& networkHandle, Packet::cPacketBase<Ty, packetId>* packetBase )
+    void send( cNetworkHandle const& networkHandle, Packet::cPacketBase<Ty, packetId>* packetBase, bool reliable = false )
     {
         if ( packetBase == nullptr ) return;
 
-        sendUnsafe( networkHandle, packetBase );
+        sendUnsafe( networkHandle, packetBase, reliable );
 
         delete packetBase;
         packetBase = nullptr;
     }
     template <class Ty, Packet::PacketId packetId>
-    void broadcast( Packet::cPacketBase<Ty, packetId>* packetBase )
+    void broadcast( Packet::cPacketBase<Ty, packetId>* packetBase, bool reliable = false )
     {
         if ( packetBase == nullptr ) return;
 
-        for ( auto& handle : mHandle )
+        for ( auto& handle : mConnections )
         {
-            sendUnsafe( handle.first, packetBase );
+            sendUnsafe( handle.first, packetBase, reliable );
         }
 
         delete packetBase;
         packetBase = nullptr;
     }
     template <class Ty, Packet::PacketId packetId>
-    void broadcastOthers( cNetworkHandle const& networkHandle, Packet::cPacketBase<Ty, packetId>* packetBase )
+    void broadcastOthers( cNetworkHandle const& networkHandle, Packet::cPacketBase<Ty, packetId>* packetBase, bool reliable = false )
     {
         if ( packetBase == nullptr ) return;
 
-        for ( auto& handle : mHandle )
+        for ( auto& handle : mConnections )
         {
             if ( networkHandle == handle.first ) continue;
 
-            sendUnsafe( handle.first, packetBase );
+            sendUnsafe( handle.first, packetBase, reliable );
         }
 
         delete packetBase;
@@ -77,24 +79,17 @@ private:
     void updateSend( );
     void updateRecv( );
 private:
-    void sendDataBufferAdd( cNetworkHandle const& networkHandle, cPacketBuffer const& packetBuffer );
+    void sendDataBufferAdd( cNetworkHandle const& networkHandle, cPacketBuffer const& packetBuffer, bool reliable );
 private:
     void connection( );
     void ping( );
 private:
-    class cClientInfo
-    {
-    public:
-        cClientInfo( ubyte1 idCount );
-    public:
-        std::vector<char> buffer;
-        float closeSecond;
-        ubyte1 id;
-    };
     cUDP mSocket;
-    std::map<cNetworkHandle, cClientInfo> mHandle;
+    std::map<cNetworkHandle, cConnectionInfo> mConnections;
     hardptr<Node::node> mRoot;
     bool mIsAccept;
     ubyte1 mIdCount;
+
+	cReliableManager mReliableManager;
 };
 }

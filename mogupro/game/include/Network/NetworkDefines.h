@@ -16,6 +16,7 @@ using byte4 = int;
 constexpr ubyte2 PACKET_MAX_BYTE = 4096U;
 using cBuffer = std::array<char, PACKET_MAX_BYTE>;
 constexpr float HOLD_SECOND = 60.0F;
+constexpr ubyte1 RELIABLE_COUNT = 7U; // M—Š«‚ğ•ÛØ‚·‚é‚½‚ß‚Ì‰ñ”B
 class cPacketBuffer
 {
 public:
