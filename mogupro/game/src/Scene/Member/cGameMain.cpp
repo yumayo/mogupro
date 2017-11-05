@@ -19,6 +19,7 @@
 #include <Node/action.hpp>
 #include <Network/cMatchingMemberManager.h>
 #include <Game/cShaderManager.h>
+#include <Game/cDebugManager.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -28,6 +29,8 @@ namespace Member
 {
 void cGameMain::setup( )
 {
+	Game::cDebugManager::getInstance( )->setup( );
+
 	glsl = cinder::gl::GlslProg::create( cinder::app::loadAsset( "Shader/world.vert" ), 
 										 cinder::app::loadAsset( "Shader/world.frag" ) );
 
@@ -108,6 +111,7 @@ void cGameMain::update( float deltaTime )
 			sendEndSetup = true;
 		}
 
+		Game::cDebugManager::getInstance( )->update( deltaTime );
         Game::cClientAdapter::getInstance( )->update( );
         Game::cServerAdapter::getInstance( )->update( );
         n->entry_update( deltaTime );
@@ -167,6 +171,8 @@ void cGameMain::draw2D( )
     gl::disableDepthWrite( );
 	
     n->entry_render( mat4( ) );
+
+	Game::cDebugManager::getInstance( )->draw2d( );
 }
 
 void cGameMain::resize( )
