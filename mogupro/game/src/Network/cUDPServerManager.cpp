@@ -65,7 +65,7 @@ void cUDPServerManager::updateSend( )
 		auto& buf = client.second.buffer;
 
 		// リライアブルなデータを詰めます。
-		auto&& reliableData = std::move( mReliableManager.update( ) );
+		auto reliableData = mReliableManager.update( );
 		std::copy( reliableData.begin(), reliableData.end(), std::back_inserter( buf ) );
 
         // 余ってたらパケットを送ります。
@@ -171,7 +171,7 @@ void cUDPServerManager::ping( )
         auto itr = mConnections.find( p->mNetworkHandle );
         if ( itr != mConnections.end( ) )
         {
-            itr->second.closeSecond = cinder::app::getElapsedSeconds( ) + HOLD_SECOND;
+            itr->second.closeSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
         }
     }
 

@@ -29,7 +29,7 @@ std::vector<char> cReliableManager::update( )
 	std::vector<char> sendData;
 	for ( auto& o : mReliables )
 	{
-		auto&& reliableData = std::move( o.get( ) );
+		auto reliableData = o.get( );
 		std::copy( reliableData.begin( ), reliableData.end( ), std::back_inserter( sendData ) );
 	}
 	return sendData;

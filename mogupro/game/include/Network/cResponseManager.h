@@ -1,6 +1,7 @@
 #pragma once
 #include <Utility/cSingletonAble.h>
 #include <stack>
+#include <map>
 #include <Network/Packet/Response.hpp>
 #include <boost/optional.hpp>
 namespace Network
@@ -11,78 +12,108 @@ class cResponseManager : public Utility::cSingletonAble<cResponseManager>
 public:
     boost::optional<Packet::Response::cResString> getResString( );
     void ungetResString( Packet::Response::cResString&& data );
-public:
+    bool isNewResString( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResString> mResString;
+    std::map<ubyte4, double> mResStringSequenceIds;
 public:
     boost::optional<Packet::Response::cResConnect> getResConnect( );
     void ungetResConnect( Packet::Response::cResConnect&& data );
-public:
+    bool isNewResConnect( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResConnect> mResConnect;
+    std::map<ubyte4, double> mResConnectSequenceIds;
 public:
     boost::optional<Packet::Response::cResGetJemSeed> getResGetJemSeed( );
     void ungetResGetJemSeed( Packet::Response::cResGetJemSeed&& data );
-public:
+    bool isNewResGetJemSeed( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResGetJemSeed> mResGetJemSeed;
+    std::map<ubyte4, double> mResGetJemSeedSequenceIds;
 public:
     boost::optional<Packet::Response::cResGetJemPoint> getResGetJemPoint( );
     void ungetResGetJemPoint( Packet::Response::cResGetJemPoint&& data );
-public:
+    bool isNewResGetJemPoint( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResGetJemPoint> mResGetJemPoint;
+    std::map<ubyte4, double> mResGetJemPointSequenceIds;
 public:
     boost::optional<Packet::Response::cResCheckGetJemPlayer> getResCheckGetJemPlayer( );
     void ungetResCheckGetJemPlayer( Packet::Response::cResCheckGetJemPlayer&& data );
-public:
+    bool isNewResCheckGetJemPlayer( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResCheckGetJemPlayer> mResCheckGetJemPlayer;
+    std::map<ubyte4, double> mResCheckGetJemPlayerSequenceIds;
 public:
     boost::optional<Packet::Response::cResCheckGetJemQuarry> getResCheckGetJemQuarry( );
     void ungetResCheckGetJemQuarry( Packet::Response::cResCheckGetJemQuarry&& data );
-public:
+    bool isNewResCheckGetJemQuarry( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResCheckGetJemQuarry> mResCheckGetJemQuarry;
+    std::map<ubyte4, double> mResCheckGetJemQuarrySequenceIds;
 public:
     boost::optional<Packet::Response::cResCheckPlayerRobJem> getResCheckPlayerRobJem( );
     void ungetResCheckPlayerRobJem( Packet::Response::cResCheckPlayerRobJem&& data );
-public:
+    bool isNewResCheckPlayerRobJem( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResCheckPlayerRobJem> mResCheckPlayerRobJem;
+    std::map<ubyte4, double> mResCheckPlayerRobJemSequenceIds;
 public:
     boost::optional<Packet::Response::cResCheckSetQuarry> getResCheckSetQuarry( );
     void ungetResCheckSetQuarry( Packet::Response::cResCheckSetQuarry&& data );
-public:
+    bool isNewResCheckSetQuarry( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResCheckSetQuarry> mResCheckSetQuarry;
+    std::map<ubyte4, double> mResCheckSetQuarrySequenceIds;
 public:
     boost::optional<Packet::Response::cResCheckPlayerDeath> getResCheckPlayerDeath( );
     void ungetResCheckPlayerDeath( Packet::Response::cResCheckPlayerDeath&& data );
-public:
+    bool isNewResCheckPlayerDeath( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResCheckPlayerDeath> mResCheckPlayerDeath;
+    std::map<ubyte4, double> mResCheckPlayerDeathSequenceIds;
 public:
     boost::optional<Packet::Response::cResMakeRoom> getResMakeRoom( );
     void ungetResMakeRoom( Packet::Response::cResMakeRoom&& data );
-public:
+    bool isNewResMakeRoom( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResMakeRoom> mResMakeRoom;
+    std::map<ubyte4, double> mResMakeRoomSequenceIds;
 public:
     boost::optional<Packet::Response::cResInRoom> getResInRoom( );
     void ungetResInRoom( Packet::Response::cResInRoom&& data );
-public:
+    bool isNewResInRoom( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResInRoom> mResInRoom;
+    std::map<ubyte4, double> mResInRoomSequenceIds;
 public:
     boost::optional<Packet::Response::cResWantTeamIn> getResWantTeamIn( );
     void ungetResWantTeamIn( Packet::Response::cResWantTeamIn&& data );
-public:
+    bool isNewResWantTeamIn( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResWantTeamIn> mResWantTeamIn;
+    std::map<ubyte4, double> mResWantTeamInSequenceIds;
 public:
     boost::optional<Packet::Response::cResCheckBeginGame> getResCheckBeginGame( );
     void ungetResCheckBeginGame( Packet::Response::cResCheckBeginGame&& data );
-public:
+    bool isNewResCheckBeginGame( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResCheckBeginGame> mResCheckBeginGame;
+    std::map<ubyte4, double> mResCheckBeginGameSequenceIds;
 public:
     boost::optional<Packet::Response::cResCheckMember> getResCheckMember( );
     void ungetResCheckMember( Packet::Response::cResCheckMember&& data );
-public:
+    bool isNewResCheckMember( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResCheckMember> mResCheckMember;
+    std::map<ubyte4, double> mResCheckMemberSequenceIds;
 public:
     boost::optional<Packet::Response::cResEndGamemainSetup> getResEndGamemainSetup( );
     void ungetResEndGamemainSetup( Packet::Response::cResEndGamemainSetup&& data );
-public:
+    bool isNewResEndGamemainSetup( Packet::PacketHeader const& header );
+private:
     std::stack<Packet::Response::cResEndGamemainSetup> mResEndGamemainSetup;
+    std::map<ubyte4, double> mResEndGamemainSetupSequenceIds;
     // P=====END=====P
 };
 }

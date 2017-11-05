@@ -18,6 +18,7 @@ cUDPClientManager::cUDPClientManager( )
     , mRoot( Node::node::create( ) )
     , mConnectSecond( std::numeric_limits<float>::max( ) )
 	, mSequenceId( 0U )
+	, mIsConnected(false)
 {
     mRoot->set_schedule_update( );
 }
@@ -32,12 +33,13 @@ void cUDPClientManager::open( )
 }
 bool cUDPClientManager::isConnected( )
 {
-    return mConnectServerHandle;
+    return mIsConnected;
 }
 void cUDPClientManager::connect( std::string const& ipAddress )
 {
+	mConnectServerHandle = cNetworkHandle( ipAddress, 25565 );
 	send( new Packet::Request::cReqConnect( ), true );
-	mConnectSecond = cinder::app::getElapsedSeconds( ) + HOLD_SECOND;
+	mConnectSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
 }
 void cUDPClientManager::connectOfflineServer( )
 {
@@ -51,11 +53,18 @@ void cUDPClientManager::update( float delta )
 }
 void cUDPClientManager::updateSend( )
 {
+	if ( !mConnectServerHandle )
+	{
+		close( );
+		MES_ERR( "送信ハンドルが未定義です。",
+				 [ ] { cSceneManager::getInstance( )->change<Scene::Member::cTitle>( ); } );
+	}
+
 	auto& handle = mConnectServerHandle;
 	auto& buf = mSendDataBuffer;
 
 	// リライアブルなデータを詰めます。
-	auto&& reliableData = std::move( mReliableManager.update( ) );
+	auto reliableData = mReliableManager.update( );
 	std::copy( reliableData.begin( ), reliableData.end( ), std::back_inserter( buf ) );
 
 	// 送るパケットが存在したら送ります。
@@ -83,9 +92,9 @@ void cUDPClientManager::connection( )
 {
     while ( auto p = cResponseManager::getInstance( )->getResConnect( ) )
     {
-        mConnectServerHandle = p->mNetworkHandle;
+		mIsConnected = true;
 
-        mCloseSecond = cinder::app::getElapsedSeconds( ) + HOLD_SECOND;
+        mCloseSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
 
         using namespace Node::Action;
         auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
@@ -109,7 +118,7 @@ void cUDPClientManager::ping( )
 {
     while ( auto p = cEventManager::getInstance( )->getEvePing( ) )
     {
-        mCloseSecond = cinder::app::getElapsedSeconds( ) + HOLD_SECOND;
+        mCloseSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
     }
     if (mConnectServerHandle.ipAddress != Network::getLocalIpAddressHost())
     {

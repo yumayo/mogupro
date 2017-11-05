@@ -19,7 +19,7 @@ private:
     void sendUnsafe( cNetworkHandle const& networkHandle, Packet::cPacketBase<Ty, packetId>* packetBase, bool reliable = false )
     {
         cPacketBuffer packetBuffer;
-        packetBase->createPacket( packetBuffer, reliable << 0 );
+        packetBase->createPacket( packetBuffer, static_cast<Packet::PacketHeader::State>( reliable << 0 ) );
         sendDataBufferAdd( networkHandle, packetBuffer, reliable );
     }
 public:

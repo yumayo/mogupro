@@ -4,7 +4,7 @@
 namespace Network
 {
 cConnectionInfo::cConnectionInfo( ubyte1 idCount )
-	: closeSecond( cinder::app::getElapsedSeconds( ) + HOLD_SECOND )
+	: closeSecond( cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND )
 {
 	if ( idCount == 255 )
 	{

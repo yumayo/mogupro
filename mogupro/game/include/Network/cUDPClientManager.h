@@ -18,7 +18,7 @@ public:
         if ( packetBase == nullptr ) return;
 
 		cPacketBuffer packetBuffer;
-		packetBase->createPacket( packetBuffer, reliable << 0 );
+		packetBase->createPacket( packetBuffer, static_cast<Packet::PacketHeader::State>( reliable << 0 ) );
 		sendDataBufferAdd( packetBuffer, reliable );
 
         delete packetBase;
@@ -46,6 +46,7 @@ private:
     cUDP mSocket;
     std::vector<char> mSendDataBuffer;
     cNetworkHandle mConnectServerHandle;
+	bool mIsConnected;
 
 	cReliableManager mReliableManager;
 
