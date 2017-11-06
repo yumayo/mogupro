@@ -16,6 +16,13 @@ in vec3 vModelViewNormal;
 
 out vec4 oColor;
 
+// 影に使うやつ
+uniform vec3 uLightPos;
+uniform sampler2DShadow uShadowMap;
+in vec4 vShadowCoord;
+in vec4 vShadowPosition;
+in vec3 vShadowNormal;
+
 void main()
 {
     vec4 col = texture( uTex0, vTexCoord0 );
@@ -28,6 +35,19 @@ void main()
     {
         oColor = texture( uTex0, vTexCoord0 ) * uAmb;
     }
+
+    // 影
+	vec3 LightVec		= normalize( uLightPos );
+    float NdotL			= max( dot( vShadowNormal, LightVec ), 0.0 );
+	vec3 Diffuse		= vec3( NdotL );
+	vec3 Ambient		= vec3( 0.3 );
+	float Shadow		= 1.0;
+	vec4 ShadowCoord	= vShadowCoord / vShadowCoord.w;
+	if ( ShadowCoord.z > -1 && ShadowCoord.z < 1 ) 
+	{
+		Shadow = textureProj( uShadowMap, ShadowCoord, -0.00005 );
+	}
+    oColor.rgb *= ( Diffuse * Shadow + Ambient );
 
     for(int i = 0; i < uLightNum; ++i)
     {

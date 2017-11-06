@@ -1,6 +1,7 @@
 #version 150 core
 
 uniform mat4 ciModelView;
+uniform mat4 ciModelMatrix;
 uniform mat3 ciNormalMatrix;
 uniform mat4 ciModelViewProjection;
 
@@ -17,6 +18,16 @@ out vec4 vColor;
 out vec4 vModelViewPosition;
 out vec3 vModelViewNormal;
 
+// 影に使うやつ
+uniform mat4 uShadowView;
+out vec4 vShadowCoord;
+const mat4 biasView = mat4( 0.5, 0.0, 0.0, 0.0,
+							0.0, 0.5, 0.0, 0.0,
+							0.0, 0.0, 0.5, 0.0,
+							0.5, 0.5, 0.5, 1.0 );
+out vec3 vShadowNormal;
+out vec4 vShadowPosition;
+
 void main( void ) 
 {
 	vPosition = ciPosition;
@@ -24,8 +35,13 @@ void main( void )
 	vTexCoord0 = ciTexCoord0;
 	vColor = ciColor;
 
-	vModelViewPosition	= ciModelView * vPosition;
-	vModelViewNormal = (ciModelView * vec4(vNormal, 0.0)).xyz;
+	vModelViewPosition = ciModelView * vPosition;
+	vModelViewNormal = normalize( (ciModelView * vec4(vNormal, 0.0)).xyz );
+
+	// 影の位置を計算します。
+	vShadowCoord = ( biasView * uShadowView * ciModelMatrix ) * ciPosition;
+	vShadowNormal = normalize( ciNormalMatrix * ciNormal );
+	vShadowPosition = ciModelView * ciPosition;
 
 	gl_Position	= ciModelViewProjection * ciPosition;
 }
