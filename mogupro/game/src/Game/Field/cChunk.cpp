@@ -60,6 +60,8 @@ cBlock* cChunk::getBlock( const int& x, const int& y, const int& z )
 cBlock* cChunk::getBlock( const ci::ivec3& c )
 {
     int y = c.y / CHUNK_SIZE;
+    if ( y >= mChunkLayers.size() || y < 0 )
+        return nullptr;
     auto& layer = mChunkLayers[y];
     y = c.y % CHUNK_SIZE;
     return layer.getBlock( c.x, y, c.z );
