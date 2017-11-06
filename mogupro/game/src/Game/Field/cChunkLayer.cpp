@@ -36,7 +36,20 @@ void cChunkLayer::setup()
 void cChunkLayer::draw()
 {
     if ( mVbo != nullptr )
-        gl::draw( mVbo );
+    {
+        auto ctx = gl::context();
+        const gl::GlslProg* curGlslProg = ctx->getGlslProg();
+
+
+        //ctx->pushVao();
+        ctx->getDefaultVao()->replacementBindBegin();
+        mVbo->buildVao( curGlslProg );
+        ctx->getDefaultVao()->replacementBindEnd();
+        ctx->setDefaultShaderVars();
+        mVbo->drawImpl();
+        //ctx->popVao();
+    }
+    //gl::draw( mVbo );
 }
 
 cBlock* cChunkLayer::getBlock( const int& x, const  int& y, const int& z )
@@ -140,6 +153,20 @@ cChunkLayer* cChunkLayer::breakBlock( ci::ivec3 c )
     auto layer = getChunkLayer( c );
     if ( layer->mIsActive == false )
         return this;
+    layer->mIsBlockBroken = true;
+
+    return layer;
+}
+
+cChunkLayer * cChunkLayer::breakBlock( cBlock * block, cChunkLayer* layer )
+{
+    if ( block->mIsActive == false )
+        return nullptr;
+    block->mIsActive = false;
+    block->toBreak();
+
+    if ( layer->mIsActive == false )
+        return nullptr;
     layer->mIsBlockBroken = true;
 
     return layer;

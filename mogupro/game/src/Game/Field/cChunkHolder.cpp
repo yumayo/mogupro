@@ -51,8 +51,17 @@ void cChunkHolder::setChunk( const int& x, const int& y, const int& z )
     mChunks[ivec3( x, y, z )] = std::make_shared<cChunk>( x, z, mUnderGround );
 }
 
+bool isPointToSphere( const ci::vec3& point, const ci::vec3& sphere_pos, const float& radius )
+{
+    float x = ( sphere_pos.x - point.x ) *( sphere_pos.x - point.x );
+    float y = ( sphere_pos.y - point.y ) *( sphere_pos.y - point.y );
+    float z = ( sphere_pos.z - point.z ) *( sphere_pos.z - point.z );
+    return ( x + y + z ) <= radius * radius;
+}
+
 bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                                const ci::ivec3& block_cell,
+                               const ci::vec3& sphere_pos,
                                const float & radius )
 {
     if ( isExistsChunk( chunk_cell ) )
@@ -81,7 +90,12 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
         for ( int y = s.y; y <= e.y; y++ )
             for ( int x = s.x; x <= e.x; x++ )
             {
-                auto layer = break_chunk_layer->breakBlock( ivec3( x, y, z ) );
+                auto block = break_chunk_layer->getBlock( ivec3( x, y, z ) );
+                if ( block->mIsActive )
+                    if ( isPointToSphere( block->mPosition, sphere_pos, radius ) == false )
+                        continue;
+                auto layer = break_chunk_layer->getChunkLayer( ivec3( x, y, z ) );
+                layer = break_chunk_layer->breakBlock( block, layer );
                 if ( layer == nullptr )
                     continue;
                 if ( std::any_of( build_chunk_layers.begin(), build_chunk_layers.end(),
@@ -123,21 +137,8 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
 
     std::copy( temp_layers.begin(), temp_layers.end(), std::back_inserter( build_chunk_layers ) );
 
-    ivec3 test;
-    if ( first_layer != nullptr )
-    {
-        test = first_layer->getChunkCell();
-        test.y = first_layer->getHeight();
-        app::console() << "first:" << test << std::endl;
-    }
-
     for ( auto c : build_chunk_layers )
-    {
-        test = c->getChunkCell();
-        test.y = c->getHeight();
-        app::console() << test << std::endl;
         c->reBuildStart();
-    }
     return true;
 }
 

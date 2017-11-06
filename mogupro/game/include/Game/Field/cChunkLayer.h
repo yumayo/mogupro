@@ -34,6 +34,7 @@ public:
 public:
 
     cChunkLayer* breakBlock( ci::ivec3 c );
+    cChunkLayer* breakBlock( cBlock* block, cChunkLayer* layer );
     void buildMesh();
     void reBuildStart();
     void reBuildMesh();
@@ -61,7 +62,7 @@ public: // スレッド用フラグ
 
 public:
 
-    bool mIsActive ;
+    bool mIsActive;
 
 private:
 
