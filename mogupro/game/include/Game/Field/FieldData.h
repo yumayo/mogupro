@@ -45,5 +45,3 @@ struct hash<ci::ivec3>
     }
 };
 }
-
-

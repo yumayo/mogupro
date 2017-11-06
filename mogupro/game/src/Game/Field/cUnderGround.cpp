@@ -195,17 +195,17 @@ cChunkLayer * cUnderGround::getChunkLayer( const ci::vec3 & position )
     return mChunkHolder.getChunk( chunk_cell )->getChunkLayer( height );
 }
 
-bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
+bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius, const cBreakBlockType& type )
 {
-    cClientAdapter::getInstance()->sendBreakBlock( position, radius );
+    cClientAdapter::getInstance()->sendBreakBlock( position, radius, type );
     return true;
 }
 
-bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & radius )
+bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & radius, const cBreakBlockType& type )
 {
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
-    return mChunkHolder.breakBlock( chunk_cell, block_cell, position, radius );
+    return mChunkHolder.breakBlock( chunk_cell, block_cell, position, radius, type );
 }
 
 ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
@@ -216,7 +216,7 @@ ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
     chunk_cell.y = 0;
     block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE * BLOCK_SIZE;
     block_cell += chunk_cell;
-    block_cell.y += BLOCK_SIZE / 2.0f + 0.1f;
+    block_cell.y += BLOCK_SIZE;
     return block_cell;
 }
 
@@ -228,7 +228,7 @@ ci::vec3 cUnderGround::getBlockHighestPosition( const ci::vec3 & target_position
     chunk_cell.y = 0;
     block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE * BLOCK_SIZE;
     block_cell += chunk_cell;
-    block_cell.y += BLOCK_SIZE / 2.0f;
+    block_cell.y += BLOCK_SIZE;
     return block_cell;
 }
 }

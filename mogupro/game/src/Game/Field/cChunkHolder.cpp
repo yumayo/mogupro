@@ -62,7 +62,8 @@ bool isPointToSphere( const ci::vec3& point, const ci::vec3& sphere_pos, const f
 bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                                const ci::ivec3& block_cell,
                                const ci::vec3& sphere_pos,
-                               const float & radius )
+                               const float & radius,
+                               const cBreakBlockType& type )
 {
     if ( isExistsChunk( chunk_cell ) )
         return false;
@@ -94,6 +95,9 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                 if ( block->mIsActive )
                     if ( isPointToSphere( block->mPosition, sphere_pos, radius ) == false )
                         continue;
+                if ( type.find( BlockType::NORMAL ) == false )
+                    continue;
+
                 auto layer = break_chunk_layer->getChunkLayer( ivec3( x, y, z ) );
                 layer = break_chunk_layer->breakBlock( block, layer );
                 if ( layer == nullptr )

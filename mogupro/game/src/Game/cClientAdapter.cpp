@@ -111,15 +111,15 @@ void cClientAdapter::recvAllBreakBlocks( )
         for ( auto& o : packet->mBreakFormats )
         {
             Game::cFieldManager::getInstance( )->blockBreakNetwork(
-                o.position, o.radius
+                o.position, o.radius, o.type
             );
         }
     }
 }
-void cClientAdapter::sendBreakBlock( cinder::vec3 const & position, float radius )
+void cClientAdapter::sendBreakBlock( cinder::vec3 const & position, float radius, Network::ubyte1 type )
 {
     // ブロック破壊は一旦バッファに詰めておきます。
-    mBreakBlocksPecket->mBreakFormats.emplace_back( position, radius );
+    mBreakBlocksPecket->mBreakFormats.emplace_back( position, radius, type );
 }
 void cClientAdapter::sendSetQuarry( cinder::vec3 const & position, Network::ubyte1 drillType )
 {

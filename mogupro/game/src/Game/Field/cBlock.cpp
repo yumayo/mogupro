@@ -13,29 +13,36 @@ cBlock::cBlock() :
     , mScale( BLOCK_SIZE )
     , mIsActive( false )
     , mCollider( mPosition, vec3( BLOCK_SIZE ), vec3( BLOCK_SIZE / 2.0f ) )
+    , mType( BlockType::AIR )
 {
 
 }
+
 cBlock::cBlock( const ci::vec3& position, const float& scale, const uint & id ) :
     mPosition( position )
     , mScale( scale )
     , mId( id )
     , mIsActive( true )
-    , mCollider( mPosition, vec3( scale ), vec3( scale / 2.0f ) )
+    , mCollider( mPosition, vec3( scale ) )
+    , mType( BlockType::NORMAL )
 {
 }
+
 cBlock::~cBlock()
 {
 
 }
+
 void cBlock::setup()
 {
     if ( mIsActive )
         mCollider.addWorld();
 }
+
 void cBlock::clear()
 {
 }
+
 void cBlock::toBreak()
 {
     mIsActive = false;
