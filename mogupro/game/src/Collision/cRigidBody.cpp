@@ -129,7 +129,7 @@ cinder::vec3 cRigidBody::calcWallScratchVector( cinder::vec3 spd, cinder::vec3 n
 }
 void cRigidBody::calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase const* targetCollider )
 {
-    auto intersectPoint = ray.calcPosition( minValue - 0.005F );
+    auto intersectPoint = ray.calcPosition( minValue ) - normalize( ray.getDirection() ) * 0.005F;
     auto normal = getNormal( intersectPoint, aabb );
 
     if ( normal.y == 1.0F ) mIsLanding = true;
