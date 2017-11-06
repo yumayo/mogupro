@@ -4,6 +4,7 @@
 #include <Utility/cString.h>
 
 using namespace ci;
+using namespace ci::app;
 namespace Game
 {
 namespace Field
@@ -95,8 +96,8 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                 if ( block->mIsActive )
                     if ( isPointToSphere( block->mPosition, sphere_pos, radius ) == false )
                         continue;
-                if ( type.find( BlockType::NORMAL ) == false )
-                    continue;
+                //if ( type.find( BlockType::NORMAL ) == false )
+                    //continue;
 
                 auto layer = break_chunk_layer->getChunkLayer( ivec3( x, y, z ) );
                 layer = break_chunk_layer->breakBlock( block, layer );

@@ -1,4 +1,6 @@
 #include <Game/Field/cBreakBlockType.h>
+#include <cinder/app/App.h>
+
 namespace Game
 {
 namespace Field
@@ -28,10 +30,12 @@ cBreakBlockType::~cBreakBlockType()
 }
 void cBreakBlockType::add( const BlockType & type )
 {
-    mType.emplace( type );
+    mType.insert( type );
 }
 bool cBreakBlockType::find( const BlockType & type ) const
 {
+    //ci::app::console() << (int) mType.size() << std::endl;
+
     return mType.find( type ) != mType.end();
 }
 void cBreakBlockType::erase( const BlockType & type )

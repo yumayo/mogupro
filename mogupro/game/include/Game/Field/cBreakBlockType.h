@@ -27,7 +27,7 @@ class cBreakBlockType
 {
 public:
 
-    cBreakBlockType( const Network::ubyte1& type);
+    cBreakBlockType( const Network::ubyte1& type );
     cBreakBlockType( const BlockType& type );
     cBreakBlockType();
     ~cBreakBlockType();
@@ -36,7 +36,7 @@ public:
     bool find( const BlockType& type ) const;
     void erase( const BlockType& type );
 
-    std::set<BlockType> getBreakType() { return mType; }
+    std::set<BlockType> getBreakType()const { return mType; }
     void setBreakType( const std::set<BlockType>& types ) { mType = types; }
 
     operator Network::ubyte1() const noexcept
