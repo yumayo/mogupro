@@ -24,7 +24,9 @@ public:
 
     bool breakBlock( const ci::ivec3& chunk_cell,
                      const ci::ivec3& block_cell_,
-                     const float & radius );
+                     const ci::vec3& sphere_pos,
+                     const float & radius,
+                     const cBreakBlockType& type );
     bool createChunk( cChunk* chunk );
     bool createChunkMesh( cChunk* chunk );
     bool isExistsChunk( const ci::ivec3 & cell );

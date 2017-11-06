@@ -29,8 +29,13 @@ cChunk::~cChunk()
 void cChunk::setup()
 {
     for ( int y = 0; y < CHUNK_RANGE_Y + 1; y++ )
+    {
         mChunkLayers.push_back( cChunkLayer( y, this, mUnderGround ) );
-}                                                    
+        // ˆê”Ôã‚ÌŠK‘w‚ÍƒuƒƒbƒN‚ð’u‚©‚È‚¢
+        if ( y == CHUNK_RANGE_Y )
+            mChunkLayers.back().mIsActive = false;
+    }
+}
 
 void cChunk::update()
 {
@@ -56,6 +61,7 @@ cBlock* cChunk::getBlock( const ci::ivec3& c )
 {
     int y = c.y / CHUNK_SIZE;
     auto& layer = mChunkLayers[y];
+    y = c.y % CHUNK_SIZE;
     return layer.getBlock( c.x, y, c.z );
 }
 

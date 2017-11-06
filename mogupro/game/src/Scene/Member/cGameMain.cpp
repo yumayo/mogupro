@@ -18,6 +18,8 @@
 #include <Node/renderer.hpp>
 #include <Node/action.hpp>
 #include <Network/cMatchingMemberManager.h>
+#include <Game/cShaderManager.h>
+#include <Game/cDebugManager.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -27,6 +29,8 @@ namespace Member
 {
 void cGameMain::setup( )
 {
+	Game::cDebugManager::getInstance( )->setup( );
+
 	glsl = cinder::gl::GlslProg::create( cinder::app::loadAsset( "Shader/world.vert" ), 
 										 cinder::app::loadAsset( "Shader/world.frag" ) );
 
@@ -83,6 +87,7 @@ void cGameMain::setup( )
     //Network::cUDPClientManager::getInstance( )->open( );
     //Network::cUDPServerManager::getInstance( )->open( );
     //Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
+	Game::cShaderManager::getInstance( )->setup( );
 	sendEndSetup = false;
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
@@ -106,10 +111,10 @@ void cGameMain::update( float deltaTime )
 			sendEndSetup = true;
 		}
 
+		Game::cDebugManager::getInstance( )->update( deltaTime );
         Game::cClientAdapter::getInstance( )->update( );
         Game::cServerAdapter::getInstance( )->update( );
         n->entry_update( deltaTime );
-        //Shader::cShadowManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
         Game::cFieldManager::getInstance( )->update( deltaTime );
         ENV->padUpdate( );
         ENV->padProcessEvent( );
@@ -118,41 +123,48 @@ void cGameMain::update( float deltaTime )
         Collision::cCollisionManager::getInstance( )->update( deltaTime );
 		Game::cPlayerManager::getInstance()->playerCollisionUpdate();
         GemManager->update( );
+        Game::cShaderManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
     }
 }
 
 void cGameMain::draw( )
 {
-    drawShadow( );
-    //Shader::cShadowManager::getInstance( )->draw( std::bind( &cGameMain::drawShadow, this ) );
+	Game::cShaderManager::getInstance( )->draw( [ this ]
+	{
+		ci::gl::ScopedColor scpCol( ColorA( 1.0F, 1.0F, 1.0F, 1.0F ) );
+
+		gl::enableDepthRead( );
+		gl::enableDepthWrite( );
+		Game::cFieldManager::getInstance( )->draw( );
+		Game::cStrategyManager::getInstance( )->draw( );
+		GemManager->draw( );
+		skydome.draw( );
+		CAMERA->unBind3D( );
+
+		//プレイヤーより後ろの2D描画
+		CAMERA->bind2D( );
+		gl::disableDepthRead( );
+		gl::disableDepthWrite( );
+		GemManager->drawFbo( );
+		CAMERA->unBind2D( );
+
+		CAMERA->bind3D( );
+		gl::enableDepthRead( );
+		gl::enableDepthWrite( );
+		Game::cPlayerManager::getInstance( )->draw( );
+	} );
+
+	Collision::cCollisionManager::getInstance( )->draw( );
 }
 
 void cGameMain::drawShadow( )
 {
-	ci::gl::ScopedGlslProg scpGlsl( glsl );
-	glsl->uniform( "uAmb", ColorA( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
 	ci::gl::ScopedColor scpCol( ColorA( 1.0F, 1.0F, 1.0F, 1.0F ) );
-
-    gl::enableDepthRead( );
-    gl::enableDepthWrite( );
-    Game::cFieldManager::getInstance( )->draw( );
-    Game::cStrategyManager::getInstance( )->draw( );
-	GemManager->draw();
-    Collision::cCollisionManager::getInstance( )->draw( );
-    skydome.draw( );
-	CAMERA->unBind3D();
-
-	//プレイヤーより後ろの2D描画
-	CAMERA->bind2D();
-	gl::disableDepthRead();
-	gl::disableDepthWrite();
-	GemManager->drawFbo();
-	CAMERA->unBind2D();
-
-	CAMERA->bind3D();
-	gl::enableDepthRead();
-	gl::enableDepthWrite();
-    Game::cPlayerManager::getInstance( )->draw( );
+	gl::enableDepthRead( );
+	gl::enableDepthWrite( );
+	Game::cFieldManager::getInstance( )->draw( );
+	Game::cStrategyManager::getInstance( )->draw( );
+	Game::cPlayerManager::getInstance( )->draw( );
 }
 
 void cGameMain::draw2D( )
@@ -163,6 +175,8 @@ void cGameMain::draw2D( )
     gl::disableDepthWrite( );
 	
     n->entry_render( mat4( ) );
+
+	Game::cDebugManager::getInstance( )->draw2d( );
 }
 
 void cGameMain::resize( )

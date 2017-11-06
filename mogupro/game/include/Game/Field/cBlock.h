@@ -3,6 +3,7 @@
 #include <cinder/gl/gl.h>
 #include <Collision/cAABBCollider.h>
 #include <Game/Field/FieldData.h>
+#include <Game/Field/cBreakBlockType.h>
 namespace Game
 {
 namespace Field
@@ -29,15 +30,7 @@ public: // Member
     float mScale;
     bool mIsActive = false;
     Collision::cAABBCollider mCollider;
-
-public: // Const
-
-    static const uint cube_indices_size = 24;
-    static const uint cube_indices_index_size = 36;
-    static const uint cube_vertices_index_size = 24;
-    static const uint cube_normals_index_size = 24;
-    static const uint cube_uvs_index_size = 24;
-
+    BlockType mType;
 };
 }
 }

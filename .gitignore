@@ -1,6 +1,16 @@
-﻿# 実際のプロジェクト
+# 実際のプロジェクト
 mogupro/game/vc2017/*
+!mogupro/game/vc2017/build/
+mogupro/game/vc2017/build/*
+!mogupro/game/vc2017/build/Win32/
+mogupro/game/vc2017/build/Win32/*
+!mogupro/game/vc2017/build/Win32/Debug/
+mogupro/game/vc2017/build/Win32/Debug/*
+!mogupro/game/vc2017/build/Win32/Release/
+mogupro/game/vc2017/build/Win32/Release/*
 !mogupro/game/vc2017/*.rc
+!mogupro/game/vc2017/build/Win32/Debug/*.dll
+!mogupro/game/vc2017/build/Win32/Release/*.dll
 
 # cinderのライブラリを除く
 # 別途でダウンロードしたzipを解凍してフォルダに入れてください。

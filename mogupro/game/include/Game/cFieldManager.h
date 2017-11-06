@@ -2,6 +2,7 @@
 #include <cinder/app/App.h>
 #include <Utility/cSingletonAble.h>
 #include <Game/Field/cUnderGround.h>
+#include <Game/Field/cBreakBlockType.h>
 
 namespace Game
 {
@@ -21,12 +22,12 @@ public: //Player, Strategy が使う関数
     // ブロックを破壊する
     // position : 位置
     // radius    : 球の半径
-    bool blockBreak( const ci::vec3& position, const float& radius = 0 );
+    bool blockBreak( const ci::vec3& position, const float& radius, const Field::cBreakBlockType& type = Field::BlockType::NORMAL );
 
     // ブロックを破壊する(ネットワーク用)
     // position : 位置
     // radius    : 球の半径
-    bool blockBreakNetwork( const ci::vec3& position, const float& radius = 0 );
+    bool blockBreakNetwork( const ci::vec3& position, const float& radius, const Field::cBreakBlockType& type = Field::BlockType::NORMAL );
 
     // 引数(vec3)で近くのブロックの上部中心位置を返す
     // target_position : 対象の位置

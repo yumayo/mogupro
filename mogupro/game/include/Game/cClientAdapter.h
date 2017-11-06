@@ -4,6 +4,7 @@
 #include <cinder/Vector.h>
 #include <cinder/Quaternion.h>
 #include <vector>
+#include <Game/Field/cBreakBlockType.h>
 namespace Network
 {
 namespace Packet
@@ -34,7 +35,7 @@ private:
     void recvAllBreakBlocks( );
 public:
     // ブロックを破壊したら呼んでください。
-    void sendBreakBlock( cinder::vec3 const& position, float radius );
+    void sendBreakBlock( cinder::vec3 const& position, float radius, Network::ubyte1 type );
     // 掘削機を設置したら呼んでください。
     void sendSetQuarry( cinder::vec3 const& position, Network::ubyte1 drillType );
     // プレイヤーの位置情報をサーバーに送りますので呼んでください。

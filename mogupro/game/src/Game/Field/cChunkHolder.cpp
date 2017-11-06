@@ -4,6 +4,7 @@
 #include <Utility/cString.h>
 
 using namespace ci;
+using namespace ci::app;
 namespace Game
 {
 namespace Field
@@ -51,9 +52,19 @@ void cChunkHolder::setChunk( const int& x, const int& y, const int& z )
     mChunks[ivec3( x, y, z )] = std::make_shared<cChunk>( x, z, mUnderGround );
 }
 
+bool isPointToSphere( const ci::vec3& point, const ci::vec3& sphere_pos, const float& radius )
+{
+    float x = ( sphere_pos.x - point.x ) *( sphere_pos.x - point.x );
+    float y = ( sphere_pos.y - point.y ) *( sphere_pos.y - point.y );
+    float z = ( sphere_pos.z - point.z ) *( sphere_pos.z - point.z );
+    return ( x + y + z ) <= radius * radius;
+}
+
 bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                                const ci::ivec3& block_cell,
-                               const float & radius )
+                               const ci::vec3& sphere_pos,
+                               const float & radius,
+                               const cBreakBlockType& type )
 {
     if ( isExistsChunk( chunk_cell ) )
         return false;
@@ -77,11 +88,19 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
     if ( first_layer != nullptr )
         build_chunk_layers.push_back( first_layer );
 
-    for ( int z = s.z; z < e.z; z++ )
-        for ( int y = s.y; y < e.y; y++ )
-            for ( int x = s.x; x < e.x; x++ )
+    for ( int z = s.z; z <= e.z; z++ )
+        for ( int y = s.y; y <= e.y; y++ )
+            for ( int x = s.x; x <= e.x; x++ )
             {
-                auto layer = break_chunk_layer->breakBlock( ivec3( x, y, z ) );
+                auto block = break_chunk_layer->getBlock( ivec3( x, y, z ) );
+                if ( block->mIsActive )
+                    if ( isPointToSphere( block->mPosition, sphere_pos, radius ) == false )
+                        continue;
+                //if ( type.find( BlockType::NORMAL ) == false )
+                    //continue;
+
+                auto layer = break_chunk_layer->getChunkLayer( ivec3( x, y, z ) );
+                layer = break_chunk_layer->breakBlock( block, layer );
                 if ( layer == nullptr )
                     continue;
                 if ( std::any_of( build_chunk_layers.begin(), build_chunk_layers.end(),

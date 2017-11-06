@@ -14,7 +14,7 @@ namespace Game
 namespace Field
 {
 cBlock none_block;
-cChunk none_chunk;
+cChunkLayer none_chunk_layer;
 
 cUnderGround::cUnderGround() :
     mChunkHolder( this )
@@ -38,10 +38,6 @@ void cUnderGround::setup()
         mChunkLoadThreads.emplace_back( [&]
         {
             calcChunks();
-        }
-        );
-        mChunkLoadThreads.emplace_back( [&]
-        {
             chunkMeshReLoaded();
         }
         );
@@ -154,15 +150,15 @@ bool cUnderGround::calcChunks()
 ci::ivec3 cUnderGround::getChunkCellFromPosition( const ci::vec3 & position )
 {
     // マップチップ番号に直す
-    ivec3 pos = position / BLOCK_SIZE;
-    return pos / CHUNK_SIZE;
+    vec3 pos = position / BLOCK_SIZE;
+    return ivec3( pos ) / CHUNK_SIZE;
 }
 
 ci::ivec3 cUnderGround::getBlockCellFromPosition( const ci::vec3 & position )
 {
     // マップチップ番号に直す
-    ivec3 pos = position / BLOCK_SIZE;
-    return pos % CHUNK_SIZE;
+    vec3 pos = position / BLOCK_SIZE;
+    return ivec3( pos ) % CHUNK_SIZE;
 }
 
 cBlock* cUnderGround::getBlock( const ci::vec3& position )
@@ -175,32 +171,41 @@ cBlock* cUnderGround::getBlock( const ci::vec3& position )
     if ( mChunkHolder.cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
         return &none_block;
 
-    auto height = ivec3( 0, chunk_cell.y * CHUNK_SIZE, 0 );
+    auto height_cell = ivec3( 0, chunk_cell.y * CHUNK_SIZE, 0 );
+    if ( ( height_cell.y / CHUNK_SIZE ) > CHUNK_RANGE_Y )
+        return &none_block;
 
-    return mChunkHolder.getChunk( chunk_cell )->getBlock( block_cell + height );
+    return mChunkHolder.getChunk( chunk_cell )->getBlock( block_cell + height_cell );
 }
 
-cChunk* cUnderGround::getChunk( const ci::vec3 & position )
-{
-    auto chunk_cell = getChunkCellFromPosition( position );
-
-    if ( mChunkHolder.isExistsChunk( chunk_cell ) )
-        return &none_chunk;
-
-    return mChunkHolder.getChunk( chunk_cell );
-}
-
-bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius )
-{
-    cClientAdapter::getInstance()->sendBreakBlock( position, radius );
-    return true;
-}
-
-bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & radius )
+cChunkLayer * cUnderGround::getChunkLayer( const ci::vec3 & position )
 {
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
-    return mChunkHolder.breakBlock( chunk_cell, block_cell, radius );
+
+    if ( mChunkHolder.isExistsChunk( chunk_cell ) )
+        return &none_chunk_layer;
+    if ( mChunkHolder.cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
+        return &none_chunk_layer;
+
+    int height = chunk_cell.y;
+    if ( height > CHUNK_RANGE_Y )
+        return &none_chunk_layer;
+
+    return mChunkHolder.getChunk( chunk_cell )->getChunkLayer( height );
+}
+
+bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius, const cBreakBlockType& type )
+{
+    cClientAdapter::getInstance()->sendBreakBlock( position, radius, type );
+    return true;
+}
+
+bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & radius, const cBreakBlockType& type )
+{
+    auto chunk_cell = getChunkCellFromPosition( position );
+    auto block_cell = getBlockCellFromPosition( position );
+    return mChunkHolder.breakBlock( chunk_cell, block_cell, position, radius, type );
 }
 
 ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
@@ -211,7 +216,7 @@ ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
     chunk_cell.y = 0;
     block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE * BLOCK_SIZE;
     block_cell += chunk_cell;
-    block_cell.y += BLOCK_SIZE / 2.0f + 0.1f;
+    block_cell.y += BLOCK_SIZE;
     return block_cell;
 }
 
@@ -223,14 +228,8 @@ ci::vec3 cUnderGround::getBlockHighestPosition( const ci::vec3 & target_position
     chunk_cell.y = 0;
     block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE * BLOCK_SIZE;
     block_cell += chunk_cell;
-    block_cell.y += BLOCK_SIZE / 2.0f;
+    block_cell.y += BLOCK_SIZE;
     return block_cell;
 }
-
-ci::ivec3 cUnderGround::getBlockMaxCell()
-{
-    return ivec3( CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE );
-}
-
 }
 }

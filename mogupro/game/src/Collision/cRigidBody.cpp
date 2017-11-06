@@ -11,6 +11,8 @@ cRigidBody::cRigidBody( cColliderBase& collider, cinder::vec3 speed )
     , mMinValue( std::numeric_limits<float>::max( ) )
     , mIsGravity( true )
     , mIsLanding( false )
+	, mIsHit( false )
+	, mFriction( 0.08F )
 {
 }
 cRigidBody::~cRigidBody( )
@@ -36,6 +38,7 @@ void cRigidBody::update( float delta )
 {
     mMinValue = std::numeric_limits<float>::max( );
     mIsLanding = false;
+	mIsHit = false;
 
     if ( mIsGravity )
     {
@@ -49,7 +52,7 @@ void cRigidBody::lateUpdate( float delta )
 {
     if ( mMinValue != std::numeric_limits<float>::max( ) )
     {
-        mSpeed *= ( 1.0F - 0.08 ) * delta;
+        mSpeed *= ( 1.0F - mFriction ) * delta;
     }
 }
 bool cRigidBody::isLanding( ) const
@@ -59,6 +62,10 @@ bool cRigidBody::isLanding( ) const
 bool cRigidBody::isGravity( ) const
 {
     return mIsGravity;
+}
+bool cRigidBody::isHit( ) const
+{
+	return mIsHit;
 }
 void cRigidBody::gravityOn( )
 {
@@ -75,6 +82,15 @@ cinder::vec3 const & cRigidBody::getSpeed( ) const
 void cRigidBody::setSpeed( cinder::vec3 value )
 {
     mSpeed = value;
+}
+float cRigidBody::getFriction( ) const
+{
+	return mFriction;
+}
+void cRigidBody::setFriction( float value )
+{
+	value = cinder::clamp( value, 0.00F, 1.00F );
+	mFriction = value;
 }
 cinder::vec3 cRigidBody::cardinalAxis( int i )
 {
@@ -113,10 +129,11 @@ cinder::vec3 cRigidBody::calcWallScratchVector( cinder::vec3 spd, cinder::vec3 n
 }
 void cRigidBody::calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase const* targetCollider )
 {
-    auto intersectPoint = ray.calcPosition( minValue - 0.005F );
+    auto intersectPoint = ray.calcPosition( minValue ) - normalize( ray.getDirection() ) * 0.005F;
     auto normal = getNormal( intersectPoint, aabb );
 
     if ( normal.y == 1.0F ) mIsLanding = true;
+	mIsHit = true;
 
     mSpeed = calcWallScratchVector( mSpeed, normal );
 

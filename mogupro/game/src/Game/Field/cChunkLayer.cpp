@@ -10,7 +10,8 @@ namespace Game
 {
 namespace Field
 {
-cChunkLayer::cChunkLayer()
+cChunkLayer::cChunkLayer() :
+    mIsActive( true )
 {
 }
 
@@ -18,6 +19,7 @@ cChunkLayer::cChunkLayer( const int& height, cChunk* chunk, cUnderGround* under_
     mHeight( height )
     , mChunk( chunk )
     , mUnderGround( under_ground )
+    , mIsActive( true )
 {
     mMesh = TriMesh::create();
 }
@@ -34,7 +36,20 @@ void cChunkLayer::setup()
 void cChunkLayer::draw()
 {
     if ( mVbo != nullptr )
-        gl::draw( mVbo );
+    {
+        auto ctx = gl::context();
+        const gl::GlslProg* curGlslProg = ctx->getGlslProg();
+
+
+        //ctx->pushVao();
+        ctx->getDefaultVao()->replacementBindBegin();
+        mVbo->buildVao( curGlslProg );
+        ctx->getDefaultVao()->replacementBindEnd();
+        ctx->setDefaultShaderVars();
+        mVbo->drawImpl();
+        //ctx->popVao();
+    }
+    //gl::draw( mVbo );
 }
 
 cBlock* cChunkLayer::getBlock( const int& x, const  int& y, const int& z )
@@ -54,21 +69,22 @@ cBlock* cChunkLayer::getBlock( const ci::ivec3& c )
     return mBlocks[getIndex( c )].get();
 }
 
-cChunk* cChunkLayer::getChunk( const ci::ivec3 & block_cell )
-{
-    if ( outOfBounds( block_cell.x ) ||
-         outOfBounds( block_cell.z ) )
-    {
-        auto world_pos = toWorldPosition( block_cell );
-        return mUnderGround->getChunk( world_pos );
-    }
-    return mChunk;
-}
-
 cChunkLayer* cChunkLayer::getChunkLayer( const int & height )
 {
     if ( height != mHeight )
         return mChunk->getChunkLayer( height );
+    return this;
+}
+
+cChunkLayer * cChunkLayer::getChunkLayer( const ci::ivec3 & cell )
+{
+    if ( outOfBounds( cell.x ) ||
+         outOfBounds( cell.y ) ||
+         outOfBounds( cell.z ) )
+    {
+        auto world_pos = toWorldPosition( cell );
+        return mUnderGround->getChunkLayer( world_pos );
+    }
     return this;
 }
 
@@ -89,17 +105,27 @@ int cChunkLayer::getIndex( const int& x, const  int& y, const int& z )
 }
 
 void cChunkLayer::addFace( const std::array<GLfloat, 12>& block_face,
+                           const std::array<GLfloat, 12>& block_normal,
                            const std::array<ci::vec2, 4> &texture_coords,
                            const ci::vec3 & block_position )
 {
     mMesh->appendTexCoords0( &texture_coords[0], 4 );
     for ( int i = 0, index = 0; i < 4; i++ )
     {
-        vec3 vertex;
+        vec3 vertex( 0 );
         vertex.x += block_face[index++] + block_position.x;
         vertex.y += block_face[index++] + block_position.y;
         vertex.z += block_face[index++] + block_position.z;
         mMesh->appendPosition( vertex );
+    }
+
+    for ( int i = 0, index = 0; i < 4; i++ )
+    {
+        vec3 normal( 0 );
+        normal.x += block_normal[index++];
+        normal.y += block_normal[index++];
+        normal.z += block_normal[index++];
+        mMesh->appendNormal( normal );
     }
 
     auto & indices = mMesh->getIndices();
@@ -124,9 +150,26 @@ cChunkLayer* cChunkLayer::breakBlock( ci::ivec3 c )
     block->mIsActive = false;
     block->toBreak();
 
-    mIsBlockBroken = true;
+    auto layer = getChunkLayer( c );
+    if ( layer->mIsActive == false )
+        return this;
+    layer->mIsBlockBroken = true;
 
-    return this;
+    return layer;
+}
+
+cChunkLayer * cChunkLayer::breakBlock( cBlock * block, cChunkLayer* layer )
+{
+    if ( block->mIsActive == false )
+        return nullptr;
+    block->mIsActive = false;
+    block->toBreak();
+
+    if ( layer->mIsActive == false )
+        return nullptr;
+    layer->mIsBlockBroken = true;
+
+    return layer;
 }
 
 void cChunkLayer::reBuildStart()
@@ -152,6 +195,11 @@ void cChunkLayer::reBuildMesh()
 
 void cChunkLayer::buildMesh()
 {
+    if ( mIsActive == false )
+    {
+        mHasBuildCompleted = true;
+        return;
+    }
     cChunkMeshBuilder builder( *this );
     mHasBuildCompleted = builder.buildMesh();
 }
@@ -214,15 +262,18 @@ void cChunkLayer::createBlocks()
             {
                 vec3 position = vec3( x * BLOCK_SIZE,
                                       y * BLOCK_SIZE,
-                                      z * BLOCK_SIZE ) + offset;// +OFFSET_POSITION;
+                                      z * BLOCK_SIZE ) + offset;
                 cBlockRef block;
                 block = std::make_shared<cBlock>( position, BLOCK_SIZE, id++ );
 
                 // 一番上のレイヤーはブロックを生成しない
                 if ( mHeight >= CHUNK_RANGE_Y )
+                {
+                    block->mPosition = vec3( 0 );
                     block->mIsActive = false;
+                }
 
-                // Colider生成
+                // Collider生成
                 block->setup();
                 mBlocks[getIndex( x, y, z )] = block;
             }

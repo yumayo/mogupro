@@ -9,6 +9,14 @@ namespace Packet
 #pragma pack(1)
 struct PacketHeader
 {
+	enum State : ubyte1
+	{
+		NONE = 0,
+		RELIABLE = 1 << 0,   // 信頼したいデータ
+		ENCRYPTION = 1 << 1, // 暗号化したいデータ
+	};
+	State mState = State::NONE;
+
     // 命令パケットの番号が入ります。
     PacketId mPacketId = PacketId::INVALID_NUMBER;
     // 送るたびにシーケンス番号を増やしていきます。
@@ -33,7 +41,7 @@ public:
         // 次に子供にやってもらう。
         packetImport( networkHandle, transferredBytes - sizeof( PacketHeader ), packet + sizeof( PacketHeader ) );
     }
-    void createPacket( cPacketBuffer& packetBuffer )
+    void createPacket( cPacketBuffer& packetBuffer, PacketHeader::State state )
     {
         ubyte2& packetByte = packetBuffer.transferredBytes;
         cBuffer& buffer = packetBuffer.buffer;
@@ -45,6 +53,7 @@ public:
 
         // ヘッダーパケットを追加する。
         PacketHeader header;
+		header.mState = state;
         header.mPacketId = packetId;
         header.mSequenceId = ++sequenceCount;
         header.mPacketByte = childPacketByte + sizeof( PacketHeader );

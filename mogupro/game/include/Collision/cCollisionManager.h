@@ -7,14 +7,10 @@
 #include <tuple>
 #include <thread>
 #include <chrono>
-#include <cinder/Vector.h>
+#include <mutex>
 #include <Collision/cRigidBody.h>
 #include <cinder/AxisAlignedBox.h>
 #include <Collision/cColliderBase.h>
-#include <Utility/cRecursionUsableMutex.h>
-#include <Utility/cScopedMutex.h>
-#include <Collision/cFallBlockSimple.h>
-#include <Collision/cStaticBlockSimple.h>
 #include <Utility/cUserPointer.hpp>
 #include <cinder/Ray.h>
 #include <Game/Field/FieldData.h>
@@ -33,14 +29,14 @@ public:
     void update( float delta );
     void draw( );
     cinder::vec3 calcNearestPoint( cinder::Ray const& ray, unsigned int layer );
-    static constexpr size_t WORLD_X = Game::Field::CHUNK_RANGE_X * Game::Field::CHUNK_SIZE;
-    static constexpr size_t WORLD_Y = Game::Field::CHUNK_RANGE_Y * Game::Field::CHUNK_SIZE;
-    static constexpr size_t WORLD_Z = Game::Field::CHUNK_RANGE_Z * Game::Field::CHUNK_SIZE;
+    static constexpr size_t WORLD_X = Game::Field::CHUNK_RANGE_X * Game::Field::CHUNK_SIZE * Game::Field::BLOCK_SIZE;
+    static constexpr size_t WORLD_Y = Game::Field::CHUNK_RANGE_Y * Game::Field::CHUNK_SIZE * Game::Field::BLOCK_SIZE;
+    static constexpr size_t WORLD_Z = Game::Field::CHUNK_RANGE_Z * Game::Field::CHUNK_SIZE * Game::Field::BLOCK_SIZE;
 private:
     bool isRange( int x, int y, int z );
     void fitWorldSpaceMinMax( cinder::ivec3& min, cinder::ivec3& max, cinder::AxisAlignedBox const& aabb ) const;
     std::mutex mWorldMutex;
-    std::array<std::array<std::array<std::set<cColliderBase*>, WORLD_X>, WORLD_Y>, WORLD_Z> mWorld;
+    std::array<std::array<std::array<std::set<cColliderBase*>, WORLD_Z>, WORLD_Y>, WORLD_X> mWorld;
     std::mutex mRigidMutex;
     std::set<cRigidBody*> mRigidBodys;
 private:
@@ -52,7 +48,7 @@ private:
     struct UpdateThread
     {
         std::thread thread;
-        Utility::cRecursionUsableMutex mutex;
+		std::mutex mutex;
     };
     std::array<UpdateThread, 4U> mUpdateThreads;
 };

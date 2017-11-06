@@ -11,17 +11,20 @@ struct BlockFormat
     BlockFormat( )
         : position( cinder::vec3( 0 ) )
         , radius( 0.0F )
+        , type( 0 )
     {
 
     }
-    BlockFormat( cinder::vec3 const& position, float radius )
+    BlockFormat( cinder::vec3 const& position, float radius, ubyte1 type )
         : position( position )
         , radius( radius )
+        , type(type)
     {
 
     }
     cinder::vec3 position;
     float radius;
+    ubyte1 type;
 };
 
 struct PlayerFormat

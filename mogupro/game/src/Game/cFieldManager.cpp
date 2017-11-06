@@ -35,13 +35,13 @@ void cFieldManager::draw()
     if ( is_culling_change == false )
         gl::enableFaceCulling( false );
 }
-bool cFieldManager::blockBreak( const ci::vec3& position, const float& radius )
+bool cFieldManager::blockBreak( const ci::vec3& position, const float& radius, const Field::cBreakBlockType& type )
 {
-    return mUnderGround->blockBreak( position, radius );
+    return mUnderGround->blockBreak( position, radius, type );
 }
-bool cFieldManager::blockBreakNetwork( const ci::vec3 & position, const float & radius )
+bool cFieldManager::blockBreakNetwork( const ci::vec3 & position, const float & radius, const Field::cBreakBlockType& type )
 {
-    return mUnderGround->blockBreakNetwork( position, radius );
+    return mUnderGround->blockBreakNetwork( position, radius, type );
 }
 ci::vec3 cFieldManager::getBlockHighestPosition( const ci::vec3 & target_position )
 {
