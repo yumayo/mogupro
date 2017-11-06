@@ -93,11 +93,15 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
             for ( int x = s.x; x <= e.x; x++ )
             {
                 auto block = break_chunk_layer->getBlock( ivec3( x, y, z ) );
+                if ( block == nullptr )
+                    continue;
+
                 if ( block->mIsActive )
                     if ( isPointToSphere( block->mPosition, sphere_pos, radius ) == false )
                         continue;
-                //if ( type.find( BlockType::NORMAL ) == false )
-                    //continue;
+
+                if ( type.find( block->mType ) == false )
+                    continue;
 
                 auto layer = break_chunk_layer->getChunkLayer( ivec3( x, y, z ) );
                 layer = break_chunk_layer->breakBlock( block, layer );

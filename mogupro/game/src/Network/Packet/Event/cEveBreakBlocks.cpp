@@ -35,7 +35,7 @@ ubyte2 cEveBreakBlocks::packetExport( char* const data )
             exp << convertFixedpoint( o.position[n] );
         }
         exp << convertFixedpoint( o.radius );
-        exp << convertFixedpoint( o.type );
+        exp << o.type ;
     }
     return exp;
 }
