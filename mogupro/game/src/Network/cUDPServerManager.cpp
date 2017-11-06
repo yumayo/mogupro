@@ -13,6 +13,9 @@ namespace Network
 {
 cUDPServerManager::cUDPServerManager( )
 {
+	closeAccepter( );
+	mRoot = Node::node::create( );
+	mRoot->set_schedule_update( );
 }
 void cUDPServerManager::close( )
 {
@@ -22,7 +25,6 @@ void cUDPServerManager::close( )
 }
 void cUDPServerManager::open( )
 {
-	closeAccepter( );
     mRoot = Node::node::create( );
     mRoot->set_schedule_update( );
     mSocket.open( 25565 );
