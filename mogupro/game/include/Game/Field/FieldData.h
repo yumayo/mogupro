@@ -18,13 +18,13 @@ using ChunkMap = std::unordered_map<ci::ivec3, cChunkRef>;
 using cBlockRef = std::shared_ptr<Game::Field::cBlock>;
 
 constexpr float
-BLOCK_SIZE = 0.5f,
+BLOCK_SIZE = 0.25f,
 OFFSET_POSITION = BLOCK_SIZE / 2;
 constexpr int
 CHUNK_SIZE = 16,
 CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE,
 CHUNK_VOLUME = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE,
-CHUNK_RANGE_X = 4, CHUNK_RANGE_Y = 3, CHUNK_RANGE_Z = 4;
+CHUNK_RANGE_X = 8, CHUNK_RANGE_Y = 4, CHUNK_RANGE_Z = 8;
 }
 }
 
