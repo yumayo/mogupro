@@ -10,7 +10,7 @@ void cDliBreakBlocks::packetImport( cNetworkHandle networkHandle, ubyte2 transfe
 {
     mNetworkHandle = networkHandle;
     cImporter imp( data );
-    for ( int i = 0; i < transferredBytes / ( sizeof( ubyte2 ) * 4 ); ++i )
+    for ( int i = 0; i < transferredBytes / ( sizeof( ubyte2 ) * 4 + sizeof( ubyte1 ) ); ++i )
     {
         float p[3];
         for ( int n = 0; n < 3; ++n )
@@ -21,7 +21,9 @@ void cDliBreakBlocks::packetImport( cNetworkHandle networkHandle, ubyte2 transfe
         }
         ubyte2 radius;
         imp >> radius;
-        mBreakFormats.emplace_back( cinder::vec3( p[0], p[1], p[2] ), convertFloat( radius ) );
+        ubyte1 type;
+        imp >> type;
+        mBreakFormats.emplace_back( cinder::vec3( p[0], p[1], p[2] ), convertFloat( radius ), type );
     }
 }
 ubyte2 cDliBreakBlocks::packetExport( char* const data )
@@ -34,6 +36,7 @@ ubyte2 cDliBreakBlocks::packetExport( char* const data )
             exp << convertFixedpoint( o.position[n] );
         }
         exp << convertFixedpoint( o.radius );
+        exp << convertFixedpoint( o.type );
     }
     return exp;
 }
