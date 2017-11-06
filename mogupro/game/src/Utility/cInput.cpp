@@ -2,28 +2,28 @@
 #include <cinder/app/App.h>
 #include <CameraManager/cCameraManager.h>
 
-extern "C"
-{
-#include <Utility/sGamepad.h>
-}
-
-#pragma comment(lib,"winmm.lib")
-#if _DEBUG
-#pragma comment(lib,"Gamepad_d.lib")
-#else
-#pragma comment(lib,"Gamepad.lib")
-#endif 
-
-static bool verbose = true;
-
-#define POLL_ITERATION_INTERVAL 30
-
-
-void onButtonDown(struct Gamepad_device * device, unsigned int buttonID, double timestamp, void * context);
-void onButtonUp(struct Gamepad_device * device, unsigned int buttonID, double timestamp, void * context);
-void onAxisMoved(struct Gamepad_device * device, unsigned int axisID, float value, float lastValue, double timestamp, void * context);
-void onDeviceAttached(struct Gamepad_device * device, void * context);
-void onDeviceRemoved(struct Gamepad_device * device, void * context);
+//extern "C"
+//{
+//#include <Utility/sGamepad.h>
+//}
+//
+//#pragma comment(lib,"winmm.lib")
+//#if _DEBUG
+//#pragma comment(lib,"Gamepad_d.lib")
+//#else
+//#pragma comment(lib,"Gamepad.lib")
+//#endif 
+//
+//static bool verbose = true;
+//
+//#define POLL_ITERATION_INTERVAL 30
+//
+//
+//void onButtonDown(struct Gamepad_device * device, unsigned int buttonID, double timestamp, void * context);
+//void onButtonUp(struct Gamepad_device * device, unsigned int buttonID, double timestamp, void * context);
+//void onAxisMoved(struct Gamepad_device * device, unsigned int axisID, float value, float lastValue, double timestamp, void * context);
+//void onDeviceAttached(struct Gamepad_device * device, void * context);
+//void onDeviceRemoved(struct Gamepad_device * device, void * context);
 
 void Utility::cInputAll::padAxisSetup()
 {
@@ -72,30 +72,30 @@ void mouseCursolFixed(const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 
 void Utility::cInputAll::padSetup()
 {
-	Gamepad_deviceAttachFunc(onDeviceAttached, (void *)0x1);
-	Gamepad_deviceRemoveFunc(onDeviceRemoved, (void *)0x2);
-	Gamepad_buttonDownFunc(onButtonDown, (void *)0x3);
-	Gamepad_buttonUpFunc(onButtonUp, (void *)0x4);
-	Gamepad_axisMoveFunc(onAxisMoved, (void *)0x5);
-	Gamepad_init();
-	padAxisSetup();
+	//Gamepad_deviceAttachFunc(onDeviceAttached, (void *)0x1);
+	//Gamepad_deviceRemoveFunc(onDeviceRemoved, (void *)0x2);
+	//Gamepad_buttonDownFunc(onButtonDown, (void *)0x3);
+	//Gamepad_buttonUpFunc(onButtonUp, (void *)0x4);
+	//Gamepad_axisMoveFunc(onAxisMoved, (void *)0x5);
+	//Gamepad_init();
+	//padAxisSetup();
 }
 
 void Utility::cInputAll::padUpdate()
 {
-	static unsigned int iterationsToNextPoll = POLL_ITERATION_INTERVAL;
+	//static unsigned int iterationsToNextPoll = POLL_ITERATION_INTERVAL;
 
-	iterationsToNextPoll--;
-	if (iterationsToNextPoll == 0) {
-		Gamepad_detectDevices();
-		iterationsToNextPoll = POLL_ITERATION_INTERVAL;
-	}
+	//iterationsToNextPoll--;
+	//if (iterationsToNextPoll == 0) {
+	//	Gamepad_detectDevices();
+	//	iterationsToNextPoll = POLL_ITERATION_INTERVAL;
+	//}
 }
 
 
 void Utility::cInputAll::padProcessEvent()
 {
-	Gamepad_processEvents();
+	//Gamepad_processEvents();
 }
 
 void Utility::cInputAll::setPadPush(const int & num)
@@ -260,49 +260,49 @@ void Utility::cInputAll::flashInput()
 
 
 
-void onButtonDown(struct Gamepad_device * device, unsigned int buttonID, double timestamp, void * context)
-{
-	if (verbose)
-	{
-		ENV->setPadPush(buttonID);
-		ENV->setPadPress(buttonID);
-	}
-}
-
-void onButtonUp(struct Gamepad_device * device, unsigned int buttonID, double timestamp, void * context)
-{
-	if (verbose)
-	{
-		ENV->setPadPull(buttonID);
-		ENV->erasePadPress(buttonID);
-	}
-}
-
-void onAxisMoved(struct Gamepad_device * device, unsigned int axisID, float value, float lastValue, double timestamp, void * context)
-{
-	if (verbose && (value < 0.3f || value > 0.3f)) // reduce the output noise by making a dead zone
-	{
-		ENV->setPadAxis(axisID, value);
-	}
-}
-
-void onDeviceAttached(struct Gamepad_device * device, void * context)
-{
-	if (verbose)
-	{
-		//パッドを差した時の処理
-		ci::app::console() << "Device ID " << device->deviceID << " attached (vendor = " << device->vendorID << "; product = " << device->productID << ") with context" << context << std::endl;
-	}
-}
-
-void onDeviceRemoved(struct Gamepad_device * device, void * context)
-{
-	if (verbose)
-	{
-		//パッドを抜いた時の処理
-		ci::app::console() << "Device ID " << device->deviceID << " removed with context " << context << std::endl;
-	}
-}
+//void onButtonDown(struct Gamepad_device * device, unsigned int buttonID, double timestamp, void * context)
+//{
+//	if (verbose)
+//	{
+//		ENV->setPadPush(buttonID);
+//		ENV->setPadPress(buttonID);
+//	}
+//}
+//
+//void onButtonUp(struct Gamepad_device * device, unsigned int buttonID, double timestamp, void * context)
+//{
+//	if (verbose)
+//	{
+//		ENV->setPadPull(buttonID);
+//		ENV->erasePadPress(buttonID);
+//	}
+//}
+//
+//void onAxisMoved(struct Gamepad_device * device, unsigned int axisID, float value, float lastValue, double timestamp, void * context)
+//{
+//	if (verbose && (value < 0.3f || value > 0.3f)) // reduce the output noise by making a dead zone
+//	{
+//		ENV->setPadAxis(axisID, value);
+//	}
+//}
+//
+//void onDeviceAttached(struct Gamepad_device * device, void * context)
+//{
+//	if (verbose)
+//	{
+//		//パッドを差した時の処理
+//		ci::app::console() << "Device ID " << device->deviceID << " attached (vendor = " << device->vendorID << "; product = " << device->productID << ") with context" << context << std::endl;
+//	}
+//}
+//
+//void onDeviceRemoved(struct Gamepad_device * device, void * context)
+//{
+//	if (verbose)
+//	{
+//		//パッドを抜いた時の処理
+//		ci::app::console() << "Device ID " << device->deviceID << " removed with context " << context << std::endl;
+//	}
+//}
 
 
 
