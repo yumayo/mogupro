@@ -38,10 +38,6 @@ void cUnderGround::setup()
         mChunkLoadThreads.emplace_back( [&]
         {
             calcChunks();
-        }
-        );
-        mChunkLoadThreads.emplace_back( [&]
-        {
             chunkMeshReLoaded();
         }
         );
@@ -209,7 +205,7 @@ bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & r
 {
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
-    return mChunkHolder.breakBlock( chunk_cell, block_cell, radius );
+    return mChunkHolder.breakBlock( chunk_cell, block_cell, position, radius );
 }
 
 ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
