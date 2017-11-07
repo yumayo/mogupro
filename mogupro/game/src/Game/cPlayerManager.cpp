@@ -27,8 +27,9 @@ void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const
 
 void Game::cPlayerManager::playerDrillMove(const float & delta_time)
 {
+	CAMERA->shakeCamera(0.03f, 0.1f);
 	//カメラの方向に移動
-	float player_speed = delta_time * active_player->getSpeed();
+	float player_speed = delta_time * active_player->getDrillSpeed();
 	active_player->move(ci::vec3(CAMERA->getCameraLook().x * player_speed, CAMERA->getCameraLook().y * player_speed, CAMERA->getCameraLook().z * player_speed));
 }
 
@@ -170,10 +171,11 @@ void Game::cPlayerManager::setPlayersPosition(std::vector<ci::vec3> positions)
 }
 //プレイヤーのコリジョンスピードはコリジョンマネージャの
 //後に呼ぶ
-void Game::cPlayerManager::playerCollisionUpdate()
+void Game::cPlayerManager::playerCollisionAfterUpdate(const float& delta_time)
 {
 	for (auto& it : players) {
 		it->setColliderSpeed();
+		it->gemsUpdate(delta_time);
 	}
 }
 void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
@@ -186,12 +188,11 @@ void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& pla
 }
 void Game::cPlayerManager::update(const float& delta_time)
 {
-    CAMERA->refPosition = active_player->getPos( ) + ci::vec3(0,0.7f,0);
+    CAMERA->refPosition = active_player->getPos( ) + ci::vec3(0,0,0);
+	playerMove(delta_time);
 	for (auto& it : players) {
 		it->update(delta_time);
 	}
-	
-	playerMove(delta_time);
     cClientAdapter::getInstance( )->sendPlayer( active_player->getPos(), ci::quat() );
 }
 
