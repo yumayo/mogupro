@@ -11,6 +11,10 @@ enum WINDOW_SIZE {
     TEXTURE_WIDTH = 3000,
     TEXTURE_HEIGHT = 4500
 };
+enum CAMERA_MODE {
+	TPS,
+	FPS
+};
 class cCameraManager : public Utility::cSingletonAble<cCameraManager>
 {
 public:
@@ -31,6 +35,7 @@ private:
     //カメラの向いている角度
     ci::vec2 camera_angle;
 
+	CAMERA_MODE camera_mode;
 
     ci::vec2 my_scatter;
     //揺れる幅
@@ -67,6 +72,7 @@ public:
         looking_point = ci::vec3( 0 );
         my_scatter = ci::vec2( 0 );
 		looking_position = ci::vec3(0);
+		camera_mode = CAMERA_MODE::TPS;
         camera_far = 5;
     }
     ~cCameraManager( ) {
@@ -91,9 +97,25 @@ public:
         return camera_angle;
     }
 
-	//カメラの向いている向きをノーマライズして返す
+	//カメラの向いている向きを返す
 	ci::vec3 getCameraLook() {
-		return ci::vec3(looking_point.x/10, looking_point.y / 10, looking_point.z / 10);
+		if (camera_mode = CAMERA_MODE::FPS) {
+			return ci::vec3(looking_point.x, looking_point.y, looking_point.z);
+		}
+		return ci::vec3(looking_point.x / 10, looking_point.y / 10, looking_point.z / 10);
+	}
+	CAMERA_MODE getCameraMode() {
+		return camera_mode;
+	}
+	void setCameraFar(float& set_far) {
+		camera_far = set_far;
+		if (camera_far <= 0.5f) {
+			camera_mode = CAMERA_MODE::FPS;
+			camera_far = 0.4f;
+		}
+		else if(camera_far > 0.5f) {
+			camera_mode = CAMERA_MODE::TPS;
+		}
 	}
 
     //カメラを揺らす関数

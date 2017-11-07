@@ -10,6 +10,10 @@ namespace Game {
 	namespace Gem {
 		class cGem;
 	}
+	namespace Field
+	{
+		class cBreakBlockType;
+	}
 	namespace Player {
 
 		struct PlayerStatus {
@@ -17,6 +21,7 @@ namespace Game {
 			float drill_range;
 			float jump_force;
 			float speed;
+			float drill_speed;
 		};
 
 		enum Team {
@@ -36,11 +41,17 @@ namespace Game {
 			ci::gl::VboMeshRef mesh;
 			//ステータス
 			PlayerStatus status;
+			//掘ることが可能なブロックタイプ
+			std::shared_ptr<Game::Field::cBreakBlockType> block_type;
 			//設置位置
 			ci::vec3 installation_position;
-
+			//プレイヤーの方向ベクトル
+			ci::vec3 player_vec;
 			//チーム
 			Team team;
+
+			//プレイヤーのAABB
+			ci::AxisAlignedBox aabb;
 
 			//何Pか
 			int player_id;
@@ -52,7 +63,11 @@ namespace Game {
 			bool jump_flag;
 
 			//クォータニオンの例外用の角度
-			float save_rotate;
+			float save_rotate_y;
+			float save_rotate_x;
+
+			//プレイヤーからのカメラの位置
+			float player_far;
 
 			//プレイヤーの移動ベクトル保存
 			ci::vec3 velocity;
@@ -73,11 +88,22 @@ namespace Game {
 			ci::vec3 begin_pos;
 			Utility::hardptr<Node::node> root;
 			std::vector<std::shared_ptr<Game::Gem::cGem>>getgems;
+			std::unordered_map<int,bool> gem_production_end;
 
-			void playerRotation();
+			//Y軸回転
+			void playerRotationY();
+			//X軸回転
+			void playerRotationX();
+
+			//掘削時のカメラの遠さ調整
+			void drillingCamera(const float& delta_time);
+			void drill(const float& delta_time);
+
+			//ジェム関連
 			void getGems(const int& _gemid);
 			void collisionGems();
-			void gemsUpdate(const float& delta_time);
+			
+			
 		public:
 			cPlayer(
 				const ci::vec3& pos,
@@ -101,16 +127,23 @@ namespace Game {
 			ci::vec3 getInstallationPosition() {
 				return installation_position;
 			}
+			//プレイヤーが向いている方向のベクトル
+			ci::vec3 getPlayerVec() {
+				return player_vec;
+			}
 			Team getWhichTeam() {
 				return team;
 			}
-			//プレイヤーの移動
-			void setColliderSpeed() {
-				mPos = mCollider.getPosition();
-			}
 
+			ci::AxisAlignedBox getAABB() {
+				return aabb;
+			}
+			
 			float getSpeed() {
 				return status.speed;
+			}
+			float getDrillSpeed() {
+				return status.drill_speed;
 			}
 			void setSpeed(const float& speed) {
 				status.speed = speed;
@@ -128,6 +161,15 @@ namespace Game {
 				return active_user;
 			}
 			
+			//コリジョンの後に呼び出す
+			//プレイヤーの移動
+			void setColliderSpeed() {
+				mPos = mCollider.getPosition();
+			}
+			void gemsUpdate(const float& delta_time);
+
+
+
 			//掘削中ならtrueを入れる
 			void Drilling(const bool& flag) {
 				drilling = flag;
