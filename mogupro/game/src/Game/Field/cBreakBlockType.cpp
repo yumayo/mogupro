@@ -9,8 +9,8 @@ cBreakBlockType::cBreakBlockType( const Network::ubyte1 & type )
 {
     for ( int i = 0; i < 8; i++ )
     {
-        auto k = 1 << i;
-        if ( type & k == 1 )
+        int k = 1 << i;
+        if ( ( type & k ) != 0 )
         {
             add( (BlockType) k );
         }
