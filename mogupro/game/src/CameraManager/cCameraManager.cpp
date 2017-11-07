@@ -75,7 +75,7 @@ void cCameraManager::update( const float& delta_time ) {
     target = Collision::cCollisionManager::getInstance( )->calcNearestPoint( ray, 1 << 1 );
 
 
-    camera.lookAt( target, origin );
+    camera.lookAt( target + ci::vec3(my_scatter.x, my_scatter.y,0), origin + ci::vec3(my_scatter.x, my_scatter.y, 0));
 
 }
 
