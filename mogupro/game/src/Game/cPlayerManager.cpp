@@ -105,9 +105,11 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	}
 
 	//Œ@í’†‚Ítrue 
-	active_player->Drilling(false);
-	if (ENV->pressKey(ci::app::MouseEvent::LEFT_DOWN)) {
+	if (ENV->pushKey(ci::app::MouseEvent::LEFT_DOWN)) {
 		active_player->Drilling(true);
+	}
+	if (ENV->pullKey(ci::app::MouseEvent::LEFT_DOWN)) {
+		active_player->Drilling(false);
 	}
 	if (ENV->isPadPress(ENV->BUTTON_2)) {
 		active_player->Drilling(true);
@@ -199,6 +201,14 @@ void Game::cPlayerManager::update(const float& delta_time)
 void Game::cPlayerManager::draw()
 {
 	for (auto& it : players) {
-		it->draw();
+		if (it->getActiveUser()) {
+			
+			if (CAMERA->getCameraMode() == CameraManager::CAMERA_MODE::TPS) {
+				it->draw();
+			}
+		}
+		else {
+			it->draw();
+		}
 	}
 }

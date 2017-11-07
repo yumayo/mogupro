@@ -50,6 +50,9 @@ namespace Game {
 			//チーム
 			Team team;
 
+			//プレイヤーのAABB
+			ci::AxisAlignedBox aabb;
+
 			//何Pか
 			int player_id;
 			//操作するプレイヤーかどうか
@@ -62,6 +65,9 @@ namespace Game {
 			//クォータニオンの例外用の角度
 			float save_rotate_y;
 			float save_rotate_x;
+
+			//プレイヤーからのカメラの位置
+			float player_far;
 
 			//プレイヤーの移動ベクトル保存
 			ci::vec3 velocity;
@@ -88,8 +94,15 @@ namespace Game {
 			void playerRotationY();
 			//X軸回転
 			void playerRotationX();
+
+			//掘削時のカメラの遠さ調整
+			void drillingCamera(const float& delta_time);
+			void drill(const float& delta_time);
+
+			//ジェム関連
 			void getGems(const int& _gemid);
 			void collisionGems();
+			
 			
 		public:
 			cPlayer(
@@ -120,6 +133,10 @@ namespace Game {
 			}
 			Team getWhichTeam() {
 				return team;
+			}
+
+			ci::AxisAlignedBox getAABB() {
+				return aabb;
 			}
 			
 			float getSpeed() {
