@@ -147,10 +147,10 @@ bool cChunkMeshBuilder::buildMesh()
             {
                 auto block = mChunkLayer->getBlock( ivec3( x, y, z ) );
 
-                if ( block->mIsActive == false )
+                if ( block->isActive() == false )
                     continue;
 
-                auto position = block->mPosition;
+                auto position = block->getPosition();
 
                 directions.update( x, y, z );
 
@@ -173,7 +173,7 @@ void cChunkMeshBuilder::tryAddFaceToMesh( const std::array<GLfloat, 12>& block_f
                                           const ci::ivec3 & block_facing )
 {
     auto block = mChunkLayer->getBlock( block_facing );
-    if ( block->mIsActive == false )
+    if ( block->isActive() == false )
         addFace( block_face, block_normal, position );
 }
 
