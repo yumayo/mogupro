@@ -62,20 +62,33 @@ void cCameraManager::update( const float& delta_time ) {
     looking_point.x = camera_far * sin( camera_angle.x ) * cos( camera_angle.y );
     looking_point.z = camera_far * cos( camera_angle.x ) * cos( camera_angle.y );
     looking_point.y = camera_far * sin( camera_angle.y );
-
+	
     MovingCamera( );
 
     looking_position = pos - looking_point;
 
     auto origin = pos;
     auto target = looking_position;
+	ci::vec3 direction;
+	if (camera_mode == CAMERA_MODE::TPS) {
+		direction = target - origin;
+	}
+	else if (camera_mode == CAMERA_MODE::FPS) {
+		direction = origin - target ;
+	}
 
-    auto direction = target - origin;
     cinder::Ray ray( origin, direction );
+
     target = Collision::cCollisionManager::getInstance( )->calcNearestPoint( ray, 1 << 1 );
 
 
-    camera.lookAt( target, origin );
+	if (camera_mode == CAMERA_MODE::TPS) {
+		camera.lookAt(target + ci::vec3(my_scatter.x, my_scatter.y, 0), origin + ci::vec3(my_scatter.x, my_scatter.y, 0));
+	}
+	else if (camera_mode == CAMERA_MODE::FPS) {
+		camera.lookAt(origin + ci::vec3(my_scatter.x, my_scatter.y, 0), target + ci::vec3(my_scatter.x, my_scatter.y, 0));
+	}
+    
 
 }
 
