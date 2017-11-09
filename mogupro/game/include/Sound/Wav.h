@@ -44,17 +44,17 @@ namespace Sound
 		//!@TODO : 2byteのTagに対応していない
 		bool searchChunk(std::ifstream& fstr, const char* chunk);
 		//チャンネル数を返す
-		unsigned int  Wav::channel() const { return chunkInfo.ch; }
+		unsigned int  channel() const { return chunkInfo.ch; }
 		//データがステレオならtrueを返す
-		bool Wav::isStereo() const { return chunkInfo.ch == 2; }
+		bool isStereo() const { return chunkInfo.ch == 2; }
 		// サンプリングレートを返す
-		unsigned int  Wav::sampleRate() const { return chunkInfo.sampleRate; }
+		unsigned int  sampleRate() const { return chunkInfo.sampleRate; }
 		// データサイズ(バイト数)を返す
-		unsigned int  Wav::size() const { return chunkInfo.size; }
+		unsigned int  size() const { return chunkInfo.size; }
 		// 再生時間(秒)を返す
-		float Wav::totalTime() const { return time; }
+		float totalTime() const { return time; }
 		// 波形データを返す
-		const char* Wav::data() const { return &wavData[0]; }
+		const char* data() const { return &wavData[0]; }
 
 		struct Chunk
 		{
