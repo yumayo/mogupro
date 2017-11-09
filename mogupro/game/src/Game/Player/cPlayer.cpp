@@ -6,6 +6,8 @@
 #include <Resource/TextureManager.h>
 #include <Game/cGemManager.h>
 #include <Game/Field/cBreakBlockType.h>
+#include <Game/Weapons/WeaponFactory.h>
+#include <assert.h>
 
 void Game::Player::cPlayer::playerRotationY()
 {
@@ -134,7 +136,6 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 	gem_production_end.insert(std::make_pair(_gemid, false));
 	int index = getgems.size() - 1;
 
-
 	getgems[index]->setPutPos(ci::vec3(begin_pos.x, mPos.y, begin_pos.z));
 
 	getgems[index]->root = Node::node::create();
@@ -204,7 +205,6 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 	drillingCamera(delta_time);
 	if (!drilling)return;
 
-	//velocity.y = -status.jump_force/2;
 	//自分の位置と、自分のベクトルの向きに対して掘る
 	Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition() + (velocity * ci::vec3(status.drill_speed / 4)), status.drill_range, *block_type);
 	//Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition(), status.drill_range, *block_type);
@@ -251,10 +251,15 @@ Game::Player::cPlayer::cPlayer(
 	player_vec = ci::vec3(0, 0, 2);
 	//プレイヤーのステータス
 	status.attack = 10;
+	status.hp = 100;
 	status.drill_range = 1.5f;
 	status.jump_force = 0.6F;
 	status.speed = DEFAULT_SPEED;
 	status.drill_speed = DEFAULT_SPEED * 2;
+
+	//武器の初期化
+	main_weapon = Weapon::cWeaponFactory::getInstance()->InstanceMainWeapon(Weapon::MAIN_WEAPON::LIGHT_SABER);
+	assert(main_weapon == NULL);
 	//設置位置
 	installation_position = ci::vec3(0, 0, 2);
 	player_far = 5;
@@ -264,6 +269,11 @@ Game::Player::cPlayer::cPlayer(
 	player_id = id;
 	active_user = is_active_user;
 
+}
+
+void Game::Player::cPlayer::weaponUpdae(const float & delta_time)
+{
+	main_weapon->setPlayerTransform(mCollider.getPosition(), player_vec);
 }
 
 void Game::Player::cPlayer::move(const ci::vec3 & velocity)
@@ -340,6 +350,7 @@ void Game::Player::cPlayer::draw()
 	//ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef( ).texture( ) ) );
 
 	ci::gl::pushModelView();
+	main_weapon->draw();
 	ci::gl::translate(mPos - ci::vec3(0, 0.5f, 0));
 	playerRotationY();
 	playerRotationX();
