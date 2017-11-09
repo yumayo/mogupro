@@ -22,13 +22,13 @@ public: // Method
 
     void clear();
     void toBreak();
+    ci::vec3 getPosition();
+    BlockType getType();
+    BlockType setType( const BlockType & type );
+    bool isActive();
 
 public: // Member
 
-    uint mId;
-    ci::vec3 mPosition;
-    float mScale;
-    bool mIsActive = false;
     Collision::cAABBCollider mCollider;
     BlockType mType;
 };

@@ -9,21 +9,14 @@ namespace Game
 namespace Field
 {
 cBlock::cBlock() :
-    mPosition( vec3( 0 ) )
-    , mScale( BLOCK_SIZE )
-    , mIsActive( false )
-    , mCollider( mPosition, vec3( BLOCK_SIZE ), vec3( BLOCK_SIZE / 2.0f ) )
+    mCollider( vec3( 0 ), vec3( BLOCK_SIZE ), vec3( BLOCK_SIZE / 2.0f ) )
     , mType( BlockType::AIR )
 {
 
 }
 
 cBlock::cBlock( const ci::vec3& position, const float& scale, const uint & id ) :
-    mPosition( position )
-    , mScale( scale )
-    , mId( id )
-    , mIsActive( true )
-    , mCollider( mPosition, vec3( scale ) )
+    mCollider( position, vec3( scale ) )
     , mType( BlockType::NORMAL )
 {
 }
@@ -35,7 +28,7 @@ cBlock::~cBlock()
 
 void cBlock::setup()
 {
-    if ( mIsActive )
+    if ( mType != BlockType::AIR )
         mCollider.addWorld();
 }
 
@@ -45,9 +38,25 @@ void cBlock::clear()
 
 void cBlock::toBreak()
 {
-    mIsActive = false;
+    mType = BlockType::AIR;
     clear();
     mCollider.removeWorld();
+}
+ci::vec3 cBlock::getPosition()
+{
+    return mCollider.getPosition();
+}
+BlockType cBlock::getType()
+{
+    return mType;
+}
+BlockType cBlock::setType( const BlockType & type )
+{
+    return mType = type;
+}
+bool cBlock::isActive()
+{
+    return mType != BlockType::AIR;
 }
 }
 }

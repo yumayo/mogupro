@@ -145,9 +145,8 @@ void cChunkLayer::addFace( const std::array<GLfloat, 12>& block_face,
 cChunkLayer* cChunkLayer::breakBlock( ci::ivec3 c )
 {
     auto block = getBlock( c );
-    if ( block->mIsActive == false )
+    if ( block->getType() == BlockType::AIR )
         return nullptr;
-    block->mIsActive = false;
     block->toBreak();
 
     auto layer = getChunkLayer( c );
@@ -160,9 +159,8 @@ cChunkLayer* cChunkLayer::breakBlock( ci::ivec3 c )
 
 cChunkLayer * cChunkLayer::breakBlock( cBlock * block, cChunkLayer* layer )
 {
-    if ( block->mIsActive == false )
+    if ( block->getType() == BlockType::AIR )
         return nullptr;
-    block->mIsActive = false;
     block->toBreak();
 
     if ( layer->mIsActive == false )
@@ -268,10 +266,8 @@ void cChunkLayer::createBlocks()
 
                 // 一番上のレイヤーはブロックを生成しない
                 if ( mHeight >= CHUNK_RANGE_Y )
-                {
-                    block->mPosition = vec3( 0 );
-                    block->mIsActive = false;
-                }
+                    block->setType( BlockType::AIR );
+
 
                 // Collider生成
                 block->setup();
