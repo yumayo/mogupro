@@ -96,8 +96,8 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                 if ( block == nullptr )
                     continue;
 
-                if ( block->mIsActive )
-                    if ( isPointToSphere( block->mPosition, sphere_pos, radius ) == false )
+                if ( block->isActive() )
+                    if ( isPointToSphere( block->getPosition(), sphere_pos, radius ) == false )
                         continue;
 
                 if ( type.find( block->mType ) == false )

@@ -33,20 +33,16 @@ void cUnderGround::setup()
         for ( int x = 0; x < CHUNK_RANGE_X; x++ )
             mChunkHolder.setChunk( x, 0, z );
 
-    for ( size_t i = 0; i < 1; i++ )
-    {
-        mChunkLoadThreads.emplace_back( [&]
-        {
-            calcChunks();
-            chunkMeshReLoaded();
-        }
-        );
-    }
+    calcChunks();
+    //chunkMeshReLoaded();
+
 }
 
 void cUnderGround::update()
 {
-    std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
+    //std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
+
+    chunkMeshReLoaded();
 
     ChunkMap& chunks = mChunkHolder.getChunks();
     for ( auto& chunk : chunks )
@@ -58,7 +54,7 @@ void cUnderGround::update()
 
 void cUnderGround::draw()
 {
-    std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
+    //std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
 
     auto texture = TEX->get( "dirt" );
     if ( !texture )
@@ -99,13 +95,13 @@ void cUnderGround::shutdown()
 
 bool cUnderGround::chunkMeshReLoaded()
 {
-    while ( mIsRunning )
+    //while ( mIsRunning )
     {
         for ( int z = 0; z < CHUNK_RANGE_Z; z++ )
         {
             for ( int x = 0; x < CHUNK_RANGE_X; x++ )
             {
-                std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
+                //std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
                 auto chunk = mChunkHolder.getChunk( x, z );
                 chunk->reBuildMesh();
             }
