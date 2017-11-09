@@ -5,7 +5,7 @@
 #include <Collision/cRigidBody.h>
 #include <Node/action.hpp>
 #include <Node/node.h>
-
+#include <Game/Weapons/WeaponBase.h>
 namespace Game {
 	namespace Gem {
 		class cGem;
@@ -14,9 +14,11 @@ namespace Game {
 	{
 		class cBreakBlockType;
 	}
+
 	namespace Player {
 
 		struct PlayerStatus {
+			float hp;
 			float attack;
 			float drill_range;
 			float jump_force;
@@ -52,6 +54,9 @@ namespace Game {
 
 			//プレイヤーのAABB
 			ci::AxisAlignedBox aabb;
+			bool damage;
+			//メイン武器
+			std::unique_ptr<Weapon::WeaponBase> main_weapon;
 
 			//何Pか
 			int player_id;
@@ -138,6 +143,9 @@ namespace Game {
 			ci::AxisAlignedBox getAABB() {
 				return aabb;
 			}
+			Weapon::WeaponBase* getMainWeapon() {
+				return main_weapon.get();
+			}
 			
 			float getSpeed() {
 				return status.speed;
@@ -165,10 +173,15 @@ namespace Game {
 			//プレイヤーの移動
 			void setColliderSpeed() {
 				mPos = mCollider.getPosition();
+				//ベクトル更新
+				if (velocity.x >= 0.01f ||
+					velocity.x <= -0.01f ||
+					velocity.z >= 0.01f ||
+					velocity.z <= -0.01f) {
+					player_vec = velocity;
+				}
 			}
 			void gemsUpdate(const float& delta_time);
-
-
 
 			//掘削中ならtrueを入れる
 			void Drilling(const bool& flag) {
@@ -178,7 +191,7 @@ namespace Game {
 			bool isDrilling() {
 				return drilling;
 			}
-
+			void weaponUpdae(const float& delta_time);
 			void move(const ci::vec3& velocity);
 			void jump(bool flag);
 

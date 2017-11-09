@@ -178,6 +178,7 @@ void Game::cPlayerManager::playerCollisionAfterUpdate(const float& delta_time)
 	for (auto& it : players) {
 		it->setColliderSpeed();
 		it->gemsUpdate(delta_time);
+		it->weaponUpdae(delta_time);
 	}
 }
 void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
