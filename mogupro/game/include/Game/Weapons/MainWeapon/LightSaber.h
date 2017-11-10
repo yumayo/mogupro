@@ -1,13 +1,15 @@
 #pragma once
 #include <Game/Weapons/WeaponBase.h>
-
+#include <Node/action/action.h>
+#include <vector>
 namespace Game {
 	namespace Weapon {
 		class LightSaber : public Game::Weapon::WeaponBase {
 		private:
-		
-			bool is_attack;
+			
+			std::vector<bool> hits;
 			void Attack();
+			void Operation();
 		public:
 			LightSaber();
 			

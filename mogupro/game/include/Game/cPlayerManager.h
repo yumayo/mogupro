@@ -19,6 +19,7 @@ private:
     void playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams);
     void playerNormalMove(const float& delta_time);
 	void playerDrillMove(const float& delta_time);
+	void playerAttack(const float& delta_time);
 	void playerMove(const float& delta_time);
 	void padMove(const float & delta_time);
 public:

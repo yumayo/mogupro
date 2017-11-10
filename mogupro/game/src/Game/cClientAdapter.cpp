@@ -38,7 +38,7 @@ void cClientAdapter::recvAllPlayers( )
         auto players = Game::cPlayerManager::getInstance( )->getPlayers( );
         for ( auto& o : packet->mPlayerFormats )
         {
-            players[o.playerId]->setPos( o.position );
+            //players[o.playerId]->setPos( o.position );
         }
     }
 }
@@ -135,7 +135,7 @@ void cClientAdapter::sendPlayer( cinder::vec3 const & position, cinder::quat con
     packet->mFormat.playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
     packet->mFormat.position = position;
     packet->mFormat.rotation = rotation;
-    Network::cUDPClientManager::getInstance( )->send( packet );
+    //Network::cUDPClientManager::getInstance( )->send( packet );
 }
 void cClientAdapter::sendGetGemPlayer( Network::ubyte2 gemId )
 {

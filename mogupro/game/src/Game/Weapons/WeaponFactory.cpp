@@ -19,7 +19,7 @@ std::unique_ptr<Game::Weapon::WeaponBase> Game::Weapon::cWeaponFactory::Instance
 {
 	switch (sub_weapon)
 	{
-	case BOMB:
+	case LIGHT_BOMB:
 		return NULL;
 		break;
 	default:

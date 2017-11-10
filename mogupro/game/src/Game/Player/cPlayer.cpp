@@ -75,7 +75,7 @@ void Game::Player::cPlayer::playerRotationY()
 void Game::Player::cPlayer::playerRotationX()
 {
 	if (!drilling) return;
-	//プレイヤーの前方向
+	//プレイヤーの上方向
 	ci::vec3 rotateaxis = ci::vec3(0.0f, 1.0f, 0.0f);
 
 	//移動先のベクトル
@@ -234,6 +234,8 @@ Game::Player::cPlayer::cPlayer(
 	const ci::vec3& pos,
 	const int& id,
 	const bool& is_active_user,
+	const int& main_weapon_id,
+	const int& sub_weapon_id,
 	const Game::Player::Team& team)
 	: cObjectBase(pos),
 	mCollider(mPos, ci::vec3(DEFAULT_SIZE)),
@@ -258,8 +260,11 @@ Game::Player::cPlayer::cPlayer(
 	status.drill_speed = DEFAULT_SPEED * 2;
 
 	//武器の初期化
-	main_weapon = Weapon::cWeaponFactory::getInstance()->InstanceMainWeapon(Weapon::MAIN_WEAPON::LIGHT_SABER);
-	assert(main_weapon == NULL);
+	main_weapon = Weapon::cWeaponFactory::getInstance()->InstanceMainWeapon(static_cast<Weapon::MAIN_WEAPON>(main_weapon_id));
+	assert(main_weapon != NULL && "メイン武器の種類のenumが正しく入っていません。");
+	sub_weapon = Weapon::cWeaponFactory::getInstance()->InstanceSubWeapon(static_cast<Weapon::SUB_WEAPON>(sub_weapon_id));
+	assert(main_weapon != NULL && "サブ武器の種類のenumが正しく入っていません。");
+	
 	//設置位置
 	installation_position = ci::vec3(0, 0, 2);
 	player_far = 5;
@@ -271,9 +276,15 @@ Game::Player::cPlayer::cPlayer(
 
 }
 
+
+void Game::Player::cPlayer::receiveDamage(const bool & hit, const float & attack)
+{
+}
+
 void Game::Player::cPlayer::weaponUpdae(const float & delta_time)
 {
-	main_weapon->setPlayerTransform(mCollider.getPosition(), player_vec);
+	main_weapon->update(delta_time);
+	//sub_weapon->update(delta_time);
 }
 
 void Game::Player::cPlayer::move(const ci::vec3 & velocity)
@@ -291,7 +302,6 @@ void Game::Player::cPlayer::move(const ci::vec3 & velocity)
 		else {
 			mRigidbody.gravityOn();
 		}
-		
 	}
 
 	mRigidbody.setSpeed(ci::vec3(0, speed.y, 0) + velocity);
@@ -331,6 +341,9 @@ void Game::Player::cPlayer::setup()
 	//重力をかける必要がない
 	if (!active_user)mRigidbody.gravityOff();
 
+	main_weapon->setup();
+	//sub_weapon->setup();
+
 	mesh = Resource::cObjectManager::getInstance()->findObject("montamogura/moguraHontai.obj");
 	TEX->set("mogura", "OBJ/montamogura/moguraHontai.png");
 }
@@ -351,6 +364,7 @@ void Game::Player::cPlayer::draw()
 
 	ci::gl::pushModelView();
 	main_weapon->draw();
+	//sub_weapon->draw();
 	ci::gl::translate(mPos - ci::vec3(0, 0.5f, 0));
 	playerRotationY();
 	playerRotationX();
