@@ -21,3 +21,5 @@ mogupro/librarys/cinder/*
 # 別途でダウンロードしたzipを解凍してフォルダに入れてください。
 mogupro/librarys/boost/*
 !mogupro/librarys/boost/.gitkeep
+
+mogupro/game/assets/Log/*
