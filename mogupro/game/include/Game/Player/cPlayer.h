@@ -57,7 +57,7 @@ namespace Game {
 			bool damage;
 			//メイン武器
 			std::unique_ptr<Weapon::WeaponBase> main_weapon;
-
+			std::unique_ptr<Weapon::WeaponBase> sub_weapon;
 			//何Pか
 			int player_id;
 			//操作するプレイヤーかどうか
@@ -114,6 +114,8 @@ namespace Game {
 				const ci::vec3& pos,
 				const int& id,
 				const bool& is_active_user,
+				const int& main_weapon_id,
+				const int& sub_weapon_id,
 				const Game::Player::Team& team);
 			
 			ci::vec3 getSize() {
@@ -126,7 +128,7 @@ namespace Game {
 			}
 
 			void resetPos() {
-				mCollider.setPosition(ci::vec3(10,70,10));
+				mCollider.setPosition(ci::vec3(0,70,0));
 			}
 
 			ci::vec3 getInstallationPosition() {
@@ -168,6 +170,13 @@ namespace Game {
 			bool getActiveUser() {
 				return active_user;
 			}
+
+			float getRotateY() {
+				return save_rotate_y;
+			}
+			float getRotateX() {
+				return save_rotate_x;
+			}
 			
 			//コリジョンの後に呼び出す
 			//プレイヤーの移動
@@ -191,6 +200,7 @@ namespace Game {
 			bool isDrilling() {
 				return drilling;
 			}
+			void receiveDamage(const bool& hit,const float& attack);
 			void weaponUpdae(const float& delta_time);
 			void move(const ci::vec3& velocity);
 			void jump(bool flag);

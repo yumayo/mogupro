@@ -7,30 +7,23 @@ namespace Game {
 		
 		class WeaponBase {
 		protected:
-			ci::vec3 center_pos;
-			ci::vec3 player_vec;
-			ci::vec3 debug_intersects;
 			float attack;
 			float range;
-			bool hit;
 			ci::Ray ray;
 			ci::AxisAlignedBox aabb;
+			bool push;
+			bool press;
+			bool pull;
 		public:
 			WeaponBase() {}
-			//RayとAABBのSetは子クラスで各々やってね
-			ci::Ray getRay() {
-				return ray;
+			virtual void pushCall(const bool& push) {
+				this->push = push;
 			}
-			ci::AxisAlignedBox getAABB() {
-				return aabb;
+			virtual void pressCall(const bool& press) {
+				this->press = press;
 			}
-			void setDebugIntersects(ci::vec3 pos) {
-				debug_intersects = pos;
-			}
-			//毎フレーム呼ぶ
-			void setPlayerTransform(ci::vec3 pos,ci::vec3 vec) {
-				center_pos = pos;
-				player_vec = vec;
+			virtual void pullCall(const bool& pull) {
+				this->pull = pull;
 			}
 			virtual void setup() = 0;
 			virtual void update(const float& delta_time) = 0;

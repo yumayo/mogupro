@@ -6,10 +6,10 @@
 namespace Game {
 	namespace Weapon {
 		enum MAIN_WEAPON {
-			LIGHT_SABER,
+			LIGHT_SABER = 0,
 		};
 		enum SUB_WEAPON {
-			BOMB,
+			LIGHT_BOMB = 0,
 		};
 
 		class cWeaponFactory : public ::Utility::cSingletonAble<cWeaponFactory>

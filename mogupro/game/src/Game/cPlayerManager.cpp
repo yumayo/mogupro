@@ -13,14 +13,14 @@ void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const
 	for (int i = 0; i < player_number; i++) {
 		//通信で代入
 		if (i == active_player_id) {
-			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, true,static_cast<Game::Player::Team>(teams[i])));
+			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, true, 0, 0, static_cast<Game::Player::Team>(teams[i])));
 			//アクティブユーザに代入
 			active_player = players[i];
-            this->active_player_id = active_player_id;
-            this->active_player_team_id = teams[i];
+			this->active_player_id = active_player_id;
+			this->active_player_team_id = teams[i];
 		}
 		else {
-			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, false, static_cast<Game::Player::Team>(teams[i])));
+			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, false, 0, 0, static_cast<Game::Player::Team>(teams[i])));
 		}
 	}
 }
@@ -31,6 +31,14 @@ void Game::cPlayerManager::playerDrillMove(const float & delta_time)
 	//カメラの方向に移動
 	float player_speed = delta_time * active_player->getDrillSpeed();
 	active_player->move(ci::vec3(CAMERA->getCameraLook().x * player_speed, CAMERA->getCameraLook().y * player_speed, CAMERA->getCameraLook().z * player_speed));
+}
+
+void Game::cPlayerManager::playerAttack(const float & delta_time)
+{
+	active_player->getMainWeapon()->pushCall(ENV->pushKey(ci::app::KeyEvent::KEY_t));
+	active_player->getMainWeapon()->pressCall(ENV->pressKey(ci::app::KeyEvent::KEY_t));
+	active_player->getMainWeapon()->pullCall(ENV->pullKey(ci::app::KeyEvent::KEY_t));
+	
 }
 
 void Game::cPlayerManager::playerNormalMove(const float& delta_time)
@@ -72,7 +80,7 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 
 	keybord_velocity += ci::vec3(z_axis*sin(CAMERA->getCameraAngle().x), 0.0f, z_axis*cos(CAMERA->getCameraAngle().x));
 	keybord_velocity += ci::vec3(x_axis*cos(CAMERA->getCameraAngle().x), 0.0f, -x_axis*sin(CAMERA->getCameraAngle().x));
-	
+
 	if (diagonal >= 2) {
 		std::sqrtf(keybord_velocity.x);
 		std::sqrtf(keybord_velocity.z);
@@ -87,9 +95,9 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 	//掘削機設置
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_o)) {
 		auto drill_pos = Game::cFieldManager::getInstance()->getBlockTopPosition(active_player->getPos() + active_player->getInstallationPosition());
-        cClientAdapter::getInstance( )->sendSetQuarry( drill_pos, Game::Strategy::cDrill::DrillType::Level1 );
+		cClientAdapter::getInstance()->sendSetQuarry(drill_pos, Game::Strategy::cDrill::DrillType::Level1);
 	}
-	
+
 }
 void Game::cPlayerManager::playerMove(const float & delta_time)
 {
@@ -161,8 +169,8 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 
 	pad_velocity += ci::vec3(z_axis*sin(CAMERA->getCameraAngle().x), 0.0f, z_axis*cos(CAMERA->getCameraAngle().x));
 	pad_velocity += ci::vec3(x_axis*cos(CAMERA->getCameraAngle().x), 0.0f, -x_axis*sin(CAMERA->getCameraAngle().x));
-	
-	active_player->move(pad_velocity);
+
+	active_player->move(pad_velocity*ci::vec3(3));
 }
 void Game::cPlayerManager::setPlayersPosition(std::vector<ci::vec3> positions)
 {
@@ -183,7 +191,7 @@ void Game::cPlayerManager::playerCollisionAfterUpdate(const float& delta_time)
 }
 void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
-	playerInstance(positions, player_number, active_player_id,teams);
+	playerInstance(positions, player_number, active_player_id, teams);
 	//ポジションの参照とカメラのズームを設定
 	for (auto& it : players) {
 		it->setup();
@@ -191,19 +199,19 @@ void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& pla
 }
 void Game::cPlayerManager::update(const float& delta_time)
 {
-    CAMERA->refPosition = active_player->getPos( ) + ci::vec3(0,0,0);
+	CAMERA->refPosition = active_player->getPos() + ci::vec3(0, 0, 0);
 	playerMove(delta_time);
 	for (auto& it : players) {
 		it->update(delta_time);
 	}
-    cClientAdapter::getInstance( )->sendPlayer( active_player->getPos(), ci::quat() );
+	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), ci::quat());
 }
 
 void Game::cPlayerManager::draw()
 {
 	for (auto& it : players) {
 		if (it->getActiveUser()) {
-			
+
 			if (CAMERA->getCameraMode() == CameraManager::CAMERA_MODE::TPS) {
 				it->draw();
 			}
