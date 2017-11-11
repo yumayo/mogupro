@@ -30,6 +30,7 @@ public: // Player,Strategy Ç≈égÇ§ä÷êî
     bool blockBreakNetwork( const ci::vec3& position, const float & radius, const cBreakBlockType& type );
     ci::vec3 getBlockTopPosition( const ci::vec3& target_position );
     ci::vec3 getBlockHighestPosition( const ci::vec3& target_position );
+    bool isBreakBlock( const vec3& position, const float& raiuds );
 
 public: // Field ì‡Ç≈égÇ§ä÷êî
 

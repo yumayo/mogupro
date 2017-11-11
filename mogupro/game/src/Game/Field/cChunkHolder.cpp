@@ -71,10 +71,6 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
     if ( cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
         return false;
 
-    auto break_chunk_layer = getChunkLayer( chunk_cell );
-
-    // •K‚¸ˆêƒ}ƒX‚ÍŒ@‚é
-    auto first_layer = break_chunk_layer->breakBlock( block_cell );
 
     if ( radius < 0 )
         return false;
@@ -83,11 +79,7 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
     auto s = block_cell - r;
     auto e = block_cell + r;
 
-    // Œ@‚ç‚ê‚½ƒ`ƒƒƒ“ƒN‚ð“o˜^‚·‚é
-    std::vector<cChunkLayer*> build_chunk_layers;
-    if ( first_layer != nullptr )
-        build_chunk_layers.push_back( first_layer );
-
+    auto break_chunk_layer = getChunkLayer( chunk_cell );
     for ( int z = s.z; z <= e.z; z++ )
         for ( int y = s.y; y <= e.y; y++ )
             for ( int x = s.x; x <= e.x; x++ )
@@ -95,60 +87,25 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                 auto block = break_chunk_layer->getBlock( ivec3( x, y, z ) );
                 if ( block == nullptr )
                     continue;
-
-                if ( block->isActive() )
-                    if ( isPointToSphere( block->getPosition(), sphere_pos, radius ) == false )
-                        continue;
-
-                if ( type.find( block->mType ) == false )
+                if ( block->isActive() == false )
+                    continue;
+                if ( isPointToSphere( block->getPosition(), sphere_pos, radius ) == false )
                     continue;
 
-                auto layer = break_chunk_layer->getChunkLayer( ivec3( x, y, z ) );
-                layer = break_chunk_layer->breakBlock( block, layer );
-                if ( layer == nullptr )
-                    continue;
-                if ( std::any_of( build_chunk_layers.begin(), build_chunk_layers.end(),
-                                  [&]( cChunkLayer* t ) { return t == layer; } ) )
-                    continue;
-                build_chunk_layers.push_back( layer );
+                return true;
             }
 
-    // Œ@‚ç‚ê‚½ƒ`ƒƒƒ“ƒN‚ÌŽü‚è‚à“o˜^‚·‚é
-    std::vector<cChunkLayer*> temp_layers;
-    for ( auto break_layer : build_chunk_layers )
-    {
-        for ( int i = 0; i < 6; i++ )
-        {
-            auto cell = break_layer->getChunkCell();
-            switch ( i )
-            {
-                case 0: cell.x += 1; break;
-                case 1: cell.x -= 1; break;
-                case 2: cell.y += 1; break;
-                case 3: cell.y -= 1; break;
-                case 4: cell.z += 1; break;
-                case 5: cell.z -= 1; break;
-            }
+    return false;
+}
 
-            if ( isExistsChunk( cell.x, 0, cell.z ) )
-                continue;
-            if ( cell.y > getHighestCell() || cell.y < 0 )
-                continue;
-            if ( std::any_of( build_chunk_layers.begin(), build_chunk_layers.end(),
-                              [&]( cChunkLayer* t ) { return t->getChunkCell() == cell; } ) )
-                continue;
+bool cChunkHolder::isBreakBlock( const ci::ivec3 & chunk_cell,
+                                 const ci::ivec3 & block_cell,
+                                 const ci::vec3 & sphere_pos,
+                                 const float & radius )
+{
 
-            auto temp_layer = getChunkLayer( cell );
-            temp_layer->mIsBlockBroken = true;
-            temp_layers.push_back( temp_layer );
-        }
-    }
 
-    std::copy( temp_layers.begin(), temp_layers.end(), std::back_inserter( build_chunk_layers ) );
-
-    for ( auto c : build_chunk_layers )
-        c->reBuildStart();
-    return true;
+    return false;
 }
 
 bool cChunkHolder::createChunk( cChunk* chunk )
