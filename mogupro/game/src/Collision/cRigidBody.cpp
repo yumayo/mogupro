@@ -8,7 +8,6 @@ namespace Collision
 cRigidBody::cRigidBody( cColliderBase& collider, cinder::vec3 speed )
     : mCollider( collider )
     , mSpeed( speed )
-    , mMinValue( std::numeric_limits<float>::max( ) )
     , mIsGravity( true )
     , mIsLanding( false )
 	, mIsHit( false )
@@ -36,7 +35,6 @@ cinder::AxisAlignedBox cRigidBody::createAABB( ) const
 
 void cRigidBody::update( float delta )
 {
-    mMinValue = std::numeric_limits<float>::max( );
     mIsLanding = false;
 	mIsHit = false;
 
@@ -50,9 +48,9 @@ void cRigidBody::update( float delta )
 }
 void cRigidBody::lateUpdate( float delta )
 {
-    if ( mMinValue != std::numeric_limits<float>::max( ) )
+    if ( mIsHit )
     {
-        mSpeed *= ( 1.0F - mFriction ) * delta;
+        mSpeed -= mSpeed * ( 1.0F - mFriction ) * delta;
     }
 }
 bool cRigidBody::isLanding( ) const
