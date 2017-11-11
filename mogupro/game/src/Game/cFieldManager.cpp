@@ -43,6 +43,10 @@ bool cFieldManager::blockBreakNetwork( const ci::vec3 & position, const float & 
 {
     return mUnderGround->blockBreakNetwork( position, radius, type );
 }
+bool cFieldManager::isBreakBlock( const ci::vec3 & position, const float & radius )
+{
+    return mUnderGround->isBreakBlock( position, radius );
+}
 ci::vec3 cFieldManager::getBlockHighestPosition( const ci::vec3 & target_position )
 {
     return mUnderGround->getBlockHighestPosition( target_position );
@@ -50,12 +54,6 @@ ci::vec3 cFieldManager::getBlockHighestPosition( const ci::vec3 & target_positio
 ci::vec3 cFieldManager::getBlockTopPosition( const ci::vec3 & target_position )
 {
     return mUnderGround->getBlockTopPosition( target_position );
-}
-void cFieldManager::setPointLight( ci::gl::GlslProgRef shader, ci::vec3 position )
-{
-}
-void cFieldManager::erasePointLight( ci::vec3 position )
-{
 }
 void cFieldManager::shutdown()
 {

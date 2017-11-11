@@ -227,5 +227,11 @@ ci::vec3 cUnderGround::getBlockHighestPosition( const ci::vec3 & target_position
     block_cell.y += BLOCK_SIZE;
     return block_cell;
 }
+bool cUnderGround::isBreakBlock( const vec3 & position, const float & raiuds )
+{
+    auto chunk_cell = getChunkCellFromPosition( position );
+    auto block_cell = getBlockCellFromPosition( position );
+    return mChunkHolder.breakBlock( chunk_cell, block_cell, position, radius, type );;
+}
 }
 }

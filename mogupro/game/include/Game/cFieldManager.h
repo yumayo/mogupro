@@ -29,6 +29,11 @@ public: //Player, Strategy が使う関数
     // radius    : 球の半径
     bool blockBreakNetwork( const ci::vec3& position, const float& radius, const Field::cBreakBlockType& type = Field::BlockType::NORMAL );
 
+    // ブロックを破壊できるか確認する
+    // position : 位置
+    // radius : 球の半径
+    bool isBreakBlock( const ci::vec3& position, const float& radius );
+
     // 引数(vec3)で近くのブロックの上部中心位置を返す
     // target_position : 対象の位置
     ci::vec3 getBlockHighestPosition( const ci::vec3& target_position );
@@ -36,11 +41,6 @@ public: //Player, Strategy が使う関数
     // x,zで近くのブロックの位置を、yはブロックの一番高い固定値を返す
     // target_position : 対象の位置
     ci::vec3 getBlockTopPosition( const ci::vec3& target_position );
-
-    // 影のシェーダー
-    // チャンク一個一個にシェーダーを作る予定
-    void setPointLight( ci::gl::GlslProgRef shader, ci::vec3 position );
-    void erasePointLight( ci::vec3 position );
 
     // シャットダウン
     void shutdown();
