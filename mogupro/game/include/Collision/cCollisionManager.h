@@ -35,9 +35,7 @@ public:
 private:
     bool isRange( int x, int y, int z );
     void fitWorldSpaceMinMax( cinder::ivec3& min, cinder::ivec3& max, cinder::AxisAlignedBox const& aabb ) const;
-    std::mutex mWorldMutex;
     std::array<std::array<std::array<std::set<cColliderBase*>, WORLD_Z>, WORLD_Y>, WORLD_X> mWorld;
-    std::mutex mRigidMutex;
     std::set<cRigidBody*> mRigidBodys;
 private:
     bool mIsUpdate = false;

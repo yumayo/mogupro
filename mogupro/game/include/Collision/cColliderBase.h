@@ -9,7 +9,7 @@ class cRigidBody;
 class cColliderBase
 {
 public:
-    enum class Type
+    enum class Type : unsigned char
     {
         AABB,
     };
