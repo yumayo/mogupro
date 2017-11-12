@@ -4,6 +4,7 @@
 #include <Game/Field/cChunk.h>
 #include <Game/Field/cUnderGround.h>
 #include <Utility/cString.h>
+#include <Utility/cTimeMeasurement.h>
 using namespace ci;
 using namespace ci::app;
 namespace Game
@@ -22,6 +23,7 @@ cChunkLayer::cChunkLayer( const int& height, cChunk* chunk, cUnderGround* under_
     , mIsActive( true )
 {
     mMesh = TriMesh::create();
+    mRevivalTime = 2.0f;
 }
 
 cChunkLayer::~cChunkLayer()
@@ -31,6 +33,22 @@ cChunkLayer::~cChunkLayer()
 
 void cChunkLayer::setup()
 {
+}
+
+void cChunkLayer::update()
+{
+    for ( auto& it : mRevivalBlocks )
+    {
+        it.second -= cTimeMeasurement::getInstance()->deltaTime();
+        if ( it.second < 0 )
+        {
+            mBlocks[it.first]->toRevival();
+            mIsRebuildMesh = true;
+            reBuildStart();
+            mRevivalBlocks.erase( it.first );
+        }
+    }
+
 }
 
 void cChunkLayer::draw()
@@ -67,6 +85,23 @@ cBlock* cChunkLayer::getBlock( const ci::ivec3& c )
         return mUnderGround->getBlock( world_pos );
     }
     return mBlocks[getIndex( c )].get();
+}
+
+void cChunkLayer::setBlock( const int & x, const int & y, const int & z, cBlock * block )
+{
+    setBlock( ci::ivec3( x, y, z ), block );
+}
+
+void cChunkLayer::setBlock( const ci::ivec3 & c, cBlock * block )
+{
+    if ( outOfBounds( c.x ) ||
+         outOfBounds( c.y ) ||
+         outOfBounds( c.z ) )
+    {
+        auto world_pos = toWorldPosition( c );
+        mUnderGround->setBlock( world_pos, block );
+    }
+    mBlocks[getIndex( c )] = std::shared_ptr<cBlock>( block );
 }
 
 cChunkLayer* cChunkLayer::getChunkLayer( const int & height )
@@ -152,7 +187,8 @@ cChunkLayer* cChunkLayer::breakBlock( ci::ivec3 c )
     auto layer = getChunkLayer( c );
     if ( layer->mIsActive == false )
         return this;
-    layer->mIsBlockBroken = true;
+    layer->mIsRebuildMesh = true;
+    layer->mRevivalBlocks[block->mId] = mRevivalTime;
 
     return layer;
 }
@@ -165,14 +201,15 @@ cChunkLayer * cChunkLayer::breakBlock( cBlock * block, cChunkLayer* layer )
 
     if ( layer->mIsActive == false )
         return nullptr;
-    layer->mIsBlockBroken = true;
+    layer->mIsRebuildMesh = true;
+    layer->mRevivalBlocks[block->mId] = mRevivalTime;
 
     return layer;
 }
 
 void cChunkLayer::reBuildStart()
 {
-    if ( mIsBlockBroken == false )
+    if ( mIsRebuildMesh == false )
         return;
     if ( mIsLoading )
         return;
@@ -213,7 +250,7 @@ bool cChunkLayer::reLoading()
     {
         mIsLoading = false;
         mHasBuild = false;
-        mIsBlockBroken = false;
+        mIsRebuildMesh = false;
         mHasBuildCompleted = false;
 
         mVbo = gl::VboMesh::create( *mMesh );
@@ -271,7 +308,9 @@ void cChunkLayer::createBlocks()
 
                 // Collider¶¬
                 block->setup();
-                mBlocks[getIndex( x, y, z )] = block;
+                int id = getIndex( x, y, z );
+                block->mId = id;
+                mBlocks[id] = block;
             }
 }
 

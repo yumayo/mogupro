@@ -15,12 +15,15 @@ public:
     ~cChunkLayer();
 
     void setup();
+    void update();
     void draw();
 
 public:
 
-    cBlock* getBlock( const ci::ivec3& c );
     cBlock* getBlock( const int& x, const  int& y, const int& z );
+    cBlock* getBlock( const ci::ivec3& c );
+    void setBlock( const int& x, const  int& y, const int& z, cBlock* block );
+    void setBlock( const ci::ivec3& c, cBlock* block );
     cChunkLayer* getChunkLayer( const int& height );
     cChunkLayer* getChunkLayer( const ci::ivec3& cell );
 
@@ -35,6 +38,7 @@ public:
 
     cChunkLayer* breakBlock( ci::ivec3 c );
     cChunkLayer* breakBlock( cBlock* block, cChunkLayer* layer );
+
     void buildMesh();
     void reBuildStart();
     void reBuildMesh();
@@ -53,7 +57,7 @@ public:
 
 public: // スレッド用フラグ
 
-    bool mIsBlockBroken = false;
+    bool mIsRebuildMesh = false;
     bool mHasBuild = false;
     bool mIsLoading = false;
     bool mHasBuildCompleted = false;
@@ -72,11 +76,13 @@ private:
     ci::gl::VboMeshRef mVbo;
     std::array<cBlockRef, CHUNK_VOLUME > mBlocks;
     int mHeight;
+    int mRevivalTime;
+    std::unordered_map<int, float> mRevivalBlocks;
 
 private:
 
-    cChunk* mChunk;
-    cUnderGround * mUnderGround;
+    cChunk *mChunk;
+    cUnderGround *mUnderGround;
 
 };
 }
