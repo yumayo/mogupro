@@ -3,6 +3,7 @@
 #include <Game/cGemManager.h>
 #include <CameraManager/cCameraManager.h>
 #include <Game/cPlayerManager.h>
+#include <Game/cLightManager.h>
 using namespace ci;
 namespace Game
 {
@@ -40,7 +41,7 @@ void cShaderManager::update( std::function<void( )> const& drawFunc )
 	glPolygonOffset( 2.0f, 2.0f );
 	gl::ScopedFramebuffer framebuffer( mFbo );
 	gl::ScopedViewport viewport( mFbo->getSize( ) );
-	gl::ScopedGlslProg glsl( cinder::gl::getStockShader( cinder::gl::ShaderDef().texture() ) );
+	gl::ScopedGlslProg glsl( cinder::gl::getStockShader( cinder::gl::ShaderDef( ).texture( ) ) );
 	gl::clear( );
 	gl::enableDepth( );
 	gl::enableAlphaBlending( );
@@ -52,38 +53,24 @@ void cShaderManager::draw( std::function<void( )> const& render )
 {
 	gl::ScopedGlslProg scpGlsl( mGlsl );
 
+	// 世界の全体的な色を調整します。
 	mGlsl->uniform( "uAmb", ColorA( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
+
+	// ポイントライトのデータを送ります。
 	std::vector<vec4> lightPositions;
 	std::vector<vec4> lightColors;
-	int lightNum = glm::min( (int)GemManager->getGems( ).size( ), 100 );
-	mGlsl->uniform( "uLightNum", lightNum );
-	for ( int i = 0; i < lightNum - Game::cPlayerManager::getInstance()->getPlayers().size(); ++i )
+	auto const& lights = Game::cLightManager::getInstance( )->getPointLights( );
+	int lightNum = std::min( lights.size( ), 100U );
+	for ( auto& light : lights )
 	{
-		lightPositions.emplace_back( CAMERA->getCamera( ).getViewMatrix( ) *
-									 vec4( vec3( GemManager->getGems( )[i]->getPos( ) ), 1 ) );
-		lightColors.emplace_back( vec4( vec3( GemManager->getGems( )[i]->getColor( ) ), 1 ) );
+		lightPositions.emplace_back( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second.position, 1 ) );
+		lightColors.emplace_back( ci::vec4( light.second.color, 1 ) );
 	}
-    auto const& players = Game::cPlayerManager::getInstance()->getPlayers();
-
-    for ( int i = 0; i < players.size(); ++i )
-    {
-        lightPositions.emplace_back( CAMERA->getCamera().getViewMatrix() * vec4( players[i]->getPos(), 1 ) );
-        switch ( players[i]->getWhichTeam() )
-        {
-            case Game::Player::Team::Blue:
-                lightColors.emplace_back( vec4( 0.8, 0.8, 1, 1 ) );
-                break;
-            case Game::Player::Team::Red:
-                lightColors.emplace_back( vec4( 1, 0.8, 0.8, 1 ) );
-                break;
-            default:
-                break;
-        }
-    }
-    
+	mGlsl->uniform( "uLightNum", lightNum );
 	mGlsl->uniform( "uModelViewLightPositions", lightPositions.data( ), lightNum );
 	mGlsl->uniform( "uModelViewLightColors", lightColors.data( ), lightNum );
 
+	// 影のデータを送ります。
 	gl::ScopedTextureBind texScope( mShadowTex, (uint8_t)1 );
 	vec3 lightPos = vec3( CAMERA->getCamera( ).getViewMatrix( ) * vec4( mCamera.getEyePoint( ), 1.0f ) );
 	mat4 shadowView = mCamera.getProjectionMatrix( ) * mCamera.getViewMatrix( );
@@ -91,6 +78,7 @@ void cShaderManager::draw( std::function<void( )> const& render )
 	mGlsl->uniform( "uLightPos", lightPos );
 	mGlsl->uniform( "uShadowView", shadowView );
 
+	// 影やポイントライトを反映させたいオブジェクトを全て描画します。
 	render( );
 }
 }
