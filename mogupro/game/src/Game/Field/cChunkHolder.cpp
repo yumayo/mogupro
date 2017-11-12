@@ -107,9 +107,11 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                 layer = break_chunk_layer->breakBlock( block, layer );
                 if ( layer == nullptr )
                     continue;
+
                 if ( std::any_of( build_chunk_layers.begin(), build_chunk_layers.end(),
                                   [&]( cChunkLayer* t ) { return t == layer; } ) )
                     continue;
+
                 build_chunk_layers.push_back( layer );
             }
 
@@ -139,7 +141,7 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                 continue;
 
             auto temp_layer = getChunkLayer( cell );
-            temp_layer->mIsBlockBroken = true;
+            temp_layer->mIsRebuildMesh = true;
             temp_layers.push_back( temp_layer );
         }
     }

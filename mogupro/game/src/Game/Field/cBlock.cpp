@@ -42,6 +42,11 @@ void cBlock::toBreak()
     clear();
     mCollider.removeWorld();
 }
+void cBlock::toRevival()
+{
+    mType = BlockType::NORMAL;
+    mCollider.addWorld();
+}
 ci::vec3 cBlock::getPosition()
 {
     return mCollider.getPosition();
@@ -53,6 +58,10 @@ BlockType cBlock::getType()
 BlockType cBlock::setType( const BlockType & type )
 {
     return mType = type;
+}
+int cBlock::getIndex()
+{
+    return mId;
 }
 bool cBlock::isActive()
 {
