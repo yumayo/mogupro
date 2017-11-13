@@ -9,7 +9,7 @@ namespace Game
 {
 void cShaderManager::setup( )
 {
-	// ‰e‚ğ“Š‰e‚·‚éƒeƒNƒXƒ`ƒƒ‚ğì¬B
+	// å½±ã‚’æŠ•å½±ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½œæˆã€‚
 	int scale = 8192;
 	gl::Texture2d::Format depthFormat;
 	depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
@@ -21,7 +21,7 @@ void cShaderManager::setup( )
 	depthFormat.setCompareFunc( GL_LEQUAL );
 	mShadowTex = gl::Texture2d::create( scale, scale, depthFormat );
 
-	// ã‹L‚Åì¬‚µ‚½ƒeƒNƒXƒ`ƒƒ‚ğƒtƒŒ[ƒ€ƒoƒbƒtƒ@ƒIƒuƒWƒFƒNƒg‚ÉƒŠƒ“ƒN‚µ‚Ü‚·B
+	// ä¸Šè¨˜ã§ä½œæˆã—ãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ãƒªãƒ³ã‚¯ã—ã¾ã™ã€‚
 	gl::Fbo::Format fboFormat;
 	fboFormat.attachment( GL_DEPTH_ATTACHMENT, mShadowTex );
 	mFbo = gl::Fbo::create( mShadowTex->getWidth( ), mShadowTex->getHeight( ), fboFormat );
@@ -29,7 +29,7 @@ void cShaderManager::setup( )
 	mGlsl = gl::GlslProg::create( app::loadAsset( "Shader/world.vert" ),
 								  app::loadAsset( "Shader/world.frag" ) );
 
-	// ‰e‚ğ“Š‰e‚·‚é‚½‚ß‚ÌƒJƒƒ‰‚ğ—pˆÓ‚µ‚Ü‚·B
+	// å½±ã‚’æŠ•å½±ã™ã‚‹ãŸã‚ã®ã‚«ãƒ¡ãƒ©ã‚’ç”¨æ„ã—ã¾ã™ã€‚
 	int size = 128;
 	vec3 pos( 80, 80, 80 );
 	mCamera.setOrtho( -size, size, -size, size, 0.25F, 512.0F );
@@ -53,24 +53,24 @@ void cShaderManager::draw( std::function<void( )> const& render )
 {
 	gl::ScopedGlslProg scpGlsl( mGlsl );
 
-	// ¢ŠE‚Ì‘S‘Ì“I‚ÈF‚ğ’²®‚µ‚Ü‚·B
+	// ä¸–ç•Œã®å…¨ä½“çš„ãªè‰²ã‚’èª¿æ•´ã—ã¾ã™ã€‚
 	mGlsl->uniform( "uAmb", ColorA( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
 
-	// ƒ|ƒCƒ“ƒgƒ‰ƒCƒg‚Ìƒf[ƒ^‚ğ‘—‚è‚Ü‚·B
+	// ãƒã‚¤ãƒ³ãƒˆãƒ©ã‚¤ãƒˆã®ãƒ‡ãƒ¼ã‚¿ã‚’é€ã‚Šã¾ã™ã€‚
 	std::vector<vec4> lightPositions;
 	std::vector<vec4> lightColors;
 	auto const& lights = Game::cLightManager::getInstance( )->getPointLights( );
 	int lightNum = std::min( lights.size( ), 100U );
 	for ( auto& light : lights )
 	{
-		lightPositions.emplace_back( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second.position, 1 ) );
-		lightColors.emplace_back( ci::vec4( light.second.color, 1 ) );
+		lightPositions.emplace_back( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->position, 1 ) );
+		lightColors.emplace_back( ci::vec4( light->color, 1 ) );
 	}
 	mGlsl->uniform( "uLightNum", lightNum );
 	mGlsl->uniform( "uModelViewLightPositions", lightPositions.data( ), lightNum );
 	mGlsl->uniform( "uModelViewLightColors", lightColors.data( ), lightNum );
 
-	// ‰e‚Ìƒf[ƒ^‚ğ‘—‚è‚Ü‚·B
+	// å½±ã®ãƒ‡ãƒ¼ã‚¿ã‚’é€ã‚Šã¾ã™ã€‚
 	gl::ScopedTextureBind texScope( mShadowTex, (uint8_t)1 );
 	vec3 lightPos = vec3( CAMERA->getCamera( ).getViewMatrix( ) * vec4( mCamera.getEyePoint( ), 1.0f ) );
 	mat4 shadowView = mCamera.getProjectionMatrix( ) * mCamera.getViewMatrix( );
@@ -78,7 +78,7 @@ void cShaderManager::draw( std::function<void( )> const& render )
 	mGlsl->uniform( "uLightPos", lightPos );
 	mGlsl->uniform( "uShadowView", shadowView );
 
-	// ‰e‚âƒ|ƒCƒ“ƒgƒ‰ƒCƒg‚ğ”½‰f‚³‚¹‚½‚¢ƒIƒuƒWƒFƒNƒg‚ğ‘S‚Ä•`‰æ‚µ‚Ü‚·B
+	// å½±ã‚„ãƒã‚¤ãƒ³ãƒˆãƒ©ã‚¤ãƒˆã‚’åæ˜ ã•ã›ãŸã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å…¨ã¦æç”»ã—ã¾ã™ã€‚
 	render( );
 }
 }
