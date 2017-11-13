@@ -1,15 +1,12 @@
 #pragma once
-#define NOMINMAX
-#pragma comment(lib,"OpenAL32.lib")
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
 #include <cmath>
 #include <limits>
 #include <iostream>
 #include <string>
 #include <vector>
 #include <fstream>
-
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
 //Wav Header の詳細
 //0 ~ 3  : "RIFF" 文字
 //4 ~ 7  : "総ファイルサイズ -8 (byte)"
@@ -39,7 +36,16 @@ namespace Sound
 	class Wav
 	{
 	public:
+		Wav(){}
+
+		Wav(const std::string& file) 
+		{
+			read(file); 
+			bindAlShortData(); 
+		}
+
 		bool read(const std::string& file);
+		void bindAlShortData();
 		unsigned int getValue(const char* p, const unsigned int num);
 		//!@TODO : 2byteのTagに対応していない
 		bool searchChunk(std::ifstream& fstr, const char* chunk);
@@ -53,9 +59,16 @@ namespace Sound
 		unsigned int  size() const { return chunkInfo.size; }
 		// 再生時間(秒)を返す
 		float totalTime() const { return time; }
+
+		void setTotalTime(const int& size)
+		{
+			time = size / chunkInfo.ch / 2.0f / chunkInfo.sampleRate; 
+		}
 		// 波形データを返す
 		const char* data() const { return &wavData[0]; }
 
+		const ALshort* alData() const { return &alShortdata[0]; }
+		unsigned int  alDataSize() const { return alShortdata.size() * 2; }
 		struct Chunk
 		{
 			unsigned int id;
@@ -66,6 +79,7 @@ namespace Sound
 		};
 
 		std::vector<char> wavData;
+		std::vector<ALshort> alShortdata;
 		Chunk chunkInfo;
 		float time;
 	};
