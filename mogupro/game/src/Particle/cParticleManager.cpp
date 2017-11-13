@@ -8,11 +8,11 @@ cParticle::~cParticle()
 {
 }
 
-cParticleManager::cParticleManager( )
+cParticleManager::cParticleManager()
 {
 
 }
-cParticleManager::~cParticleManager( )
+cParticleManager::~cParticleManager()
 {
 
 }
