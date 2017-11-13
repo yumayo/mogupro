@@ -24,13 +24,14 @@ public:
     void draw();
     void shutdown();
 
-public: // Player,Strategy Ç≈égÇ§ä÷êî
+public: // äOïîÇ≈åƒÇŒÇÍÇÈ
 
     bool blockBreak( const ci::vec3& position, const float& radius, const cBreakBlockType& type );
     bool blockBreakNetwork( const ci::vec3& position, const float & radius, const cBreakBlockType& type );
+    bool isBreakBlock( const ci::vec3& position, const float& radius );
     ci::vec3 getBlockTopPosition( const ci::vec3& target_position );
     ci::vec3 getBlockHighestPosition( const ci::vec3& target_position );
-    bool isBreakBlock( const ci::vec3& position, const float& radius );
+    std::vector<int> getChunkId( const ci::vec3& position, const float& radius );
 
 public: // Field ì‡Ç≈égÇ§ä÷êî
 

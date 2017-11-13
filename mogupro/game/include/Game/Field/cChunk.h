@@ -13,7 +13,10 @@ class cChunk : public std::enable_shared_from_this<cChunk>
 public:
 
     cChunk();
-    cChunk( int x, int z, cUnderGround* under_ground );
+    cChunk( const int& x,
+            const int& z,
+            const int& id,
+            cUnderGround* under_ground );
     ~cChunk();
 
     void setup();
@@ -44,6 +47,7 @@ private:
     ci::ivec3 mChunkCell;
     std::vector<cChunkLayer> mChunkLayers;
     cUnderGround* mUnderGround;
+    int mChunkId;
 
 };
 }

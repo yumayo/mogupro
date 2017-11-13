@@ -11,6 +11,7 @@ namespace Field
 {
 cChunkHolder::cChunkHolder( cUnderGround* under_ground ) :
     mUnderGround( under_ground )
+    , mChunkIdOffset( 0 )
 {
 }
 
@@ -49,7 +50,9 @@ void cChunkHolder::setChunk( const int& x, const int& y, const int& z )
 {
     if ( isExistsChunk( x, y, z ) == false )
         return;
-    mChunks[ivec3( x, y, z )] = std::make_shared<cChunk>( x, z, mUnderGround );
+    int id = ( CHUNK_RANGE_Y + 1 ) * mChunkIdOffset;
+    mChunkIdOffset += 1;
+    mChunks[ivec3( x, y, z )] = std::make_shared<cChunk>( x, z, id, mUnderGround );
 }
 
 bool isPointToSphere( const ci::vec3& point, const ci::vec3& sphere_pos, const float& radius )
@@ -188,6 +191,48 @@ bool cChunkHolder::isBreakBlock( const ci::ivec3 & chunk_cell,
             }
 
     return false;
+}
+
+std::vector<int> cChunkHolder::getChunkId( const ci::ivec3 & chunk_cell,
+                                           const ci::ivec3& block_cell,
+                                           const float & radius )
+{
+    std::vector<int> empty( 0 );
+    if ( isExistsChunk( chunk_cell ) )
+        return empty;
+    if ( cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
+        return empty;
+
+    auto r = ivec3( int( radius / BLOCK_SIZE ) );
+    auto s = block_cell - r;
+    auto e = block_cell + r;
+
+    auto chunk_layer = getChunkLayer( chunk_cell );
+    std::vector<int> chunks_id;
+
+    for ( int z = s.z; z <= e.z; z++ )
+        for ( int y = s.y; y <= e.y; y++ )
+            for ( int x = s.x; x <= e.x; x++ )
+            {
+                auto block = chunk_layer->getBlock( ivec3( x, y, z ) );
+                if ( block == nullptr )
+                    continue;
+                if ( block->isActive() == false )
+                    continue;
+
+                auto layer = chunk_layer->getChunkLayer( ivec3( x, y, z ) );
+                if ( layer == nullptr )
+                    continue;
+
+                int id = layer->getChunkLayerId();
+                if ( std::any_of( chunks_id.begin(), chunks_id.end(),
+                                  [&]( int t ) { return t == id; } ) )
+                    continue;
+
+                chunks_id.push_back( id );
+            }
+
+    return chunks_id;
 }
 
 bool cChunkHolder::createChunk( cChunk* chunk )
