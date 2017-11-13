@@ -4,6 +4,7 @@ uniform sampler2D uTex0;
 uniform vec4 uAmb;
 uniform vec4 uModelViewLightPositions[100];
 uniform vec4 uModelViewLightColors[100];
+uniform float uModelViewLightRadiuses[100];
 uniform int uLightNum;
 
 in vec4 vPosition;
@@ -52,9 +53,9 @@ void main()
     for(int i = 0; i < uLightNum; ++i)
     {
         float lightDistance = distance(uModelViewLightPositions[i].xyz, vModelViewPosition.xyz);
-        if(lightDistance < 2.0)
+        if(lightDistance < uModelViewLightRadiuses[i])
         {
-            oColor.rgb += uModelViewLightColors[i].rgb * (2.0 - lightDistance) * 0.5;
+            oColor.rgb += uModelViewLightColors[i].rgb * (uModelViewLightRadiuses[i] - lightDistance) * ( 1.0F / uModelViewLightRadiuses[i] );
         }
     }
 }

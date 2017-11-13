@@ -5,6 +5,7 @@
 #include <Game/Field/cUnderGround.h>
 #include <Utility/cString.h>
 #include <Utility/cTimeMeasurement.h>
+#include <Game/cShaderManager.h>
 using namespace ci;
 using namespace ci::app;
 namespace Game
@@ -65,6 +66,7 @@ void cChunkLayer::draw()
         auto ctx = gl::context();
         const gl::GlslProg* curGlslProg = ctx->getGlslProg();
 
+		cShaderManager::getInstance( )->uniformUpdate( mLayerId );
 
         //ctx->pushVao();
         ctx->getDefaultVao()->replacementBindBegin();
