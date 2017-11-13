@@ -13,10 +13,12 @@ public:
 	void draw();
 	void update(const float& deltatime);
 	void deleteCapsule();
-	void createCapsule(const ci::vec3 pos,const Game::Weapons::SubWeapon::SubWeaponType type);
+	void createCapsule(const ci::vec3 pos,const Game::Weapons::SubWeapon::SubWeaponType type,const int capsuleid);
 	void CollisionToPlayer();
+	void HitPlayer(const int playerid,const int capsuleid);
 private:
-	std::list<std::shared_ptr<Game::Capsule::cCapsuleBase>>mCapsules;
+	std::map<int,std::shared_ptr<Game::Capsule::cCapsuleBase>>mCapsules;
+	int debugcount = 0;
 };
 }
 #define CAPSULEM Game::cCapsuleManager::getInstance()

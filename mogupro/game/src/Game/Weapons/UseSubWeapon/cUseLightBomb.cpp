@@ -43,7 +43,17 @@ bool cUseLightBomb::deleteThis()
 }
 void cUseLightBomb::createSubWeapon()
 {
-	SUBWM->createLightBomb(ci::vec3(0, 0, 0), ci::vec3(0, 0, 0), ci::vec3(1, 1, 1), mPlayerId);
+	ci::vec3 pos = cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getPos();
+	ci::vec3 scale = ci::vec3(0.5f, 0.5f, 0.5f);
+	ci::vec3 playerDir = cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getInstallationPosition();
+	playerDir = glm::normalize(playerDir);
+	ci::vec3 tangent = glm::rotateY(playerDir, glm::pi<float>() * 0.5F);
+
+	ci::vec3 normalizedSpeed = playerDir * glm::angleAxis(glm::radians(30.0F), tangent);
+
+	float power = 0.3F;
+
+	SUBWM->createLightBomb(pos, normalizedSpeed * power, scale, mPlayerId);
 }
 }
 }
