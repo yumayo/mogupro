@@ -101,4 +101,15 @@ namespace Sound
 		fstr.read(&wavData[0], chunkInfo.size);
 		return true;
 	}
+
+	void Wav::bindAlShortData()
+	{
+		const char* t = data();
+		// キャスト
+		const ALshort* sample = (const ALshort*)t;
+		// データサイズ
+		int sampleSize = size() / 2;
+		// 配列の開始位置と終了位置から作成
+		alShortdata = std::vector<ALshort>(&sample[0], &sample[sampleSize]);
+	}
 }
