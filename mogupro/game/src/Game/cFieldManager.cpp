@@ -51,6 +51,10 @@ ci::vec3 cFieldManager::getBlockTopPosition( const ci::vec3 & target_position )
 {
     return mUnderGround->getBlockTopPosition( target_position );
 }
+std::vector<int> cFieldManager::getChunkId( const ci::vec3 & position, const float & radius )
+{
+    return mUnderGround->getChunkId( position, radius );
+}
 void cFieldManager::shutdown()
 {
     mUnderGround->shutdown();

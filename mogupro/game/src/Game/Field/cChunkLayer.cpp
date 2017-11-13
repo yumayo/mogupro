@@ -5,6 +5,7 @@
 #include <Game/Field/cUnderGround.h>
 #include <Utility/cString.h>
 #include <Utility/cTimeMeasurement.h>
+#include <Game/cShaderManager.h>
 using namespace ci;
 using namespace ci::app;
 namespace Game
@@ -16,14 +17,18 @@ cChunkLayer::cChunkLayer() :
 {
 }
 
-cChunkLayer::cChunkLayer( const int& height, cChunk* chunk, cUnderGround* under_ground ) :
+cChunkLayer::cChunkLayer( const int& height,
+                          const int& id,
+                          cChunk* chunk,
+                          cUnderGround* under_ground ) :
     mHeight( height )
     , mChunk( chunk )
     , mUnderGround( under_ground )
     , mIsActive( true )
+    , mLayerId( id )
 {
     mMesh = TriMesh::create();
-    mRevivalTime = 2.0f;
+    mRevivalTime = 10.0f;
 }
 
 cChunkLayer::~cChunkLayer()
@@ -37,18 +42,21 @@ void cChunkLayer::setup()
 
 void cChunkLayer::update()
 {
-    for ( auto& it : mRevivalBlocks )
+    for ( auto it = mRevivalBlocks.begin(); it != mRevivalBlocks.end(); )
     {
-        it.second -= cTimeMeasurement::getInstance()->deltaTime();
-        if ( it.second < 0 )
+        it->second -= cTimeMeasurement::getInstance()->deltaTime();
+        if ( it->second < 0 )
         {
-            mBlocks[it.first]->toRevival();
+            mBlocks[it->first]->toRevival();
             mIsRebuildMesh = true;
             reBuildStart();
-            mRevivalBlocks.erase( it.first );
+            mRevivalBlocks.erase( it++ );
+        }
+        else
+        {
+            it++;
         }
     }
-
 }
 
 void cChunkLayer::draw()
@@ -58,6 +66,7 @@ void cChunkLayer::draw()
         auto ctx = gl::context();
         const gl::GlslProg* curGlslProg = ctx->getGlslProg();
 
+		cShaderManager::getInstance( )->uniformUpdate( mLayerId );
 
         //ctx->pushVao();
         ctx->getDefaultVao()->replacementBindBegin();

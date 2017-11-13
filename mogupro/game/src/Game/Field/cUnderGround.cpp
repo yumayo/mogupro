@@ -201,6 +201,13 @@ bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & r
     return mChunkHolder->breakBlock( chunk_cell, block_cell, position, radius, type );
 }
 
+bool cUnderGround::isBreakBlock( const ci::vec3& position, const float& radius )
+{
+    auto chunk_cell = getChunkCellFromPosition( position );
+    auto block_cell = getBlockCellFromPosition( position );
+    return mChunkHolder->isBreakBlock( chunk_cell, block_cell, position, radius );
+}
+
 ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
 {
     auto chunk_cell = getChunkCellFromPosition( target_position );
@@ -209,7 +216,7 @@ ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
     chunk_cell.y = 0;
     block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE * BLOCK_SIZE;
     block_cell += chunk_cell;
-    block_cell.y += BLOCK_SIZE;
+    block_cell.y += BLOCK_SIZE + 0.1f;
     return block_cell;
 }
 
@@ -221,14 +228,15 @@ ci::vec3 cUnderGround::getBlockHighestPosition( const ci::vec3 & target_position
     chunk_cell.y = 0;
     block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE * BLOCK_SIZE;
     block_cell += chunk_cell;
-    block_cell.y += BLOCK_SIZE;
+    block_cell.y += BLOCK_SIZE + 0.1f;
     return block_cell;
 }
-bool cUnderGround::isBreakBlock( const ci::vec3& position, const float& radius )
+
+std::vector<int> cUnderGround::getChunkId( const ci::vec3 & position, const float & radius )
 {
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
-    return mChunkHolder->isBreakBlock( chunk_cell, block_cell, position, radius );
+    return mChunkHolder->getChunkId( chunk_cell, block_cell, radius );
 }
 }
 }

@@ -15,9 +15,13 @@ cChunk::cChunk() :
 {
 }
 
-cChunk::cChunk( int x, int z, cUnderGround* under_ground ) :
+cChunk::cChunk( const int& x,
+                const int& z,
+                const int& id,
+                cUnderGround* under_ground ) :
     mChunkCell( ci::ivec3( x, 0, z ) )
     , mUnderGround( under_ground )
+    , mChunkId( id )
 {
     setup();
 }
@@ -30,7 +34,8 @@ void cChunk::setup()
 {
     for ( int y = 0; y < CHUNK_RANGE_Y + 1; y++ )
     {
-        mChunkLayers.push_back( cChunkLayer( y, this, mUnderGround ) );
+        int layer_id = mChunkId + y;
+        mChunkLayers.push_back( cChunkLayer( y, layer_id, this, mUnderGround ) );
         // ˆê”Ôã‚ÌŠK‘w‚ÍƒuƒƒbƒN‚ð’u‚©‚È‚¢
         if ( y == CHUNK_RANGE_Y )
             mChunkLayers.back().mIsActive = false;

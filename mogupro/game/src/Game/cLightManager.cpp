@@ -7,8 +7,6 @@ namespace Game
 {
 void cLightManager::setup( )
 {
-	// プレイヤーにポイントライトを適用します。
-	// ※100個しか作成できないのでaddしすぎないように。
 	auto const& players = Game::cPlayerManager::getInstance( )->getPlayers( );
 	for ( int i = 0; i < players.size( ); ++i )
 	{
@@ -24,9 +22,8 @@ void cLightManager::setup( )
 		default:
 			break;
 		}
-		mPointLightHandles.emplace_back( Game::cLightManager::getInstance( )->addPointLight( players[i]->getPos( ), color, 0.0F ) );
+		mPointLightHandles.emplace_back( Game::cLightManager::getInstance( )->addPointLight( players[i]->getPos( ), color, 1.0F ) );
 	}
-	// ジェムにポイントライトを適用します。
 	//for ( int i = 0; i < GemManager->getGems( ).size( ); ++i )
 	//{
 	//	Game::cLightManager::getInstance( )->addPointLight( GemManager->getGems( )[i]->getPos( ), GemManager->getGems( )[i]->getColor( ), 0.0F );
@@ -37,37 +34,51 @@ void cLightManager::update( )
 	auto const& players = Game::cPlayerManager::getInstance( )->getPlayers( );
 	for ( int i = 0; i < players.size( ); ++i )
 	{
-		mPointLightHandles[i]->attachPosition( players[i]->getPos( ) );
+		mPointLightHandles[i]->reAttachPosition( mPointLightHandles[i], players[i]->getPos( ) );
 	}
 }
-std::set<Utility::hardptr<Light::cPointLightParam>> const & cLightManager::getPointLights( ) const
+boost::optional<std::set<Utility::softptr<Light::cPointLightParam>> const&> cLightManager::getPointLights( int chunkId ) const
 {
-	return mPointLights;
+	auto itr = mPointLightsMap.find( chunkId );
+	if ( itr != mPointLightsMap.end( ) )
+	{
+		return itr->second;
+	}
+	else
+	{
+		return boost::none;
+	}
 }
 Utility::softptr<Light::cPointLightParam> cLightManager::addPointLight( cinder::vec3 position, cinder::vec3 color, float radius )
 {
 	auto temp = mPointLights.insert( std::make_shared<Light::cPointLightParam>( position, color, radius ) );
 	if ( !temp.second )
 	{
-		throw std::runtime_error( "やばい。" );
+		throw std::runtime_error( "やばい." );
 	}
-	int id = cFieldManager::getInstance( )->getChunkId( position, radius );
-	mPointLightsMap.insert( );
-	return *temp.first;
+	auto handle = ( *temp.first );
+	for ( int id : cFieldManager::getInstance( )->getChunkId( position, radius ) )
+	{
+		mPointLightsMap[id].insert( handle );
+	}
+	return handle;
 }
 void cLightManager::removePointLight( Utility::softptr<Light::cPointLightParam> handle )
 {
 	mPointLights.erase( handle );
 }
-void cLightManager::reAppend( int chunkId, Utility::softptr<Light::cPointLightParam> handle )
+void cLightManager::attachChunk( Utility::softptr<Light::cPointLightParam> handle )
 {
-	for ( int id : cFieldManager::getInstance( )->getChunkId( handle->position, handle->radius ) )
+	for ( int id : cFieldManager::getInstance( )->getChunkId( handle->getPosition( ), handle->getRadius( ) ) )
 	{
 		mPointLightsMap[id].insert( handle );
 	}
-	for ( int id : cFieldManager::getInstance( )->getChunkId( handle->position, handle->radius ) )
+}
+void cLightManager::detachChunk( Utility::softptr<Light::cPointLightParam> handle )
+{
+	for ( int id : cFieldManager::getInstance( )->getChunkId( handle->getPosition( ), handle->getRadius( ) ) )
 	{
-		mPointLightsMap[id].insert( handle );
+		mPointLightsMap[id].erase( handle );
 	}
 }
 }
