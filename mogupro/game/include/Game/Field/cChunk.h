@@ -13,7 +13,10 @@ class cChunk : public std::enable_shared_from_this<cChunk>
 public:
 
     cChunk();
-    cChunk( int x, int z, cUnderGround* under_ground );
+    cChunk( const int& x,
+            const int& z,
+            const int& id,
+            cUnderGround* under_ground );
     ~cChunk();
 
     void setup();
@@ -24,7 +27,8 @@ public:
 
     ci::ivec3 getCell();
     cBlock* getBlock( const int& x, const int& y, const int& z );
-    cBlock* getBlock( const ci::ivec3& c );
+    cBlock* getBlock( const ci::ivec3& cell );
+    void setBlock( const ci::ivec3& cell, cBlock* block );
     cChunkLayer* getChunkLayer( const int& height );
 
     void buildMesh();
@@ -43,6 +47,7 @@ private:
     ci::ivec3 mChunkCell;
     std::vector<cChunkLayer> mChunkLayers;
     cUnderGround* mUnderGround;
+    int mChunkId;
 
 };
 }

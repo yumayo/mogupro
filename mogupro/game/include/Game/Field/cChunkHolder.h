@@ -23,10 +23,18 @@ public:
     void setChunk( const int& x, const int& y, const int& z );
 
     bool breakBlock( const ci::ivec3& chunk_cell,
-                     const ci::ivec3& block_cell_,
+                     const ci::ivec3& block_cell,
                      const ci::vec3& sphere_pos,
                      const float & radius,
                      const cBreakBlockType& type );
+    bool isBreakBlock( const ci::ivec3& chunk_cell,
+                       const ci::ivec3& block_cell,
+                       const ci::vec3& sphere_pos,
+                       const float & radius );
+    std::vector<int> getChunkId( const ci::ivec3& chunk_cell,
+                                 const ci::ivec3& block_cell,
+                                 const float& radius );
+
     bool createChunk( cChunk* chunk );
     bool createChunkMesh( cChunk* chunk );
     bool isExistsChunk( const ci::ivec3 & cell );
@@ -40,6 +48,7 @@ private:
 
     cUnderGround* mUnderGround;
     ChunkMap mChunks;
+    int mChunkIdOffset;
 
 };
 }

@@ -20,6 +20,7 @@
 #include <Network/cMatchingMemberManager.h>
 #include <Game/cShaderManager.h>
 #include <Game/cDebugManager.h>
+#include <Game/cLightManager.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -87,6 +88,7 @@ void cGameMain::setup( )
     //Network::cUDPClientManager::getInstance( )->open( );
     //Network::cUDPServerManager::getInstance( )->open( );
     //Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
+	Game::cLightManager::getInstance( )->setup( );
 	Game::cShaderManager::getInstance( )->setup( );
 	sendEndSetup = false;
     gl::enableDepthRead( );
@@ -123,6 +125,7 @@ void cGameMain::update( float deltaTime )
         Collision::cCollisionManager::getInstance( )->update( deltaTime );
 		Game::cPlayerManager::getInstance()->playerCollisionAfterUpdate( deltaTime );
         GemManager->update( );
+		Game::cLightManager::getInstance( )->update( );
         Game::cShaderManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
     }
 }
@@ -136,6 +139,7 @@ void cGameMain::draw( )
 		gl::enableDepthRead( );
 		gl::enableDepthWrite( );
 		Game::cFieldManager::getInstance( )->draw( );
+		Game::cShaderManager::getInstance( )->uniformUpdate( );
 		Game::cStrategyManager::getInstance( )->draw( );
 		GemManager->draw( );
 		skydome.draw( );

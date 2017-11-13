@@ -29,7 +29,6 @@ void cCollisionManager::add( cColliderBase& collider )
         }
     }
     {
-        std::lock_guard<std::mutex> mutex( mWorldMutex );
         for ( auto& leaf : leafs )
         {
             leaf->insert( &collider );
@@ -46,12 +45,10 @@ void cCollisionManager::remove( cColliderBase& collider )
 }
 void cCollisionManager::add( cRigidBody& rigidBody )
 {
-    std::lock_guard<std::mutex> mutex( mRigidMutex );
     mRigidBodys.insert( &rigidBody );
 }
 void cCollisionManager::remove( cRigidBody & rigidBody )
 {
-    std::lock_guard<std::mutex> mutex( mRigidMutex );
     mRigidBodys.erase( &rigidBody );
 }
 void cCollisionManager::setup( )

@@ -15,9 +15,13 @@ cChunk::cChunk() :
 {
 }
 
-cChunk::cChunk( int x, int z, cUnderGround* under_ground ) :
+cChunk::cChunk( const int& x,
+                const int& z,
+                const int& id,
+                cUnderGround* under_ground ) :
     mChunkCell( ci::ivec3( x, 0, z ) )
     , mUnderGround( under_ground )
+    , mChunkId( id )
 {
     setup();
 }
@@ -30,7 +34,8 @@ void cChunk::setup()
 {
     for ( int y = 0; y < CHUNK_RANGE_Y + 1; y++ )
     {
-        mChunkLayers.push_back( cChunkLayer( y, this, mUnderGround ) );
+        int layer_id = mChunkId + y;
+        mChunkLayers.push_back( cChunkLayer( y, layer_id, this, mUnderGround ) );
         // ˆê”Ôã‚ÌŠK‘w‚ÍƒuƒƒbƒN‚ð’u‚©‚È‚¢
         if ( y == CHUNK_RANGE_Y )
             mChunkLayers.back().mIsActive = false;
@@ -39,6 +44,8 @@ void cChunk::setup()
 
 void cChunk::update()
 {
+    for ( auto& layer : mChunkLayers )
+        layer.update();
 }
 
 void cChunk::draw()
@@ -57,14 +64,24 @@ cBlock* cChunk::getBlock( const int& x, const int& y, const int& z )
     return getBlock( ci::ivec3( x, y, z ) );
 }
 
-cBlock* cChunk::getBlock( const ci::ivec3& c )
+cBlock* cChunk::getBlock( const ci::ivec3& cell )
 {
-    int y = c.y / CHUNK_SIZE;
+    int y = cell.y / CHUNK_SIZE;
     if ( y >= (int) mChunkLayers.size() || y < 0 )
         return nullptr;
     auto& layer = mChunkLayers[y];
-    y = c.y % CHUNK_SIZE;
-    return layer.getBlock( c.x, y, c.z );
+    y = cell.y % CHUNK_SIZE;
+    return layer.getBlock( cell.x, y, cell.z );
+}
+
+void cChunk::setBlock( const ci::ivec3 & cell, cBlock * block )
+{
+    int y = cell.y / CHUNK_SIZE;
+    if ( y >= (int) mChunkLayers.size() || y < 0 )
+        return;
+    auto& layer = mChunkLayers[y];
+    y = cell.y % CHUNK_SIZE;
+    layer.setBlock( cell.x, y, cell.z, block );
 }
 
 cChunkLayer* cChunk::getChunkLayer( const int & height )

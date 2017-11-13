@@ -16,8 +16,7 @@ namespace Field
 cBlock none_block;
 cChunkLayer none_chunk_layer;
 
-cUnderGround::cUnderGround() :
-    mChunkHolder( this )
+cUnderGround::cUnderGround()
 {
 }
 
@@ -29,11 +28,13 @@ void cUnderGround::setup()
 {
     TEX->set( "dirt", "dirt.jpg" );
 
+    mChunkHolder = new cChunkHolder( this );
+
     for ( int z = 0; z < CHUNK_RANGE_Z; z++ )
         for ( int x = 0; x < CHUNK_RANGE_X; x++ )
-            mChunkHolder.setChunk( x, 0, z );
+            mChunkHolder->setChunk( x, 0, z );
 
-    calcChunks();
+    createChunks();
     //chunkMeshReLoaded();
 
 }
@@ -44,7 +45,7 @@ void cUnderGround::update()
 
     chunkMeshReLoaded();
 
-    ChunkMap& chunks = mChunkHolder.getChunks();
+    ChunkMap& chunks = mChunkHolder->getChunks();
     for ( auto& chunk : chunks )
     {
         chunk.second->update();
@@ -68,17 +69,8 @@ void cUnderGround::draw()
     ScopedVao vaoScp( ctx->getDrawTextureVao() );
     ScopedBuffer vboScp( ctx->getDrawTextureVbo() );
     ScopedTextureBind texBindScope( texture );
-    //ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef().texture() ) );
 
-    //auto glsl = getStockShader( ShaderDef().uniformBasedPosAndTexCoord().color().texture( texture ) );
-    //ScopedGlslProg glslScp( glsl );
-    //glsl->uniform( "uTex0", 0 );
-    //glsl->uniform( "uPositionOffset", vec2( 0 ) );
-    //glsl->uniform( "uPositionScale", vec2( 1 ) );
-    //glsl->uniform( "uTexCoordOffset", texRect.getUpperLeft() );
-    //glsl->uniform( "uTexCoordScale", texRect.getSize() );
-
-    ChunkMap& chunks = mChunkHolder.getChunks();
+    ChunkMap& chunks = mChunkHolder->getChunks();
     for ( auto& chunk : chunks )
         chunk.second->draw();
 }
@@ -87,10 +79,8 @@ void cUnderGround::shutdown()
 {
     mIsRunning = false;
     for ( auto& thread : mChunkLoadThreads )
-    {
         thread.join();
-    }
-    mChunkHolder.clear();
+    mChunkHolder->clear();
 }
 
 bool cUnderGround::chunkMeshReLoaded()
@@ -102,43 +92,34 @@ bool cUnderGround::chunkMeshReLoaded()
             for ( int x = 0; x < CHUNK_RANGE_X; x++ )
             {
                 //std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
-                auto chunk = mChunkHolder.getChunk( x, z );
+                auto chunk = mChunkHolder->getChunk( x, z );
                 chunk->reBuildMesh();
             }
         }
     }
-
     return true;
 }
 
-bool cUnderGround::calcChunks()
+bool cUnderGround::createChunks()
 {
-    while ( mIsRunning )
+    for ( int z = 0; z < CHUNK_RANGE_Z; z++ )
     {
-        for ( int z = 0; z < CHUNK_RANGE_Z; z++ )
+        for ( int x = 0; x < CHUNK_RANGE_X; x++ )
         {
-            for ( int x = 0; x < CHUNK_RANGE_X; x++ )
-            {
-                std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
-                auto chunk = mChunkHolder.getChunk( x, z );
-                mChunkHolder.createChunk( chunk );
-            }
+            //std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
+            auto chunk = mChunkHolder->getChunk( x, z );
+            mChunkHolder->createChunk( chunk );
         }
-        break;
     }
 
-    while ( mIsRunning )
+    for ( int z = 0; z < CHUNK_RANGE_Z; z++ )
     {
-        for ( int z = 0; z < CHUNK_RANGE_Z; z++ )
+        for ( int x = 0; x < CHUNK_RANGE_X; x++ )
         {
-            for ( int x = 0; x < CHUNK_RANGE_X; x++ )
-            {
-                std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
-                auto chunk = mChunkHolder.getChunk( x, z );
-                mChunkHolder.createChunkMesh( chunk );
-            }
+            //std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
+            auto chunk = mChunkHolder->getChunk( x, z );
+            mChunkHolder->createChunkMesh( chunk );
         }
-        return true;
     }
     return true;
 }
@@ -162,16 +143,32 @@ cBlock* cUnderGround::getBlock( const ci::vec3& position )
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
 
-    if ( mChunkHolder.isExistsChunk( chunk_cell ) )
+    if ( mChunkHolder->isExistsChunk( chunk_cell ) )
         return &none_block;
-    if ( mChunkHolder.cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
+    if ( mChunkHolder->cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
         return &none_block;
 
     auto height_cell = ivec3( 0, chunk_cell.y * CHUNK_SIZE, 0 );
     if ( ( height_cell.y / CHUNK_SIZE ) > CHUNK_RANGE_Y )
         return &none_block;
 
-    return mChunkHolder.getChunk( chunk_cell )->getBlock( block_cell + height_cell );
+    return mChunkHolder->getChunk( chunk_cell )->getBlock( block_cell + height_cell );
+}
+
+void cUnderGround::setBlock( const ci::vec3 & position, cBlock* block )
+{
+    auto chunk_cell = getChunkCellFromPosition( position );
+    auto block_cell = getBlockCellFromPosition( position );
+
+    if ( mChunkHolder->isExistsChunk( chunk_cell ) )
+        return;
+    if ( mChunkHolder->cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
+        return;
+    auto height_cell = ivec3( 0, chunk_cell.y * CHUNK_SIZE, 0 );
+    if ( ( height_cell.y / CHUNK_SIZE ) > CHUNK_RANGE_Y )
+        return;
+
+    mChunkHolder->getChunk( chunk_cell )->setBlock( block_cell + height_cell, block );
 }
 
 cChunkLayer * cUnderGround::getChunkLayer( const ci::vec3 & position )
@@ -179,16 +176,16 @@ cChunkLayer * cUnderGround::getChunkLayer( const ci::vec3 & position )
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
 
-    if ( mChunkHolder.isExistsChunk( chunk_cell ) )
+    if ( mChunkHolder->isExistsChunk( chunk_cell ) )
         return &none_chunk_layer;
-    if ( mChunkHolder.cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
+    if ( mChunkHolder->cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
         return &none_chunk_layer;
 
     int height = chunk_cell.y;
     if ( height > CHUNK_RANGE_Y )
         return &none_chunk_layer;
 
-    return mChunkHolder.getChunk( chunk_cell )->getChunkLayer( height );
+    return mChunkHolder->getChunk( chunk_cell )->getChunkLayer( height );
 }
 
 bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius, const cBreakBlockType& type )
@@ -201,7 +198,14 @@ bool cUnderGround::blockBreakNetwork( const ci::vec3 & position, const float & r
 {
     auto chunk_cell = getChunkCellFromPosition( position );
     auto block_cell = getBlockCellFromPosition( position );
-    return mChunkHolder.breakBlock( chunk_cell, block_cell, position, radius, type );
+    return mChunkHolder->breakBlock( chunk_cell, block_cell, position, radius, type );
+}
+
+bool cUnderGround::isBreakBlock( const ci::vec3& position, const float& radius )
+{
+    auto chunk_cell = getChunkCellFromPosition( position );
+    auto block_cell = getBlockCellFromPosition( position );
+    return mChunkHolder->isBreakBlock( chunk_cell, block_cell, position, radius );
 }
 
 ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
@@ -212,7 +216,7 @@ ci::vec3 cUnderGround::getBlockTopPosition( const ci::vec3 & target_position )
     chunk_cell.y = 0;
     block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE * BLOCK_SIZE;
     block_cell += chunk_cell;
-    block_cell.y += BLOCK_SIZE;
+    block_cell.y += BLOCK_SIZE + 0.1f;
     return block_cell;
 }
 
@@ -224,8 +228,15 @@ ci::vec3 cUnderGround::getBlockHighestPosition( const ci::vec3 & target_position
     chunk_cell.y = 0;
     block_cell.y = CHUNK_RANGE_Y * CHUNK_SIZE * BLOCK_SIZE;
     block_cell += chunk_cell;
-    block_cell.y += BLOCK_SIZE;
+    block_cell.y += BLOCK_SIZE + 0.1f;
     return block_cell;
+}
+
+std::vector<int> cUnderGround::getChunkId( const ci::vec3 & position, const float & radius )
+{
+    auto chunk_cell = getChunkCellFromPosition( position );
+    auto block_cell = getBlockCellFromPosition( position );
+    return mChunkHolder->getChunkId( chunk_cell, block_cell, radius );
 }
 }
 }

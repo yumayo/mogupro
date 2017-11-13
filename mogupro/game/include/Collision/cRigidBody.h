@@ -34,7 +34,6 @@ private:
     bool mIsLanding;
     bool mIsGravity;
 	bool mIsHit;
-    float mMinValue;
 	float mFriction;
 private:
     static cinder::vec3 calcWallScratchVector( cinder::vec3 speed, cinder::vec3 normal );

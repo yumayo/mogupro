@@ -26,10 +26,6 @@ void cFieldManager::draw()
     if ( is_culling_change == false )
         gl::enableFaceCulling( true );
 
-    //auto lambert = gl::ShaderDef().lambert();
-    //auto shader = gl::getStockShader( lambert );
-    //gl::ScopedGlslProg shaderScp( shader );
-
     mUnderGround->draw();
 
     if ( is_culling_change == false )
@@ -43,6 +39,10 @@ bool cFieldManager::blockBreakNetwork( const ci::vec3 & position, const float & 
 {
     return mUnderGround->blockBreakNetwork( position, radius, type );
 }
+bool cFieldManager::isBreakBlock( const ci::vec3 & position, const float & radius )
+{
+    return mUnderGround->isBreakBlock( position, radius );
+}
 ci::vec3 cFieldManager::getBlockHighestPosition( const ci::vec3 & target_position )
 {
     return mUnderGround->getBlockHighestPosition( target_position );
@@ -51,11 +51,9 @@ ci::vec3 cFieldManager::getBlockTopPosition( const ci::vec3 & target_position )
 {
     return mUnderGround->getBlockTopPosition( target_position );
 }
-void cFieldManager::setPointLight( ci::gl::GlslProgRef shader, ci::vec3 position )
+std::vector<int> cFieldManager::getChunkId( const ci::vec3 & position, const float & radius )
 {
-}
-void cFieldManager::erasePointLight( ci::vec3 position )
-{
+    return mUnderGround->getChunkId( position, radius );
 }
 void cFieldManager::shutdown()
 {
