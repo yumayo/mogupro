@@ -35,6 +35,22 @@ void cShaderManager::setup( )
 	mCamera.setOrtho( -size, size, -size, size, 0.25F, 512.0F );
 	mCamera.lookAt( pos + vec3( size, size, -size ), pos + vec3( 0, 0, 0 ) );
 }
+void cShaderManager::uniformUpdate( int chunkId )
+{
+	// ポイントライトのデータを送ります。
+	std::vector<vec4> lightPositions;
+	std::vector<vec4> lightColors;
+	auto const& lights = Game::cLightManager::getInstance( )->getPointLights( );
+	int lightNum = std::min( lights.size( ), 100U );
+	for ( auto& light : lights )
+	{
+		lightPositions.emplace_back( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getPosition( ), 1 ) );
+		lightColors.emplace_back( ci::vec4( light->color, 1 ) );
+	}
+	mGlsl->uniform( "uLightNum", lightNum );
+	mGlsl->uniform( "uModelViewLightPositions", lightPositions.data( ), lightNum );
+	mGlsl->uniform( "uModelViewLightColors", lightColors.data( ), lightNum );
+}
 void cShaderManager::update( std::function<void( )> const& drawFunc )
 {
 	gl::enable( GL_POLYGON_OFFSET_FILL );
@@ -56,19 +72,7 @@ void cShaderManager::draw( std::function<void( )> const& render )
 	// 世界の全体的な色を調整します。
 	mGlsl->uniform( "uAmb", ColorA( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
 
-	// ポイントライトのデータを送ります。
-	std::vector<vec4> lightPositions;
-	std::vector<vec4> lightColors;
-	auto const& lights = Game::cLightManager::getInstance( )->getPointLights( );
-	int lightNum = std::min( lights.size( ), 100U );
-	for ( auto& light : lights )
-	{
-		lightPositions.emplace_back( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->position, 1 ) );
-		lightColors.emplace_back( ci::vec4( light->color, 1 ) );
-	}
-	mGlsl->uniform( "uLightNum", lightNum );
-	mGlsl->uniform( "uModelViewLightPositions", lightPositions.data( ), lightNum );
-	mGlsl->uniform( "uModelViewLightColors", lightColors.data( ), lightNum );
+	mGlsl->uniform( "uLightNum", 0 );
 
 	// 影のデータを送ります。
 	gl::ScopedTextureBind texScope( mShadowTex, (uint8_t)1 );
