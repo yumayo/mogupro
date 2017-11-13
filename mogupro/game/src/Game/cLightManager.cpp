@@ -66,6 +66,7 @@ Utility::softptr<Light::cPointLightParam> cLightManager::addPointLight( cinder::
 }
 void cLightManager::removePointLight( Utility::softptr<Light::cPointLightParam> handle )
 {
+	detachChunk( handle );
 	mPointLights.erase( handle );
 }
 void cLightManager::attachChunk( Utility::softptr<Light::cPointLightParam> handle )
