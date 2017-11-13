@@ -37,6 +37,10 @@ void cLightManager::update( )
 		mPointLightHandles[i]->reAttachPosition( mPointLightHandles[i], players[i]->getPos( ) );
 	}
 }
+std::set<Utility::hardptr<Light::cPointLightParam>> const & cLightManager::getPointLights( ) const
+{
+	return mPointLights;
+}
 boost::optional<std::set<Utility::softptr<Light::cPointLightParam>> const&> cLightManager::getPointLights( int chunkId ) const
 {
 	auto itr = mPointLightsMap.find( chunkId );
