@@ -32,6 +32,26 @@ void cShaderManager::setup( )
 	mCamera.setOrtho( -size, size, -size, size, 0.25F, 512.0F );
 	mCamera.lookAt( pos + vec3( size, size, -size ), pos + vec3( 0, 0, 0 ) );
 }
+void cShaderManager::uniformUpdate( )
+{
+	auto lights = Game::cLightManager::getInstance( )->getPointLights( );
+
+	// ポイントライトのデータを送ります。
+	std::vector<vec4> positions;
+	std::vector<vec4> colors;
+	std::vector<float> radiuses;
+	int lightNum = std::min( lights.size( ), 100U );
+	for ( auto& light : lights )
+	{
+		positions.emplace_back( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getPosition( ), 1 ) );
+		colors.emplace_back( ci::vec4( light->color, 1 ) );
+		radiuses.emplace_back( light->getRadius( ) );
+	}
+	mGlsl->uniform( "uLightNum", lightNum );
+	mGlsl->uniform( "uModelViewLightPositions", positions.data( ), lightNum );
+	mGlsl->uniform( "uModelViewLightColors", colors.data( ), lightNum );
+	mGlsl->uniform( "uModelViewLightRadiuses", radiuses.data( ), lightNum );
+}
 void cShaderManager::uniformUpdate( int chunkId )
 {
 	auto lights = Game::cLightManager::getInstance( )->getPointLights( chunkId );

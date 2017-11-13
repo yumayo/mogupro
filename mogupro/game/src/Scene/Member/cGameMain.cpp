@@ -139,6 +139,7 @@ void cGameMain::draw( )
 		gl::enableDepthRead( );
 		gl::enableDepthWrite( );
 		Game::cFieldManager::getInstance( )->draw( );
+		Game::cShaderManager::getInstance( )->uniformUpdate( );
 		Game::cStrategyManager::getInstance( )->draw( );
 		GemManager->draw( );
 		skydome.draw( );
