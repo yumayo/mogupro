@@ -5,6 +5,7 @@
 #include<Network.hpp>
 #include"cinder\gl\scoped.h"
 #include"Game\cClientAdapter.h"
+#include"Game\cPlayerManager.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -22,6 +23,7 @@ namespace Game
 			id = 0;
 			ismyobject = _ismyobject;
 			direction = _direction;
+
 		}
 		cCannon::~cCannon()
 		{
@@ -49,6 +51,10 @@ namespace Game
 		void cCannon::update(const float & delta_time)
 		{
 
+		}
+
+		void cCannon::updateCollisionAfterUpdate(const float & delta_time)
+		{
 		}
 
 		void cCannon::setup()
