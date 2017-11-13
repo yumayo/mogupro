@@ -57,10 +57,7 @@ Utility::softptr<Light::cPointLightParam> cLightManager::addPointLight( cinder::
 		throw std::runtime_error( "‚â‚Î‚¢." );
 	}
 	auto handle = ( *temp.first );
-	for ( int id : cFieldManager::getInstance( )->getChunkId( position, radius ) )
-	{
-		mPointLightsMap[id].insert( handle );
-	}
+	attachChunk( handle );
 	return handle;
 }
 void cLightManager::removePointLight( Utility::softptr<Light::cPointLightParam> handle )
