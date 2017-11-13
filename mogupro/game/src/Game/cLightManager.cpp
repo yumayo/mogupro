@@ -36,38 +36,23 @@ void cLightManager::update( )
 	auto const& players = Game::cPlayerManager::getInstance( )->getPlayers( );
 	for ( int i = 0; i < players.size( ); ++i )
 	{
-		auto& param = getLight( mPointLightHandles[i] );
-		param->position = players[i]->getPos( );
+		mPointLightHandles[i]->position = players[i]->getPos( );
 	}
 }
-boost::optional<PointLightParam&> cLightManager::getLight( unsigned int handle )
-{
-	auto itr = mPointLights.find( handle );
-	if ( itr != mPointLights.end( ) )
-	{
-		return itr->second;
-	}
-	else
-	{
-		return boost::none;
-	}
-}
-std::map<unsigned int, PointLightParam> const & cLightManager::getPointLights( ) const
+std::set<Utility::hardptr<PointLightParam>> const & cLightManager::getPointLights( ) const
 {
 	return mPointLights;
 }
-unsigned int cLightManager::addPointLight( cinder::vec3 position, cinder::vec3 color, float radius )
+Utility::softptr<PointLightParam> cLightManager::addPointLight( cinder::vec3 position, cinder::vec3 color, float radius )
 {
-	std::random_device rander;
-	auto handle = rander( );
-	auto temp = mPointLights.insert( std::make_pair( handle, PointLightParam( position, color, radius ) ) );
+	auto temp = mPointLights.insert( std::make_shared<PointLightParam>( position, color, radius ) );
 	if ( !temp.second )
 	{
-		throw std::runtime_error( "ポイントライトのidが重複しました。" );
+		throw std::runtime_error( "やばい。" );
 	}
-	return handle;
+	return *temp.first;
 }
-void cLightManager::removePointLight( unsigned int handle )
+void cLightManager::removePointLight( Utility::softptr<PointLightParam> handle )
 {
 	mPointLights.erase( handle );
 }
