@@ -3,6 +3,21 @@
 
 namespace Particle
 {
+enum class ParticleType
+{
+    NONE,
+    SCATTER,
+    SPLASH,
+};
+
+enum class ParticleTextureType
+{
+    NONE,
+    SAND,
+    SPARK,
+
+};
+
 class cParticle
 {
 public:
@@ -26,7 +41,7 @@ public:
 
 private:
 
-
+    void create( const ci::vec3& position, const std::string name );
 
 
 };

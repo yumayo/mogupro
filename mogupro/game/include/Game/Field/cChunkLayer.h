@@ -81,7 +81,7 @@ private:
     ci::gl::VboMeshRef mVbo;
     std::array<cBlockRef, CHUNK_VOLUME > mBlocks;
     int mHeight;
-    int mRevivalTime;
+    float mRevivalTime;
     std::unordered_map<int, float> mRevivalBlocks;
     int mLayerId;
 
