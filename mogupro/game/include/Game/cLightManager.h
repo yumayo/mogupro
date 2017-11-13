@@ -32,7 +32,7 @@ public:
 private:
 	std::set<Utility::hardptr<PointLightParam>> mPointLights;
 
-	// ��Ƀv���C���[�}�l�[�W���[�̕��ł���ĖႤ�\��B
+	// 後にプレイヤーマネージャーの方でやって貰う予定。
 	std::vector<Utility::softptr<PointLightParam>> mPointLightHandles;
 };
 }

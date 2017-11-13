@@ -11,7 +11,10 @@ class cChunkLayer
 public:
 
     cChunkLayer();
-    cChunkLayer( const int& height, cChunk* chunk, cUnderGround* under_ground );
+    cChunkLayer( const int& height,
+                 const int& id,
+                 cChunk* chunk,
+                 cUnderGround* under_ground );
     ~cChunkLayer();
 
     void setup();
@@ -29,11 +32,13 @@ public:
 
     int getHeight() { return mHeight; }
     ci::ivec3 getChunkCell();
+    int getChunkLayerId() { return mLayerId; }
 
     void addFace( const std::array<GLfloat, 12>& block_face,
                   const std::array<GLfloat, 12>& block_normal,
                   const std::array<ci::vec2, 4>& texture_coords,
                   const ci::vec3 & block_position );
+
 public:
 
     cChunkLayer* breakBlock( ci::ivec3 c );
@@ -78,6 +83,7 @@ private:
     int mHeight;
     int mRevivalTime;
     std::unordered_map<int, float> mRevivalBlocks;
+    int mLayerId;
 
 private:
 

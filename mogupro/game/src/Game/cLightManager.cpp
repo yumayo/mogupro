@@ -6,8 +6,8 @@ namespace Game
 {
 void cLightManager::setup( )
 {
-	// ƒvƒŒƒCƒ„[‚Éƒ|ƒCƒ“ƒgƒ‰ƒCƒg‚ğ“K—p‚µ‚Ü‚·B
-	// ¦100ŒÂ‚µ‚©ì¬‚Å‚«‚È‚¢‚Ì‚Åadd‚µ‚·‚¬‚È‚¢‚æ‚¤‚ÉB
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«ãƒã‚¤ãƒ³ãƒˆãƒ©ã‚¤ãƒˆã‚’é©ç”¨ã—ã¾ã™ã€‚
+	// â€»100å€‹ã—ã‹ä½œæˆã§ããªã„ã®ã§addã—ã™ããªã„ã‚ˆã†ã«ã€‚
 	auto const& players = Game::cPlayerManager::getInstance( )->getPlayers( );
 	for ( int i = 0; i < players.size( ); ++i )
 	{
@@ -25,7 +25,7 @@ void cLightManager::setup( )
 		}
 		mPointLightHandles.emplace_back( Game::cLightManager::getInstance( )->addPointLight( players[i]->getPos( ), color, 0.0F ) );
 	}
-	// ƒWƒFƒ€‚Éƒ|ƒCƒ“ƒgƒ‰ƒCƒg‚ğ“K—p‚µ‚Ü‚·B
+	// ã‚¸ã‚§ãƒ ã«ãƒã‚¤ãƒ³ãƒˆãƒ©ã‚¤ãƒˆã‚’é©ç”¨ã—ã¾ã™ã€‚
 	//for ( int i = 0; i < GemManager->getGems( ).size( ); ++i )
 	//{
 	//	Game::cLightManager::getInstance( )->addPointLight( GemManager->getGems( )[i]->getPos( ), GemManager->getGems( )[i]->getColor( ), 0.0F );
@@ -48,7 +48,7 @@ Utility::softptr<PointLightParam> cLightManager::addPointLight( cinder::vec3 pos
 	auto temp = mPointLights.insert( std::make_shared<PointLightParam>( position, color, radius ) );
 	if ( !temp.second )
 	{
-		throw std::runtime_error( "‚â‚Î‚¢B" );
+		throw std::runtime_error( "ã‚„ã°ã„ã€‚" );
 	}
 	return *temp.first;
 }
