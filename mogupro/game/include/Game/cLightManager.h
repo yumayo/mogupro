@@ -1,9 +1,9 @@
 #pragma once
 #include <Utility/cSingletonAble.h>
 #include <cinder/Vector.h>
-#include <map>
+#include <set>
 #include <vector>
-#include <boost/optional.hpp>
+#include <Utility/cUserPointer.hpp>
 namespace Game
 {
 struct PointLightParam
@@ -26,14 +26,13 @@ public:
 	~cLightManager( ) = default;
 	void setup( );
 	void update( );
-	boost::optional<PointLightParam&> getLight( unsigned int handle );
-	std::map<unsigned int, PointLightParam> const& getPointLights( ) const;
-	unsigned int addPointLight( cinder::vec3 position, cinder::vec3 color, float radius );
-	void removePointLight( unsigned int handle );
+	std::set<Utility::hardptr<PointLightParam>> const& getPointLights( ) const;
+	Utility::softptr<PointLightParam> addPointLight( cinder::vec3 position, cinder::vec3 color, float radius );
+	void removePointLight( Utility::softptr<PointLightParam> handle );
 private:
-	std::map<unsigned int, PointLightParam> mPointLights;
+	std::set<Utility::hardptr<PointLightParam>> mPointLights;
 
 	// 後にプレイヤーマネージャーの方でやって貰う予定。
-	std::vector<unsigned int> mPointLightHandles;
+	std::vector<Utility::softptr<PointLightParam>> mPointLightHandles;
 };
 }

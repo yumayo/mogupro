@@ -63,8 +63,8 @@ void cShaderManager::draw( std::function<void( )> const& render )
 	int lightNum = std::min( lights.size( ), 100U );
 	for ( auto& light : lights )
 	{
-		lightPositions.emplace_back( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second.position, 1 ) );
-		lightColors.emplace_back( ci::vec4( light.second.color, 1 ) );
+		lightPositions.emplace_back( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->position, 1 ) );
+		lightColors.emplace_back( ci::vec4( light->color, 1 ) );
 	}
 	mGlsl->uniform( "uLightNum", lightNum );
 	mGlsl->uniform( "uModelViewLightPositions", lightPositions.data( ), lightNum );
