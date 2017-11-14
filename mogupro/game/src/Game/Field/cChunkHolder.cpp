@@ -197,18 +197,19 @@ std::vector<int> cChunkHolder::getChunkId( const ci::ivec3 & chunk_cell,
                                            const ci::ivec3& block_cell,
                                            const float & radius )
 {
-    std::vector<int> empty( 0 );
+    std::vector<int> chunks_id;
     if ( isExistsChunk( chunk_cell ) )
-        return empty;
+        return chunks_id;
     if ( cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
-        return empty;
+        return chunks_id;
 
     auto r = ivec3( int( radius / BLOCK_SIZE ) );
     auto s = block_cell - r;
     auto e = block_cell + r;
 
+    // position‚ÌˆÊ’u‚Ìƒ`ƒƒƒ“ƒN‚ğÅ‰‚É“o˜^‚·‚é
     auto chunk_layer = getChunkLayer( chunk_cell );
-    std::vector<int> chunks_id;
+    chunks_id.push_back( chunk_layer->getChunkLayerId() );
 
     for ( int z = s.z; z <= e.z; z++ )
         for ( int y = s.y; y <= e.y; y++ )
@@ -249,6 +250,8 @@ bool cChunkHolder::createChunkMesh( cChunk* chunk )
 
 bool cChunkHolder::isExistsChunk( const ci::ivec3 & cell )
 {
+    if ( cell.y < 0 || cell.y > CHUNK_RANGE_Y + 1 )
+        return true;
     return mChunks.find( ivec3( cell.x, 0, cell.z ) ) == mChunks.end();
 }
 

@@ -88,6 +88,8 @@ cChunkLayer* cChunk::getChunkLayer( const int & height )
 {
     if ( height >= (int) mChunkLayers.size() )
         return &mChunkLayers[mChunkLayers.size() - 1];
+    if ( height < 0 )
+        return &mChunkLayers[0];
     return &mChunkLayers[height];
 }
 
