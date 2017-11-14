@@ -21,6 +21,7 @@
 #include <Game/cShaderManager.h>
 #include <Game/cDebugManager.h>
 #include <Game/cLightManager.h>
+#include <Particle/cParticleManager.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -90,6 +91,12 @@ void cGameMain::setup( )
     //Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
 	Game::cLightManager::getInstance( )->setup( );
 	Game::cShaderManager::getInstance( )->setup( );
+
+    Particle::cParticleManager::getInstance()->create( vec3( 0, get_map_top_pos, 0 ),
+                                                       Particle::ParticleType::SCATTER,
+                                                       Particle::ParticleTextureType::SPARK,
+                                                       1.0f );
+    
 	sendEndSetup = false;
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
@@ -127,6 +134,7 @@ void cGameMain::update( float deltaTime )
         GemManager->update( );
 		Game::cLightManager::getInstance( )->update( );
         Game::cShaderManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
+        Particle::cParticleManager::getInstance()->update( deltaTime );
     }
 }
 
@@ -138,6 +146,7 @@ void cGameMain::draw( )
 
 		gl::enableDepthRead( );
 		gl::enableDepthWrite( );
+        Particle::cParticleManager::getInstance()->draw( );
 		Game::cFieldManager::getInstance( )->draw( );
 		Game::cShaderManager::getInstance( )->uniformUpdate( );
 		Game::cStrategyManager::getInstance( )->draw( );

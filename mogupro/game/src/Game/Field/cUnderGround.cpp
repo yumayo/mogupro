@@ -26,7 +26,7 @@ cUnderGround::~cUnderGround()
 
 void cUnderGround::setup()
 {
-    TEX->set( "dirt", "dirt.jpg" );
+    TEX->set( "dirt", "dirt.png" );
 
     mChunkHolder = new cChunkHolder( this );
 
