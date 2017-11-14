@@ -95,7 +95,7 @@ void cGameMain::setup( )
     Particle::cParticleManager::getInstance()->create( vec3( 0, get_map_top_pos, 0 ),
                                                        Particle::ParticleType::SCATTER,
                                                        Particle::ParticleTextureType::SPARK,
-                                                       1.0f );
+                                                       5.0f );
     
 	sendEndSetup = false;
     gl::enableDepthRead( );
