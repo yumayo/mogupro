@@ -126,7 +126,7 @@ void cParticleHolder::sortByCamera()
 
 void cParticleHolder::create()
 {
-    float range = 1.0f;
+    float range = 0.1f;
     Utility::RandomFloat r( -range, range );
     vec3 rand_vec = vec3( r(), r(), r() );
     mParticles.push_back( std::make_shared<cParticle>( rand_vec ) );
@@ -163,8 +163,8 @@ void cParticleManager::create( const ci::vec3& position,
                                const ParticleTextureType& texture_type,
                                const float& time )
 {
-    cParticleHolder holder = cParticleHolder( position, type, texture_type, time );
-    mParticleHolders.push_back( std::make_shared<cParticleHolder>( holder ) );
+    mParticleHolders.push_back( 
+        std::make_shared<cParticleHolder>( position, type, texture_type, time ) );
 }
 
 void cParticleManager::builbordUpdate()
