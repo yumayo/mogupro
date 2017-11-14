@@ -16,8 +16,8 @@ void cCameraManager::setup( ) {
     camera.lookAt( refPosition, ci::vec3( 0 ), ci::vec3( 0, 1, 0 ) );
     camera.setFarClip( 10000 );
     auto size = ci::app::getWindowSize( );
-    camera_2d.setOrtho( -size.x / 2, size.x / 2, -size.y / 2, size.y / 2, 0.125F, 5.0F );
-    camera_2d.lookAt( ci::vec3( 0, 0, 1.0F ), ci::vec3( 0, 0, 0.0F ), ci::vec3( 0, 1, 0 ) );
+    camera_2d.setOrtho( -size.x / 2, size.x / 2, -size.y / 2, size.y / 2, 0.125F, 100.0F );
+    camera_2d.lookAt( ci::vec3( 0, 0, 50.0F ), ci::vec3( 0, 0, 0.0F ), ci::vec3( 0, 1, 0 ) );
 	camera_angle.y = -0.25f;
 }
 
