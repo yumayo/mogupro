@@ -66,7 +66,7 @@ void cChunkLayer::draw()
         auto ctx = gl::context();
         const gl::GlslProg* curGlslProg = ctx->getGlslProg();
 
-		cShaderManager::getInstance( )->uniformUpdate( mLayerId );
+        cShaderManager::getInstance()->uniformUpdate( mLayerId );
 
         //ctx->pushVao();
         ctx->getDefaultVao()->replacementBindBegin();
@@ -189,11 +189,15 @@ void cChunkLayer::addFace( const std::array<GLfloat, 12>& block_face,
 cChunkLayer* cChunkLayer::breakBlock( ci::ivec3 c )
 {
     auto block = getBlock( c );
+    if ( block == nullptr )
+        return nullptr;
     if ( block->getType() == BlockType::AIR )
         return nullptr;
     block->toBreak();
 
     auto layer = getChunkLayer( c );
+    if ( layer == nullptr )
+        return nullptr;
     if ( layer->mIsActive == false )
         return this;
     layer->mIsRebuildMesh = true;
