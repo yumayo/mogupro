@@ -21,6 +21,7 @@
 #include <Game/cShaderManager.h>
 #include <Game/cDebugManager.h>
 #include <Game/cLightManager.h>
+#include <Game/cUIManager.h>
 #include <Particle/cParticleManager.h>
 using namespace ci;
 using namespace ci::app;
@@ -40,33 +41,18 @@ void cGameMain::setup( )
     CAMERA->setup( );
     ENV->padSetup( );
 
-    n = Node::node::create( );
-    auto font = Node::Renderer::label::create( "sawarabi-gothic-medium.ttf", 64 );
-    font->set_text( u8"日本語ほげほげ" );
-    font->set_scale( vec2( 1, -1 ) );
-    using namespace Node::Action;
-    n->run_action( repeat_forever::create( sequence::create(
-        ease<EaseOutCubic>::create( move_to::create( 1.0F, vec2( 360, 200 ) ) ),
-        ease<EaseOutCubic>::create( move_to::create( 1.0F, vec2( 360, -200 ) ) ),
-        ease<EaseOutCubic>::create( move_to::create( 1.0F, vec2( -360, -200 ) ) ),
-        ease<EaseOutCubic>::create( move_to::create( 1.0F, vec2( -360, 200 ) ) )
-    ) ) );
-    n->set_schedule_update( );
-    n->add_child( font );
+    Game::cUIManager::getInstance( )->setup( );
 
     Shader::cShadowManager::getInstance( )->setup( );
     Game::cFieldManager::getInstance( )->setup( );
     Game::cStrategyManager::getInstance( )->setup( );
 
-	//プレイヤーの人数
 	int player_numbers = 8;
 
-	//自分が何Pなのか
 	const int active_player_id = Network::cMatchingMemberManager::getInstance( )->mPlayerID;
 
 	std::vector<int> teams;
 
-    //プレイヤー達の位置
     std::vector<ci::vec3> positions;
 	float get_map_top_pos = Game::cFieldManager::getInstance()->getBlockTopPosition(ci::vec3(0,0,0)).y;
 	for (int i = 0; i < player_numbers; i++) {
@@ -123,7 +109,7 @@ void cGameMain::update( float deltaTime )
 		Game::cDebugManager::getInstance( )->update( deltaTime );
         Game::cClientAdapter::getInstance( )->update( );
         Game::cServerAdapter::getInstance( )->update( );
-        n->entry_update( deltaTime );
+        Game::cUIManager::getInstance( )->update( deltaTime );
         Game::cFieldManager::getInstance( )->update( deltaTime );
         ENV->padUpdate( );
         ENV->padProcessEvent( );
@@ -154,7 +140,6 @@ void cGameMain::draw( )
 		skydome.draw( );
 		CAMERA->unBind3D( );
 
-		//プレイヤーより後ろの2D描画
 		CAMERA->bind2D( );
 		gl::disableDepthRead( );
 		gl::disableDepthWrite( );
@@ -182,13 +167,11 @@ void cGameMain::drawShadow( )
 
 void cGameMain::draw2D( )
 {
-	//プレイヤーより前の2D描画
     gl::enableFaceCulling( false );
     gl::disableDepthRead( );
     gl::disableDepthWrite( );
 	
-    n->entry_render( mat4( ) );
-
+	Game::cUIManager::getInstance( )->draw( );
 	Game::cDebugManager::getInstance( )->draw2d( );
 }
 

@@ -20,7 +20,6 @@ public:
 private:
 	cinder::gl::GlslProgRef glsl;
     Game::SkyDome::cSkyDome skydome;
-    hardptr<Node::node> n;
 	bool sendEndSetup;
 };
 }
