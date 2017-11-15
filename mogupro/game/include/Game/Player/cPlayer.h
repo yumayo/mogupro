@@ -57,7 +57,7 @@ namespace Game {
 			bool damage;
 			//メイン武器
 			std::unique_ptr<Weapon::WeaponBase> main_weapon;
-			std::unique_ptr<Weapon::WeaponBase> sub_weapon;
+
 			//何Pか
 			int player_id;
 			//操作するプレイヤーかどうか
@@ -73,6 +73,8 @@ namespace Game {
 
 			//プレイヤーからのカメラの位置
 			float player_far;
+
+			float gravity_buf;
 
 			//プレイヤーの移動ベクトル保存
 			ci::vec3 velocity;
@@ -121,6 +123,13 @@ namespace Game {
 			ci::vec3 getSize() {
 				return size;
 			}
+
+			PlayerStatus getStatus() {
+				return status;
+			}
+			ci::vec3 getPos() override {
+				return mCollider.getPosition();
+			}
 			void setPos(const ci::vec3 pos) {
 				if(active_user) return;
 				velocity = pos - mPos;
@@ -128,6 +137,8 @@ namespace Game {
 			}
 
 			void resetPos() {
+				velocity = ci::vec3(0);
+				gravity_buf = 0;
 				mCollider.setPosition(ci::vec3(0,70,0));
 			}
 
@@ -136,7 +147,7 @@ namespace Game {
 			}
 			//プレイヤーが向いている方向のベクトル
 			ci::vec3 getPlayerVec() {
-				return player_vec;
+				return glm::normalize(player_vec);
 			}
 			Team getWhichTeam() {
 				return team;
@@ -181,6 +192,7 @@ namespace Game {
 			//コリジョンの後に呼び出す
 			//プレイヤーの移動
 			void setColliderSpeed() {
+				gravity_buf = (mPos.y + velocity.y) - mCollider.getPosition().y;
 				mPos = mCollider.getPosition();
 				//ベクトル更新
 				if (velocity.x >= 0.01f ||

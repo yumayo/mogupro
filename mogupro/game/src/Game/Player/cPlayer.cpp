@@ -8,6 +8,7 @@
 #include <Game/Field/cBreakBlockType.h>
 #include <Game/Weapons/WeaponFactory.h>
 #include <assert.h>
+#include <Resource/cSoundManager.h>
 
 void Game::Player::cPlayer::playerRotationY()
 {
@@ -151,8 +152,6 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 		gem_production_end[_gemid] = true;
 	})));
 
-	//プレイヤーのヒットを作ってもらう
-	//GemManager->getGems()[_gemid]->setIsDrillhit(true);
 }
 
 void Game::Player::cPlayer::collisionGems()
@@ -194,7 +193,8 @@ void Game::Player::cPlayer::drillingCamera(const float& delta_time)
 	if (player_far > 5) player_far = 5;
 	if (player_far < 0) player_far = 0;
 	
-	CAMERA->setCameraFar(player_far);
+	//FPSにする必要が無いのでコメントアウト
+	//CAMERA->setCameraFar(player_far);
 }
 
 
@@ -204,7 +204,7 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 	if (!active_user) return;
 	drillingCamera(delta_time);
 	if (!drilling)return;
-
+	if(!Game::cFieldManager::getInstance()->isBreakBlock(mCollider.getPosition() + (velocity * ci::vec3(status.drill_speed / 4)), status.drill_range))return;
 	//自分の位置と、自分のベクトルの向きに対して掘る
 	Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition() + (velocity * ci::vec3(status.drill_speed / 4)), status.drill_range, *block_type);
 	//Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition(), status.drill_range, *block_type);
@@ -251,10 +251,11 @@ Game::Player::cPlayer::cPlayer(
 	drilling = false;
 	jump_flag = false;
 	player_vec = ci::vec3(0, 0, 2);
+	gravity_buf = 0;
 	//プレイヤーのステータス
 	status.attack = 10;
 	status.hp = 100;
-	status.drill_range = 1.5f;
+	status.drill_range = 1;
 	status.jump_force = 0.6F;
 	status.speed = DEFAULT_SPEED;
 	status.drill_speed = DEFAULT_SPEED * 2;
@@ -262,9 +263,7 @@ Game::Player::cPlayer::cPlayer(
 	//武器の初期化
 	main_weapon = Weapon::cWeaponFactory::getInstance()->InstanceMainWeapon(static_cast<Weapon::MAIN_WEAPON>(main_weapon_id));
 	assert(main_weapon != NULL && "メイン武器の種類のenumが正しく入っていません。");
-	sub_weapon = Weapon::cWeaponFactory::getInstance()->InstanceSubWeapon(static_cast<Weapon::SUB_WEAPON>(sub_weapon_id));
-	assert(main_weapon != NULL && "サブ武器の種類のenumが正しく入っていません。");
-	
+
 	//設置位置
 	installation_position = ci::vec3(0, 0, 2);
 	player_far = 5;
@@ -279,32 +278,32 @@ Game::Player::cPlayer::cPlayer(
 
 void Game::Player::cPlayer::receiveDamage(const bool & hit, const float & attack)
 {
+	status.hp -= attack;
+	Resource::cSoundManager::getInstance()->findSe("Player/damage6.wav").play();
 }
 
 void Game::Player::cPlayer::weaponUpdae(const float & delta_time)
 {
 	main_weapon->update(delta_time);
-	//sub_weapon->update(delta_time);
 }
 
 void Game::Player::cPlayer::move(const ci::vec3 & velocity)
 {
 
-	auto speed = mRigidbody.getSpeed() - this->velocity;
-
 	//プレイヤーの移動ベクトル保存
 	this->velocity = velocity;
 	if (active_user) {
 		//地面の中で掘削中なら重力をなくす
-		if (mPos.y <= Game::cFieldManager::getInstance()->getBlockTopPosition(mPos).y && drilling) {
+		if (mCollider.getPosition().y <= 16.0f && drilling) {
 			mRigidbody.gravityOff();
+			gravity_buf = 0;
 		}
 		else {
 			mRigidbody.gravityOn();
 		}
 	}
-
-	mRigidbody.setSpeed(ci::vec3(0, speed.y, 0) + velocity);
+	//ci::app::console() << gravity_buf << std::endl;
+	mRigidbody.setSpeed(velocity - ci::vec3(0, gravity_buf,0));
 }
 
 void Game::Player::cPlayer::jump(bool flag)
@@ -314,7 +313,8 @@ void Game::Player::cPlayer::jump(bool flag)
 
 	if (jump_flag == true) {
 		if (mRigidbody.isLanding()) {
-			velocity.y = -status.jump_force;
+			Resource::cSoundManager::getInstance()->findSe("Player/onground.wav").play();
+			velocity.y -= status.jump_force;
 			jump_flag = false;
 		}
 	}
@@ -342,10 +342,10 @@ void Game::Player::cPlayer::setup()
 	if (!active_user)mRigidbody.gravityOff();
 
 	main_weapon->setup();
-	//sub_weapon->setup();
 
 	mesh = Resource::cObjectManager::getInstance()->findObject("montamogura/moguraHontai.obj");
 	TEX->set("mogura", "OBJ/montamogura/moguraHontai.png");
+	
 }
 
 #include <Game/cClientAdapter.h>
@@ -358,13 +358,10 @@ void Game::Player::cPlayer::update(const float & delta_time)
 
 void Game::Player::cPlayer::draw()
 {
-	//ci::gl::ScopedColor col( color );
 	ci::gl::ScopedTextureBind tex(TEX->get("mogura"));
-	//ci::gl::ScopedGlslProg glsl( ci::gl::getStockShader( ci::gl::ShaderDef( ).texture( ) ) );
 
 	ci::gl::pushModelView();
 	main_weapon->draw();
-	//sub_weapon->draw();
 	ci::gl::translate(mPos - ci::vec3(0, 0.5f, 0));
 	playerRotationY();
 	playerRotationX();

@@ -27,7 +27,7 @@ void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const
 
 void Game::cPlayerManager::playerDrillMove(const float & delta_time)
 {
-	CAMERA->shakeCamera(0.03f, 0.1f);
+	CAMERA->shakeCamera(0.1f, 0.1f);
 	//カメラの方向に移動
 	float player_speed = delta_time * active_player->getDrillSpeed();
 	active_player->move(ci::vec3(CAMERA->getCameraLook().x * player_speed, CAMERA->getCameraLook().y * player_speed, CAMERA->getCameraLook().z * player_speed));
@@ -35,10 +35,18 @@ void Game::cPlayerManager::playerDrillMove(const float & delta_time)
 
 void Game::cPlayerManager::playerAttack(const float & delta_time)
 {
-	active_player->getMainWeapon()->pushCall(ENV->pushKey(ci::app::KeyEvent::KEY_t));
-	active_player->getMainWeapon()->pressCall(ENV->pressKey(ci::app::KeyEvent::KEY_t));
-	active_player->getMainWeapon()->pullCall(ENV->pullKey(ci::app::KeyEvent::KEY_t));
-	
+	active_player->getMainWeapon()->pushCall(false);
+	active_player->getMainWeapon()->pressCall(false);
+	active_player->getMainWeapon()->pullCall(false);
+	if (ENV->pushKey(ci::app::KeyEvent::KEY_t)) {
+		active_player->getMainWeapon()->pushCall(true);
+	}
+	if (ENV->pressKey(ci::app::KeyEvent::KEY_t)) {
+		active_player->getMainWeapon()->pressCall(true);
+	}
+	if (ENV->pullKey(ci::app::KeyEvent::KEY_t)) {
+		active_player->getMainWeapon()->pullCall(true);
+	}
 }
 
 void Game::cPlayerManager::playerNormalMove(const float& delta_time)
@@ -86,11 +94,13 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 		std::sqrtf(keybord_velocity.z);
 	}
 
-	if (ENV->pressKey(ci::app::KeyEvent::KEY_SPACE)) {
+	
+	active_player->move(keybord_velocity);
+
+	//ジャンプはMoveの後に呼ぶ
+	if (ENV->pushKey(ci::app::KeyEvent::KEY_SPACE)) {
 		active_player->jump(true);
 	}
-
-	active_player->move(keybord_velocity);
 
 	//掘削機設置
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_o)) {
@@ -188,6 +198,7 @@ void Game::cPlayerManager::playerCollisionAfterUpdate(const float& delta_time)
 		it->gemsUpdate(delta_time);
 		it->weaponUpdae(delta_time);
 	}
+	playerAttack(delta_time);
 }
 void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
