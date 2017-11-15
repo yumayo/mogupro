@@ -149,7 +149,7 @@ cBlock* cUnderGround::getBlock( const ci::vec3& position )
         return &none_block;
 
     auto height_cell = ivec3( 0, chunk_cell.y * CHUNK_SIZE, 0 );
-    if ( ( height_cell.y / CHUNK_SIZE ) > CHUNK_RANGE_Y )
+    if ( height_cell.y < 0 || ( height_cell.y / CHUNK_SIZE ) > CHUNK_RANGE_Y )
         return &none_block;
 
     return mChunkHolder->getChunk( chunk_cell )->getBlock( block_cell + height_cell );
@@ -165,7 +165,7 @@ void cUnderGround::setBlock( const ci::vec3 & position, cBlock* block )
     if ( mChunkHolder->cellIsOutOfBounds( block_cell.x, block_cell.y, block_cell.z ) )
         return;
     auto height_cell = ivec3( 0, chunk_cell.y * CHUNK_SIZE, 0 );
-    if ( ( height_cell.y / CHUNK_SIZE ) > CHUNK_RANGE_Y )
+    if ( height_cell.y < 0 || ( height_cell.y / CHUNK_SIZE ) > CHUNK_RANGE_Y )
         return;
 
     mChunkHolder->getChunk( chunk_cell )->setBlock( block_cell + height_cell, block );
