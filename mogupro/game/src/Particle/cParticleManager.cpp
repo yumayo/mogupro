@@ -213,6 +213,7 @@ void cParticleManager::update( const float& delta_time )
 
 void cParticleManager::draw()
 {
+	gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef( ).texture( ) ) );
     for ( auto& it : mParticleHolders )
         it->draw( mBuilbordRotate );
 }

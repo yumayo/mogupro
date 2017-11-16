@@ -132,7 +132,6 @@ void cGameMain::draw( )
 
 		gl::enableDepthRead( );
 		gl::enableDepthWrite( );
-        Particle::cParticleManager::getInstance()->draw( );
 		Game::cFieldManager::getInstance( )->draw( );
 		Game::cShaderManager::getInstance( )->uniformUpdate( );
 		Game::cStrategyManager::getInstance( )->draw( );
@@ -150,6 +149,8 @@ void cGameMain::draw( )
 		gl::enableDepthRead( );
 		gl::enableDepthWrite( );
 		Game::cPlayerManager::getInstance( )->draw( );
+
+		Particle::cParticleManager::getInstance( )->draw( );
 	} );
 
 	Collision::cCollisionManager::getInstance( )->draw( );
