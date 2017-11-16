@@ -76,20 +76,25 @@ bool cParticle::isActive()
 cParticleHolder::cParticleHolder( const vec3& position,
                                   const ParticleType& type,
                                   const ParticleTextureType& texture_type,
+                                  const ci::vec3& scale,
                                   const float& time,
                                   const int& count,
-                                  const float& speed ) :
+                                  const float& speed,
+                                  const bool& lighting ) :
     mPosition( position )
+    , mScale( scale )
     , mType( type )
     , mTime( time )
     , mSpeed( speed )
+    , mLighting( lighting )
 {
     mTextureName = getTextureNameFromTextureType( texture_type );
     TEX->set( mTextureName, mTextureName + ".png" );
 
-    mHandle = Game::cLightManager::getInstance()->addPointLight( mPosition,
-                                                                 vec3( 1, 1, 1 ),
-                                                                 2.0f );
+    if ( mLighting )
+        mHandle = Game::cLightManager::getInstance()->addPointLight( mPosition,
+                                                                     vec3( 1, 1, 1 ),
+                                                                     2.0f );
 
     if ( mType == ParticleType::EXPROTION )
         for ( int i = 0; i < count; i++ )
@@ -98,7 +103,8 @@ cParticleHolder::cParticleHolder( const vec3& position,
 
 cParticleHolder::~cParticleHolder()
 {
-    Game::cLightManager::getInstance()->removePointLight( mHandle );
+    if ( mLighting )
+        Game::cLightManager::getInstance()->removePointLight( mHandle );
     mParticles.clear();
 }
 
@@ -118,7 +124,7 @@ void cParticleHolder::update( const float& delta_time )
             it++;
     }
 
-    sort();
+    //sort();
 }
 
 void cParticleHolder::draw( const glm::quat& rotation )
@@ -137,6 +143,7 @@ void cParticleHolder::draw( const glm::quat& rotation )
     ScopedBlendAlpha blend;
 
     gl::translate( mPosition );
+    gl::scale( mScale );
     for ( const auto& it : mParticles )
     {
         gl::ScopedColor color( 1.0f, 1.0f, 1.0f, clamp( it->mTime, 0.0f, 1.0f ) );
@@ -169,7 +176,7 @@ void cParticleHolder::create( const ci::vec3& position,
     Utility::RandomFloat rv( -mSpeed, mSpeed );
     vec3 rand_vec = vec3( rv(), rv(), rv() );
 
-    Utility::RandomFloat rt( time - 2.0f, time + 2.0f );
+    Utility::RandomFloat rt( time, time + 1.0f);
     mParticles.push_back( std::make_shared<cParticle>( rand_vec, position, rt() ) );
 }
 
@@ -202,29 +209,34 @@ void cParticleManager::update( const float& delta_time )
 
 void cParticleManager::draw()
 {
+    gl::disableDepthWrite();
     gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().color().texture() ) );
     for ( auto& it : mParticleHolders )
         it->draw( mBuilbordRotate );
+    gl::enableDepthWrite();
 }
 
 void cParticleManager::create( const ci::vec3& position,
                                const ParticleType& type,
                                const ParticleTextureType& texture_type,
+                               const ci::vec3& scale,
                                const float& time,
                                const float& speed )
 {
-    create( position, type, texture_type, time, 0, speed );
+    create( position, type, texture_type, scale, time, 0, speed, false );
 }
 
 void cParticleManager::create( const ci::vec3 & position,
                                const ParticleType & type,
                                const ParticleTextureType & texture_type,
+                               const ci::vec3& scale,
                                const float& time,
                                const int & count,
-                               const float& speed )
+                               const float& speed,
+                               const bool& lighting )
 {
     mParticleHolders.push_back(
-        std::make_shared<cParticleHolder>( position, type, texture_type, time, count, speed ) );
+        std::make_shared<cParticleHolder>( position, type, texture_type, scale, time, count, speed, lighting ) );
 }
 
 void cParticleManager::builbordUpdate()
