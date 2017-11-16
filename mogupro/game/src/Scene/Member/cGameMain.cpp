@@ -83,15 +83,12 @@ void cGameMain::setup( )
 	Game::cShaderManager::getInstance( )->setup( );
 	Game::cCapsuleManager::getInstance()->setup();
 	Game::cSubWeaponManager::getInstance()->setup();
-    Particle::cParticleManager::getInstance()->create( vec3( 0, get_map_top_pos, 0 ),
-                                                       Particle::ParticleType::EXPROTION,
-                                                       Particle::ParticleTextureType::SPARK,
-                                                       5.0f, 10,0.5f );
-    
+
 	sendEndSetup = false;
 	endTimer = false;
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
+	gameStartTimer = -1.0f;
 }
 
 void cGameMain::shutDown( )
@@ -116,11 +113,17 @@ void cGameMain::update( float deltaTime )
 			while (auto resSetGamestartTimer = Network::cResponseManager::getInstance()->getResSetGamestartTimer())
 			{
 				boost::posix_time::ptime nowTime = boost::posix_time::second_clock::universal_time();
-				boost::posix_time::ptime startTime(boost::posix_time::from_iso_string(resSetGamestartTimer->mTimerStr));
+				 startTime = boost::posix_time::from_iso_string(resSetGamestartTimer->mTimerStr);
 				gameStartTimer = (startTime.time_of_day().total_milliseconds() - nowTime.time_of_day().total_milliseconds()) / 1000.0f;
 				continue;
 			}
-			endTimer = true;
+
+			gameStartTimer -= deltaTime;
+			if (gameStartTimer < 0.0f)
+			{
+				endTimer = true;
+				Network::cUDPClientManager::getInstance()->send(new Network::Packet::Request::cReqEndStartTimer());
+			}
 		}
 		
 

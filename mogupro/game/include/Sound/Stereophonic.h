@@ -49,9 +49,9 @@ namespace Sound
 			end(false)
 		{
 			source->bindBuffer(*buffer);
-			position();
+			/*position();
 			direction();
-			soundPosition();
+			soundPosition();*/
 			play();
 		}
 
@@ -126,9 +126,9 @@ namespace Sound
 				return;
 			}
 
-			position();
+		/*	position();
 			direction();
-			soundPosition();
+			soundPosition();*/
 		}
 
 		void position(Utility::softptr<ci::vec3> listenerPos)

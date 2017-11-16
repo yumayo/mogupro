@@ -32,6 +32,8 @@ public:
     void cleanup( ) override;
 };
 
+
+
 void gameApp::setup( )
 {
     cSceneManager::getInstance( )->change<Scene::Member::cTitle>( );
@@ -41,7 +43,6 @@ void gameApp::setup( )
 void gameApp::mouseDown( MouseEvent event )
 {
 	ENV->mouseDown(event);
-    CAMERA->shakeCamera( 0.1f, 0.1f );
 }
 
 void gameApp::mouseUp( MouseEvent event )

@@ -12,6 +12,7 @@ cRigidBody::cRigidBody( cColliderBase& collider, cinder::vec3 speed )
     , mIsLanding( false )
 	, mIsHit( false )
 	, mFriction( 0.08F )
+	, mDelta( 0.0F )
 {
 }
 cRigidBody::~cRigidBody( )
@@ -28,20 +29,20 @@ void cRigidBody::removeWorld( )
 cinder::AxisAlignedBox cRigidBody::createAABB( ) const
 {
     auto&& aabb = std::move( mCollider.createAABB( mCollider.getPosition( ) ) );
-    auto aPrevPos = mCollider.getPosition( ) - mSpeed;
+    auto aPrevPos = mCollider.getPosition( ) - getSpeedCalcedDelta( );
     aabb.include( std::move( mCollider.createAABB( aPrevPos ) ) );
     return aabb;
 }
 
 void cRigidBody::update( float delta )
 {
+	mDelta = delta;
     mIsLanding = false;
 	mIsHit = false;
 
     if ( mIsGravity )
     {
-        if ( mSpeed.y > -10.0F )
-            mSpeed.y += -0.98F * delta;
+        mSpeed.y -= ( 9.8F * mDelta ) * 2; //Å@î˜ï™ÇÇ∑ÇÈÇ∆ämÇ©Ç±Ç§Ç»ÇÈÅB
     }
 
     mCollider.update( this );
@@ -50,7 +51,7 @@ void cRigidBody::lateUpdate( float delta )
 {
     if ( mIsHit )
     {
-        mSpeed -= mSpeed * ( 1.0F - mFriction ) * delta;
+		mSpeed *= ( 1.0F - mFriction * delta );
     }
 }
 bool cRigidBody::isLanding( ) const
@@ -77,9 +78,17 @@ cinder::vec3 const & cRigidBody::getSpeed( ) const
 {
     return mSpeed;
 }
+cinder::vec3 cRigidBody::getSpeedCalcedDelta( ) const
+{
+	return mSpeed * mDelta;
+}
 void cRigidBody::setSpeed( cinder::vec3 value )
 {
     mSpeed = value;
+}
+void cRigidBody::addSpeed( cinder::vec3 value )
+{
+	mSpeed += value;
 }
 float cRigidBody::getFriction( ) const
 {
@@ -135,8 +144,8 @@ void cRigidBody::calc( float minValue, cinder::Ray const& ray, cinder::AxisAlign
 
     mSpeed = calcWallScratchVector( mSpeed, normal );
 
-	auto pullVector = normalize( ray.getDirection( ) ) * 0.005F;
-    auto position = intersectPoint + mSpeed - pullVector;
+	auto pullVector = normalize( ray.getDirection( ) ) * ( 1.0F / 512 );
+    auto position = intersectPoint + getSpeedCalcedDelta( ) - pullVector;
 
     mCollider.setPosition( position );
 }

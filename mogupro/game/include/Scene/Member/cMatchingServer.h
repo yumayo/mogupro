@@ -19,6 +19,7 @@ public:
 	void checkBeginGame();
 	void resetMember();
 	void updateServer(float deltaTime);
+	void checkStartGameMember();
 	void draw();
 	void draw2D();
 	void resize();
@@ -37,6 +38,9 @@ private:
 	Utility::hardptr<Node::node> n;
 	Utility::hardptr<Node::Renderer::label> font;
 	bool mCanUpdateServerAdapter;
+	std::string mTimeStr;
+	boost::posix_time::ptime mGameStartTime;
+	bool mStartGame;
 };
 }
 }
