@@ -10,7 +10,7 @@ namespace Game
 namespace Field
 {
 cBlock::cBlock() :
-    mCollider( vec3( 0 ), vec3( BLOCK_SIZE ), vec3( BLOCK_SIZE / 2.0f ) )
+    mCollider( vec3( 0 ), vec3( BLOCK_SIZE ) )
     , mType( BlockType::AIR )
 {
 

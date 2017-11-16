@@ -52,7 +52,7 @@ void cUseLightBomb::createSubWeapon()
 
 	ci::vec3 normalizedSpeed = playerDir * glm::angleAxis(glm::radians(50.0F), tangent);
 
-	float power = 0.65F;
+	float power = 10.0F;
 
 	SUBWM->createLightBomb(pos, normalizedSpeed * power, scale, mPlayerId);
 }

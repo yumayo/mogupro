@@ -20,7 +20,7 @@ cinder::vec3 const & cColliderBase::getPosition( ) const
 void cColliderBase::update( cRigidBody * rigidbody )
 {
     cCollisionManager::getInstance( )->remove( *this );
-    mPosition += rigidbody->getSpeed( );
+    mPosition += rigidbody->getSpeedCalcedDelta( );
     cCollisionManager::getInstance( )->add( *this );
 }
 void cColliderBase::setLeafs( std::vector<std::set<cColliderBase*>*>&& leafs )
