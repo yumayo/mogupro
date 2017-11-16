@@ -83,10 +83,7 @@ void cGameMain::setup( )
 	Game::cShaderManager::getInstance( )->setup( );
 	Game::cCapsuleManager::getInstance()->setup();
 	Game::cSubWeaponManager::getInstance()->setup();
-    Particle::cParticleManager::getInstance()->create( vec3( 0, get_map_top_pos, 0 ),
-                                                       Particle::ParticleType::EXPROTION,
-                                                       Particle::ParticleTextureType::SPARK,
-                                                       5.0f, 10);
+
 	sendEndSetup = false;
 	endTimer = false;
     gl::enableDepthRead( );

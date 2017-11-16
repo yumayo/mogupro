@@ -1,5 +1,6 @@
 #include <Game/Field/cBlock.h>
 #include <cinder/gl/gl.h>
+#include <Particle/cParticleManager.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -40,6 +41,14 @@ void cBlock::toBreak()
 {
     mType = BlockType::AIR;
     clear();
+    Particle::cParticleManager::getInstance()->
+        create( getPosition(),
+                Particle::ParticleType::EXPROTION,
+                Particle::ParticleTextureType::SAND,
+                vec3( 0.02f ),
+                1.0f,
+                1,
+                0.2f );
     mCollider.removeWorld();
 }
 void cBlock::toRevival()
