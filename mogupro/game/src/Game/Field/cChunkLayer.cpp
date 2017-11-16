@@ -28,7 +28,7 @@ cChunkLayer::cChunkLayer( const int& height,
     , mLayerId( id )
 {
     mMesh = TriMesh::create();
-    mRevivalTime = 600.0f;
+    mRevivalTime = 30.0f;
 }
 
 cChunkLayer::~cChunkLayer()

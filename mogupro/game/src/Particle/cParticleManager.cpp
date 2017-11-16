@@ -33,7 +33,7 @@ float getLength( const vec3& p1, const vec3& p2 )
 }
 
 template<typename T>
-void sortByCamera( std::vector<std::shared_ptr<T>> list, const vec3& offset_pos )
+void sortByCamera( std::vector<std::shared_ptr<T>>& list, const vec3& offset_pos )
 {
     vec3 camera_pos = CameraManager::cCameraManager::getInstance()->getCamera().getEyePoint();
 
@@ -105,9 +105,9 @@ cParticleHolder::~cParticleHolder()
 void cParticleHolder::update( const float& delta_time )
 {
     mTime -= delta_time;
-
-    if ( mType != ParticleType::EXPROTION )
-        create( vec3( 0 ), 3.0f );
+    if ( mTime > 0 )
+        if ( mType != ParticleType::EXPROTION )
+            create( vec3( 0 ), 3.0f );
 
     for ( auto& it = mParticles.begin(); it != mParticles.end(); )
     {
@@ -139,7 +139,8 @@ void cParticleHolder::draw( const glm::quat& rotation )
     gl::translate( mPosition );
     for ( const auto& it : mParticles )
     {
-        ScopedColor color( 1, 1, 1, it->mTime );
+        gl::ScopedColor color( 1.0f, 1.0f, 1.0f, clamp( it->mTime, 0.0f, 1.0f ) );
+
         gl::pushModelView();
         gl::translate( it->mPosition );
         glm::fmat4 mat = glm::toMat4( rotation );
@@ -154,9 +155,7 @@ void cParticleHolder::draw( const glm::quat& rotation )
 
 bool cParticleHolder::isActive()
 {
-    if ( mType == ParticleType::EXPROTION )
-        return mParticles.size() >= 0;
-    return mTime > 0;
+    return mParticles.size() > 0;
 }
 
 void cParticleHolder::sort()
@@ -203,7 +202,7 @@ void cParticleManager::update( const float& delta_time )
 
 void cParticleManager::draw()
 {
-    gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().texture() ) );
+    gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().color().texture() ) );
     for ( auto& it : mParticleHolders )
         it->draw( mBuilbordRotate );
 }
