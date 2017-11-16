@@ -20,7 +20,7 @@ public:
     ~cChunk();
 
     void setup();
-    void update();
+    void update( const float& delta_time );
     void draw();
 
 public:

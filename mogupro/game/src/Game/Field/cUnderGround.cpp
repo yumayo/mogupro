@@ -39,7 +39,7 @@ void cUnderGround::setup()
 
 }
 
-void cUnderGround::update()
+void cUnderGround::update( const float& delta_time )
 {
     //std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
 
@@ -48,7 +48,7 @@ void cUnderGround::update()
     ChunkMap& chunks = mChunkHolder->getChunks();
     for ( auto& chunk : chunks )
     {
-        chunk.second->update();
+        chunk.second->update( delta_time );
         chunk.second->createMainCall();
     }
 }

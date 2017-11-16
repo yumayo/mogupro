@@ -71,12 +71,8 @@ cParticleHolder::cParticleHolder( const vec3& position,
                                                                  2.0f );
 
     if ( mType == ParticleType::EXPROTION )
-    {
-        for ( size_t i = 0; i < count; i++ )
-        {
+        for ( int i = 0; i < count; i++ )
             create( vec3( 0 ), time );
-        }
-    }
 }
 
 cParticleHolder::~cParticleHolder()
