@@ -32,6 +32,27 @@ float getLength( const vec3& p1, const vec3& p2 )
     return glm::sqrt( vec.x * vec.x + vec.y * vec.y + vec.z * vec.z );
 }
 
+template<typename T>
+void sortByCamera( std::vector<std::shared_ptr<T>>& list, const vec3& offset_pos )
+{
+    vec3 camera_pos = CameraManager::cCameraManager::getInstance()->getCamera().getEyePoint();
+
+    for ( size_t i = 0; i < list.size(); i++ )
+    {
+        for ( size_t k = 0; k < list.size() - i - 1; k++ )
+        {
+            const vec3& p1_pos = offset_pos + list[k]->mPosition;
+            const vec3& p2_pos = offset_pos + list[k + 1]->mPosition;
+
+            float length1 = getLength( camera_pos, p1_pos );
+            float length2 = getLength( camera_pos, p2_pos );
+
+            if ( length1 < length2 )
+                std::swap( list[k], list[k + 1] );
+        }
+    }
+}
+
 cParticle::cParticle( const ci::vec3& vec,
                       const ci::vec3& position,
                       const float& time ) :
@@ -84,9 +105,9 @@ cParticleHolder::~cParticleHolder()
 void cParticleHolder::update( const float& delta_time )
 {
     mTime -= delta_time;
-
-    if ( mType != ParticleType::EXPROTION )
-        create( vec3( 0 ), 3.0f );
+    if ( mTime > 0 )
+        if ( mType != ParticleType::EXPROTION )
+            create( vec3( 0 ), 3.0f );
 
     for ( auto& it = mParticles.begin(); it != mParticles.end(); )
     {
@@ -97,7 +118,7 @@ void cParticleHolder::update( const float& delta_time )
             it++;
     }
 
-    sortByCamera();
+    sort();
 }
 
 void cParticleHolder::draw( const glm::quat& rotation )
@@ -118,9 +139,10 @@ void cParticleHolder::draw( const glm::quat& rotation )
     gl::translate( mPosition );
     for ( const auto& it : mParticles )
     {
+        gl::ScopedColor color( 1.0f, 1.0f, 1.0f, clamp( it->mTime, 0.0f, 1.0f ) );
+
         gl::pushModelView();
         gl::translate( it->mPosition );
-
         glm::fmat4 mat = glm::toMat4( rotation );
         gl::multModelMatrix( mat );
 
@@ -133,29 +155,12 @@ void cParticleHolder::draw( const glm::quat& rotation )
 
 bool cParticleHolder::isActive()
 {
-    if ( mType == ParticleType::EXPROTION )
-        return mParticles.size() >= 0;
-    return mTime > 0;
+    return mParticles.size() > 0;
 }
 
-void cParticleHolder::sortByCamera()
+void cParticleHolder::sort()
 {
-    vec3 camera_pos = CameraManager::cCameraManager::getInstance()->getCamera().getEyePoint();
-
-    for ( size_t i = 0; i < mParticles.size(); i++ )
-    {
-        for ( size_t k = 0; k < mParticles.size() - i - 1; k++ )
-        {
-            const vec3& p1_pos = mPosition + mParticles[k]->mPosition;
-            const vec3& p2_pos = mPosition + mParticles[k + 1]->mPosition;
-
-            float length1 = getLength( camera_pos, p1_pos );
-            float length2 = getLength( camera_pos, p2_pos );
-
-            if ( length1 < length2 )
-                std::swap( mParticles[k], mParticles[k + 1] );
-        }
-    }
+    sortByCamera<cParticle>( mParticles, mPosition );
 }
 
 void cParticleHolder::create( const ci::vec3& position,
@@ -191,11 +196,13 @@ void cParticleManager::update( const float& delta_time )
         else
             it++;
     }
+
+    sortByCamera<cParticleHolder>( mParticleHolders, vec3( 0 ) );
 }
 
 void cParticleManager::draw()
 {
-    gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().texture() ) );
+    gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().color().texture() ) );
     for ( auto& it : mParticleHolders )
         it->draw( mBuilbordRotate );
 }

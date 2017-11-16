@@ -28,9 +28,9 @@ class cParticle
 public:
 
     cParticle() {}
-    cParticle( const ci::vec3& vec, 
+    cParticle( const ci::vec3& vec,
                const ci::vec3& position,
-               const float& time);
+               const float& time );
 
     void update( const float& delta_time );
     bool isActive();
@@ -50,7 +50,7 @@ public:
                      const ParticleTextureType& texture_type,
                      const float& time,
                      const int& count,
-                     const float& speed);
+                     const float& speed );
     ~cParticleHolder();
 
     void update( const float& delta_time );
@@ -60,11 +60,11 @@ public:
 
 private:
 
-    void sortByCamera();
+    void sort();
     void create( const ci::vec3& position,
                  const float& time );
 
-private:
+public:
 
     ci::vec3 mPosition;
     ParticleType mType;
@@ -102,12 +102,13 @@ public:
     // type         : 飛ばす種類
     // texture_type : 画像の種類
     // count        : 生成個数
+    // speed        : パーティクルの速さ
     void create( const ci::vec3& position,
                  const ParticleType& type,
                  const ParticleTextureType& texture_type,
                  const float& time,
                  const int& count,
-                 const float& speed = 0.1f);
+                 const float& speed = 0.1f );
 
 private:
 
