@@ -23,6 +23,8 @@
 #include <Game/cLightManager.h>
 #include <Game/cUIManager.h>
 #include <Particle/cParticleManager.h>
+#include<Game/cCapsuleManager.h>
+#include<Game/cSubWeaponManager.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -77,11 +79,12 @@ void cGameMain::setup( )
     //Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
 	Game::cLightManager::getInstance( )->setup( );
 	Game::cShaderManager::getInstance( )->setup( );
-
+	Game::cCapsuleManager::getInstance()->setup();
+	Game::cSubWeaponManager::getInstance()->setup();
     Particle::cParticleManager::getInstance()->create( vec3( 0, get_map_top_pos, 0 ),
-                                                       Particle::ParticleType::SCATTER,
+                                                       Particle::ParticleType::EXPROTION,
                                                        Particle::ParticleTextureType::SPARK,
-                                                       5.0f );
+                                                       5.0f, 10 );
     
 	sendEndSetup = false;
     gl::enableDepthRead( );
@@ -115,8 +118,11 @@ void cGameMain::update( float deltaTime )
         ENV->padProcessEvent( );
         Game::cPlayerManager::getInstance( )->update( deltaTime );
         Game::cStrategyManager::getInstance( )->update( deltaTime );
+		Game::cCapsuleManager::getInstance()->update(deltaTime);
+		Game::cSubWeaponManager::getInstance()->update(deltaTime);
         Collision::cCollisionManager::getInstance( )->update( deltaTime );
 		Game::cPlayerManager::getInstance()->playerCollisionAfterUpdate( deltaTime );
+		Game::cSubWeaponManager::getInstance()->updateCollisionAfterUpdate(deltaTime);
         GemManager->update( );
 		Game::cLightManager::getInstance( )->update( );
         Game::cShaderManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
@@ -132,10 +138,11 @@ void cGameMain::draw( )
 
 		gl::enableDepthRead( );
 		gl::enableDepthWrite( );
-        Particle::cParticleManager::getInstance()->draw( );
 		Game::cFieldManager::getInstance( )->draw( );
 		Game::cShaderManager::getInstance( )->uniformUpdate( );
 		Game::cStrategyManager::getInstance( )->draw( );
+		Game::cSubWeaponManager::getInstance()->draw();
+		Game::cCapsuleManager::getInstance()->draw();
 		GemManager->draw( );
 		skydome.draw( );
 		CAMERA->unBind3D( );
@@ -150,6 +157,8 @@ void cGameMain::draw( )
 		gl::enableDepthRead( );
 		gl::enableDepthWrite( );
 		Game::cPlayerManager::getInstance( )->draw( );
+
+		Particle::cParticleManager::getInstance( )->draw( );
 	} );
 
 	Collision::cCollisionManager::getInstance( )->draw( );

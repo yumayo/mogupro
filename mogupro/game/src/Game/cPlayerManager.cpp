@@ -169,6 +169,18 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_LEFT))
 		CAMERA->setCameraAngle(ci::vec2(0.05f, 0));
+
+	///////////////////デバックでライトボムを増やす
+	if (ENV->pushKey(ci::app::KeyEvent::KEY_h)) {
+		active_player->useSubWeapon.addSubWeapon(Game::Weapons::SubWeapon::LIGHT_BOMB);
+	}
+
+	/////////////////アイテムを使う
+	if (ENV->pushKey(ci::app::KeyEvent::KEY_g)) {
+		active_player->useSubWeapon.useWeapon(active_player_id);
+	}
+	///////////////////
+
 }
 void Game::cPlayerManager::padMove(const float & delta_time)
 {

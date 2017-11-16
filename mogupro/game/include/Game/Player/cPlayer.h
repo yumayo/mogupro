@@ -6,6 +6,7 @@
 #include <Node/action.hpp>
 #include <Node/node.h>
 #include <Game/Weapons/WeaponBase.h>
+#include<Game/Weapons/UseSubWeapon/cUseSubWeapon.h>
 namespace Game {
 	namespace Gem {
 		class cGem;
@@ -119,7 +120,9 @@ namespace Game {
 				const int& main_weapon_id,
 				const int& sub_weapon_id,
 				const Game::Player::Team& team);
-			
+			/////アイテムを使用するのに使います
+			Game::Weapons::UseSubWeapon::cUseSubWeapon useSubWeapon;
+
 			ci::vec3 getSize() {
 				return size;
 			}
