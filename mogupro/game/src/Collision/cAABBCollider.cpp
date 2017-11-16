@@ -3,10 +3,9 @@
 #include <Collision/cCollisionManager.h>
 namespace Collision
 {
-cAABBCollider::cAABBCollider( cinder::vec3 position, cinder::vec3 size, cinder::vec3 anchor )
+cAABBCollider::cAABBCollider( cinder::vec3 position, cinder::vec3 size )
     : cColliderBase( Type::AABB, position )
     , mSize( size )
-    , mAnchor( anchor )
 {
 }
 cAABBCollider::~cAABBCollider( )
@@ -22,16 +21,12 @@ void cAABBCollider::removeWorld( )
 }
 cinder::AxisAlignedBox cAABBCollider::createAABB( cinder::vec3 calcedPosition ) const
 {
-    cinder::AxisAlignedBox aabb( -mSize * mAnchor, mSize * ( 1.0F - mAnchor ) );
+    cinder::AxisAlignedBox aabb( -mSize / 2.0F, mSize / 2.0F );
     aabb.transform( translate( cinder::mat4( ), calcedPosition ) );
     return aabb;
 }
 cinder::vec3 const & cAABBCollider::getSize( ) const
 {
     return mSize;
-}
-cinder::vec3 const & cAABBCollider::getAnchor( ) const
-{
-    return mAnchor;
 }
 }

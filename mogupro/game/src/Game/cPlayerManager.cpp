@@ -27,10 +27,9 @@ void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const
 
 void Game::cPlayerManager::playerDrillMove(const float & delta_time)
 {
-	CAMERA->shakeCamera(0.1f, 0.1f);
+	//CAMERA->shakeCamera(0.1f, 0.1f);
 	//ƒJƒƒ‰‚Ì•ûŒü‚ÉˆÚ“®
-	float player_speed = delta_time * active_player->getDrillSpeed();
-	active_player->move(ci::vec3(CAMERA->getCameraLook().x * player_speed, CAMERA->getCameraLook().y * player_speed, CAMERA->getCameraLook().z * player_speed));
+	active_player->move( CAMERA->getCameraLook( ) * active_player->getDrillSpeed( ) );
 }
 
 void Game::cPlayerManager::playerAttack(const float & delta_time)
@@ -67,22 +66,22 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_w)) {
-		z_axis = delta_time * active_player->getSpeed();
+		z_axis = active_player->getSpeed();
 		diagonal++;
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_s)) {
-		z_axis = -delta_time * active_player->getSpeed();
+		z_axis = -active_player->getSpeed();
 		diagonal++;
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_d)) {
-		x_axis = -delta_time * active_player->getSpeed();
+		x_axis = -active_player->getSpeed();
 		diagonal++;
 	}
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_a)) {
-		x_axis = delta_time * active_player->getSpeed();
+		x_axis = active_player->getSpeed();
 		diagonal++;
 	}
 

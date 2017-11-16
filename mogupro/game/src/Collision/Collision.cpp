@@ -18,8 +18,8 @@ void hitRayToCube( cinder::Ray const & ray, unsigned int layer, cColliderBase co
 }
 void hitRayToCube( cinder::Ray const & ray, cAABBCollider const* const bCollider, float & calcMin, cinder::Ray & calcRay, cinder::AxisAlignedBox & calcBoundingBox, cColliderBase const** targetCollider )
 {
-    AxisAlignedBox boundingBox( cinder::vec3( 0.0F ) + -bCollider->getSize( ) * bCollider->getAnchor( ),
-                                cinder::vec3( 0.0F ) + bCollider->getSize( ) * ( 1.0F - bCollider->getAnchor( ) ) );
+    AxisAlignedBox boundingBox( cinder::vec3( 0.0F ) + -bCollider->getSize( ) / 2.0F,
+                                cinder::vec3( 0.0F ) + bCollider->getSize( ) / 2.0F );
     boundingBox.transform( translate( mat4( ), bCollider->getPosition( ) ) );
 
     float min = 0.0F, max = 0.0F;
@@ -53,7 +53,7 @@ void hitCubeToCube( cColliderBase const* const aCollider, cRigidBody const* cons
 }
 void hitCubeToCube( cAABBCollider const* const aAABB, cRigidBody const* const aRigidBody, cAABBCollider const* const bAABB, float& min, cinder::Ray& ray, cinder::AxisAlignedBox& boundingBox, cColliderBase const** targetCollider )
 {
-    auto aPrevPos = aAABB->getPosition( ) - aRigidBody->getSpeed( );
+    auto aPrevPos = aAABB->getPosition( ) - aRigidBody->getSpeedCalcedDelta( );
     auto direction = aAABB->getPosition( ) - aPrevPos;
     //@ Q^PPPP_Q
     //@(›@ LƒÖM@ ›)
@@ -72,8 +72,8 @@ void hitCubeToCube( cAABBCollider const* const aAABB, cRigidBody const* const aR
 
     Ray calcRay( aPrevPos, direction );
 
-    AxisAlignedBox calcBoundingBox( -aAABB->getSize( ) * aAABB->getAnchor( ) + -bAABB->getSize( ) * bAABB->getAnchor( ),
-                                    aAABB->getSize( ) * ( 1.0F - aAABB->getAnchor( ) ) + bAABB->getSize( ) * ( 1.0F - bAABB->getAnchor( ) ) );
+    AxisAlignedBox calcBoundingBox( -aAABB->getSize( ) / 2.0F + -bAABB->getSize( ) / 2.0F,
+                                    aAABB->getSize( ) / 2.0F + bAABB->getSize( ) / 2.0F );
     calcBoundingBox.transform( translate( mat4( ), bAABB->getPosition( ) ) );
 
     float calcMin = std::numeric_limits<float>::max( ), calcMax = std::numeric_limits<float>::max( );
