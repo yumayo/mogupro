@@ -498,5 +498,38 @@ bool cRequestManager::isNewReqEndGamemainSetup( Packet::PacketHeader const& head
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
+boost::optional<Packet::Request::cReqEndStartTimer> cRequestManager::getReqEndStartTimer( )
+{
+    if ( mReqEndStartTimer.empty( ) )
+    {
+        auto it = mReqEndStartTimerSequenceIds.begin( );
+		while ( it != mReqEndStartTimerSequenceIds.end( ) ) 
+		{
+			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
+			{
+				mReqEndStartTimerSequenceIds.erase( it++ );
+			}
+			else ++it;
+		}
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqEndStartTimer.top( );
+        mReqEndStartTimer.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqEndStartTimer( Packet::Request::cReqEndStartTimer&& data )
+{
+    mReqEndStartTimer.push( std::move( data ) );
+}
+bool cRequestManager::isNewReqEndStartTimer( Packet::PacketHeader const& header )
+{
+	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
+    auto status = mReqEndStartTimerSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    status.first->second = cinder::app::getElapsedSeconds( );
+	return status.second;
+}
 // P=====END=====P
 }

@@ -114,6 +114,13 @@ public:
 private:
     std::stack<Packet::Request::cReqEndGamemainSetup> mReqEndGamemainSetup;
     std::map<ubyte4, double> mReqEndGamemainSetupSequenceIds;
+public:
+    boost::optional<Packet::Request::cReqEndStartTimer> getReqEndStartTimer( );
+    void ungetReqEndStartTimer( Packet::Request::cReqEndStartTimer&& data );
+    bool isNewReqEndStartTimer( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Request::cReqEndStartTimer> mReqEndStartTimer;
+    std::map<ubyte4, double> mReqEndStartTimerSequenceIds;
     // P=====END=====P
 };
 }
