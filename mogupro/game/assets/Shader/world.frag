@@ -51,7 +51,7 @@ void main()
     }
     else
     {
-        oColor = texture( uTex0, vTexCoord0 ) * uAmb;
+        oColor = col * uAmb;
     }
 
     // 影
