@@ -53,7 +53,7 @@ void mouseCursolFixed(const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 		delta.x = pt.x - last_cursor_pos.x;
 		delta.y = pt.y - last_cursor_pos.y;
 
-		if (delta.x != 0 && delta.y != 0) {
+		if (delta.x != 0 || delta.y != 0) {
 			SetCursorPos(last_cursor_pos.x, last_cursor_pos.y);
 			CAMERA->setCameraAngle(ci::vec2(-delta.x, -delta.y) * 0.005f);
 		}

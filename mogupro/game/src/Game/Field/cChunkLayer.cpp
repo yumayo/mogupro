@@ -28,7 +28,7 @@ cChunkLayer::cChunkLayer( const int& height,
     , mLayerId( id )
 {
     mMesh = TriMesh::create();
-    mRevivalTime = 600.0f;
+    mRevivalTime = 30.0f;
 }
 
 cChunkLayer::~cChunkLayer()
@@ -49,7 +49,6 @@ void cChunkLayer::update( const float& delta_time )
         {
             mBlocks[it->first]->toRevival();
             mIsRebuildMesh = true;
-            reBuildStart();
             mRevivalBlocks.erase( it++ );
         }
         else

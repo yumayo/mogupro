@@ -32,6 +32,27 @@ float getLength( const vec3& p1, const vec3& p2 )
     return glm::sqrt( vec.x * vec.x + vec.y * vec.y + vec.z * vec.z );
 }
 
+template<typename T>
+void sortByCamera( std::vector<std::shared_ptr<T>>& list, const vec3& offset_pos )
+{
+    vec3 camera_pos = CameraManager::cCameraManager::getInstance()->getCamera().getEyePoint();
+
+    for ( size_t i = 0; i < list.size(); i++ )
+    {
+        for ( size_t k = 0; k < list.size() - i - 1; k++ )
+        {
+            const vec3& p1_pos = offset_pos + list[k]->mPosition;
+            const vec3& p2_pos = offset_pos + list[k + 1]->mPosition;
+
+            float length1 = getLength( camera_pos, p1_pos );
+            float length2 = getLength( camera_pos, p2_pos );
+
+            if ( length1 < length2 )
+                std::swap( list[k], list[k + 1] );
+        }
+    }
+}
+
 cParticle::cParticle( const ci::vec3& vec,
                       const ci::vec3& position,
                       const float& time ) :
@@ -55,20 +76,30 @@ bool cParticle::isActive()
 cParticleHolder::cParticleHolder( const vec3& position,
                                   const ParticleType& type,
                                   const ParticleTextureType& texture_type,
+                                  const ci::vec3& scale,
                                   const float& time,
                                   const int& count,
-                                  const float& speed ) :
+                                  const float& speed,
+                                  const bool& lighting,
+                                  const ci::ColorA& color ) :
     mPosition( position )
+    , mScale( scale )
     , mType( type )
     , mTime( time )
     , mSpeed( speed )
+    , mLighting( lighting )
+    , mColor( color )
 {
-    mTextureName = getTextureNameFromTextureType( texture_type );
-    TEX->set( mTextureName, mTextureName + ".png" );
+    if ( texture_type != ParticleTextureType::NONE )
+    {
+        mTextureName = getTextureNameFromTextureType( texture_type );
+        TEX->set( mTextureName, mTextureName + ".png" );
+    }
 
-    mHandle = Game::cLightManager::getInstance()->addPointLight( mPosition,
-                                                                 vec3( 1, 1, 1 ),
-                                                                 2.0f );
+    if ( mLighting )
+        mHandle = Game::cLightManager::getInstance()->addPointLight( mPosition,
+                                                                     vec3( 1, 1, 1 ),
+                                                                     2.0f );
 
     if ( mType == ParticleType::EXPROTION )
         for ( int i = 0; i < count; i++ )
@@ -77,16 +108,17 @@ cParticleHolder::cParticleHolder( const vec3& position,
 
 cParticleHolder::~cParticleHolder()
 {
-    Game::cLightManager::getInstance()->removePointLight( mHandle );
+    if ( mLighting )
+        Game::cLightManager::getInstance()->removePointLight( mHandle );
     mParticles.clear();
 }
 
 void cParticleHolder::update( const float& delta_time )
 {
     mTime -= delta_time;
-
-    if ( mType != ParticleType::EXPROTION )
-        create( vec3( 0 ), 3.0f );
+    if ( mTime > 0 )
+        if ( mType != ParticleType::EXPROTION )
+            create( vec3( 0 ), 3.0f );
 
     for ( auto& it = mParticles.begin(); it != mParticles.end(); )
     {
@@ -97,65 +129,41 @@ void cParticleHolder::update( const float& delta_time )
             it++;
     }
 
-    sortByCamera();
+    //sort();
 }
 
 void cParticleHolder::draw( const glm::quat& rotation )
 {
-    using namespace ci::gl;
-    auto ctx = context();
-
     gl::pushModelView();
-    auto texture = TEX->get( mTextureName );
-    if ( !texture )
-        return;
+    gl::ScopedBlendAlpha blend;
 
-    Rectf rect( vec2( -0.5, -0.5 ), vec2( 0.5, 0.5 ) );
-
-    ScopedTextureBind tex( texture );
-    ScopedBlendAlpha blend;
-
-    gl::translate( mPosition );
-    for ( const auto& it : mParticles )
+    if ( mTextureName != "" )
     {
-        gl::pushModelView();
-        gl::translate( it->mPosition );
+        gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().color().texture() ) );
 
-        glm::fmat4 mat = glm::toMat4( rotation );
-        gl::multModelMatrix( mat );
+        auto texture = TEX->get( mTextureName );
+        if ( !texture ) return;
+        gl::ScopedTextureBind tex( texture );
+        particleDraw( rotation );
 
-        gl::drawSolidRect( rect );
+    }
+    else
+    {
+        gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().color() ) );
 
-        gl::popModelView();
+        particleDraw( rotation );
     }
     gl::popModelView();
 }
 
 bool cParticleHolder::isActive()
 {
-    if ( mType == ParticleType::EXPROTION )
-        return mParticles.size() >= 0;
-    return mTime > 0;
+    return mParticles.size() > 0;
 }
 
-void cParticleHolder::sortByCamera()
+void cParticleHolder::sort()
 {
-    vec3 camera_pos = CameraManager::cCameraManager::getInstance()->getCamera().getEyePoint();
-
-    for ( size_t i = 0; i < mParticles.size(); i++ )
-    {
-        for ( size_t k = 0; k < mParticles.size() - i - 1; k++ )
-        {
-            const vec3& p1_pos = mPosition + mParticles[k]->mPosition;
-            const vec3& p2_pos = mPosition + mParticles[k + 1]->mPosition;
-
-            float length1 = getLength( camera_pos, p1_pos );
-            float length2 = getLength( camera_pos, p2_pos );
-
-            if ( length1 < length2 )
-                std::swap( mParticles[k], mParticles[k + 1] );
-        }
-    }
+    sortByCamera<cParticle>( mParticles, mPosition );
 }
 
 void cParticleHolder::create( const ci::vec3& position,
@@ -164,8 +172,31 @@ void cParticleHolder::create( const ci::vec3& position,
     Utility::RandomFloat rv( -mSpeed, mSpeed );
     vec3 rand_vec = vec3( rv(), rv(), rv() );
 
-    Utility::RandomFloat rt( time - 2.0f, time + 2.0f );
+    Utility::RandomFloat rt( time, time + 1.0f );
     mParticles.push_back( std::make_shared<cParticle>( rand_vec, position, rt() ) );
+}
+
+void cParticleHolder::particleDraw( const glm::quat& rotation )
+{
+    Rectf rect( vec2( -0.5, -0.5 ), vec2( 0.5, 0.5 ) );
+    gl::translate( mPosition );
+    gl::scale( mScale );
+    for ( const auto& it : mParticles )
+    {
+        gl::ScopedColor color( mColor.r,
+                               mColor.g,
+                               mColor.b,
+                               clamp( it->mTime, 0.0f, 1.0f ) );
+        gl::pushModelView();
+        gl::translate( it->mPosition );
+        glm::fmat4 mat = glm::toMat4( rotation );
+        gl::multModelMatrix( mat );
+
+        gl::drawSolidRect( rect );
+
+        gl::popModelView();
+    }
+
 }
 
 cParticleManager::cParticleManager()
@@ -191,33 +222,41 @@ void cParticleManager::update( const float& delta_time )
         else
             it++;
     }
+
+    sortByCamera<cParticleHolder>( mParticleHolders, vec3( 0 ) );
 }
 
 void cParticleManager::draw()
 {
-    gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().texture() ) );
+    gl::disableDepthWrite();
+
     for ( auto& it : mParticleHolders )
         it->draw( mBuilbordRotate );
+    gl::enableDepthWrite();
 }
 
 void cParticleManager::create( const ci::vec3& position,
                                const ParticleType& type,
                                const ParticleTextureType& texture_type,
+                               const ci::vec3& scale,
                                const float& time,
                                const float& speed )
 {
-    create( position, type, texture_type, time, 0, speed );
+    create( position, type, texture_type, scale, time, 0, speed, false );
 }
 
 void cParticleManager::create( const ci::vec3 & position,
                                const ParticleType & type,
                                const ParticleTextureType & texture_type,
+                               const ci::vec3& scale,
                                const float& time,
                                const int & count,
-                               const float& speed )
+                               const float& speed,
+                               const bool& lighting,
+                               const ci::ColorA& color )
 {
     mParticleHolders.push_back(
-        std::make_shared<cParticleHolder>( position, type, texture_type, time, count, speed ) );
+        std::make_shared<cParticleHolder>( position, type, texture_type, scale, time, count, speed, lighting, color ) );
 }
 
 void cParticleManager::builbordUpdate()

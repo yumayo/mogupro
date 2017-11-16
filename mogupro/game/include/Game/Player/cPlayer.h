@@ -49,7 +49,7 @@ namespace Game {
 			//設置位置
 			ci::vec3 installation_position;
 			//プレイヤーの方向ベクトル
-			ci::vec3 player_vec;
+			ci::vec3 normalized_player_vec;
 			//チーム
 			Team team;
 
@@ -74,11 +74,6 @@ namespace Game {
 
 			//プレイヤーからのカメラの位置
 			float player_far;
-
-			float gravity_buf;
-
-			//プレイヤーの移動ベクトル保存
-			ci::vec3 velocity;
 
 			//当たり判定登録
 			Collision::cAABBCollider mCollider;
@@ -135,13 +130,10 @@ namespace Game {
 			}
 			void setPos(const ci::vec3 pos) {
 				if(active_user) return;
-				velocity = pos - mPos;
 				mCollider.setPosition(pos);
 			}
 
 			void resetPos() {
-				velocity = ci::vec3(0);
-				gravity_buf = 0;
 				mCollider.setPosition(ci::vec3(0,70,0));
 			}
 
@@ -150,7 +142,7 @@ namespace Game {
 			}
 			//プレイヤーが向いている方向のベクトル
 			ci::vec3 getPlayerVec() {
-				return glm::normalize(player_vec);
+				return normalized_player_vec;
 			}
 			Team getWhichTeam() {
 				return team;
@@ -195,15 +187,7 @@ namespace Game {
 			//コリジョンの後に呼び出す
 			//プレイヤーの移動
 			void setColliderSpeed() {
-				gravity_buf = (mPos.y + velocity.y) - mCollider.getPosition().y;
 				mPos = mCollider.getPosition();
-				//ベクトル更新
-				if (velocity.x >= 0.01f ||
-					velocity.x <= -0.01f ||
-					velocity.z >= 0.01f ||
-					velocity.z <= -0.01f) {
-					player_vec = velocity;
-				}
 			}
 			void gemsUpdate(const float& delta_time);
 

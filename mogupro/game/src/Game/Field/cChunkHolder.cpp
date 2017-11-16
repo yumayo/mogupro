@@ -215,12 +215,6 @@ std::vector<int> cChunkHolder::getChunkId( const ci::ivec3 & chunk_cell,
         for ( int y = s.y; y <= e.y; y++ )
             for ( int x = s.x; x <= e.x; x++ )
             {
-                auto block = chunk_layer->getBlock( ivec3( x, y, z ) );
-                if ( block == nullptr )
-                    continue;
-                if ( block->isActive() == false )
-                    continue;
-
                 auto layer = chunk_layer->getChunkLayer( ivec3( x, y, z ) );
                 if ( layer == nullptr )
                     continue;

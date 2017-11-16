@@ -16,17 +16,12 @@ void Game::Player::cPlayer::playerRotationY()
 	ci::vec3 rotateaxis = ci::vec3(0.0f, 0.0f, 1.0f);
 
 	//移動先のベクトル
-	ci::vec3 targetvec = ci::vec3(velocity.x, 0, velocity.z);
+	auto xzVector = normalized_player_vec * ci::vec3( 1, 0, 1 );
 
-	//移動方向をnormalize
-	targetvec = ci::normalize(targetvec);
-	if (velocity.x >= 0.01f ||
-		velocity.x <= -0.01f ||
-		velocity.z >= 0.01f ||
-		velocity.z <= -0.01f) {
-		installation_position = ci::vec3(velocity.x * 10, 0, velocity.z * 10);
-		ci::vec3 rotateaxis_x = ci::vec3(velocity.x * 10, velocity.y * 10, velocity.z * 10);
-	}
+	ci::vec3 targetvec = ci::vec3(normalized_player_vec.x, 0, normalized_player_vec.z);
+
+	installation_position = xzVector * 10.0F;
+	ci::vec3 rotateaxis_x = normalized_player_vec * 10.0F;
 	//回転軸
 	ci::vec3 quataxis = glm::cross(rotateaxis, targetvec);
 
@@ -37,18 +32,18 @@ void Game::Player::cPlayer::playerRotationY()
 	//なのでZが０の時と１の時だけ例外として角度
 	//を与えなければならない
 	if (quataxis == ci::vec3(0)) {
-		if (velocity.z > 0.0f) {
+		if ( normalized_player_vec.z > 0.0f) {
 			ci::gl::rotate(0, ci::vec3(0, 1, 0));
 			save_rotate_y = 0;
 		}
-		if (velocity.z < 0.0f) {
+		if ( normalized_player_vec.z < 0.0f) {
 			ci::gl::rotate(M_PI, ci::vec3(0, 1, 0));
 			save_rotate_y = M_PI;
 		}
 		return;
 	}
 
-	float rotation = atan2f(velocity.x, velocity.z);
+	float rotation = atan2f( normalized_player_vec.x, normalized_player_vec.z);
 
 	//回転
 	// 左回り
@@ -80,13 +75,10 @@ void Game::Player::cPlayer::playerRotationX()
 	ci::vec3 rotateaxis = ci::vec3(0.0f, 1.0f, 0.0f);
 
 	//移動先のベクトル
-	ci::vec3 targetvec = ci::vec3(0, velocity.y, velocity.z);
-
-	//移動方向をnormalize
-	targetvec = ci::normalize(targetvec);
+	ci::vec3 yzVector = normalized_player_vec * ci::vec3( 0, 1, 1 );
 
 	//回転軸
-	ci::vec3 quataxis = glm::cross(rotateaxis, targetvec);
+	ci::vec3 quataxis = glm::cross(rotateaxis, yzVector );
 
 	//同じベクトルを向いた状態だとクォータニオンが
 	//０になる。
@@ -95,18 +87,18 @@ void Game::Player::cPlayer::playerRotationX()
 	//なのでZが０の時と１の時だけ例外として角度
 	//を与えなければならない
 	if (quataxis == ci::vec3(0)) {
-		if (velocity.z > 0.0f) {
+		if ( normalized_player_vec.z > 0.0f) {
 			ci::gl::rotate(0, ci::vec3(1, 0, 0));
 			save_rotate_x = 0;
 		}
-		if (velocity.z < 0.0f) {
+		if ( normalized_player_vec.z < 0.0f) {
 			ci::gl::rotate(M_PI, ci::vec3(1, 0, 0));
 			save_rotate_x = M_PI;
 		}
 		return;
 	}
 
-	float rotation = atan2f(velocity.z, velocity.y);
+	float rotation = atan2f( normalized_player_vec.z, normalized_player_vec.y);
 
 	//回転
 	// 左回り
@@ -206,9 +198,9 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 	if (!active_user) return;
 	drillingCamera(delta_time);
 	if (!drilling)return;
-	if(!Game::cFieldManager::getInstance()->isBreakBlock(mCollider.getPosition() + (velocity * ci::vec3(status.drill_speed / 4)), status.drill_range))return;
+	if(!Game::cFieldManager::getInstance()->isBreakBlock(mCollider.getPosition() + ( normalized_player_vec * ci::vec3(status.drill_speed / 4)), status.drill_range))return;
 	//自分の位置と、自分のベクトルの向きに対して掘る
-	Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition() + (velocity * ci::vec3(status.drill_speed / 4)), status.drill_range, *block_type);
+	Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition() + ( normalized_player_vec * ci::vec3(status.drill_speed / 4)), status.drill_range, *block_type);
 	//Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition(), status.drill_range, *block_type);
 
 	collisionGems();
@@ -246,21 +238,18 @@ Game::Player::cPlayer::cPlayer(
 	size = ci::vec3(DEFAULT_SIZE);
 	color = ci::vec4(1);
 	color = ci::ColorA8u(1, 0, 1, 1);
-	velocity = ci::vec3(0);
 	this->team = team;
 	save_rotate_y = 0;
 	save_rotate_x = 0;
 	drilling = false;
 	jump_flag = false;
-	player_vec = ci::vec3(0, 0, 2);
-	gravity_buf = 0;
 	//プレイヤーのステータス
 	status.attack = 10;
 	status.hp = 100;
 	status.drill_range = 1;
-	status.jump_force = 0.6F;
+	status.jump_force = 10.0F;
 	status.speed = DEFAULT_SPEED;
-	status.drill_speed = DEFAULT_SPEED * 2;
+	status.drill_speed = DEFAULT_SPEED;
 
 	//武器の初期化
 	main_weapon = Weapon::cWeaponFactory::getInstance()->InstanceMainWeapon(static_cast<Weapon::MAIN_WEAPON>(main_weapon_id));
@@ -291,21 +280,28 @@ void Game::Player::cPlayer::weaponUpdae(const float & delta_time)
 
 void Game::Player::cPlayer::move(const ci::vec3 & velocity)
 {
-
 	//プレイヤーの移動ベクトル保存
-	this->velocity = velocity;
+	//ベクトル更新
+	if ( velocity.x >= 0.01f ||
+		 velocity.x <= -0.01f ||
+		 velocity.z >= 0.01f ||
+		 velocity.z <= -0.01f ) {
+		normalized_player_vec = glm::normalize( velocity );
+	}
 	if (active_user) {
 		//地面の中で掘削中なら重力をなくす
 		if (mCollider.getPosition().y <= 16.0f && drilling) {
 			mRigidbody.gravityOff();
-			gravity_buf = 0;
 		}
 		else {
 			mRigidbody.gravityOn();
 		}
 	}
 	//ci::app::console() << gravity_buf << std::endl;
-	mRigidbody.setSpeed(velocity - ci::vec3(0, gravity_buf,0));
+
+	auto vec = velocity;
+	vec.y = drilling ? velocity.y : mRigidbody.getSpeed( ).y;
+	mRigidbody.setSpeed( vec );
 }
 
 void Game::Player::cPlayer::jump(bool flag)
@@ -316,7 +312,7 @@ void Game::Player::cPlayer::jump(bool flag)
 	if (jump_flag == true) {
 		if (mRigidbody.isLanding()) {
 			Resource::cSoundManager::getInstance()->findSe("Player/onground.wav").play();
-			velocity.y -= status.jump_force;
+			mRigidbody.addSpeed( ci::vec3( 0, status.jump_force, 0 ) );
 			jump_flag = false;
 		}
 	}

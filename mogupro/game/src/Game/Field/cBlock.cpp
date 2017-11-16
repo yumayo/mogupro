@@ -1,5 +1,6 @@
 #include <Game/Field/cBlock.h>
 #include <cinder/gl/gl.h>
+#include <Particle/cParticleManager.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -9,7 +10,7 @@ namespace Game
 namespace Field
 {
 cBlock::cBlock() :
-    mCollider( vec3( 0 ), vec3( BLOCK_SIZE ), vec3( BLOCK_SIZE / 2.0f ) )
+    mCollider( vec3( 0 ), vec3( BLOCK_SIZE ) )
     , mType( BlockType::AIR )
 {
 
@@ -40,6 +41,16 @@ void cBlock::toBreak()
 {
     mType = BlockType::AIR;
     clear();
+    Particle::cParticleManager::getInstance()->
+        create( getPosition(),
+                Particle::ParticleType::EXPROTION,
+                Particle::ParticleTextureType::NONE,
+                vec3( 0.02f ),
+                1.0f,
+                1,
+                0.2f,
+                false,
+                ColorA8u( 95, 66, 41, 255 ) );
     mCollider.removeWorld();
 }
 void cBlock::toRevival()

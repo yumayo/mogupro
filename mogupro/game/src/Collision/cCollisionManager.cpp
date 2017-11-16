@@ -103,7 +103,7 @@ void cCollisionManager::update( float delta )
         // 10‰ñˆÈãŒJ‚è•Ô‚µ‚½ê‡‚Íundo‚µ‚Ä•Ô‚µ‚Ü‚·B
         if ( i == 10 )
         {
-            rigidBody->mCollider.setPosition( rigidBody->mCollider.getPosition( ) - rigidBody->getSpeed( ) );
+            rigidBody->mCollider.setPosition( rigidBody->mCollider.getPosition( ) - rigidBody->getSpeedCalcedDelta( ) );
         }
     }
     for ( auto& rigidBody : mRigidBodys )
