@@ -129,6 +129,8 @@ enum class PacketId : ubyte1
 	RES_CHECK_MEMBER,
 	//GameMainのSetupが終わったことの通知を受けそれに対しServerAdapterのUpdate開始を通知するかも用
 	RES_END_GAMEMAIN_SETUP,
+	//GameMainのSetupが終了した時点からの
+	RES_SET_GAMESTART_TIMER,
 };
 }
 }
