@@ -29,8 +29,8 @@ void cStrategyManager::setup()
 	float y_max = Field::CHUNK_RANGE_Y * Field::CHUNK_SIZE*Field::BLOCK_SIZE;
 	float z_max = Field::CHUNK_RANGE_Z * Field::CHUNK_SIZE*Field::BLOCK_SIZE;
 
-	CreateCannon(vec3(x_max / 2.f, y_max +4.f - 0.5f, 4-0.5),1.f,0, true);
-	CreateCannon(vec3(x_max / 2.f, y_max + 4.f-0.5f, z_max-4-0.5),-1.f,1, false);
+	CreateCannon(vec3(x_max / 2.f, y_max + Field::CHUNK_RANGE_X/2.f - 0.5f, Field::CHUNK_RANGE_X / 2.f -0.5),1.f,0, true);
+	CreateCannon(vec3(x_max / 2.f, y_max + Field::CHUNK_RANGE_X / 2.f -0.5f, z_max- Field::CHUNK_RANGE_X / 2.f -0.5),-1.f,1, false);
 	///////ÉLÉÉÉmÉìçÏÇËÇ‹Ç∑
 }
 void cStrategyManager::draw()
