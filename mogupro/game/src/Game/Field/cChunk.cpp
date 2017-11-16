@@ -42,10 +42,10 @@ void cChunk::setup()
     }
 }
 
-void cChunk::update()
+void cChunk::update( const float& delta_time )
 {
     for ( auto& layer : mChunkLayers )
-        layer.update();
+        layer.update( delta_time );
 }
 
 void cChunk::draw()
