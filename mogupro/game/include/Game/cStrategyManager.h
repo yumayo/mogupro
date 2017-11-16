@@ -26,6 +26,7 @@ public:
 	void CreateBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale, const int _id);
 	//テスト用です
 	void drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color);
+	void drawShere(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color,int segment);
 private:
 	std::map<int, std::shared_ptr<Game::Strategy::cDrill>>drills;
 	std::map<int, std::shared_ptr<Game::Strategy::cBomb>>bombs;

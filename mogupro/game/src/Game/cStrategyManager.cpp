@@ -170,5 +170,17 @@ void cStrategyManager::drawCube(const ci::vec3 pos, const ci::vec3 size, const c
 		gl::drawCube(vec3(0, 0, 0), vec3(1, 1, 1));
 		gl::popModelView();
 }
+void cStrategyManager::drawShere(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color, int segment)
+{
+	gl::pushModelView();
+	gl::translate(pos);
+	gl::rotate(rotate.x, vec3(1, 0, 0));
+	gl::rotate(rotate.y, vec3(0, 1, 0));
+	gl::rotate(rotate.z, vec3(0, 0, 1));
+	gl::scale(size);
+	gl::color(color);
+	gl::drawSphere(vec3(0, 0, 0), 1, segment);
+	gl::popModelView();
+}
 }
 
