@@ -97,6 +97,9 @@ namespace Game
 			moveGetGem(delta_time);
 
 		}
+		void cDrill::updateCollisionAfterUpdate(const float & delta_time)
+		{
+		}
 		void cDrill::setup()
 		{
 
