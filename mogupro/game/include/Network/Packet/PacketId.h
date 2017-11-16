@@ -94,6 +94,8 @@ enum class PacketId : ubyte1
 	REQ_CHECK_MEMBER,
 	//GameMainのSetupが終わったことの通知
 	REQ_END_GAMEMAIN_SETUP,
+	//Game開始までのTimer終了通知
+	REQ_END_START_TIMER,
     //=========================================================//
     //                        Response                         //
     //=========================================================//

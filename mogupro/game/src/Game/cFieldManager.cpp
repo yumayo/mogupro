@@ -16,7 +16,7 @@ void cFieldManager::setup()
 }
 void cFieldManager::update( const float& delta_time )
 {
-    mUnderGround->update();
+    mUnderGround->update( delta_time );
 }
 void cFieldManager::draw()
 {
