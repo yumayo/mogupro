@@ -21,8 +21,10 @@ public:
 	bool isHit( ) const;
     void gravityOn( );
     void gravityOff( );
-    cinder::vec3 const& getSpeed( ) const;
+	cinder::vec3 const& getSpeed( ) const;
+	cinder::vec3 getSpeedCalcedDelta( ) const;
     void setSpeed( cinder::vec3 value );
+	void addSpeed( cinder::vec3 value );
 	float getFriction( ) const;
 	void setFriction( float value );
     void calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase const* targetCollider );
@@ -30,11 +32,13 @@ public:
     cColliderBase& mCollider;
 private:
     cinder::vec3 mSpeed;
+	cinder::vec3 mGravitySpeed;
 private:
     bool mIsLanding;
     bool mIsGravity;
 	bool mIsHit;
 	float mFriction;
+	float mDelta;
 private:
     static cinder::vec3 calcWallScratchVector( cinder::vec3 speed, cinder::vec3 normal );
     static cinder::vec3 cardinalAxis( int i );
