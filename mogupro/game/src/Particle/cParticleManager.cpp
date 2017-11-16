@@ -145,12 +145,10 @@ void cParticleHolder::draw( const glm::quat& rotation )
         if ( !texture ) return;
         gl::ScopedTextureBind tex( texture );
         particleDraw( rotation );
-
     }
     else
     {
         gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().color() ) );
-
         particleDraw( rotation );
     }
     gl::popModelView();
@@ -173,7 +171,7 @@ void cParticleHolder::create( const ci::vec3& position,
     vec3 rand_vec = vec3( rv(), rv(), rv() );
 
     Utility::RandomFloat rt( time, time + 1.0f );
-    mParticles.push_back( std::make_shared<cParticle>( rand_vec, position, rt() ) );
+    mParticles.emplace_back( std::make_shared<cParticle>( rand_vec, position, rt() ) );
 }
 
 void cParticleHolder::particleDraw( const glm::quat& rotation )
@@ -235,16 +233,6 @@ void cParticleManager::draw()
     gl::enableDepthWrite();
 }
 
-void cParticleManager::create( const ci::vec3& position,
-                               const ParticleType& type,
-                               const ParticleTextureType& texture_type,
-                               const ci::vec3& scale,
-                               const float& time,
-                               const float& speed )
-{
-    create( position, type, texture_type, scale, time, 0, speed, false );
-}
-
 void cParticleManager::create( const ci::vec3 & position,
                                const ParticleType & type,
                                const ParticleTextureType & texture_type,
@@ -255,7 +243,7 @@ void cParticleManager::create( const ci::vec3 & position,
                                const bool& lighting,
                                const ci::ColorA& color )
 {
-    mParticleHolders.push_back(
+    mParticleHolders.emplace_back(
         std::make_shared<cParticleHolder>( position, type, texture_type, scale, time, count, speed, lighting, color ) );
 }
 

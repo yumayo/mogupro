@@ -104,18 +104,6 @@ public:
     void update( const float& delta_time );
     void draw();
 
-    // パーティクル生成
-    // position     : 生成位置 
-    // type         : 飛ばす種類
-    // texture_type : 画像の種類
-    // time         : 生成時間
-    void create( const ci::vec3& position,
-                 const ParticleType& type,
-                 const ParticleTextureType& texture_type,
-                 const ci::vec3& scale,
-                 const float& time,
-                 const float& speed = 0.1f );
-
     // パーティクル生成する
     // position     : 生成位置 
     // type         : 飛ばす種類
@@ -131,7 +119,7 @@ public:
                  const int& count = 10,
                  const float& speed = 0.1f,
                  const bool& lighting = false,
-                 const ci::ColorA& color = ci::ColorA() );
+                 const ci::ColorA& color = ci::ColorA( 1, 1, 1, 1 ) );
 
 private:
 
