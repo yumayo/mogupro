@@ -122,8 +122,12 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	}
 
 	//Œ@í’†‚Ítrue 
-	if (ENV->pushKey(ci::app::MouseEvent::LEFT_DOWN)) {
+	if (ENV->pressKey(ci::app::MouseEvent::LEFT_DOWN) &&
+		Game::cFieldManager::getInstance()->isBreakBlock(active_player->getPos() + (glm::normalize(CAMERA->getCamera().getViewDirection()) * ci::vec3(active_player->getStatus().drill_speed / 4)), 0.5f)) {
 		active_player->Drilling(true);
+	}
+	else {
+		active_player->Drilling(false);
 	}
 	if (ENV->pullKey(ci::app::MouseEvent::LEFT_DOWN)) {
 		active_player->Drilling(false);

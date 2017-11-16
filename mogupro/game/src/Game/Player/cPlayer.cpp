@@ -9,7 +9,7 @@
 #include <Game/Weapons/WeaponFactory.h>
 #include <assert.h>
 #include <Resource/cSoundManager.h>
-
+#include <Particle/cParticleManager.h>
 void Game::Player::cPlayer::playerRotationY()
 {
 	//プレイヤーの前方向
@@ -198,7 +198,6 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 	if (!active_user) return;
 	drillingCamera(delta_time);
 	if (!drilling)return;
-	if(!Game::cFieldManager::getInstance()->isBreakBlock(mCollider.getPosition() + ( normalized_player_vec * ci::vec3(status.drill_speed / 4)), status.drill_range))return;
 	//自分の位置と、自分のベクトルの向きに対して掘る
 	Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition() + ( normalized_player_vec * ci::vec3(status.drill_speed / 4)), status.drill_range, *block_type);
 	//Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition(), status.drill_range, *block_type);
@@ -269,6 +268,12 @@ Game::Player::cPlayer::cPlayer(
 
 void Game::Player::cPlayer::receiveDamage(const bool & hit, const float & attack)
 {
+	Particle::cParticleManager::getInstance()->create(
+		mCollider.getPosition(),
+		Particle::ParticleType::EXPROTION,
+		Particle::ParticleTextureType::SPARK,
+		ci::vec3(0.2f),
+		0.1f, 3, 2.0f,false,ci::ColorA(1,1,1,1));
 	status.hp -= attack;
 	Resource::cSoundManager::getInstance()->findSe("Player/damage6.wav").play();
 }
@@ -363,9 +368,10 @@ void Game::Player::cPlayer::draw()
 
 	ci::gl::pushModelView();
 	main_weapon->draw();
-	ci::gl::translate(mPos - ci::vec3(0, 0.5f, 0));
+	ci::gl::translate(mPos); 
 	playerRotationY();
 	playerRotationX();
+	ci::gl::translate(-ci::vec3(0, 0.5f, 0));
 	ci::gl::scale(ci::vec3(0.01f, 0.01f, 0.012f));
 	ci::gl::draw(mesh);
 	ci::gl::popModelView();
