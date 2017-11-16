@@ -21,6 +21,9 @@ private:
 	cinder::gl::GlslProgRef glsl;
     Game::SkyDome::cSkyDome skydome;
 	bool sendEndSetup;
+
+	bool endTimer;
+	float gameStartTimer;
 };
 }
 }

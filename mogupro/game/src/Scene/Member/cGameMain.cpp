@@ -25,6 +25,8 @@
 #include <Particle/cParticleManager.h>
 #include<Game/cCapsuleManager.h>
 #include<Game/cSubWeaponManager.h>
+#include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/date_time.hpp>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -72,7 +74,7 @@ void cGameMain::setup( )
 	GemManager->setUp(vec3(0,0,0),
 		              vec3(Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_X /2,
 						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Y,
-						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Z),1,1,100,seed);
+						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Z),Game::Field::BLOCK_SIZE,0.5,100,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
     //Network::cUDPClientManager::getInstance( )->open( );
     //Network::cUDPServerManager::getInstance( )->open( );
@@ -84,9 +86,10 @@ void cGameMain::setup( )
     Particle::cParticleManager::getInstance()->create( vec3( 0, get_map_top_pos, 0 ),
                                                        Particle::ParticleType::EXPROTION,
                                                        Particle::ParticleTextureType::SPARK,
-                                                       5.0f, 10 );
+                                                       5.0f, 10,0.5f );
     
 	sendEndSetup = false;
+	endTimer = false;
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
 }
@@ -108,6 +111,19 @@ void cGameMain::update( float deltaTime )
 			Network::cUDPClientManager::getInstance()->send(new Network::Packet::Request::cReqEndGamemainSetup());
 			sendEndSetup = true;
 		}
+		if (endTimer == false)
+		{
+			while (auto resSetGamestartTimer = Network::cResponseManager::getInstance()->getResSetGamestartTimer())
+			{
+				boost::posix_time::ptime nowTime = boost::posix_time::second_clock::universal_time();
+				boost::posix_time::ptime startTime(boost::posix_time::from_iso_string(resSetGamestartTimer->mTimerStr));
+				gameStartTimer = (startTime.time_of_day().total_milliseconds() - nowTime.time_of_day().total_milliseconds()) / 1000.0f;
+				continue;
+			}
+			endTimer = true;
+		}
+		
+
 
 		Game::cDebugManager::getInstance( )->update( deltaTime );
         Game::cClientAdapter::getInstance( )->update( );

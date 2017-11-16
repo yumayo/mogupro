@@ -35,9 +35,7 @@ namespace Weapons
 			for (int i = 0; i < mAroundLights.size(); i++) {
 				cLightManager::getInstance()->removePointLight(mAroundLights[i]);
 			}
-		
-			
-		
+
 		}
 
 		void cLightBomb::dmageToPlayer(const int playerid)
@@ -79,7 +77,7 @@ namespace Weapons
 		}
 		void cLightBomb::createAroundLight()
 		{
-			const float createnum = 100.f;
+			const float createnum = 20.f;
 
 			for (float i = 0.0f; i < createnum; i++) {
 				float angle = (i / createnum)*2.f*M_PI;
@@ -114,7 +112,7 @@ namespace Weapons
 			aabb.addWorld();
 			rb.addWorld();
 			rb.setSpeed(mSpeed);
-			rb.setFriction(0.0f);
+			rb.setFriction(1.0f);
 			ci::app::console() << "‚¤‚Ü‚ê‚½" << std::endl;
 			light = cLightManager::getInstance()->addPointLight(mPos, ci::vec3(0, 1, 0), 1.f);
 			mExprosionLength = 8.f*mScale.x;

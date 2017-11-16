@@ -507,6 +507,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
+        case Network::Packet::PacketId::RES_SET_GAMESTART_TIMER:
+        {
+            if ( cResponseManager::getInstance( )->isNewResSetGamestartTimer( packetHeader ) )
+			{
+                Packet::Response::cResSetGamestartTimer data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cResponseManager::getInstance( )->ungetResSetGamestartTimer( std::move( data ) );
+            }
+            break;
+        }
         // P=====END=====P
         default:
             break;
