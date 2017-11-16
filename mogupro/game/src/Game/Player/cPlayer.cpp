@@ -141,7 +141,7 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 
 	getgems[index]->root = Node::node::create();
 	getgems[index]->root->set_schedule_update();
-	getgems[index]->root->set_position_3d(getgems[index]->getPos());
+	getgems[index]->root->set_position_3d(getgems[index]->getCenterPos());
 	getgems[index]->root->set_scale_3d(getgems[index]->getScale());
 
 	getgems[index]->root->run_action(Node::Action::move_to::create(2, mPos));
@@ -164,7 +164,7 @@ void Game::Player::cPlayer::collisionGems()
 	for (int i = 0; i < int(GemManager->getGems().size()); i++)
 	{
 		if (GemManager->getGems()[i]->getIsDrillhit())continue;
-		ci::vec3 gempos = GemManager->getGems()[i]->getPos();
+		ci::vec3 gempos = GemManager->getGems()[i]->getCenterPos();
 		ci::vec3 gemscale = GemManager->getGems()[i]->getScale();
 
 		//ジェムのAABBを生成
@@ -174,9 +174,11 @@ void Game::Player::cPlayer::collisionGems()
 		//接触していたらidをsend
 		if (player_aabb.intersects(gem_aabb))
 		{
+			ci::app::console() << "hit" << std::endl;
 			//プレイヤー用のパケットを作らないとsendあかんやろ
 			getGems(GemManager->getGems()[i]->getId());
 			//cClientAdapter::getInstance()->sendGetGemQuarry(player_id, GemManager->getGems()[i]->getId());
+			GemManager->AcquisitionGem(i);
 		}
 	}
 }

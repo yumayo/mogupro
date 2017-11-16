@@ -49,7 +49,8 @@ public:
                      const ParticleType& type,
                      const ParticleTextureType& texture_type,
                      const float& time,
-                     const int& count );
+                     const int& count,
+                     const float& speed);
     ~cParticleHolder();
 
     void update( const float& delta_time );
@@ -71,7 +72,7 @@ private:
     std::vector<std::shared_ptr<cParticle>> mParticles;
     std::string mTextureName;
     float mTime;
-    ci::gl::TextureRef mTexture;
+    float mSpeed;
 };
 
 class cParticleManager : public Utility::cSingletonAble<cParticleManager>
@@ -93,7 +94,8 @@ public:
     void create( const ci::vec3& position,
                  const ParticleType& type,
                  const ParticleTextureType& texture_type,
-                 const float& time );
+                 const float& time,
+                 const float& speed = 0.1f );
 
     // パーティクル生成する
     // position     : 生成位置 
@@ -104,7 +106,8 @@ public:
                  const ParticleType& type,
                  const ParticleTextureType& texture_type,
                  const float& time,
-                 const int& count );
+                 const int& count,
+                 const float& speed = 0.1f);
 
 private:
 
