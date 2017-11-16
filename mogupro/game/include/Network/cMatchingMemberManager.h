@@ -18,13 +18,14 @@ namespace Network
 		ubyte1 playerID;
 		cNetworkHandle networkHandle;
 		bool canUpdate;
+		bool startGame;
 		PlayerData()
 		{
 
 		}
 
 		PlayerData(ubyte1 _teamNum, std::string _nameStr, ubyte1 _playerID, cNetworkHandle _networkHandle) :
-			teamNum(_teamNum), nameStr(_nameStr), playerID(_playerID),networkHandle(_networkHandle), canUpdate(false)
+			teamNum(_teamNum), nameStr(_nameStr), playerID(_playerID),networkHandle(_networkHandle), canUpdate(false), startGame(false)
 		{
 
 		}

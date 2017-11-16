@@ -10,11 +10,14 @@
 #include <Scene/Member/cMatching.h>
 #include <Scene/Member/cMatchingServer.h>
 #include <Scene/Member/cTitle.h>
-
+#include <Log/Log.h>
+#include <Sound/Stereophonic.h>
+#include <phonon.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+#pragma comment(lib,"phonon.lib")
 class gameApp : public App
 {
 private:
@@ -32,10 +35,85 @@ public:
     void cleanup( ) override;
 };
 
+std::shared_ptr < ci::vec3> pos(new ci::vec3(0, 0, 0));
+std::shared_ptr < ci::vec3> dir(new ci::vec3(0, 0, 1));
+std::shared_ptr < ci::vec3> soundPos(new ci::vec3(0, 0, 50));
+
+IPLfloat32 iplDataDry[512];
+IPLfloat32 iplDataSpatilized[1024];
+
+//buffer object
+IPLAudioBuffer bufFromOf; //from OF to Phonon
+IPLAudioBuffer bufFromPhoton; //from Phonon back to OF
+
+							  //setup stuff
+IPLContext iplContext;
+IPLRenderingSettings iplRenderSettings;
+
+//renderer & effects
+IPLhandle *binRen; //binarual renderer
+IPLhandle *binEff; //object based binaural effect
+
 void gameApp::setup( )
 {
+	Sound::StereophonicManager::getInstance()->open();
+	Sound::Wav wav(ci::app::getAssetPath("BGM/test.wav").string());
     cSceneManager::getInstance( )->change<Scene::Member::cTitle>( );
     cSceneManager::getInstance( )->now( ).setup( );
+
+
+	iplRenderSettings.frameSize = 512;
+	iplRenderSettings.samplingRate = 44100;
+	iplRenderSettings.convolutionType = IPL_CONVOLUTIONTYPE_PHONON;
+
+	//-- buffer dry (for OF)
+	IPLAudioFormat formatIn;
+	formatIn.channelLayoutType = IPL_CHANNELLAYOUTTYPE_SPEAKERS; // intended to be played back by a single speaker
+	formatIn.channelLayout = IPL_CHANNELLAYOUT_STEREO; //play over headphones
+	formatIn.numSpeakers = 2; //number of channels in the audio data, input is mono, but buffer In MUST HAVE SAME CHANNELS WITH BUFFER OUT, so 2 here
+	formatIn.channelOrder = IPL_CHANNELORDER_INTERLEAVED; //LRLRLR...
+														  //setup two speakers, one on left, one on right, assume radius is 400
+	IPLVector3 speakers[2];
+	speakers[0].x = -400;
+	speakers[0].y = 0;
+	speakers[0].z = 0;
+	speakers[1].x = 400;
+	speakers[1].y = 0;
+	speakers[1].z = 0;
+	formatIn.speakerDirections = speakers;
+
+	bufFromOf.format = formatIn;
+	bufFromOf.numSamples = 512;
+	bufFromOf.interleavedBuffer = new IPLfloat32[bufFromOf.numSamples * formatIn.numSpeakers];
+
+	//-- buffer spatialize (for Phonon)
+	IPLAudioFormat formatOut;
+	formatOut.channelLayoutType = IPL_CHANNELLAYOUTTYPE_SPEAKERS; // intended to be played back by a single speaker
+	formatOut.channelLayout = IPL_CHANNELLAYOUT_STEREO; //play over headphones
+	formatOut.numSpeakers = 2; //number of channels in the audio data
+	formatOut.channelOrder = IPL_CHANNELORDER_INTERLEAVED; //LRLRLR...
+	formatOut.speakerDirections = speakers;
+
+	bufFromPhoton.format = formatOut;
+	bufFromPhoton.numSamples = 512;
+	bufFromPhoton.interleavedBuffer = new IPLfloat32[bufFromPhoton.numSamples * formatOut.numSpeakers]; //output is stereo, so multiple by 2 channels
+
+																										//--- create renderer & effects
+	binRen = new IPLhandle; //IMPORTANT, need to allocate it first, if not, will raise error
+	IPLHrtfParams hrtfParams{ IPL_HRTFDATABASETYPE_DEFAULT, nullptr, 0, nullptr, nullptr, nullptr };
+
+	IPLerror check = iplCreateBinauralRenderer(iplContext, iplRenderSettings, hrtfParams, binRen);
+	if (check != IPL_STATUS_SUCCESS)
+		cout << "ERROR iplCreateBinauralRenderer: " << check << endl;
+
+	binEff = new IPLhandle;
+	check = iplCreateBinauralEffect(*binRen, formatIn, formatOut, binEff); //IMPORTANT: use *binRen, if not, will error
+	if (check != IPL_STATUS_SUCCESS)
+		cout << "ERROR iplCreateBinauralEffect: " << check << endl;
+
+
+	/*Sound::StereophonicManager::getInstance()->add(wav, pos, dir, soundPos);
+	int a = 0;*/
 }
 
 void gameApp::mouseDown( MouseEvent event )
@@ -106,6 +184,8 @@ void gameApp::draw( )
 void gameApp::cleanup()
 {
     cSceneManager::getInstance()->now().shutDown();
+	iplDestroyBinauralEffect(binEff);
+	iplDestroyBinauralRenderer(binRen);
 }
 
 CINDER_APP( gameApp, RendererGl, [ ] ( App::AppBase::Settings* s ) { s->setWindowSize( 1600, 900 ); } )

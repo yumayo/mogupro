@@ -3,6 +3,9 @@
 #include <Game/SkyDome/cSkyDome.h>
 #include <Node/node.h>
 #include <cinder/gl/GlslProg.h>
+#include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/date_time.hpp>
+
 namespace Scene
 {
 namespace Member
@@ -24,6 +27,8 @@ private:
 
 	bool endTimer;
 	float gameStartTimer;
+	boost::posix_time::ptime startTime;
+	boost::posix_time::ptime endTime;
 };
 }
 }
