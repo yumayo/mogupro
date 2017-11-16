@@ -10,10 +10,11 @@
 #include <Scene/Member/cMatching.h>
 #include <Scene/Member/cMatchingServer.h>
 #include <Scene/Member/cTitle.h>
-#include <Log/Log.h>
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
 class gameApp : public App
 {
 private:
@@ -31,17 +32,17 @@ public:
     void cleanup( ) override;
 };
 
+
+
 void gameApp::setup( )
 {
     cSceneManager::getInstance( )->change<Scene::Member::cTitle>( );
     cSceneManager::getInstance( )->now( ).setup( );
-
 }
 
 void gameApp::mouseDown( MouseEvent event )
 {
 	ENV->mouseDown(event);
-    CAMERA->shakeCamera( 0.1f, 0.1f );
 }
 
 void gameApp::mouseUp( MouseEvent event )
