@@ -99,23 +99,23 @@ public:
 
 	//ƒJƒƒ‰‚ÌŒü‚¢‚Ä‚¢‚éŒü‚«‚ğ•Ô‚·
 	ci::vec3 getCameraLook() {
-		if (camera_mode = CAMERA_MODE::FPS) {
+		/*if (camera_mode = CAMERA_MODE::FPS) {
 			return ci::vec3(looking_point.x, looking_point.y, looking_point.z);
-		}
+		}*/
 		return ci::vec3(looking_point.x / 10, looking_point.y / 10, looking_point.z / 10);
 	}
 	CAMERA_MODE getCameraMode() {
 		return camera_mode;
 	}
 	void setCameraFar(float& set_far) {
-		camera_far = set_far;
+		/*camera_far = set_far;
 		if (camera_far <= 0.5f) {
 			camera_mode = CAMERA_MODE::FPS;
 			camera_far = 0.4f;
 		}
 		else if(camera_far > 0.5f) {
 			camera_mode = CAMERA_MODE::TPS;
-		}
+		}*/
 	}
 
     //ƒJƒƒ‰‚ğ—h‚ç‚·ŠÖ”

@@ -16,13 +16,13 @@ namespace Game {
 			bool pull;
 		public:
 			WeaponBase() {}
-			virtual void pushCall(const bool& push) {
+			virtual void pushCall(bool push) {
 				this->push = push;
 			}
-			virtual void pressCall(const bool& press) {
+			virtual void pressCall(bool press) {
 				this->press = press;
 			}
-			virtual void pullCall(const bool& pull) {
+			virtual void pullCall(bool pull) {
 				this->pull = pull;
 			}
 			virtual void setup() = 0;

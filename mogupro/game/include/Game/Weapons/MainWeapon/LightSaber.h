@@ -6,9 +6,11 @@ namespace Game {
 	namespace Weapon {
 		class LightSaber : public Game::Weapon::WeaponBase {
 		private:
-			
+			ci::vec3 player_pos;
+			ci::vec3 player_vec;
 			std::vector<bool> hits;
-			void Attack();
+			Utility::hardptr<Node::node> root;
+			void Attack(const float & delta_time);
 			void Operation();
 		public:
 			LightSaber();
