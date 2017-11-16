@@ -115,7 +115,7 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                                   [&]( cChunkLayer* t ) { return t == layer; } ) )
                     continue;
 
-                build_chunk_layers.push_back( layer );
+                build_chunk_layers.emplace_back( layer );
             }
 
     // Œ@‚ç‚ê‚½ƒ`ƒƒƒ“ƒN‚ÌŽü‚è‚à“o˜^‚·‚é
@@ -145,7 +145,7 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
 
             auto temp_layer = getChunkLayer( cell );
             temp_layer->mIsRebuildMesh = true;
-            temp_layers.push_back( temp_layer );
+            temp_layers.emplace_back( temp_layer );
         }
     }
 
@@ -211,9 +211,9 @@ std::vector<int> cChunkHolder::getChunkId( const ci::ivec3 & chunk_cell,
     auto chunk_layer = getChunkLayer( chunk_cell );
     chunks_id.push_back( chunk_layer->getChunkLayerId() );
 
-    for ( int z = s.z; z <= e.z; z++ )
-        for ( int y = s.y; y <= e.y; y++ )
-            for ( int x = s.x; x <= e.x; x++ )
+    for ( int z = s.z; z <= e.z; z += r.z  * 2)
+        for ( int y = s.y; y <= e.y; y += r.y * 2 )
+            for ( int x = s.x; x <= e.x; x += r.x * 2 )
             {
                 auto layer = chunk_layer->getChunkLayer( ivec3( x, y, z ) );
                 if ( layer == nullptr )
@@ -224,7 +224,7 @@ std::vector<int> cChunkHolder::getChunkId( const ci::ivec3 & chunk_cell,
                                   [&]( int t ) { return t == id; } ) )
                     continue;
 
-                chunks_id.push_back( id );
+                chunks_id.emplace_back( id );
             }
 
     return chunks_id;
