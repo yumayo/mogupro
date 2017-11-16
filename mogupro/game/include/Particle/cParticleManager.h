@@ -52,7 +52,8 @@ public:
                      const float& time,
                      const int& count,
                      const float& speed,
-                     const bool& lighting);
+                     const bool& lighting,
+                     const ci::ColorA& color );
     ~cParticleHolder();
 
     void update( const float& delta_time );
@@ -65,6 +66,7 @@ private:
     void sort();
     void create( const ci::vec3& position,
                  const float& time );
+    void particleDraw( const glm::quat& rotation );
 
 public:
 
@@ -72,6 +74,7 @@ public:
     ci::vec3 mScale;
     ParticleType mType;
     std::string mTextureName;
+    ci::ColorA mColor;
     float mTime;
     float mSpeed;
     bool mLighting;
@@ -87,7 +90,8 @@ public:
 //             100.0f,                                // 生成時間
 //             10,                                    // 生成個数
 //             0.1f,                                  // 玉の速度 (内部でrandomをしている
-//             false);                                // ライトのenable
+//             false,                                 // ライトのenable
+//             color);                                // カラー
 
 class cParticleManager : public Utility::cSingletonAble<cParticleManager>
 {
@@ -126,7 +130,8 @@ public:
                  const float& time = 5.0f,
                  const int& count = 10,
                  const float& speed = 0.1f,
-                 const bool& lighting = false);
+                 const bool& lighting = false,
+                 const ci::ColorA& color = ci::ColorA() );
 
 private:
 

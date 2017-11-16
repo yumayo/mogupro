@@ -44,11 +44,13 @@ void cBlock::toBreak()
     Particle::cParticleManager::getInstance()->
         create( getPosition(),
                 Particle::ParticleType::EXPROTION,
-                Particle::ParticleTextureType::SAND,
+                Particle::ParticleTextureType::NONE,
                 vec3( 0.02f ),
                 1.0f,
                 1,
-                0.2f );
+                0.2f,
+                false,
+                ColorA8u( 95, 66, 41, 255 ) );
     mCollider.removeWorld();
 }
 void cBlock::toRevival()
