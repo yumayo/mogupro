@@ -86,7 +86,7 @@ void cGameMain::setup( )
     Particle::cParticleManager::getInstance()->create( vec3( 0, get_map_top_pos, 0 ),
                                                        Particle::ParticleType::EXPROTION,
                                                        Particle::ParticleTextureType::SPARK,
-                                                       5.0f, 10 );
+                                                       5.0f, 10,0.5f );
     
 	sendEndSetup = false;
 	endTimer = false;

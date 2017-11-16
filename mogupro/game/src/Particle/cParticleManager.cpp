@@ -56,21 +56,14 @@ cParticleHolder::cParticleHolder( const vec3& position,
                                   const ParticleType& type,
                                   const ParticleTextureType& texture_type,
                                   const float& time,
-                                  const int& count ) :
+                                  const int& count,
+                                  const float& speed ) :
     mPosition( position )
     , mType( type )
     , mTime( time )
+    , mSpeed( speed )
 {
     mTextureName = getTextureNameFromTextureType( texture_type );
-
-    gl::Texture2d::Format fmt;
-    fmt.enableMipmapping( true );
-    fmt.setMinFilter( GL_LINEAR_MIPMAP_LINEAR );
-    mTexture = gl::Texture::create( loadImage( loadAsset( mTextureName + ".png" ) ), fmt );
-
-    gl::enableDepthWrite();
-    gl::enableDepthRead();
-
     TEX->set( mTextureName, mTextureName + ".png" );
 
     mHandle = Game::cLightManager::getInstance()->addPointLight( mPosition,
@@ -94,7 +87,6 @@ cParticleHolder::~cParticleHolder()
 
 void cParticleHolder::update( const float& delta_time )
 {
-    sortByCamera();
     mTime -= delta_time;
 
     if ( mType != ParticleType::EXPROTION )
@@ -108,6 +100,8 @@ void cParticleHolder::update( const float& delta_time )
         else
             it++;
     }
+
+    sortByCamera();
 }
 
 void cParticleHolder::draw( const glm::quat& rotation )
@@ -120,17 +114,10 @@ void cParticleHolder::draw( const glm::quat& rotation )
     if ( !texture )
         return;
 
-    Rectf rect( vec2( -0.5, 1.0 ), vec2( 0.5, 0.0 ) );
+    Rectf rect( vec2( -0.5, -0.5 ), vec2( 0.5, 0.5 ) );
 
-    //gl::GlslProgRef mShader = ctx->getStockShader( gl::ShaderDef().color().texture() );;
-
-    gl::color( Color( 1.0f, 0.5f, 0.25f ) );
-
-    //ScopedGlslProg shader( mShader );
-    ScopedTextureBind tex( mTexture );
-    ScopedBlendAlpha blend();
-
-    gl::color( Color( 1, 1, 1 ) );
+    ScopedTextureBind tex( texture );
+    ScopedBlendAlpha blend;
 
     gl::translate( mPosition );
     for ( const auto& it : mParticles )
@@ -142,16 +129,10 @@ void cParticleHolder::draw( const glm::quat& rotation )
         gl::multModelMatrix( mat );
 
         gl::drawSolidRect( rect );
-        //Rectf drawRect( 0, 0, mTexture->getWidth() / 3,
-        //                mTexture->getHeight() / 3 );
-        //gl::draw( mTexture, drawRect );
-        //gl::drawSphere( vec3( 0 ), 1.0f, 60 );
-        //gl::draw( mTexture, Area( rect ), rect );
 
         gl::popModelView();
     }
     gl::popModelView();
-
 }
 
 bool cParticleHolder::isActive()
@@ -164,14 +145,18 @@ bool cParticleHolder::isActive()
 void cParticleHolder::sortByCamera()
 {
     vec3 camera_pos = CameraManager::cCameraManager::getInstance()->getCamera().getEyePoint();
+
     for ( size_t i = 0; i < mParticles.size(); i++ )
     {
         for ( size_t k = 0; k < mParticles.size() - i - 1; k++ )
         {
-            float length1 = getLength( camera_pos, mParticles[k]->mPosition );
-            float length2 = getLength( camera_pos, mParticles[k + 1]->mPosition );
+            const vec3& p1_pos = mPosition + mParticles[k]->mPosition;
+            const vec3& p2_pos = mPosition + mParticles[k + 1]->mPosition;
 
-            if ( length1 > length2 )
+            float length1 = getLength( camera_pos, p1_pos );
+            float length2 = getLength( camera_pos, p2_pos );
+
+            if ( length1 < length2 )
                 std::swap( mParticles[k], mParticles[k + 1] );
         }
     }
@@ -180,10 +165,11 @@ void cParticleHolder::sortByCamera()
 void cParticleHolder::create( const ci::vec3& position,
                               const float& time )
 {
-    float range = 0.1f;
-    Utility::RandomFloat r( -range, range );
-    vec3 rand_vec = vec3( r(), r(), r() );
-    mParticles.push_back( std::make_shared<cParticle>( rand_vec, position, time ) );
+    Utility::RandomFloat rv( -mSpeed, mSpeed );
+    vec3 rand_vec = vec3( rv(), rv(), rv() );
+
+    Utility::RandomFloat rt( time - 2.0f, time + 2.0f );
+    mParticles.push_back( std::make_shared<cParticle>( rand_vec, position, rt() ) );
 }
 
 cParticleManager::cParticleManager()
@@ -213,7 +199,7 @@ void cParticleManager::update( const float& delta_time )
 
 void cParticleManager::draw()
 {
-	gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef( ).texture( ) ) );
+    gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().texture() ) );
     for ( auto& it : mParticleHolders )
         it->draw( mBuilbordRotate );
 }
@@ -221,20 +207,21 @@ void cParticleManager::draw()
 void cParticleManager::create( const ci::vec3& position,
                                const ParticleType& type,
                                const ParticleTextureType& texture_type,
-                               const float& time )
+                               const float& time,
+                               const float& speed )
 {
-    mParticleHolders.push_back(
-        std::make_shared<cParticleHolder>( position, type, texture_type, time, 0 ) );
+    create( position, type, texture_type, time, 0, speed );
 }
 
 void cParticleManager::create( const ci::vec3 & position,
                                const ParticleType & type,
                                const ParticleTextureType & texture_type,
                                const float& time,
-                               const int & count )
+                               const int & count,
+                               const float& speed )
 {
     mParticleHolders.push_back(
-        std::make_shared<cParticleHolder>( position, type, texture_type, time, count ) );
+        std::make_shared<cParticleHolder>( position, type, texture_type, time, count, speed ) );
 }
 
 void cParticleManager::builbordUpdate()
