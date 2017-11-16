@@ -7,6 +7,8 @@
 #include <CameraManager/cCameraManager.h>
 #include <Utility/cInput.h>
 #include <Game/cServerAdapter.h>
+#include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/date_time.hpp>
 using namespace Network;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
@@ -83,6 +85,20 @@ namespace Scene
 				}
 				mCanUpdateServerAdapter = true;
 				mIsGameUpdate = true;
+				boost::posix_time::ptime nowtime = boost::posix_time::second_clock::universal_time();
+				nowtime += boost::posix_time::seconds(10);
+				std::string timeStr = boost::posix_time::to_iso_string(nowtime);
+
+				//ƒQ[ƒ€ŠJŽnŽžŠÔ‚ÌTimerSet
+				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				{
+					for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
+					{
+						cUDPServerManager::getInstance()->send(m.networkHandle,
+							new cResSetGamestartTimer(timeStr));
+					}
+				}
+
 			}
 			if (mIsGameUpdate)
 			{
@@ -150,6 +166,7 @@ namespace Scene
 					continue;
 			
 				mPhaseState = PhaseState::BEGIN_GAME;
+
 				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
 				{
 					for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)

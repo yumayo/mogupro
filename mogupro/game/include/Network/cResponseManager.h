@@ -114,6 +114,13 @@ public:
 private:
     std::stack<Packet::Response::cResEndGamemainSetup> mResEndGamemainSetup;
     std::map<ubyte4, double> mResEndGamemainSetupSequenceIds;
+public:
+    boost::optional<Packet::Response::cResSetGamestartTimer> getResSetGamestartTimer( );
+    void ungetResSetGamestartTimer( Packet::Response::cResSetGamestartTimer&& data );
+    bool isNewResSetGamestartTimer( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Response::cResSetGamestartTimer> mResSetGamestartTimer;
+    std::map<ubyte4, double> mResSetGamestartTimerSequenceIds;
     // P=====END=====P
 };
 }

@@ -25,6 +25,8 @@
 #include <Particle/cParticleManager.h>
 #include<Game/cCapsuleManager.h>
 #include<Game/cSubWeaponManager.h>
+#include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/date_time.hpp>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -87,6 +89,7 @@ void cGameMain::setup( )
                                                        5.0f, 10 );
     
 	sendEndSetup = false;
+	endTimer = false;
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
 }
@@ -108,6 +111,19 @@ void cGameMain::update( float deltaTime )
 			Network::cUDPClientManager::getInstance()->send(new Network::Packet::Request::cReqEndGamemainSetup());
 			sendEndSetup = true;
 		}
+		if (endTimer == false)
+		{
+			while (auto resSetGamestartTimer = Network::cResponseManager::getInstance()->getResSetGamestartTimer())
+			{
+				boost::posix_time::ptime nowTime = boost::posix_time::second_clock::universal_time();
+				boost::posix_time::ptime startTime(boost::posix_time::from_iso_string(resSetGamestartTimer->mTimerStr));
+				gameStartTimer = (startTime.time_of_day().total_milliseconds() - nowTime.time_of_day().total_milliseconds()) / 1000.0f;
+				continue;
+			}
+			endTimer = true;
+		}
+		
+
 
 		Game::cDebugManager::getInstance( )->update( deltaTime );
         Game::cClientAdapter::getInstance( )->update( );
