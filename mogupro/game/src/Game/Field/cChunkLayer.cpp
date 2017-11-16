@@ -49,13 +49,17 @@ void cChunkLayer::update()
         {
             mBlocks[it->first]->toRevival();
             mIsRebuildMesh = true;
-            reBuildStart();
             mRevivalBlocks.erase( it++ );
         }
         else
         {
             it++;
         }
+    }
+
+    if ( mIsRebuildMesh )
+    {
+        reBuildStart();
     }
 }
 
