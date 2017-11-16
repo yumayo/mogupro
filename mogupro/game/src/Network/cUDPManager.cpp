@@ -357,6 +357,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
+        case Network::Packet::PacketId::REQ_END_START_TIMER:
+        {
+            if ( cRequestManager::getInstance( )->isNewReqEndStartTimer( packetHeader ) )
+			{
+                Packet::Request::cReqEndStartTimer data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cRequestManager::getInstance( )->ungetReqEndStartTimer( std::move( data ) );
+            }
+            break;
+        }
         case Network::Packet::PacketId::RES_STRING:
         {
             if ( cResponseManager::getInstance( )->isNewResString( packetHeader ) )
