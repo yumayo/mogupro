@@ -43,8 +43,12 @@ namespace Game
 		// team     0‚ªfirst,1‚ªsecond
 		void gemCountUp(int team, Gem::GemType type);
 		void gemDelete(int it);
-		std::vector<std::shared_ptr<Gem::cGem>> getGems() { return mGemsptr; }
+		void buildMesh();
+		//oldcode-----------
+		std::vector<std::shared_ptr<Gem::cGem>> getGems() { return mStaticGem; }
+		//-------------------
 		std::shared_ptr<Gem::cGem> FindGem(int id);
+		std::shared_ptr<Gem::cGem> AcquisitionGem(int id);
 
 	private:
 
@@ -64,9 +68,11 @@ namespace Game
 		float mGemScale;
 		int mGemMaxNum;
 		ci::gl::FboRef mGemBuffer;
+		ci::gl::GlslProgRef mShader;
 		ci::gl::GlslProgRef mHShader;
 		ci::gl::GlslProgRef mVShader;
-		ci::gl::BatchRef batch;
+		ci::gl::GlslProgRef mVboShader;
+		ci::gl::VboMeshRef mGemsVbo;
 		float blurSize;
 		float mBloom;
 		unsigned long mSeed;
