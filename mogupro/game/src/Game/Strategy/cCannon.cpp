@@ -5,6 +5,8 @@
 #include<Network.hpp>
 #include"cinder\gl\scoped.h"
 #include"Game\cClientAdapter.h"
+#include"Game\cPlayerManager.h"
+#include"Game\Field\FieldData.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -18,10 +20,11 @@ namespace Game
 		cCannon::cCannon(const ci::vec3 _pos, const float _direction, const bool _ismyobject)
 		{
 			mPos = _pos;
-			scale = vec3(8, 8, 8);
+			scale = vec3(Field::CHUNK_RANGE_X, Field::CHUNK_RANGE_X, Field::CHUNK_RANGE_X);
 			id = 0;
 			ismyobject = _ismyobject;
 			direction = _direction;
+
 		}
 		cCannon::~cCannon()
 		{
@@ -49,6 +52,10 @@ namespace Game
 		void cCannon::update(const float & delta_time)
 		{
 
+		}
+
+		void cCannon::updateCollisionAfterUpdate(const float & delta_time)
+		{
 		}
 
 		void cCannon::setup()

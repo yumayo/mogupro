@@ -38,5 +38,6 @@ private:
 public:
 	cinder::vec3 color;
 };
+using LineLightHandle = Utility::softptr<cLineLightParam>;
 }
 }

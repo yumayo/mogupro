@@ -39,6 +39,7 @@ namespace Game
 
 			int getId() { return mId; }
 			ci::vec3 getPos() { return mPosition; }
+			ci::vec3 getCenterPos() { return mPosition + mScale / 2.0f; }
 			ci::vec3 getPutPos() { return mPutPosition; }
 			ci::vec3 getScale() { return mScale; }
 			GemType getType() { return mType; }
@@ -46,13 +47,19 @@ namespace Game
 			float getSinRotate() { return mSinrotate; }
 			bool getIsDrillhit() { return misdrillhit; }
 			std::vector<uint32_t> getIndices() { return indices; }
+			std::vector<ci::vec3> getNomals() { return nomals; }
+			std::vector<ci::ColorA> getColorAs() { return colorAs; }
 			void setPos(ci::vec3 pos) { mPosition = pos; }
 			void setPutPos(ci::vec3 pos) { mPutPosition = pos; }
 			void setSinRotate(float rotate) { mSinrotate = rotate; }
 			void setIsDrillhit(bool ishit) { misdrillhit = ishit; }
-			void setIndices(int offset) { for (int i = 0; i < 36; i++) indices.push_back(i + offset); }
+			void setIndices(int offset);
+			void setNomals() { for (int i = 0; i < 24; i++) { nomals.push_back(BOXNOMAL[i]); } };
+			void setColorA() { for (int i = 0; i < 24; i++) { colorAs.push_back(mColor); fboColorAs.push_back(mColor); } }
 			hardptr<Node::node> root;
+			void cGem::deleteGem();
 			
+
 		private:
 
 			
@@ -66,9 +73,33 @@ namespace Game
 			float mDelay;
 			GemType mType;
 			std::vector<uint32_t> indices;
-			int mMoney;
+			std::vector<ci::vec3> nomals;
+			std::vector<ci::ColorA> colorAs;
+			std::vector<ci::ColorA> fboColorAs;
 			float mSinrotate;
 			bool misdrillhit = false;
+			
+	
+
+			uint32_t BOXINDICES[36] = 
+			{
+				0, 1, 2, 0, 2, 3,
+				4, 5, 6, 4, 6, 7,
+				8, 9,10, 8, 10,11,
+				12,13,14,12,14,15,
+				16,17,18,16,18,19,
+				20,21,22,20,22,23
+			};
+
+			ci::vec3 BOXNOMAL[24] =
+			{ ci::vec3(1,0,0),ci::vec3(1,0,0),ci::vec3(1,0,0),ci::vec3(1,0,0),
+				ci::vec3(0,1,0),ci::vec3(0,1,0),ci::vec3(0,1,0),ci::vec3(0,1,0),
+				ci::vec3(0,0,1),ci::vec3(0,0,1),ci::vec3(0,0,1),ci::vec3(0,0,1),
+				ci::vec3(-1,0,0),ci::vec3(-1,0,0),ci::vec3(-1,0,0),ci::vec3(-1,0,0),
+				ci::vec3(0,-1,0),ci::vec3(0,-1,0),ci::vec3(0,-1,0),ci::vec3(0,-1,0),
+				ci::vec3(0,0,-1),	ci::vec3(0,0,-1),ci::vec3(0,0,-1),ci::vec3(0,0,-1)
+			};
+
 		};
 	}
 }

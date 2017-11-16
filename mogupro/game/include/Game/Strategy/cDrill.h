@@ -19,6 +19,7 @@ public:
     ~cDrill();
     void draw() override;
     void update( const float& delta_time ) override;
+	void updateCollisionAfterUpdate(const float& delta_time)override;
     void setup() override;
     bool DeleteThis() override;
 	void setField(const ci::vec3 pos) override;

@@ -14,3 +14,4 @@
 #include<Network/Packet/Response/cResCheckBeginGame.h>
 #include<Network/Packet/Response/cResCheckMember.h>
 #include<Network/Packet/Response/cResEndGamemainSetup.h>
+#include<Network/Packet/Response/cResSetGamestartTimer.h>

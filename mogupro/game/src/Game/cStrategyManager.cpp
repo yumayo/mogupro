@@ -6,6 +6,7 @@
 #include<algorithm>
 #include"Game\cClientAdapter.h"
 #include"Game\cFieldManager.h"
+#include"Game/Strategy/cBomb.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -24,12 +25,12 @@ cStrategyManager::~cStrategyManager( )
 void cStrategyManager::setup()
 {
 	///////ƒLƒƒƒmƒ“ì‚è‚Ü‚·
-	float x_max = Field::CHUNK_RANGE_X * Field::CHUNK_SIZE;
-	float y_max = Field::CHUNK_RANGE_Y * Field::CHUNK_SIZE;
-	float z_max = Field::CHUNK_RANGE_Z * Field::CHUNK_SIZE;
+	float x_max = Field::CHUNK_RANGE_X * Field::CHUNK_SIZE*Field::BLOCK_SIZE;
+	float y_max = Field::CHUNK_RANGE_Y * Field::CHUNK_SIZE*Field::BLOCK_SIZE;
+	float z_max = Field::CHUNK_RANGE_Z * Field::CHUNK_SIZE*Field::BLOCK_SIZE;
 
-	CreateCannon(vec3(x_max / 2.f, y_max +4.f - 0.5f, 4-0.5),1.f, true);
-	CreateCannon(vec3(x_max / 2.f, y_max + 4.f-0.5f, z_max-4-0.5),-1.f, false);
+	CreateCannon(vec3(x_max / 2.f, y_max + Field::CHUNK_RANGE_X/2.f - 0.5f, Field::CHUNK_RANGE_X / 2.f -0.5),1.f,0, true);
+	CreateCannon(vec3(x_max / 2.f, y_max + Field::CHUNK_RANGE_X / 2.f -0.5f, z_max- Field::CHUNK_RANGE_X / 2.f -0.5),-1.f,1, false);
 	///////ƒLƒƒƒmƒ“ì‚è‚Ü‚·
 }
 void cStrategyManager::draw()
@@ -38,6 +39,9 @@ void cStrategyManager::draw()
 		it.second->draw();
 	}
 	for (auto it :cannons) {
+		it.second->draw();
+	}
+	for (auto it : bombs) {
 		it.second->draw();
 	}
 }
@@ -50,7 +54,9 @@ void cStrategyManager::update(const float & deltatime)
 	for (auto& it : cannons) {
 		it.second->update(deltatime);
 	}
-
+	for (auto& it : bombs) {
+		it.second->update(deltatime);
+	}
 	deleteObject();
 
 	if (ENV->pushKey(KeyEvent::KEY_p)) {
@@ -58,8 +64,26 @@ void cStrategyManager::update(const float & deltatime)
 
 	}
 
+	if (ENV->pushKey(KeyEvent::KEY_i)) {
+		vec3 speed = Game::cPlayerManager::getInstance()->getActivePlayer()->getInstallationPosition();
+		vec3 pos = Game::cPlayerManager::getInstance()->getActivePlayer()->getPos();
+		CreateBomb(pos, speed, vec3(0.5, 0.5,0.5), bombs.size());
 
+	}
 
+}
+
+void cStrategyManager::updateCollisionAfterUpdate(const float & deltaTime)
+{
+	for (auto& it : cannons) {
+		it.second->updateCollisionAfterUpdate(deltaTime);
+	}
+	for (auto& it : bombs) {
+		it.second->updateCollisionAfterUpdate(deltaTime);
+	}
+	for (auto& it : drills) {
+		it.second->updateCollisionAfterUpdate(deltaTime);
+	}
 }
 
 void cStrategyManager::deleteObject()
@@ -77,6 +101,15 @@ void cStrategyManager::deleteObject()
 		itr != cannons.end();) {
 		if (itr->second->DeleteThis()) {
 			itr = cannons.erase(itr);
+		}
+		else {
+			itr++;
+		}
+	}
+	for (auto itr = bombs.begin();
+		itr != bombs.end();) {
+		if (itr->second->DeleteThis()) {
+			itr = bombs.erase(itr);
 		}
 		else {
 			itr++;
@@ -112,10 +145,18 @@ void cStrategyManager::HitDrillToGem(const int _objectid, const int _gemid)
 void cStrategyManager::CreateDrill(const ci::vec3 _pos, const int _id, const Strategy::cDrill::DrillType _type, const bool _ismyobject)
 {
 	drills.insert(std::make_pair(_id, std::make_shared<Game::Strategy::cDrill>(_pos, _id, _type, _ismyobject)));
+	drills[_id]->setup();
 }
-void cStrategyManager::CreateCannon(const ci::vec3 _pos, const float _direction, const bool _ismyobject)
+void cStrategyManager::CreateCannon(const ci::vec3 _pos, const float _direction, const int _id, const bool _ismyobject)
 {
-	cannons.insert(std::make_pair(_ismyobject, std::make_shared<Game::Strategy::cCannon>(_pos,_direction, _ismyobject)));
+	cannons.insert(std::make_pair(_id, std::make_shared<Game::Strategy::cCannon>(_pos, _direction, _ismyobject)));
+	cannons[_id]->setup();
+}
+
+void cStrategyManager::CreateBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale, const int _id)
+{
+	bombs.insert(std::make_pair(_id, std::make_shared<Game::Strategy::cBomb>(_pos, _speed, _scale, true)));
+	bombs[_id]->setup();
 }
 void cStrategyManager::drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color)
 {
@@ -129,8 +170,17 @@ void cStrategyManager::drawCube(const ci::vec3 pos, const ci::vec3 size, const c
 		gl::drawCube(vec3(0, 0, 0), vec3(1, 1, 1));
 		gl::popModelView();
 }
+void cStrategyManager::drawShere(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color, int segment)
+{
+	gl::pushModelView();
+	gl::translate(pos);
+	gl::rotate(rotate.x, vec3(1, 0, 0));
+	gl::rotate(rotate.y, vec3(0, 1, 0));
+	gl::rotate(rotate.z, vec3(0, 0, 1));
+	gl::scale(size);
+	gl::color(color);
+	gl::drawSphere(vec3(0, 0, 0), 1, segment);
+	gl::popModelView();
 }
-
-
-;
+}
 
