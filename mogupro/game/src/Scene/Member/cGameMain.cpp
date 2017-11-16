@@ -74,7 +74,7 @@ void cGameMain::setup( )
 	GemManager->setUp(vec3(0,0,0),
 		              vec3(Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_X /2,
 						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Y,
-						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Z),1,1,100,seed);
+						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Z),Game::Field::BLOCK_SIZE,0.5,100,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
     //Network::cUDPClientManager::getInstance( )->open( );
     //Network::cUDPServerManager::getInstance( )->open( );
