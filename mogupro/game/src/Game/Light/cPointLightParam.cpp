@@ -1,5 +1,4 @@
 #include <Game/Light/cPointLightParam.h>
-#include <cinder/gl/gl.h>
 #include <Game/cLightManager.h>
 namespace Game
 {

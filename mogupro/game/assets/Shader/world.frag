@@ -2,10 +2,6 @@
 
 uniform sampler2D uTex0;
 uniform vec4 uAmb;
-uniform vec4 uModelViewLightPositions[100];
-uniform vec4 uModelViewLightColors[100];
-uniform float uModelViewLightRadiuses[100];
-uniform int uLightNum;
 
 in vec4 vPosition;
 in vec3 vNormal;
@@ -23,6 +19,27 @@ uniform sampler2DShadow uShadowMap;
 in vec4 vShadowCoord;
 in vec4 vShadowPosition;
 in vec3 vShadowNormal;
+
+// ポイントライトに使うやつ
+uniform vec3 uModelViewPointLightPositions[100];
+uniform vec3 uModelViewPointLightColors[100];
+uniform float uModelViewPointLightRadiuses[100];
+uniform int uPointLineNum;
+
+// ラインライトに使うやつ
+uniform vec3 uModelViewLineLightPositionsA[100];
+uniform vec3 uModelViewLineLightPositionsB[100];
+uniform vec3 uModelViewLineLightColors[100];
+uniform float uModelViewLineLightRadiuses[100];
+uniform int uLineLightNum;
+
+float distancePointLine( vec3 P, vec3 A, vec3 B )
+{
+    vec3 a = B - A;
+    vec3 b = P - A;
+    float t = clamp(dot(a, b) / dot(a, a), 0.0, 1.0);
+    return distance(P, A + a * t);
+}
 
 void main()
 {
@@ -50,12 +67,23 @@ void main()
 	}
     oColor.rgb *= ( Diffuse * Shadow + Ambient );
 
-    for(int i = 0; i < uLightNum; ++i)
+    // ポイントライト
+    for(int i = 0; i < uPointLineNum; ++i)
     {
-        float lightDistance = distance(uModelViewLightPositions[i].xyz, vModelViewPosition.xyz);
-        if(lightDistance < uModelViewLightRadiuses[i])
+        float lightDistance = distance( vModelViewPosition.xyz, uModelViewPointLightPositions[i] );
+        if(lightDistance < uModelViewPointLightRadiuses[i])
         {
-            oColor.rgb += uModelViewLightColors[i].rgb * (uModelViewLightRadiuses[i] - lightDistance) * ( 1.0F / uModelViewLightRadiuses[i] );
+            oColor.rgb += uModelViewPointLightColors[i] * (uModelViewPointLightRadiuses[i] - lightDistance) * ( 1.0F / uModelViewPointLightRadiuses[i] );
+        }
+    }
+
+    // ラインライト
+    for(int i = 0; i < uLineLightNum; ++i)
+    {
+        float d = distancePointLine(vModelViewPosition.xyz, uModelViewLineLightPositionsA[i], uModelViewLineLightPositionsB[i] );
+        if(d < uModelViewLineLightRadiuses[i])
+        {
+            oColor.rgb += uModelViewLineLightColors[i] * (uModelViewLineLightRadiuses[i] - d) * ( 1.0F / uModelViewLineLightRadiuses[i] );
         }
     }
 }

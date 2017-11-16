@@ -34,44 +34,97 @@ void cShaderManager::setup( )
 }
 void cShaderManager::uniformUpdate( )
 {
-	auto lights = Game::cLightManager::getInstance( )->getPointLights( );
-
-	// ポイントライトのデータを送ります。
-	std::vector<vec4> positions;
-	std::vector<vec4> colors;
-	std::vector<float> radiuses;
-	int lightNum = std::min( lights.size( ), 100U );
-	for ( auto& light : lights )
 	{
-		positions.emplace_back( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getPosition( ), 1 ) );
-		colors.emplace_back( ci::vec4( light->color, 1 ) );
-		radiuses.emplace_back( light->getRadius( ) );
+		// ポイントライトのデータを送ります。
+		auto lights = Game::cLightManager::getInstance( )->getPointLights( );
+		{
+			std::vector<vec3> positions;
+			std::vector<vec3> colors;
+			std::vector<float> radiuses;
+			int lightNum = std::min( lights.size( ), 100U );
+			for ( auto& light : lights )
+			{
+				positions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getPosition( ), 1 ) ) );
+				colors.emplace_back( light->color );
+				radiuses.emplace_back( light->getRadius( ) );
+			}
+			mGlsl->uniform( "uPointLineNum", lightNum );
+			mGlsl->uniform( "uModelViewPointLightPositions", positions.data( ), lightNum );
+			mGlsl->uniform( "uModelViewPointLightColors", colors.data( ), lightNum );
+			mGlsl->uniform( "uModelViewPointLightRadiuses", radiuses.data( ), lightNum );
+		}
 	}
-	mGlsl->uniform( "uLightNum", lightNum );
-	mGlsl->uniform( "uModelViewLightPositions", positions.data( ), lightNum );
-	mGlsl->uniform( "uModelViewLightColors", colors.data( ), lightNum );
-	mGlsl->uniform( "uModelViewLightRadiuses", radiuses.data( ), lightNum );
+	{
+		// ラインライトの情報を送ります。
+		auto lights = Game::cLightManager::getInstance( )->getLineLights( );
+		{
+			std::vector<vec3> beginPositions;
+			std::vector<vec3> endPositions;
+			std::vector<vec3> colors;
+			std::vector<float> radiuses;
+			int lightNum = std::min( lights.size( ), 100U );
+			for ( auto& light : lights )
+			{
+				beginPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getBeginPosition( ), 1 ) ) );
+				endPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getEndPosition( ), 1 ) ) );
+				colors.emplace_back( light->color );
+				radiuses.emplace_back( light->getRadius( ) );
+			}
+			mGlsl->uniform( "uLineLightNum", lightNum );
+			mGlsl->uniform( "uModelViewLineLightPositionsA", beginPositions.data( ), lightNum );
+			mGlsl->uniform( "uModelViewLineLightPositionsB", endPositions.data( ), lightNum );
+			mGlsl->uniform( "uModelViewLineLightColors", colors.data( ), lightNum );
+			mGlsl->uniform( "uModelViewLineLightRadiuses", radiuses.data( ), lightNum );
+		}
+	}
 }
 void cShaderManager::uniformUpdate( int chunkId )
 {
-	auto lights = Game::cLightManager::getInstance( )->getPointLights( chunkId );
-	if ( !lights ) return;
-
-	// ポイントライトのデータを送ります。
-	std::vector<vec4> positions;
-	std::vector<vec4> colors;
-	std::vector<float> radiuses;
-	int lightNum = std::min( lights->size( ), 100U );
-	for ( auto& light : *lights )
 	{
-		positions.emplace_back( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getPosition( ), 1 ) );
-		colors.emplace_back( ci::vec4( light->color, 1 ) );
-		radiuses.emplace_back( light->getRadius( ) );
+		// ポイントライトのデータを送ります。
+		auto lights = Game::cLightManager::getInstance( )->getPointLights( chunkId );
+		if ( lights )
+		{
+			std::vector<vec3> positions;
+			std::vector<vec3> colors;
+			std::vector<float> radiuses;
+			int lightNum = std::min( lights->size( ), 100U );
+			for ( auto& light : *lights )
+			{
+				positions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getPosition( ), 1 ) ) );
+				colors.emplace_back( light->color );
+				radiuses.emplace_back( light->getRadius( ) );
+			}
+			mGlsl->uniform( "uPointLineNum", lightNum );
+			mGlsl->uniform( "uModelViewPointLightPositions", positions.data( ), lightNum );
+			mGlsl->uniform( "uModelViewPointLightColors", colors.data( ), lightNum );
+			mGlsl->uniform( "uModelViewPointLightRadiuses", radiuses.data( ), lightNum );
+		}
 	}
-	mGlsl->uniform( "uLightNum", lightNum );
-	mGlsl->uniform( "uModelViewLightPositions", positions.data( ), lightNum );
-	mGlsl->uniform( "uModelViewLightColors", colors.data( ), lightNum );
-	mGlsl->uniform( "uModelViewLightRadiuses", radiuses.data( ), lightNum );
+	{
+		// ラインライトの情報を送ります。
+		auto lights = Game::cLightManager::getInstance( )->getLineLights( chunkId );
+		if ( lights )
+		{
+			std::vector<vec3> beginPositions;
+			std::vector<vec3> endPositions;
+			std::vector<vec3> colors;
+			std::vector<float> radiuses;
+			int lightNum = std::min( lights->size( ), 100U );
+			for ( auto& light : *lights )
+			{
+				beginPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getBeginPosition( ), 1 ) ) );
+				endPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getEndPosition( ), 1 ) ) );
+				colors.emplace_back( light->color );
+				radiuses.emplace_back( light->getRadius( ) );
+			}
+			mGlsl->uniform( "uLineLightNum", lightNum );
+			mGlsl->uniform( "uModelViewLineLightPositionsA", beginPositions.data( ), lightNum );
+			mGlsl->uniform( "uModelViewLineLightPositionsB", endPositions.data( ), lightNum );
+			mGlsl->uniform( "uModelViewLineLightColors", colors.data( ), lightNum );
+			mGlsl->uniform( "uModelViewLineLightRadiuses", radiuses.data( ), lightNum );
+		}
+	}
 }
 void cShaderManager::update( std::function<void( )> const& drawFunc )
 {
@@ -89,11 +142,14 @@ void cShaderManager::update( std::function<void( )> const& drawFunc )
 }
 void cShaderManager::draw( std::function<void( )> const& render )
 {
+	dot( vec3(), vec3() );
+
 	gl::ScopedGlslProg scpGlsl( mGlsl );
 
 	mGlsl->uniform( "uAmb", ColorA( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
 
-	mGlsl->uniform( "uLightNum", 0 );
+	mGlsl->uniform( "uPointLightNum", 0 );
+	mGlsl->uniform( "uLineLightNum", 0 );
 
 	gl::ScopedTextureBind texScope( mShadowTex, (uint8_t)1 );
 	vec3 lightPos = vec3( CAMERA->getCamera( ).getViewMatrix( ) * vec4( mCamera.getEyePoint( ), 1.0f ) );
