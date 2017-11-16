@@ -32,5 +32,6 @@ private:
 public:
 	cinder::vec3 color;
 };
+using PointLightHandle = Utility::softptr<cPointLightParam>;
 }
 }

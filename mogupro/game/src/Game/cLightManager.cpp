@@ -74,7 +74,7 @@ std::set<Utility::hardptr<Light::cPointLightParam>> const & cLightManager::getPo
 {
 	return mPointLights;
 }
-boost::optional<std::set<Utility::softptr<Light::cPointLightParam>> const&> cLightManager::getPointLights( int chunkId ) const
+boost::optional<std::set<Light::PointLightHandle> const&> cLightManager::getPointLights( int chunkId ) const
 {
 	auto itr = mPointLightsMap.find( chunkId );
 	if ( itr != mPointLightsMap.end( ) )
@@ -86,7 +86,7 @@ boost::optional<std::set<Utility::softptr<Light::cPointLightParam>> const&> cLig
 		return boost::none;
 	}
 }
-Utility::softptr<Light::cPointLightParam> cLightManager::addPointLight( cinder::vec3 position, cinder::vec3 color, float radius )
+Light::PointLightHandle cLightManager::addPointLight( cinder::vec3 position, cinder::vec3 color, float radius )
 {
 	auto temp = mPointLights.insert( std::make_shared<Light::cPointLightParam>( position, color, radius ) );
 	if ( !temp.second )
@@ -94,22 +94,22 @@ Utility::softptr<Light::cPointLightParam> cLightManager::addPointLight( cinder::
 		throw std::runtime_error( "やばい." );
 	}
 	auto handle = ( *temp.first );
-	attachChunk( Utility::softptr<Light::cPointLightParam>( handle ) );
+	attachChunk( Light::PointLightHandle( handle ) );
 	return handle;
 }
-void cLightManager::removePointLight( Utility::softptr<Light::cPointLightParam> handle )
+void cLightManager::removePointLight( Light::PointLightHandle handle )
 {
 	detachChunk( handle );
 	mPointLights.erase( handle );
 }
-void cLightManager::attachChunk( Utility::softptr<Light::cPointLightParam> handle )
+void cLightManager::attachChunk( Light::PointLightHandle handle )
 {
 	for ( int id : cFieldManager::getInstance( )->getChunkId( handle->getPosition( ), handle->getRadius( ) ) )
 	{
 		mPointLightsMap[id].insert( handle );
 	}
 }
-void cLightManager::detachChunk( Utility::softptr<Light::cPointLightParam> handle )
+void cLightManager::detachChunk( Light::PointLightHandle handle )
 {
 	for ( int id : cFieldManager::getInstance( )->getChunkId( handle->getPosition( ), handle->getRadius( ) ) )
 	{
@@ -120,7 +120,7 @@ std::set<Utility::hardptr<Light::cLineLightParam>> const & cLightManager::getLin
 {
 	return mLineLights;
 }
-boost::optional<std::set<Utility::softptr<Light::cLineLightParam>>const&> cLightManager::getLineLights( int chunkId ) const
+boost::optional<std::set<Light::LineLightHandle>const&> cLightManager::getLineLights( int chunkId ) const
 {
 	auto itr = mLineLightsMap.find( chunkId );
 	if ( itr != mLineLightsMap.end( ) )
@@ -132,7 +132,7 @@ boost::optional<std::set<Utility::softptr<Light::cLineLightParam>>const&> cLight
 		return boost::none;
 	}
 }
-Utility::softptr<Light::cLineLightParam> cLightManager::addLineLight( cinder::vec3 beginPosition, cinder::vec3 endPosition, cinder::vec3 color, float radius )
+Light::LineLightHandle cLightManager::addLineLight( cinder::vec3 beginPosition, cinder::vec3 endPosition, cinder::vec3 color, float radius )
 {
 	auto temp = mLineLights.insert( std::make_shared<Light::cLineLightParam>( beginPosition, endPosition, color, radius ) );
 	if ( !temp.second )
@@ -140,15 +140,15 @@ Utility::softptr<Light::cLineLightParam> cLightManager::addLineLight( cinder::ve
 		throw std::runtime_error( "やばい." );
 	}
 	auto handle = ( *temp.first );
-	attachChunk( Utility::softptr<Light::cLineLightParam>( handle ) );
+	attachChunk( Light::LineLightHandle( handle ) );
 	return handle;
 }
-void cLightManager::removeLineLight( Utility::softptr<Light::cLineLightParam> handle )
+void cLightManager::removeLineLight( Light::LineLightHandle handle )
 {
 	detachChunk( handle );
 	mLineLights.erase( handle );
 }
-void cLightManager::attachChunk( Utility::softptr<Light::cLineLightParam> handle )
+void cLightManager::attachChunk( Light::LineLightHandle handle )
 {
 	// 始点を判定に使った簡易なもの。
 	for ( int id : cFieldManager::getInstance( )->getChunkId( handle->getBeginPosition( ), handle->getRadius( ) ) )
@@ -156,7 +156,7 @@ void cLightManager::attachChunk( Utility::softptr<Light::cLineLightParam> handle
 		mLineLightsMap[id].insert( handle );
 	}
 }
-void cLightManager::detachChunk( Utility::softptr<Light::cLineLightParam> handle )
+void cLightManager::detachChunk( Light::LineLightHandle handle )
 {
 	for ( int id : cFieldManager::getInstance( )->getChunkId( handle->getBeginPosition( ), handle->getRadius( ) ) )
 	{
