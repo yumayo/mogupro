@@ -1,6 +1,7 @@
 #pragma once
 #include <Scene/cSceneBase.h>
 #include <Node/node.h>
+#include <Utility/cFont.h>
 namespace Scene
 {
 namespace Member
@@ -10,6 +11,7 @@ class cTitle final : public cSceneBase
     hardptr<Node::node> mRoot;
     int mSelectTag;
     std::vector<std::function<void( )>> mScenes;
+	Utility::cFont font;
 public:
     cTitle( );
     ~cTitle( );
