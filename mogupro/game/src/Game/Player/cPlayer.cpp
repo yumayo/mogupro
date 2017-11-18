@@ -266,20 +266,21 @@ Game::Player::cPlayer::cPlayer(
 }
 
 
-void Game::Player::cPlayer::receiveDamage(const bool & hit, const float & attack)
+void Game::Player::cPlayer::receiveDamage(const float & attack)
 {
 	Particle::cParticleManager::getInstance()->create(
 		mCollider.getPosition(),
 		Particle::ParticleType::EXPROTION,
 		Particle::ParticleTextureType::SPARK,
-		ci::vec3(0.2f),
-		0.1f, 3, 2.0f,false,ci::ColorA(1,1,1,1));
+		ci::vec3(0.5f),
+		0.1f, 7, 2.0f,false,ci::ColorA(1,1,1,1));
 	status.hp -= attack;
 	Resource::cSoundManager::getInstance()->findSe("Player/damage6.wav").play();
 }
 
 void Game::Player::cPlayer::weaponUpdae(const float & delta_time)
 {
+	if(active_user)
 	main_weapon->update(delta_time);
 }
 
