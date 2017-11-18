@@ -90,6 +90,8 @@ void cTitle::setup( )
             )
         )
     );
+
+	font.setup( "sawarabi-gothic-medium.ttf", 64 );
 }
 void cTitle::shutDown( )
 {
@@ -142,6 +144,8 @@ void cTitle::draw2D( )
     ci::gl::disableDepthRead( );
     ci::gl::disableDepthWrite( );
     mRoot->entry_render( cinder::mat4( ) );
+	font.draw( ci::vec2(0, -300), u8"“ú–{Œê‚Ù‚°‚Ù‚°" );
+
 }
 }
 }
