@@ -3,13 +3,20 @@
 #include <Game/cPlayerManager.h>
 #include <Utility/cInput.h>
 #include <CameraManager/cCameraManager.h>
+#include <Resource/cObjectManager.h>
+#include <Resource/TextureManager.h>
+
+
 void Game::Weapon::LightSaber::Attack(const float & delta_time)
 {
-	player_pos = root->get_position_3d();
+
+	weapon_pos = player_pos + ci::vec3(sin(rotate.x + player_rotate_x), sin(rotate.y), cos(rotate.x + player_rotate_x));
+
+	weapon_vec = ci::vec3(sin(rotate.x + player_rotate_x), sin(rotate.y), cos(rotate.x + player_rotate_x));
+	
 	//プレイヤーの位置からrayかaabbを生成
-	ray.setOrigin(player_pos);
-	ray.setDirection(player_vec);
-	//aabb.set(player_pos - player_size, player_pos + player_size);
+	ray.setOrigin(weapon_pos);
+	ray.setDirection(weapon_pos + weapon_vec);
 
 	//hitsのベクターに入れるためのi
 	int i = 0;
@@ -20,7 +27,10 @@ void Game::Weapon::LightSaber::Attack(const float & delta_time)
 
 		//rayが当たったらis_hitがtrueになる
 		bool is_hit = it->getAABB().intersects(ray);
-		//is_hit = it->getAABB().intersects(aabb);
+		float min;
+		float max;
+		it->getAABB().intersect(ray,&min,&max);
+		debug_pos = ray.calcPosition(max);
 
 		//対象のプレイヤーがhitしたら
 		if (is_hit) {
@@ -38,16 +48,34 @@ using namespace Node::Action;
 void Game::Weapon::LightSaber::Operation()
 {
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_t)) {
-		ci::app::console() << push << std::endl;
+		light = Game::cLightManager::getInstance()->addPointLight(weapon_pos,ci::vec3(1,0.5f,0.5f),0.5f);
 		//プレイヤーのposとVecとsizeを取得
+		weapon_pos = cPlayerManager::getInstance()->getActivePlayer()->getPos();
 		player_pos = cPlayerManager::getInstance()->getActivePlayer()->getPos();
-		player_vec = player_pos + cPlayerManager::getInstance()->getActivePlayer()->getPlayerVec() * ci::vec3(range * 10);
-		root->set_position_3d(player_pos);
-		root->set_schedule_update();
-		root->run_action(Node::Action::sequence::create(
-			ease<ci::EaseOutCubic>::create(move_to::create(1.0F, player_pos + ci::vec3(2,0,0))),
-			ease<ci::EaseOutCubic>::create(move_to::create(1.0F, player_pos + ci::vec3(-2, 0, 0)))
+		weapon_vec = cPlayerManager::getInstance()->getActivePlayer()->getPos();
+		player_rotate_x = cPlayerManager::getInstance()->getActivePlayer()->getRotateY();
+		player_rotate_y = cPlayerManager::getInstance()->getActivePlayer()->getRotateX();
+
+		root_x->set_schedule_update();
+		root_x->run_action(Node::Action::sequence::create(
+			ease<ci::EaseInOutAtan>::create(float_to::create(0.5f, rotate.x, M_PI/2, [this](float t) {
+			light->reAttachPositionWithRadius(light, weapon_pos, 0.5f);
+			this->rotate.x = t;
+		})), Node::Action::call_func::create([this]() {
+			this->rotate.x = -M_PI/2;
+			Game::cLightManager::getInstance()->removePointLight(light);
+		})
 		));
+
+		root_y->set_schedule_update();
+		root_y->run_action(Node::Action::sequence::create(
+			ease<ci::EaseInOutAtan>::create(float_to::create(0.5f, rotate.y, -M_PI / 2, [this](float t) {
+			this->rotate.y = t;
+		})), Node::Action::call_func::create([this]() {
+			this->rotate.y = M_PI/2;
+		})
+			));
+
 	}
 }
 
@@ -55,29 +83,52 @@ Game::Weapon::LightSaber::LightSaber()
 {
 	attack = 30;
 	range = 3;
+	player_rotate_x = 0;
+	player_rotate_y = 0;
+	debug_pos = ci::vec3(0);
 	player_pos = ci::vec3(0);
-	player_vec = ci::vec3(0);
+	rotate = ci::vec2(-M_PI/2, M_PI / 2);
+	weapon_pos = ci::vec3(0);
+	weapon_vec = ci::vec3(0);
 }
 
 void Game::Weapon::LightSaber::setup()
 {
+	mesh = Resource::cObjectManager::getInstance()->findObject("montamogura/weapon.obj");
+	TEX->set("weapon", "OBJ/montamogura/weapon.png");
 	//当たった状態をプレイヤーごとに保持するために
 	//プレイヤーの個数文プッシュバック
 	for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size();i++) {
 		hits.push_back(false);
 	}
-	root = Node::node::create();
-	root->set_schedule_update();
+	root_x = Node::node::create();
+	root_x->set_schedule_update();
+	root_y = Node::node::create();
+	root_y->set_schedule_update();
 }
 
 void Game::Weapon::LightSaber::update(const float & delta_time)
 {
 	Operation();
-	root->entry_update(delta_time);
+	root_x->entry_update(delta_time);
+	root_y->entry_update(delta_time);
 	Attack(delta_time);
 }
 
 void Game::Weapon::LightSaber::draw()
 {
+	//ci::gl::drawSphere(debug_pos, 0.1f, 12);
 	ci::gl::drawVector(ray.getOrigin(), ray.getDirection());
+	/*ci::gl::ScopedTextureBind tex(TEX->get("weapon"));
+	ci::gl::pushModelView();
+	ci::gl::translate(weapon_pos);
+	ci::gl::rotate(M_PI/2, ci::vec3(0, 1, 0));
+	ci::gl::rotate(-M_PI / 2, ci::vec3(0, 0, 1));
+
+	
+	ci::gl::rotate(player_rotate_x,ci::vec3(0,1,0));
+
+	ci::gl::scale(ci::vec3(0.02f, 0.02f, 0.02f));
+	ci::gl::draw(mesh);
+	ci::gl::popModelView();*/
 }
