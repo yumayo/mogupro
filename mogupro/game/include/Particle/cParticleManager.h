@@ -14,6 +14,7 @@ enum class ParticleType
     SPLASH,     // 重力ありの飛び散り
     EXPROTION,  // 爆発
     GLITTER,    // 動きなしキラキラ
+    CONVERGE,   // 収束
 };
 
 enum class ParticleTextureType
@@ -21,6 +22,37 @@ enum class ParticleTextureType
     NONE,
     SAND,
     SPARK,
+};
+
+class ParticleParam
+{
+public:
+    ci::vec3 mPosition;
+    ci::vec3 mScale;
+    ParticleType mMoveType;
+    ParticleTextureType mTextureType;
+    ci::ColorA mColor;
+    int mCount;
+    float mVanishTime;
+    float mEffectTime;
+    float mSpeed;
+    bool mIsLighting;
+    bool mIsTrajectory;
+
+    ParticleParam();
+
+    ParticleParam& position( const ci::vec3& position );
+    ParticleParam& scale( const ci::vec3& scale );
+    ParticleParam& moveType( const ParticleType& move_type );
+    ParticleParam& textureType( const ParticleTextureType& texture_type );
+    ParticleParam& color( const ci::ColorA& color );
+    ParticleParam& count( const int& count );
+    ParticleParam& vanishTime( const float& vanish_time );
+    ParticleParam& effectTime( const float& effect_time );
+    ParticleParam& speed( const float& speed );
+    ParticleParam& isLighting( const bool& is_lighting );
+    ParticleParam& isTrajectory( const bool& is_trajectory );
+
 };
 
 class cParticle
@@ -45,6 +77,7 @@ class cParticleHolder
 {
 public:
 
+    cParticleHolder( const ParticleParam& param );
     cParticleHolder( const ci::vec3& position,
                      const ParticleType& type,
                      const ParticleTextureType& texture_type,
@@ -67,22 +100,20 @@ private:
     void create( const ci::vec3& position,
                  const float& time );
     void particleDraw( const glm::quat& rotation );
+    void setTexture( const ParticleTextureType& texture_type );
+    void setLight( bool is_lighting );
 
 public:
 
-    ci::vec3 mPosition;
-    ci::vec3 mScale;
-    ParticleType mType;
+    ParticleParam mParam;
     std::string mTextureName;
-    ci::ColorA mColor;
-    float mTime;
-    float mSpeed;
-    bool mLighting;
     Utility::softptr<Game::Light::cPointLightParam> mHandle;
     std::vector<std::shared_ptr<cParticle>> mParticles;
 };
 
-// /*使い方*/
+// /* 使い方 */
+// /* コンストラクタ法 */
+//
 // Particle::cParticleManager::getInstance()->
 //     create( vec3( 0, get_map_top_pos, 0 ),         // 生成位置の中心
 //             Particle::ParticleType::SCATTER,       // 飛ばし方
@@ -92,6 +123,15 @@ public:
 //             0.1f,                                  // 玉の速度 (内部でrandomをしている
 //             false,                                 // ライトのenable
 //             color);                                // カラー
+//
+
+// /* 変更したいパラメーターだけ変更していくチェーン記法 */
+//
+// Particle::cParticleManager::getInstance()->
+//     create( Particle::ParticleParam()
+//             .position( mCollider.getPosition()
+//             .scale( vec3( 0.5f ) ) );    // 生成位置の中心
+//
 
 class cParticleManager : public Utility::cSingletonAble<cParticleManager>
 {
@@ -105,12 +145,9 @@ public:
     void draw();
 
     // パーティクル生成する
-    // position     : 生成位置 
-    // type         : 飛ばす種類
-    // texture_type : 画像の種類
-    // scale        : スケール
-    // count        : 生成個数
-    // speed        : パーティクルの速さ
+    // param : ParticleParam
+    void create( const ParticleParam& param );
+
     void create( const ci::vec3& position,
                  const ParticleType& type = ParticleType::EXPROTION,
                  const ParticleTextureType& texture_type = ParticleTextureType::SPARK,
