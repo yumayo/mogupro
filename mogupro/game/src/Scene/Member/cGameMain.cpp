@@ -142,7 +142,7 @@ void cGameMain::update( float deltaTime )
         Collision::cCollisionManager::getInstance( )->update( deltaTime );
 		Game::cPlayerManager::getInstance()->playerCollisionAfterUpdate( deltaTime );
 		Game::cSubWeaponManager::getInstance()->updateCollisionAfterUpdate(deltaTime);
-        GemManager->update( );
+        GemManager->update(deltaTime);
 		Game::cLightManager::getInstance( )->update( );
         Game::cShaderManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
         Particle::cParticleManager::getInstance()->update( deltaTime );

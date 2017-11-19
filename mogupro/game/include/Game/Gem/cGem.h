@@ -28,11 +28,11 @@ namespace Game
 			// scale       大きさ
 			// color       カラー（ここは本来Texture）
 			// type        Gemの種類(これ入れたらtexture引数にいらないかも)
-			cGem(int id,ci::vec3 postion, ci::vec3 scale, ci::Color color, GemType type, float delay)
+			cGem(int id,ci::vec3 postion, ci::vec3 scale, ci::ColorA color, GemType type, float delay)
 				: mId(id),mPosition(postion), mScale(scale), mColor(color), mType(type), mDelay(delay) {};
 			~cGem() {};
 
-			void setUp(ci::vec3 postion, ci::vec3 scale, ci::Color color, GemType type, float delay);
+			void setUp(ci::vec3 postion, ci::vec3 scale, ci::ColorA color, GemType type, float delay);
 			void draw();
 			void drawFbo();
 			void update();
@@ -43,7 +43,7 @@ namespace Game
 			ci::vec3 getPutPos() { return mPutPosition; }
 			ci::vec3 getScale() { return mScale; }
 			GemType getType() { return mType; }
-			ci::Color getColor() { return mColor; }
+			ci::ColorA getColor() { return mColor; }
 			float getSinRotate() { return mSinrotate; }
 			bool getIsDrillhit() { return misdrillhit; }
 			std::vector<uint32_t> getIndices() { return indices; }
@@ -55,7 +55,7 @@ namespace Game
 			void setIsDrillhit(bool ishit) { misdrillhit = ishit; }
 			void setIndices(int offset);
 			void setNomals() { for (int i = 0; i < 24; i++) { nomals.push_back(BOXNOMAL[i]); } };
-			void setColorA() { for (int i = 0; i < 24; i++) { colorAs.push_back(mColor); fboColorAs.push_back(mColor); } }
+			void setColorAs() { for (int i = 0; i < 24; i++) { colorAs.push_back(mColor); } }
 			hardptr<Node::node> root;
 			void cGem::deleteGem();
 			
@@ -75,7 +75,6 @@ namespace Game
 			std::vector<uint32_t> indices;
 			std::vector<ci::vec3> nomals;
 			std::vector<ci::ColorA> colorAs;
-			std::vector<ci::ColorA> fboColorAs;
 			float mSinrotate;
 			bool misdrillhit = false;
 			

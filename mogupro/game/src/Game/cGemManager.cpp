@@ -11,6 +11,8 @@ namespace Game
 		mGemMaxNum = gemMaxNum;
 		mBloom = 1.0f;
 		mSeed = seed;
+		mTime = 0.0f;
+		mLightingSpeed = 0.4;
 		for (int i = 0; i < 2; i++)
 		{
 			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Dia, 0));
@@ -48,14 +50,16 @@ namespace Game
 			ci::gl::drawSolidRect(rect);
 	}
 
-	void cGemManager::update()
+	void cGemManager::update(float deltaTime)
 	{
+		mTime += deltaTime * mLightingSpeed;
 		//sort();
 		ci::gl::ScopedFramebuffer fbScp(mGemBuffer);
 		ci::gl::ScopedViewport scpVp2(ci::ivec2(0), mGemBuffer->getSize());
 
 		ci::gl::setMatrices(CAMERA->getCamera());
 		ci::gl::ScopedGlslProg shaderScp(mVboShader);
+		mVboShader->uniform("deltaTime", mTime);
 		ci::gl::clear(ci::ColorA(0, 0, 0, 0));
 		
 		ci::gl::draw(mGemsVbo);
@@ -76,24 +80,27 @@ namespace Game
 
 
 			//テクスチャーの張替え
-			ci::Color color = ci::Color(1, 1, 1);
+			ci::ColorA color = ci::Color(1, 1, 1);
 			switch (type)
 			{
 			case Game::Gem::GemType::Dia:
-				color = ci::Color8u(52, 152, 219);
+				color = ci::ColorA8u(52, 152, 219);
 				break;
 			case Game::Gem::GemType::Gold:
-				color = ci::Color8u(241, 196, 15);
+				color = ci::ColorA8u(241, 196, 15);
 				break;
 			case Game::Gem::GemType::Coal:
-				color = ci::Color8u(155, 89, 182);
+				color = ci::ColorA8u(155, 89, 182);
 				break;
 			case Game::Gem::GemType::Iron:
-				color = ci::Color8u(139, 195, 74);
+				color = ci::ColorA8u(139, 195, 74);
 				break;
 			default:
 				break;
 			}
+
+			color.a = cinder::randFloat(0,1);
+			
 			//oldcode-------
 			mGemsptr.push_back(std::make_shared<Gem::cGem>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type, delay));
 			mGemsptr.push_back(std::make_shared<Gem::cGem>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type, delay));
@@ -106,7 +113,7 @@ namespace Game
 		for each (auto& g in mStaticGem)
 		{
 			g->setIndices(offset);
-			g->setColorA();
+			g->setColorAs();
 			g->setNomals();
 			offset += 24;
 		}
