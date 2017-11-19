@@ -185,7 +185,7 @@ void cParticle::trajectoryUpdate( const bool& is_trajectory )
     {
         if ( mLinePositions.size() > 1 )
             for ( int i = 0; i < mLineCount - 1; i++ )
-                mLinePositions.pop_back();
+                mLinePositions.pop_front();
 
         for ( int i = 1; i < mLineCount; i++ )
         {
@@ -195,9 +195,10 @@ void cParticle::trajectoryUpdate( const bool& is_trajectory )
     }
     else
     {
-        mLinePositions.pop_back();
+        if ( mLinePositions.size() > 1 )
+            mLinePositions.pop_front();
+        mLinePositions.emplace_back( mPosition );
     }
-
 }
 
 cParticleHolder::cParticleHolder( const ParticleParam& param ) :
@@ -210,6 +211,7 @@ cParticleHolder::cParticleHolder( const ParticleParam& param ) :
         for ( int i = 0; i < param.mCount; i++ )
             create( vec3( 0 ), param.mVanishTime );
 }
+
 cParticleHolder::cParticleHolder( const vec3& position,
                                   const ParticleType& type,
                                   const ParticleTextureType& texture_type,
