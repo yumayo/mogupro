@@ -32,7 +32,7 @@ public:
     ParticleParam();
 
     ParticleParam& position( const ci::vec3& position );
-    ParticleParam& scale( const ci::vec3& scale );
+    ParticleParam& scale( const float& scale );
     ParticleParam& moveType( const ParticleType& move_type );
     ParticleParam& textureType( const ParticleTextureType& texture_type );
     ParticleParam& color( const ci::ColorA& color );
@@ -46,7 +46,7 @@ public:
 private:
 
     ci::vec3 mPosition;
-    ci::vec3 mScale;
+    float mScale;
     ParticleType mMoveType;
     ParticleTextureType mTextureType;
     ci::ColorA mColor;
@@ -65,7 +65,7 @@ public:
 
     cParticle( const ci::vec3& vec,
                const ci::vec3& position,
-               const ci::vec3& scale,
+               const float& scale,
                const float& time );
     ~cParticle();
 
@@ -97,7 +97,7 @@ public:
     cParticleHolder( const ci::vec3& position,
                      const ParticleType& type,
                      const ParticleTextureType& texture_type,
-                     const ci::vec3& scale,
+                     const float& scale,
                      const float& time,
                      const int& count,
                      const float& speed,
@@ -164,6 +164,16 @@ public:
     // パーティクル生成する
     // param : ParticleParam
     void create( const ParticleParam& param );
+
+    void create( const ci::vec3& position,
+                 const ParticleType& type = ParticleType::EXPROTION,
+                 const ParticleTextureType& texture_type = ParticleTextureType::SPARK,
+                 const float& scale = 0.3f,
+                 const float& time = 5.0f,
+                 const int& count = 10,
+                 const float& speed = 0.1f,
+                 const bool& lighting = false,
+                 const ci::ColorA& color = ci::ColorA( 1, 1, 1, 1 ) );
 
     void create( const ci::vec3& position,
                  const ParticleType& type = ParticleType::EXPROTION,

@@ -55,7 +55,7 @@ float getLength( const vec3& p1, const vec3& p2 )
 
 ParticleParam::ParticleParam() :
     mPosition( ci::vec3( 0 ) ),
-    mScale( ci::vec3( 1 ) ),
+    mScale( 1.0f ),
     mMoveType( ParticleType::EXPROTION ),
     mTextureType( ParticleTextureType::NONE ),
     mColor( ci::ColorA::white() ),
@@ -72,7 +72,7 @@ ParticleParam & ParticleParam::position( const ci::vec3 & position )
     mPosition = position;
     return *this;
 }
-ParticleParam & ParticleParam::scale( const ci::vec3 & scale )
+ParticleParam & ParticleParam::scale( const float & scale )
 {
     mScale = scale;
     return *this;
@@ -125,17 +125,17 @@ ParticleParam & ParticleParam::isTrajectory( const bool & is_trajectory )
 
 cParticle::cParticle( const ci::vec3& vec,
                       const ci::vec3& position,
-                      const ci::vec3& scale,
+                      const float& scale,
                       const float& time ) :
     mPosition( position )
     , mVec( vec )
     , mTime( time )
 {
-    mLineLengthCount = 3;
+    mLineLengthCount = 4;
     vec3 max_vec = mVec * (float) mLineLengthCount;
     float length = glm::length( max_vec );
 
-    float line_num = length / ( scale.x * 2 );
+    float line_num = length / ( scale / 2.0f );
     mOneLineVec = max_vec / line_num;
     mLineCount = line_num;
 }
@@ -215,7 +215,7 @@ cParticleHolder::cParticleHolder( const ParticleParam& param ) :
 cParticleHolder::cParticleHolder( const vec3& position,
                                   const ParticleType& type,
                                   const ParticleTextureType& texture_type,
-                                  const ci::vec3& scale,
+                                  const float& scale,
                                   const float& time,
                                   const int& count,
                                   const float& speed,
@@ -306,7 +306,7 @@ void cParticleHolder::create( const ci::vec3& position,
     Utility::RandomFloat rv( -mParam.mSpeed, mParam.mSpeed );
     vec3 rand_vec = vec3( rv(), rv(), rv() );
     rand_vec = glm::normalize( rand_vec );
-    rand_vec += rv();
+    rand_vec *= mParam.mSpeed;
     Utility::RandomFloat rt( time, time + 1.0f );
     mParticles.emplace_back( std::make_shared<cParticle>( rand_vec, position, mParam.mScale, rt() ) );
 }
@@ -314,7 +314,7 @@ void cParticleHolder::create( const ci::vec3& position,
 void cParticleHolder::particleDraw( const glm::quat& rotation )
 {
     gl::translate( mParam.mPosition );
-    gl::scale( mParam.mScale );
+    gl::scale( vec3( mParam.mScale ) );
     for ( const auto& it : mParticles )
     {
         it->draw( rotation, mParam.mColor );
@@ -382,7 +382,7 @@ void cParticleManager::create( const ParticleParam& param )
 void cParticleManager::create( const ci::vec3 & position,
                                const ParticleType & type,
                                const ParticleTextureType & texture_type,
-                               const ci::vec3 & scale,
+                               const float & scale,
                                const float & time,
                                const int & count,
                                const float & speed,
@@ -390,6 +390,12 @@ void cParticleManager::create( const ci::vec3 & position,
                                const ci::ColorA & color )
 {
     mParticleHolders.emplace_back( std::make_shared<cParticleHolder>( position, type, texture_type, scale, time, count, speed, lighting, color ) );
+}
+
+void cParticleManager::create( const ci::vec3 & position, const ParticleType & type, const ParticleTextureType & texture_type, const ci::vec3 & scale, const float & time, const int & count, const float & speed, const bool & lighting, const ci::ColorA & color )
+{
+    //mParticleHolders.emplace_back( std::make_shared<cParticleHolder>( position, type, texture_type, scale, time, count, speed, lighting, color ) );
+
 }
 
 void cParticleManager::builbordUpdate()
