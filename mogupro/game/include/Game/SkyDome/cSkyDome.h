@@ -1,18 +1,14 @@
 #pragma once
 #include <Game/cObjectBase.h>
 #include <cinder/gl/gl.h>
+#include <cinder/gl/VboMesh.h>
 namespace Game {
 	namespace SkyDome {
 		class cSkyDome : public cObjectBase {
 		private:
-			//画像
-			ci::gl::TextureRef texture;
-			//Sphereのメッシュデータ
-			ci::gl::BatchRef mSphere;
-			//画像を貼るためのシェーダー
 			ci::gl::GlslProgRef mGlsl;
-
-			ci::vec3 size;
+			ci::vec3 worldCenter;
+			cinder::gl::VboMeshRef caveMesh;
 		public:
 			
 			void setup() override;
