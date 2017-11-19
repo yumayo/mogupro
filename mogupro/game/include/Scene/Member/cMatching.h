@@ -10,13 +10,16 @@ class cMatching : public cSceneBase
 {
 public:
 	void setup();
+	void registerFunc();
 	void shutDown();
 	void update(float deltaTime);
+	void updateBoxFunc();
 	void makeRoom();
 	void inRoom();
 	void addInRoomUI();
 	void draw();
 	void draw2D();
+	void drawInRoom2D();
 	void resize();
 private:
 	enum class ClassState
@@ -44,6 +47,7 @@ private:
 	int mTeamNum;
 	ci::vec3 mCamPos;
 	int mSelectTag;
+	int mPrevSelectTag;
 	std::vector<std::function<void()>> outRoomFunc;
 	std::vector<std::function<void()>> inRoomFunc;
 };

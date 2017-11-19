@@ -46,6 +46,15 @@ namespace Scene
 			ENV->padSetup();
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mSelectTag = 0;
+			mPrevSelectTag = 0;
+			mAddMember = false;
+			mTeamNum = -1;
+
+			registerFunc();
+		}
+
+		void cMatching::registerFunc()
+		{
 			mRoot = Node::node::create();
 			mRoot->set_schedule_update();
 
@@ -118,9 +127,8 @@ namespace Scene
 
 			mMemberRoot = Node::node::create();
 			mMemberRoot->set_schedule_update();
-			mAddMember = false;
-			mTeamNum = -1;
 		}
+
 
 		void cMatching::shutDown()
 		{
@@ -129,17 +137,21 @@ namespace Scene
 
 		void cMatching::update(float deltaTime)
 		{
-			int prevSelectTag = mSelectTag;
+			mPrevSelectTag = mSelectTag;
 			mRoot->entry_update(deltaTime);
 			Network::cUDPClientManager::getInstance()->update(deltaTime);
 			if (cUDPClientManager::getInstance()->isConnected() == false)return;
 			makeRoom();
 			inRoom();
-			ci::app::console() << "HIT" << std::endl;
-			if (prevSelectTag != mSelectTag)
+			updateBoxFunc();
+		}
+
+		void cMatching::updateBoxFunc()
+		{
+			if (mPrevSelectTag != mSelectTag)
 			{
-				mRoot->get_child_by_tag(prevSelectTag)->remove_all_actions();
-				mRoot->get_child_by_tag(prevSelectTag)->set_scale(ci::vec2(1.0F));
+				mRoot->get_child_by_tag(mPrevSelectTag)->remove_all_actions();
+				mRoot->get_child_by_tag(mPrevSelectTag)->set_scale(ci::vec2(1.0F));
 				mRoot->get_child_by_tag(mSelectTag)->run_action(
 					repeat_forever::create(
 						sequence::create(
@@ -231,51 +243,43 @@ namespace Scene
 				}
 			}
 		}
+
 		void cMatching::inRoom()
 		{
 			if (mPhaseState != PhaseState::IN_ROOM)return;
 			mAddMember = false;
+			if (mClassState == ClassState::NOT)return;
 
-			if (mClassState == ClassState::CLIENT
-				|| mClassState == ClassState::MASTER)
+
+			if (ENV->pushKey(ci::app::KeyEvent::KEY_RIGHT))
 			{
-				if (ENV->pushKey(ci::app::KeyEvent::KEY_RIGHT))
-				{
-					if (mClassState == ClassState::MASTER)
-						mSelectTag = std::min(mSelectTag + 1, 2);
-					else
-						mSelectTag = std::min(mSelectTag + 1, 1);
-				}
+				if (mClassState == ClassState::MASTER)
+					mSelectTag = std::min(mSelectTag + 1, 2);
+				else
+					mSelectTag = std::min(mSelectTag + 1, 1);
+			}
 
-				if (ENV->pushKey(ci::app::KeyEvent::KEY_LEFT))
-				{
-					mSelectTag = std::max(mSelectTag - 1, 0);
-				}
+			if (ENV->pushKey(ci::app::KeyEvent::KEY_LEFT))
+				mSelectTag = std::max(mSelectTag - 1, 0);
 
-				if (ENV->pushKey(ci::app::KeyEvent::KEY_RETURN) && mCanSend)
-				{
-					inRoomFunc[mSelectTag]();
-				}
+			if (ENV->pushKey(ci::app::KeyEvent::KEY_RETURN) && mCanSend)
+				inRoomFunc[mSelectTag]();
 
-				while (auto resWantTeamIn = cResponseManager::getInstance()->getResWantTeamIn())
-				{
-					if (resWantTeamIn->mFlag == 1)
-					{
-						mCanSend = true;
-						mTeamNum = resWantTeamIn->mTeamNum;
-					}
-					else
-					{
-						mCanSend = true;
-					}
-				}
-
-				while (auto eveTeamMember = cEventManager::getInstance()->getEveTeamMember())
-				{
-					cMatchingMemberManager::getInstance()->addPlayerDatas(
-						eveTeamMember->mNameStr, eveTeamMember->mTeamNum, eveTeamMember->mPlayerID, cNetworkHandle("", 0));
-					mAddMember = true;
-				}
+			//Teamに入れたかどうか
+			while (auto resWantTeamIn = cResponseManager::getInstance()->getResWantTeamIn())
+			{
+				//!@ TODO : Add Performance (Team%Dに入れました or Team%Dに入れませんでした)
+				if (resWantTeamIn->mFlag == 1)
+					mTeamNum = resWantTeamIn->mTeamNum;
+			
+				mCanSend = true;
+			}
+			//TODO : 参加した場合とTeamが変更された場合は分けるべき
+			while (auto eveTeamMember = cEventManager::getInstance()->getEveTeamMember())
+			{
+				cMatchingMemberManager::getInstance()->addPlayerDatas(
+					eveTeamMember->mNameStr, eveTeamMember->mTeamNum, eveTeamMember->mPlayerID, cNetworkHandle("", 0));
+				mAddMember = true;
 			}
 		}
 
@@ -343,74 +347,49 @@ namespace Scene
 		void cMatching::draw2D()
 		{
 			mRoot->entry_render(cinder::mat4());
+			drawInRoom2D();
+			mMemberRoot->entry_render(cinder::mat4());
+		}
 
-			if (mPhaseState == PhaseState::IN_ROOM)
+		void cMatching::drawInRoom2D()
+		{
+			if (mPhaseState != PhaseState::IN_ROOM)return;
+			int noTeamCount = 0;
+			int team1Count = 0;
+			int team2Count = 0;
+			for each (auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
 			{
-				if (mAddMember == true)
+				auto nameTag = Node::Renderer::rect::create(ci::vec2(300, 50));
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				if (m.teamNum == 0)
 				{
-					mMemberRoot->remove_all_children();
-					{
-						auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-						f->set_color(ci::ColorA(1, 0, 0));
-						f->set_position(ci::vec2(-350, 250));
-						f->set_text(u8"赤チーム");
-						f->set_scale(glm::vec2(1, -1));
-						mMemberRoot->add_child(f);
-					}
-					{
-						auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-						f->set_color(ci::ColorA(0, 1, 1));
-						f->set_position(ci::vec2(0, 250));
-						f->set_text(u8"チームなし");
-						f->set_scale(glm::vec2(1, -1));
-						mMemberRoot->add_child(f);
-					}
-					{
-						auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-						f->set_position(ci::vec2(350, 250));
-						f->set_text(u8"白チーム");
-						f->set_scale(glm::vec2(1, -1));
-						mMemberRoot->add_child(f);
-					}
-					int noTeamCount = 0;
-					int team1Count = 0;
-					int team2Count = 0;
-					for each (auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
-					{
-						auto nameTag = Node::Renderer::rect::create(ci::vec2(300, 50));
-						auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-						if (m.teamNum == 0)
-						{
-							nameTag->set_color(ci::ColorA(1, 0, 0));
-							nameTag->set_position(ci::vec2(-350, 200 - 60 * team1Count));
-							team1Count++;
-						}
-
-						else if(m.teamNum == 1)
-						{
-							nameTag->set_color(ci::ColorA(1, 1, 1));
-							nameTag->set_position(ci::vec2(350, 200 - 60 * team2Count));
-							team2Count++;
-							f->set_color(ci::ColorA(0, 0, 0));
-						}
-
-						else
-						{
-							nameTag->set_color(ci::ColorA(0, 1, 0));
-							nameTag->set_position(ci::vec2(0, 200 - 60 * noTeamCount));
-							noTeamCount++;
-							f->set_color(ci::ColorA(0, 0, 0));
-						}
-
-						mMemberRoot->add_child(nameTag);
-						f->set_text(u8"" + m.nameStr);
-						f->set_scale(glm::vec2(1, -1));
-						nameTag->add_child(f);
-					}
+					nameTag->set_color(ci::ColorA(1, 0, 0));
+					nameTag->set_position(ci::vec2(-350, 200 - 60 * team1Count));
+					team1Count++;
 				}
+
+				else if (m.teamNum == 1)
+				{
+					nameTag->set_color(ci::ColorA(1, 1, 1));
+					nameTag->set_position(ci::vec2(350, 200 - 60 * team2Count));
+					team2Count++;
+					f->set_color(ci::ColorA(0, 0, 0));
+				}
+
+				else
+				{
+					nameTag->set_color(ci::ColorA(0, 1, 0));
+					nameTag->set_position(ci::vec2(0, 200 - 60 * noTeamCount));
+					noTeamCount++;
+					f->set_color(ci::ColorA(0, 0, 0));
+				}
+
+				mMemberRoot->add_child(nameTag);
+				f->set_text(u8"" + m.nameStr);
+				f->set_scale(glm::vec2(1, -1));
+				nameTag->add_child(f);
 			}
 
-			mMemberRoot->entry_render(cinder::mat4());
 		}
 
 		void cMatching::resize()
