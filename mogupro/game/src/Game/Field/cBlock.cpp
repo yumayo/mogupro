@@ -49,7 +49,8 @@ void cBlock::toBreak()
                 .vanishTime( 1.0f )
                 .effectTime( 0 )
                 .speed( 0.5f )
-                .count( 1 ) );
+                .count( 1 )
+                .isTrajectory( false ) );
     mCollider.removeWorld();
 }
 void cBlock::toRevival()
