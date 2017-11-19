@@ -27,17 +27,7 @@ enum class ParticleTextureType
 class ParticleParam
 {
 public:
-    ci::vec3 mPosition;
-    ci::vec3 mScale;
-    ParticleType mMoveType;
-    ParticleTextureType mTextureType;
-    ci::ColorA mColor;
-    int mCount;
-    float mVanishTime;
-    float mEffectTime;
-    float mSpeed;
-    bool mIsLighting;
-    bool mIsTrajectory;
+    friend class cParticleHolder;
 
     ParticleParam();
 
@@ -53,24 +43,50 @@ public:
     ParticleParam& isLighting( const bool& is_lighting );
     ParticleParam& isTrajectory( const bool& is_trajectory );
 
+private:
+
+    ci::vec3 mPosition;
+    ci::vec3 mScale;
+    ParticleType mMoveType;
+    ParticleTextureType mTextureType;
+    ci::ColorA mColor;
+    int mCount;
+    float mVanishTime;
+    float mEffectTime;
+    float mSpeed;
+    bool mIsLighting;
+    bool mIsTrajectory;
+
 };
 
 class cParticle
 {
 public:
 
-    cParticle() {}
     cParticle( const ci::vec3& vec,
                const ci::vec3& position,
+               const ci::vec3& scale,
                const float& time );
+    ~cParticle();
 
     void update( const float& delta_time );
+    void draw( const glm::quat& rotation, const ci::ColorA& color );
     bool isActive();
 
 public:
+
+    void trajectoryUpdate( const bool& is_trajectory );
+
+public:
+
     ci::vec3 mPosition;
     ci::vec3 mVec;
     float mTime;
+    std::deque<ci::vec3> mLinePositions;
+    int mLineCount;
+    int mLineLengthCount;
+    ci::vec3 mOneLineVec;
+
 };
 
 class cParticleHolder
@@ -109,6 +125,7 @@ public:
     std::string mTextureName;
     Utility::softptr<Game::Light::cPointLightParam> mHandle;
     std::vector<std::shared_ptr<cParticle>> mParticles;
+
 };
 
 // /* Žg‚¢•û */
