@@ -354,6 +354,31 @@ namespace Scene
 		void cMatching::drawInRoom2D()
 		{
 			if (mPhaseState != PhaseState::IN_ROOM)return;
+			if (mAddMember != true)return;
+			mMemberRoot->remove_all_children();
+			{
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				f->set_color(ci::ColorA(1, 0, 0));
+				f->set_position(ci::vec2(-350, 250));
+				f->set_text(u8"赤チーム");
+				f->set_scale(glm::vec2(1, -1));
+				mMemberRoot->add_child(f);
+			}
+			{
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				f->set_color(ci::ColorA(0, 1, 1));
+				f->set_position(ci::vec2(0, 250));
+				f->set_text(u8"チームなし");
+				f->set_scale(glm::vec2(1, -1));
+				mMemberRoot->add_child(f);
+			}
+			{
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				f->set_position(ci::vec2(350, 250));
+				f->set_text(u8"白チーム");
+				f->set_scale(glm::vec2(1, -1));
+				mMemberRoot->add_child(f);
+			}
 			int noTeamCount = 0;
 			int team1Count = 0;
 			int team2Count = 0;
