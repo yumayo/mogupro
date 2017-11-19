@@ -199,7 +199,7 @@ namespace Game {
 			bool isDrilling() {
 				return drilling;
 			}
-			void receiveDamage(const bool& hit,const float& attack);
+			void receiveDamage(const float& attack);
 			void weaponUpdae(const float& delta_time);
 			void move(const ci::vec3& velocity);
 			void jump(bool flag);

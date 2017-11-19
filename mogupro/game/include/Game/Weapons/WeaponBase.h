@@ -9,8 +9,9 @@ namespace Game {
 		protected:
 			float attack;
 			float range;
-			ci::Ray ray;
+			ci::Ray ray[3];
 			ci::AxisAlignedBox aabb;
+			bool is_attack;
 			bool push;
 			bool press;
 			bool pull;
