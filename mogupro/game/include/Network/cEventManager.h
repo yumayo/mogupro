@@ -73,6 +73,13 @@ private:
     std::stack<Packet::Event::cEvePlayerDeath> mEvePlayerDeath;
     std::map<ubyte4, double> mEvePlayerDeathSequenceIds;
 public:
+    boost::optional<Packet::Event::cEveLightBomb> getEveLightBomb( );
+    void ungetEveLightBomb( Packet::Event::cEveLightBomb&& data );
+    bool isNewEveLightBomb( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Event::cEveLightBomb> mEveLightBomb;
+    std::map<ubyte4, double> mEveLightBombSequenceIds;
+public:
     boost::optional<Packet::Event::cEveTeamMember> getEveTeamMember( );
     void ungetEveTeamMember( Packet::Event::cEveTeamMember&& data );
     bool isNewEveTeamMember( Packet::PacketHeader const& header );

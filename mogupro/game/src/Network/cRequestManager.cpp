@@ -300,6 +300,39 @@ bool cRequestManager::isNewReqCheckPlayerDeath( Packet::PacketHeader const& head
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
+boost::optional<Packet::Request::cReqCheckLightBomb> cRequestManager::getReqCheckLightBomb( )
+{
+    if ( mReqCheckLightBomb.empty( ) )
+    {
+        auto it = mReqCheckLightBombSequenceIds.begin( );
+		while ( it != mReqCheckLightBombSequenceIds.end( ) ) 
+		{
+			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
+			{
+				mReqCheckLightBombSequenceIds.erase( it++ );
+			}
+			else ++it;
+		}
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqCheckLightBomb.top( );
+        mReqCheckLightBomb.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqCheckLightBomb( Packet::Request::cReqCheckLightBomb&& data )
+{
+    mReqCheckLightBomb.push( std::move( data ) );
+}
+bool cRequestManager::isNewReqCheckLightBomb( Packet::PacketHeader const& header )
+{
+	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
+    auto status = mReqCheckLightBombSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    status.first->second = cinder::app::getElapsedSeconds( );
+	return status.second;
+}
 boost::optional<Packet::Request::cReqMakeRoom> cRequestManager::getReqMakeRoom( )
 {
     if ( mReqMakeRoom.empty( ) )

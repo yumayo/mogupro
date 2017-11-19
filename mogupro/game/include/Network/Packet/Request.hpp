@@ -8,6 +8,7 @@
 #include<Network/Packet/Request/cReqCheckPlayerRobJem.h>
 #include<Network/Packet/Request/cReqCheckSetQuarry.h>
 #include<Network/Packet/Request/cReqCheckPlayerDeath.h>
+#include<Network/Packet/Request/cReqCheckLightBomb.h>
 #include<Network/Packet/Request/cReqMakeRoom.h>
 #include<Network/Packet/Request/cReqInRoom.h>
 #include<Network/Packet/Request/cReqWantTeamIn.h>

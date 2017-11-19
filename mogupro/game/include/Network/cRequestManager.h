@@ -73,6 +73,13 @@ private:
     std::stack<Packet::Request::cReqCheckPlayerDeath> mReqCheckPlayerDeath;
     std::map<ubyte4, double> mReqCheckPlayerDeathSequenceIds;
 public:
+    boost::optional<Packet::Request::cReqCheckLightBomb> getReqCheckLightBomb( );
+    void ungetReqCheckLightBomb( Packet::Request::cReqCheckLightBomb&& data );
+    bool isNewReqCheckLightBomb( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Request::cReqCheckLightBomb> mReqCheckLightBomb;
+    std::map<ubyte4, double> mReqCheckLightBombSequenceIds;
+public:
     boost::optional<Packet::Request::cReqMakeRoom> getReqMakeRoom( );
     void ungetReqMakeRoom( Packet::Request::cReqMakeRoom&& data );
     bool isNewReqMakeRoom( Packet::PacketHeader const& header );
