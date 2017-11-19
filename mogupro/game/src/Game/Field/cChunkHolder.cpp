@@ -207,7 +207,7 @@ std::vector<int> cChunkHolder::getChunkId( const ci::ivec3 & chunk_cell,
     auto chunk_layer = getChunkLayer( chunk_cell );
     chunks_id.push_back( chunk_layer->getChunkLayerId() );
 
-    if(radius <= BLOCK_SIZE )
+    if(radius < BLOCK_SIZE )
         return chunks_id;
 
     auto r = ivec3( int( radius / BLOCK_SIZE ) );
