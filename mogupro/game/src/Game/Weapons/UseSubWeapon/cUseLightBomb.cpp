@@ -2,6 +2,7 @@
 #include<Game/cSubWeaponManager.h>
 #include <Utility/cInput.h>
 #include<Game/cPlayerManager.h>
+
 namespace Game
 {
 namespace Weapons
@@ -10,7 +11,7 @@ namespace UseSubWeapon
 {
 cUseLightBomb::cUseLightBomb( )
 {
-
+	
 }
 cUseLightBomb::~cUseLightBomb( )
 {
@@ -35,7 +36,7 @@ void cUseLightBomb::update(const float & delta_time)
 }
 void cUseLightBomb::draw()
 {
-
+	
 }
 bool cUseLightBomb::deleteThis()
 {

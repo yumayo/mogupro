@@ -63,14 +63,6 @@ void cStrategyManager::update(const float & deltatime)
 		cClientAdapter::getInstance()->sendSetQuarry(vec3(randInt(0, 10), 15, randInt(0, 10)),Strategy::cDrill::DrillType::Level1);
 
 	}
-
-	if (ENV->pushKey(KeyEvent::KEY_i)) {
-		vec3 speed = Game::cPlayerManager::getInstance()->getActivePlayer()->getInstallationPosition();
-		vec3 pos = Game::cPlayerManager::getInstance()->getActivePlayer()->getPos();
-		CreateBomb(pos, speed, vec3(0.5, 0.5,0.5), bombs.size());
-
-	}
-
 }
 
 void cStrategyManager::updateCollisionAfterUpdate(const float & deltaTime)
