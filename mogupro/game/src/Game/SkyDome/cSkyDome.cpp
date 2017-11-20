@@ -1,33 +1,18 @@
 #include <Game/SkyDome/cSkyDome.h>
-#include <Resource/TextureManager.h>
+#include <Resource/cObjectManager.h>
 #include <CameraManager/cCameraManager.h>
-
+#include <Game/Field/FieldData.h>
 void Game::SkyDome::cSkyDome::setup()
 {
-	//画像のバインド
-	TEX->set("sky_dome","SkyDome/skydome_1.bmp");
-
-	size = ci::vec3(5000, 5000, 5000);
-	
-	//画像を貼れる状態にする
-	//カリングが適用されなかったのでLambertはなし
-	auto shader = ci::gl::ShaderDef().texture();
-	mGlsl = ci::gl::getStockShader(shader);
-	//頂点数５０のスフィア生成
-	auto sphere = ci::geom::Sphere().subdivisions(50);
-	mSphere = ci::gl::Batch::create(sphere, mGlsl);
-
+	worldCenter = ci::vec3( Game::Field::CHUNK_RANGE_X, Game::Field::CHUNK_RANGE_Y, Game::Field::CHUNK_RANGE_Z ) * Game::Field::BLOCK_SIZE * (float)Game::Field::CHUNK_SIZE / 2.0F;
+	mGlsl = ci::gl::getStockShader( ci::gl::ShaderDef( ).color( ) );
+	caveMesh = Resource::cObjectManager::getInstance( )->findObject( "cave.obj" );
 }
 
 void Game::SkyDome::cSkyDome::draw()
 {
-    ci::gl::ScopedTextureBind tex( Resource::TextureManager::getInstance( )->get( "sky_dome" ) );
-	//画像をバインド
-	ci::gl::pushModelView();
-	ci::gl::translate(CAMERA->getPos());
-	ci::gl::scale(size);
-	mSphere->draw();
-	ci::gl::popModelView();
-
-
+	ci::gl::ScopedColor col( ci::ColorA( 0.294, 0.156, 0.09 ) );
+	ci::gl::ScopedModelMatrix mat;
+	ci::gl::translate( worldCenter );
+	ci::gl::draw( caveMesh );
 }

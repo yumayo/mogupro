@@ -44,12 +44,13 @@ void cBlock::toBreak()
     Particle::cParticleManager::getInstance()->
         create( Particle::ParticleParam()
                 .position( mCollider.getPosition() )
-                .scale( vec3( 0.02f ) )
+                .scale( 0.02f  )
                 .color( ColorA8u( 95, 66, 41, 255 ) )
-                .vanishTime( 1.0f )
+                .vanishTime( 0.5f )
                 .effectTime( 0 )
                 .speed( 0.5f )
-                .count( 1 ) );
+                .count( 1 )
+                .isTrajectory( false ) );
     mCollider.removeWorld();
 }
 void cBlock::toRevival()
