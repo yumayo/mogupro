@@ -5,19 +5,22 @@
 #include <Network/cEventManager.h>
 #include <Network/cRequestManager.h>
 #include <Network/cResponseManager.h>
+#include <Game/Field/FieldData.h>
 namespace Game
 {
 cServerAdapter::cServerAdapter( )
 {
+	ci::vec3 worldSize = ci::vec3( Game::Field::CHUNK_RANGE_X, Game::Field::CHUNK_RANGE_Y, Game::Field::CHUNK_RANGE_Z ) * Game::Field::BLOCK_SIZE * (float)Game::Field::CHUNK_SIZE;
+
 	mQuarryId = 0;
-	mPlayerFormats.insert( std::make_pair( 0, Network::Packet::PlayerFormat( 0, cinder::vec3( 30, 30, 20 ), cinder::quat( ) ) ) );
-	mPlayerFormats.insert( std::make_pair( 1, Network::Packet::PlayerFormat( 1, cinder::vec3( 32, 30, 20 ), cinder::quat( ) ) ) );
-	mPlayerFormats.insert( std::make_pair( 2, Network::Packet::PlayerFormat( 2, cinder::vec3( 34, 30, 20 ), cinder::quat( ) ) ) );
-	mPlayerFormats.insert( std::make_pair( 3, Network::Packet::PlayerFormat( 3, cinder::vec3( 36, 30, 20 ), cinder::quat( ) ) ) );
-	mPlayerFormats.insert( std::make_pair( 4, Network::Packet::PlayerFormat( 4, cinder::vec3( 30, 30, 30 ), cinder::quat( ) ) ) );
-	mPlayerFormats.insert( std::make_pair( 5, Network::Packet::PlayerFormat( 5, cinder::vec3( 30, 30, 32 ), cinder::quat( ) ) ) );
-	mPlayerFormats.insert( std::make_pair( 6, Network::Packet::PlayerFormat( 6, cinder::vec3( 30, 30, 34 ), cinder::quat( ) ) ) );
-	mPlayerFormats.insert( std::make_pair( 7, Network::Packet::PlayerFormat( 7, cinder::vec3( 30, 30, 36 ), cinder::quat( ) ) ) );
+	mPlayerFormats.insert( std::make_pair( 0, Network::Packet::PlayerFormat( 0, cinder::vec3( worldSize.x / 2 - 1.5F, worldSize.y + 1.0F, 7.0F ), cinder::quat( ) ) ) );
+	mPlayerFormats.insert( std::make_pair( 1, Network::Packet::PlayerFormat( 1, cinder::vec3( worldSize.x / 2 - 0.5F, worldSize.y + 1.0F, 7.0F ), cinder::quat( ) ) ) );
+	mPlayerFormats.insert( std::make_pair( 2, Network::Packet::PlayerFormat( 2, cinder::vec3( worldSize.x / 2 + 0.5F, worldSize.y + 1.0F, 7.0F ), cinder::quat( ) ) ) );
+	mPlayerFormats.insert( std::make_pair( 3, Network::Packet::PlayerFormat( 3, cinder::vec3( worldSize.x / 2 + 1.5F, worldSize.y + 1.0F, 7.0F ), cinder::quat( ) ) ) );
+	mPlayerFormats.insert( std::make_pair( 4, Network::Packet::PlayerFormat( 4, cinder::vec3( worldSize.x / 2 - 1.5F, worldSize.y + 1.0F, worldSize.z - 7.0F ), cinder::quat( ) ) ) );
+	mPlayerFormats.insert( std::make_pair( 5, Network::Packet::PlayerFormat( 5, cinder::vec3( worldSize.x / 2 - 0.5F, worldSize.y + 1.0F, worldSize.z - 7.0F ), cinder::quat( ) ) ) );
+	mPlayerFormats.insert( std::make_pair( 6, Network::Packet::PlayerFormat( 6, cinder::vec3( worldSize.x / 2 + 0.5F, worldSize.y + 1.0F, worldSize.z - 7.0F ), cinder::quat( ) ) ) );
+	mPlayerFormats.insert( std::make_pair( 7, Network::Packet::PlayerFormat( 7, cinder::vec3( worldSize.x / 2 + 1.5F, worldSize.y + 1.0F, worldSize.z - 7.0F ), cinder::quat( ) ) ) );
 }
 cServerAdapter::~cServerAdapter( )
 {
