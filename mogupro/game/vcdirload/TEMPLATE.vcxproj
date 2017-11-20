@@ -29,7 +29,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -87,7 +87,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\..\librarys\cinder\include;..\..\librarys\boost\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\librarys\cinder\include;..\..\librarys\boost\include;..\..\librarys\MathGeolib\include;..\..\librarys\Gamepad\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -102,7 +102,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\lib;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\;..\..\librarys\boost\lib\$(PlatformTarget)\$(PlatformToolset)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\;..\..\librarys\boost\lib\$(PlatformTarget)\$(PlatformToolset)\;..\..\librarys\MathGeoLib\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\;..\..\librarys\Gamepad\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -114,7 +114,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\..\librarys\cinder\include;..\..\librarys\boost\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\librarys\cinder\include;..\..\librarys\boost\include;..\..\librarys\MathGeolib\include;..\..\librarys\Gamepad\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -128,7 +128,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\lib;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\;..\..\librarys\boost\lib\$(PlatformTarget)\$(PlatformToolset)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\;..\..\librarys\boost\lib\$(PlatformTarget)\$(PlatformToolset)\;..\..\librarys\MathGeoLib\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\;..\..\librarys\Gamepad\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -138,7 +138,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;..\..\librarys\cinder\include;..\..\librarys\boost\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\librarys\cinder\include;..\..\librarys\boost\include;..\..\librarys\MathGeolib\include;..\..\librarys\Gamepad\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -154,7 +154,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\lib;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\;..\..\librarys\boost\lib\$(PlatformTarget)\$(PlatformToolset)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\;..\..\librarys\boost\lib\$(PlatformTarget)\$(PlatformToolset)\;..\..\librarys\MathGeoLib\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\;..\..\librarys\Gamepad\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
       <SubSystem>Windows</SubSystem>
@@ -167,7 +167,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;..\..\librarys\cinder\include;..\..\librarys\boost\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\librarys\cinder\include;..\..\librarys\boost\include;..\..\librarys\MathGeolib\include;..\..\librarys\Gamepad\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -183,7 +183,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\lib;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\;..\..\librarys\boost\lib\$(PlatformTarget)\$(PlatformToolset)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\;..\..\librarys\cinder\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\;..\..\librarys\boost\lib\$(PlatformTarget)\$(PlatformToolset)\;..\..\librarys\MathGeoLib\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\;..\..\librarys\Gamepad\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
       <SubSystem>Windows</SubSystem>
@@ -200,8 +200,14 @@
     <ProjectReference Include="..\..\librarys\cinder\proj\vc2017\cinder.vcxproj">
       <Project>{92b5be70-dcaa-40e4-92d8-cc2b95aa28be}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\librarys\Gamepad\proj\vc2017\Gamepad.vcxproj">
+      <Project>{0a9f4b08-5c1b-4305-bc63-b3cae9c32aff}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\librarys\MathGeoLib\proj\vc2017\MathGeoLib.vcxproj">
+      <Project>{eceb573d-7021-4094-a82a-41d2588a5535}</Project>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup/>
+  <ItemGroup />
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
