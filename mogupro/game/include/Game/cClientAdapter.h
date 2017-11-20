@@ -33,6 +33,8 @@ private:
     void recvAllGems( );
     // 全てのブロック破壊イベントを行う。
     void recvAllBreakBlocks( );
+	// 全てのライトボムイベントを行う。
+	void recvAllBombs( );
 public:
     // ブロックを破壊したら呼んでください。
     void sendBreakBlock( cinder::vec3 const& position, float radius, Network::ubyte1 type );
@@ -44,6 +46,8 @@ public:
     void sendGetGemPlayer( Network::ubyte2 gemId );
     // 掘削機がジェムを取得したら呼んでください。
     void sendGetGemQuarry( Network::ubyte2 drillId, Network::ubyte2 gemId );
+	// ライトボムを投げる。
+	void sendLightBomb( cinder::vec3 const& position, cinder::vec3 const& speed );
 private:
     // 上記でたまったブロックを実際に送ります。
     void sendBreakBlocks( );
