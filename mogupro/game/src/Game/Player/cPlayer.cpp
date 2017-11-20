@@ -286,6 +286,11 @@ void Game::Player::cPlayer::weaponUpdae(const float & delta_time)
 
 void Game::Player::cPlayer::move(const ci::vec3 & velocity)
 {
+	//スタン中は動けない
+	if (stan) {
+		mRigidbody.setSpeed(ci::vec3(0));
+		return;
+	}
 	//プレイヤーの移動ベクトル保存
 	//ベクトル更新
 	if ( velocity.x >= 0.01f ||
