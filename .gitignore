@@ -23,3 +23,16 @@ mogupro/librarys/boost/*
 !mogupro/librarys/boost/.gitkeep
 
 mogupro/game/assets/Log/*
+
+mogupro/librarys/MathGeoLib/proj/vc2017/*
+!mogupro/librarys/MathGeoLib/proj/vc2017/*.sln
+!mogupro/librarys/MathGeoLib/proj/vc2017/*.vcxproj
+!mogupro/librarys/MathGeoLib/proj/vc2017/*.vcxproj.filters
+!mogupro/librarys/MathGeoLib/proj/vc2017/*.vcxproj.user
+mogupro/librarys/MathGeoLib/lib/*
+
+mogupro/librarys/Gamepad/proj/vc2017/*
+!mogupro/librarys/Gamepad/proj/vc2017/*.vcxproj
+!mogupro/librarys/Gamepad/proj/vc2017/*.vcxproj.filters
+!mogupro/librarys/Gamepad/proj/vc2017/*.vcxproj.user
+mogupro/librarys/Gamepad/lib/*
