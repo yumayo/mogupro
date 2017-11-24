@@ -1,6 +1,5 @@
 #include <Game/Weapons/MainWeapon/LightSaber.h>
 #include <cinder/gl/gl.h>
-#include <Game/cPlayerManager.h>
 #include <Utility/cInput.h>
 #include <CameraManager/cCameraManager.h>
 #include <Resource/cObjectManager.h>
@@ -68,6 +67,10 @@ void Game::Weapon::LightSaber::Attack(const float & delta_time)
 		if (it->getActiveUser()) {
 			continue;
 		}
+		//自分のチームのプレイヤーなら当たらないので返す
+		if (it->getWhichTeam() == team) {
+			continue;
+		}
 		//既に当たっていたら返す
 		if (hits[i - 1]) {
 			continue;
@@ -119,7 +122,7 @@ void Game::Weapon::LightSaber::Attack(const float & delta_time)
 		if (is_hit) {
 			//当たった時の演出として一瞬カメラを揺らす
 			CAMERA->shakeCamera(0.1f, 0.1f);
-			it->receiveDamage(attack);
+			it->receiveDamage(attack, cPlayerManager::getInstance()->getActivePlayer()->getPlayerId());
 			ci::app::console() << i - 1 << std::endl;
 			//対象のhitをtrueにして
 			//対象限定でヒットストップをつけたり当たり判定をなくしたり
@@ -227,6 +230,7 @@ void Game::Weapon::LightSaber::setup()
 	for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size();i++) {
 		hits.push_back(false);
 	}
+	team = cPlayerManager::getInstance()->getActivePlayer()->getWhichTeam();
 	root_x = Node::node::create();
 	root_x->set_schedule_update();
 	root_y = Node::node::create();
@@ -282,9 +286,6 @@ void Game::Weapon::LightSaber::DrawRotate3()
 void Game::Weapon::LightSaber::draw()
 {
 	if (!is_attack) return;
-	ci::gl::drawVector(ray[0].getOrigin(), ray[0].getDirection());
-	//ci::gl::drawVector(ray[1].getOrigin(), ray[1].getDirection());
-	//ci::gl::drawVector(ray[2].getOrigin(), ray[2].getDirection());
 	ci::gl::ScopedTextureBind tex(TEX->get("weapon"));
 	ci::gl::pushModelView();
 	DrawRotate1();

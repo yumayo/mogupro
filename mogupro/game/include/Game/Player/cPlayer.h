@@ -25,6 +25,7 @@ namespace Game {
 			float jump_force;
 			float speed;
 			float drill_speed;
+			float respawn_time;
 		};
 
 		enum Team {
@@ -52,10 +53,15 @@ namespace Game {
 			ci::vec3 normalized_player_vec;
 			//チーム
 			Team team;
-
+			//死んでいるかどうか(true時、死亡中)
+			bool is_dead;
+			//再出撃までの待機時間のカウント
+			float respawn_count;
+			//攻撃された時の敵のid
+			int damaged_id;
 			//プレイヤーのAABB
 			ci::AxisAlignedBox aabb;
-			bool damage;
+
 			//メイン武器
 			std::unique_ptr<Weapon::WeaponBase> main_weapon;
 
@@ -75,6 +81,9 @@ namespace Game {
 
 			//プレイヤーからのカメラの位置
 			float player_far;
+
+			//掘削時に６０フレームで音がならないように
+			float drill_sound;
 
 			//当たり判定登録
 			Collision::cAABBCollider mCollider;
@@ -107,7 +116,9 @@ namespace Game {
 			void getGems(const int& _gemid);
 			void collisionGems();
 			
-			
+			void dead();
+			void respawn(const float& delta_time);
+			void resetPlayerStatus();
 		public:
 			cPlayer(
 				const ci::vec3& pos,
@@ -133,8 +144,21 @@ namespace Game {
 				if(active_user) return;
 				mCollider.setPosition(pos);
 			}
+			//プレイヤーが動けない状態かどうか
 			bool getStan() {
 				return stan;
+			}
+
+			//プレイヤーが死んでいるかどうか（死亡中はtrue）
+			bool isDead() {
+				return is_dead;
+			}
+			//攻撃してきた敵のid
+			int getDamagedId() {
+				return damaged_id;
+			}
+			int getRespawnCount() {
+				return respawn_count;
 			}
 
 			void resetPos() {
@@ -206,7 +230,9 @@ namespace Game {
 			bool isDrilling() {
 				return drilling;
 			}
-			void receiveDamage(const float& attack);
+			//attack = 攻撃力
+			//player_id = 攻撃を仕掛けたプレイヤーのid
+			void receiveDamage(const float& attack, const float& player_id);
 			void weaponUpdae(const float& delta_time);
 			void move(const ci::vec3& velocity);
 			void jump(bool flag);

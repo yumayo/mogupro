@@ -61,6 +61,14 @@ void cGameMain::setup( )
 	float get_map_top_pos = Game::cFieldManager::getInstance()->getBlockTopPosition(ci::vec3(0,0,0)).y;
 	for (int i = 0; i < player_numbers; i++) {
 		positions.push_back(ci::vec3(0, get_map_top_pos, i * 2));
+
+		//デバッグ用にチーム分け//////
+		if (i > 3) {
+			teams.emplace_back(1);
+			continue;
+		}
+		//////////////////////////////
+
         teams.emplace_back( 0 );
 	}
     for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )

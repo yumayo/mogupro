@@ -4,6 +4,7 @@
 #include <cinder/gl/gl.h>
 #include <vector>
 #include <Game/cLightManager.h>
+#include <Game/cPlayerManager.h>
 namespace Game {
 	namespace Weapon {
 
@@ -23,6 +24,8 @@ namespace Game {
 			float player_rotate_y;
 			Motion motion;
 			float timer;
+
+			Player::Team team;
 
 			ci::vec2 rotate_before_frame;
 			std::vector<bool> hits;
