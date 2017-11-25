@@ -10,8 +10,7 @@ namespace Particle
 enum class ParticleType
 {
     NONE,
-    SCATTER,    // 重力無しの飛び散り
-    SPLASH,     // 重力ありの飛び散り
+    SCATTER,    // 飛び散り
     EXPROTION,  // 爆発
     GLITTER,    // 動きなしキラキラ
     CONVERGE,   // 収束
@@ -29,19 +28,40 @@ class ParticleParam
 public:
     friend class cParticleHolder;
 
+    // デフォルトの設定
     ParticleParam();
 
+    // 生成の中心位置
     ParticleParam& position( const ci::vec3& position );
+    // パーティクルのスケール
     ParticleParam& scale( const float& scale );
+    // パーティクルの移動の仕方
     ParticleParam& moveType( const ParticleType& move_type );
+    // パーティクルの画像の種類
     ParticleParam& textureType( const ParticleTextureType& texture_type );
+    // 色
     ParticleParam& color( const ci::ColorA& color );
+    // 一フレームでパーティクルが生成される数
     ParticleParam& count( const int& count );
+    // 消滅時間
     ParticleParam& vanishTime( const float& vanish_time );
+    // 消滅時間のランダムの範囲
+    ParticleParam& vanishTimeRange( const float& vanish_time_range );
+    // 生成時間
     ParticleParam& effectTime( const float& effect_time );
+    // パーティクルの移動速度
     ParticleParam& speed( const float& speed );
+    // ベクトルの追加量 ( ベクトルに偏りを持たせる )
+    ParticleParam& addVec( const ci::vec3& add_vec );
+    // 生成の中心位置にライトを生成するかどうか
     ParticleParam& isLighting( const bool& is_lighting );
+    // パーティクルの軌跡を生成するかどうか
     ParticleParam& isTrajectory( const bool& is_trajectory );
+    // 重力の強さ ( vec.y - gravity )
+    ParticleParam& gravity( const float& gravity );
+    // パーティクルをCubeにするかどうか
+    ParticleParam& isCube( const bool& is_cube );
+
 
 private:
 
@@ -52,10 +72,14 @@ private:
     ci::ColorA mColor;
     int mCount;
     float mVanishTime;
+    float mVanishTimeRange;
     float mEffectTime;
     float mSpeed;
+    ci::vec3 mAddVec;
     bool mIsLighting;
     bool mIsTrajectory;
+    float mGravity;
+    bool mIsCube;
 
 };
 
@@ -63,30 +87,23 @@ class cParticle
 {
 public:
 
-    cParticle( const ci::vec3& vec,
-               const ci::vec3& position,
-               const float& scale,
+    cParticle( const ci::vec3& position,
+               const ci::vec3& vec,
                const float& time );
     ~cParticle();
 
-    void update( const float& delta_time );
+    void update( const float& delta_time, const float& gravity );
     void draw( const glm::quat& rotation, const ci::ColorA& color );
+    void cubeDraw( const ci::ColorA& color );
     bool isActive();
 
 public:
 
-    void trajectoryUpdate( const bool& is_trajectory );
-
-public:
-
     ci::vec3 mPosition;
+    ci::vec3 mPrevPosition;
     ci::vec3 mVec;
     float mTime;
-    std::deque<ci::vec3> mLinePositions;
-    int mLineCount;
-    int mLineLengthCount;
-    ci::vec3 mOneLineVec;
-
+    int mTrajectoryCount;
 };
 
 class cParticleHolder
@@ -113,8 +130,8 @@ public:
 private:
 
     void sort();
-    void create( const ci::vec3& position,
-                 const float& time );
+    void create( const ci::vec3& position, const float& time );
+    void trajectoryCreate( const ci::vec3& position, const float& vanish_time, const float& delta_time );
     void particleDraw( const glm::quat& rotation );
     void setTexture( const ParticleTextureType& texture_type );
     void setLight( bool is_lighting );
@@ -125,6 +142,10 @@ public:
     std::string mTextureName;
     Utility::softptr<Game::Light::cPointLightParam> mHandle;
     std::vector<std::shared_ptr<cParticle>> mParticles;
+    std::deque<std::shared_ptr<cParticle>> mTrajectoryParticles;
+
+    ci::TriMeshRef mMesh;
+    ci::gl::VboMeshRef mVbo;
 
 };
 
