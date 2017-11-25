@@ -44,7 +44,7 @@ void cBlock::toBreak()
     Particle::cParticleManager::getInstance()->
         create( Particle::ParticleParam()
                 .position( mCollider.getPosition() )
-                .scale( 0.02f  )
+                .scale( 0.02f )
                 .color( ColorA8u( 95, 66, 41, 255 ) )
                 .vanishTime( 0.5f )
                 .effectTime( 0 )

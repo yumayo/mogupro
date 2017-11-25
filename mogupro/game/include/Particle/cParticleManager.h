@@ -10,8 +10,7 @@ namespace Particle
 enum class ParticleType
 {
     NONE,
-    SCATTER,    // èdóÕñ≥ÇµÇÃîÚÇ—éUÇË
-    SPLASH,     // èdóÕÇ†ÇËÇÃîÚÇ—éUÇË
+    SCATTER,    // îÚÇ—éUÇË
     EXPROTION,  // îöî≠
     GLITTER,    // ìÆÇ´Ç»ÇµÉLÉâÉLÉâ
     CONVERGE,   // é˚ë©
@@ -38,10 +37,12 @@ public:
     ParticleParam& color( const ci::ColorA& color );
     ParticleParam& count( const int& count );
     ParticleParam& vanishTime( const float& vanish_time );
+    ParticleParam& vanishTimeRange( const float& vanish_time_range );
     ParticleParam& effectTime( const float& effect_time );
     ParticleParam& speed( const float& speed );
     ParticleParam& isLighting( const bool& is_lighting );
     ParticleParam& isTrajectory( const bool& is_trajectory );
+    ParticleParam& gravity( const float& gravity );
 
 private:
 
@@ -52,10 +53,12 @@ private:
     ci::ColorA mColor;
     int mCount;
     float mVanishTime;
+    float mVanishTimeRange;
     float mEffectTime;
     float mSpeed;
     bool mIsLighting;
     bool mIsTrajectory;
+    float mGravity;
 
 };
 
@@ -63,30 +66,22 @@ class cParticle
 {
 public:
 
-    cParticle( const ci::vec3& vec,
-               const ci::vec3& position,
-               const float& scale,
+    cParticle( const ci::vec3& position,
+               const ci::vec3& vec,
                const float& time );
     ~cParticle();
 
-    void update( const float& delta_time );
+    void update( const float& delta_time, const float& gravity );
     void draw( const glm::quat& rotation, const ci::ColorA& color );
     bool isActive();
 
 public:
 
-    void trajectoryUpdate( const bool& is_trajectory );
-
-public:
-
     ci::vec3 mPosition;
+    ci::vec3 mPrevPosition;
     ci::vec3 mVec;
     float mTime;
-    std::deque<ci::vec3> mLinePositions;
-    int mLineCount;
-    int mLineLengthCount;
-    ci::vec3 mOneLineVec;
-
+    int mTrajectoryCount;
 };
 
 class cParticleHolder
@@ -113,8 +108,8 @@ public:
 private:
 
     void sort();
-    void create( const ci::vec3& position,
-                 const float& time );
+    void create( const ci::vec3& position, const float& time );
+    void trajectoryCreate( const ci::vec3& position, const float& vanish_time,const float& delta_time );
     void particleDraw( const glm::quat& rotation );
     void setTexture( const ParticleTextureType& texture_type );
     void setLight( bool is_lighting );
@@ -125,6 +120,7 @@ public:
     std::string mTextureName;
     Utility::softptr<Game::Light::cPointLightParam> mHandle;
     std::vector<std::shared_ptr<cParticle>> mParticles;
+    std::deque<std::shared_ptr<cParticle>> mTrajectoryParticles;
 
 };
 
