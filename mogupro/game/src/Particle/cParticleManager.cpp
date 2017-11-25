@@ -66,7 +66,8 @@ ParticleParam::ParticleParam() :
     mSpeed( 0.2f ),
     mIsLighting( false ),
     mIsTrajectory( false ),
-    mGravity( 0 )
+    mGravity( 0 ),
+    mIsCube( false )
 {
 }
 ParticleParam & ParticleParam::position( const ci::vec3 & position )
@@ -134,6 +135,11 @@ ParticleParam & ParticleParam::gravity( const float & gravity )
     mGravity = gravity;
     return *this;
 }
+ParticleParam & ParticleParam::isCube( const bool & is_cube )
+{
+    mIsCube = is_cube;
+    return *this;
+}
 
 cParticle::cParticle( const ci::vec3& position,
                       const ci::vec3& vec,
@@ -163,7 +169,6 @@ void cParticle::draw( const glm::quat& rotation, const ci::ColorA& color )
 {
     Rectf rect( vec2( -0.5, -0.5 ), vec2( 0.5, 0.5 ) );
 
-
     gl::ScopedColor scoped_color( color.r, color.g, color.b, glm::clamp( mTime, 0.0f, 1.0f ) );
 
     gl::pushModelView();
@@ -173,6 +178,18 @@ void cParticle::draw( const glm::quat& rotation, const ci::ColorA& color )
     gl::multModelMatrix( mat );
 
     gl::drawSolidRect( rect );
+
+    gl::popModelView();
+}
+
+void cParticle::cubeDraw( const ci::ColorA& color )
+{
+    gl::ScopedColor scoped_color( color.r, color.g, color.b, glm::clamp( mTime, 0.0f, 1.0f ) );
+
+    gl::pushModelView();
+    gl::translate( mPosition );
+
+    gl::drawCube( vec3( 0.0f ), vec3( 1.0f ) );
 
     gl::popModelView();
 }
@@ -344,10 +361,18 @@ void cParticleHolder::particleDraw( const glm::quat& rotation )
 {
     gl::translate( mParam.mPosition );
     gl::scale( vec3( mParam.mScale ) );
+
     for ( const auto& it : mParticles )
-        it->draw( rotation, mParam.mColor );
+        if ( mParam.mIsCube == false )
+            it->draw( rotation, mParam.mColor );
+        else
+            it->cubeDraw( mParam.mColor );
+
     for ( const auto& it : mTrajectoryParticles )
-        it->draw( rotation, mParam.mColor );
+        if ( mParam.mIsCube == false )
+            it->draw( rotation, mParam.mColor );
+        else
+            it->cubeDraw( mParam.mColor );
 }
 
 void cParticleHolder::setTexture( const ParticleTextureType & texture_type )

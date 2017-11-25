@@ -43,6 +43,8 @@ public:
     ParticleParam& isLighting( const bool& is_lighting );
     ParticleParam& isTrajectory( const bool& is_trajectory );
     ParticleParam& gravity( const float& gravity );
+    ParticleParam& isCube( const bool& is_cube );
+
 
 private:
 
@@ -59,6 +61,7 @@ private:
     bool mIsLighting;
     bool mIsTrajectory;
     float mGravity;
+    bool mIsCube;
 
 };
 
@@ -73,6 +76,7 @@ public:
 
     void update( const float& delta_time, const float& gravity );
     void draw( const glm::quat& rotation, const ci::ColorA& color );
+    void cubeDraw( const ci::ColorA& color );
     bool isActive();
 
 public:
@@ -109,7 +113,7 @@ private:
 
     void sort();
     void create( const ci::vec3& position, const float& time );
-    void trajectoryCreate( const ci::vec3& position, const float& vanish_time,const float& delta_time );
+    void trajectoryCreate( const ci::vec3& position, const float& vanish_time, const float& delta_time );
     void particleDraw( const glm::quat& rotation );
     void setTexture( const ParticleTextureType& texture_type );
     void setLight( bool is_lighting );
