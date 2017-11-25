@@ -32,15 +32,17 @@ namespace Weapons
 			rb.removeWorld();
 			cLightManager::getInstance()->removePointLight(light);
 
-			for (int i = 0; i < mAroundLights.size(); i++) {
+		/*	for (int i = 0; i < mAroundLights.size(); i++) {
 				cLightManager::getInstance()->removePointLight(mAroundLights[i]);
+			}*/
+			for (int i = 0; i < mAroundLineLight.size(); i++) {
+				cLightManager::getInstance()->removeLineLight(mAroundLineLight[i]);
 			}
-
 		}
 
 		void cLightBomb::dmageToPlayer(const int playerid)
 		{
-			//cPlayerManager::getInstance()->getPlayers()[playerid]
+			cPlayerManager::getInstance()->getPlayers()[playerid]->receiveDamage(100.f);
 		}
 
 		void cLightBomb::hitObject()
@@ -60,15 +62,29 @@ namespace Weapons
 
 			if (mIsHitObject) {
 				lightsinrotate += mLandcount;
-				for (int i = 0; i < mAroundLights.size(); i++) {
-					mAroundLights[i]->reAttachPosition(mAroundLights[i], mPos + ci::vec3(mAroundLightLength*cos(mAroundLightAngle[i]),
-						0, mAroundLightLength*sin(mAroundLightAngle[i])));
+
+				//for (int i = 0; i < mAroundLights.size(); i++) {
+				//	mAroundLights[i]->reAttachPosition(mAroundLights[i], mPos + ci::vec3(mAroundLightLength*cos(mAroundLightAngle[i]),
+				//		0, mAroundLightLength*sin(mAroundLightAngle[i])));
+
+				//	mAroundLightColorH[i] += delta_time;
+				//	float h = std::fmodf(mAroundLightColorH[i], 1.0f);
+				//	ci::Colorf hsv = ci::hsvToRgb(ci::vec3(h, 1.0f, 1.0f));
+				//	mAroundLights[i]->color = ci::vec3(hsv.r, hsv.g, hsv.b);
+				//	//mAroundLightAngle[i] += mLandcount/10.f;
+				//}
+
+				for (int i = 0; i < mAroundLineLight.size(); i++) {
+					mAroundLineLight[i]->reAttachLine(mAroundLineLight[i], mPos + ci::vec3(mAroundLightLength*cos(mAroundLightAngle[i]),
+						-0.1f, mAroundLightLength*sin(mAroundLightAngle[i])),
+						mPos + ci::vec3(mAroundLightLength*cos(mAroundLightAngle[i]+2.f*M_PI / 3.f),
+							-0.1f, mAroundLightLength*sin(mAroundLightAngle[i] + 2.f*M_PI / 3.f)));
 
 					mAroundLightColorH[i] += delta_time;
 					float h = std::fmodf(mAroundLightColorH[i], 1.0f);
 					ci::Colorf hsv = ci::hsvToRgb(ci::vec3(h, 1.0f, 1.0f));
-					mAroundLights[i]->color = ci::vec3(hsv.r, hsv.g, hsv.b);
-					//mAroundLightAngle[i] += mLandcount/10.f;
+					mAroundLineLight[i]->color = ci::vec3(hsv.r, hsv.g, hsv.b);
+					mAroundLightAngle[i] += mLandcount/10.f;
 				}
 			}
 			else {
@@ -79,16 +95,29 @@ namespace Weapons
 		{
 			const float createnum = 20.f;
 
-			for (float i = 0.0f; i < createnum; i++) {
+		/*	for (float i = 0.0f; i < createnum; i++) {
 				float angle = (i / createnum)*2.f*M_PI;
-				mAroundLightAngle.push_back(angle);
-				mAroundLightColorH.push_back(i / createnum);
+				mAroundLightAngle.emplace_back(angle);
+				mAroundLightColorH.emplace_back(i / createnum);
 				ci::vec3 pos = mPos + ci::vec3(mAroundLightLength*cos(angle), 0, mAroundLightLength*sin(angle));
 				float h = (i / createnum);
 				ci::Colorf hsv = ci::hsvToRgb(ci::vec3(h, 1.0f, 1.f));
 
-				mAroundLights.push_back(cLightManager::getInstance()->addPointLight(pos, ci::vec3(hsv.r, hsv.g, hsv.b), 0.5f));
+				mAroundLights.emplace_back(cLightManager::getInstance()->addPointLight(pos, ci::vec3(hsv.r, hsv.g, hsv.b), 0.5f));
+			}*/
+
+			for (float i = 0; i < 3; i++) {
+				float angle = (i / 3.f)*2.f*M_PI;
+				mAroundLightAngle.emplace_back(angle);
+				mAroundLightColorH.emplace_back(i / 3.f);
+				ci::vec3 beginpos = mPos + ci::vec3(mAroundLightLength*cos(angle), 0, mAroundLightLength*sin(angle));
+				ci::vec3 endpos = mPos + ci::vec3(mAroundLightLength*cos(angle+2.f*M_PI/3.f), 0, mAroundLightLength*sin(angle+2.f*M_PI / 3.f));
+				float h = (i / 3.f);
+				ci::Colorf hsv = ci::hsvToRgb(ci::vec3(h, 1.0f, 1.f));
+				mAroundLineLight.emplace_back(cLightManager::getInstance()->addLineLight(beginpos, endpos,ci::vec3(hsv.r, hsv.g, hsv.b), 1.0f));
 			}
+
+
 		}
 		void cLightBomb::updateScale(const float & delta_time)
 		{
@@ -104,7 +133,15 @@ namespace Weapons
 				collisonToPlayer();
 				Game::cFieldManager::getInstance()->blockBreak(mPos, mExprosionLength/2.f);
 				mIsExprosion = true;
-				//Particle::cParticleManager::getInstance()->create(mPos, Particle::ParticleType::SCATTER, Particle::ParticleTextureType::NONE, 1.0f);
+
+				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
+					.scale(0.5f).
+					vanishTime(1.0f).
+					speed(0.5f).
+					textureType(Particle::ParticleTextureType::SPARK).
+					color(ci::ColorA::white()).
+					moveType(Particle::ParticleType::EXPROTION).count(100).isTrajectory(true));
+
 			}
 		}
 		void cLightBomb::setup()
@@ -113,8 +150,9 @@ namespace Weapons
 			rb.addWorld();
 			rb.setSpeed(mSpeed);
 			rb.setFriction(1.0f);
-			ci::app::console() << "‚¤‚Ü‚ê‚½" << std::endl;
+			
 			light = cLightManager::getInstance()->addPointLight(mPos, ci::vec3(0, 1, 0), 1.f);
+
 			mExprosionLength = 8.f*mScale.x;
 			mAroundLightLength = (mExprosionLength / 2.f) - 0.5f;
 		
@@ -136,7 +174,7 @@ namespace Weapons
 		}
 		void cLightBomb::draw()
 		{
-			STRM->drawShere(mPos, mDrawscale, ci::vec3(0, 0, 0), ci::ColorA(light->color.r, light->color.g, light->color.b), 20);
+			STRM->drawShere(mPos, mDrawscale, ci::vec3(0, 0, 0), ci::ColorA(light->color.r, light->color.g, light->color.b), 100);
 		}
 		bool cLightBomb::deleteThis()
 		{
@@ -145,9 +183,9 @@ namespace Weapons
 		void cLightBomb::collisonToPlayer()
 		{
 			for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size(); i++) {
-				//if (cPlayerManager::getInstance()->getPlayers()[i]->getWhichTeam() == mTeamNum)continue;
+				if (cPlayerManager::getInstance()->getPlayers()[i]->getWhichTeam() == mTeamNum)continue;
 				if (glm::distance2(cPlayerManager::getInstance()->getPlayers()[i]->getPos(), mPos) < mExprosionLength) {
-					//dmageToPlayer(i);
+					dmageToPlayer(i);
 					ci::app::console() << "‚ ‚Á‚½‚Á‚½" << std::endl;
 				}
 

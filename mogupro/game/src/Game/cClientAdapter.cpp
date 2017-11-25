@@ -20,7 +20,7 @@ cClientAdapter::~cClientAdapter( )
 }
 void cClientAdapter::update( )
 {
-    // ブロックだけは個々のタイミングで送信します。
+    // ブロックだけはまとめてで送信します。
     sendBreakBlocks( );
 
     // サーバーから受信したものがあった場合は取り出して、
@@ -29,6 +29,7 @@ void cClientAdapter::update( )
     recvAllQuarrys( );
     recvAllGems( );
     recvAllBreakBlocks( );
+	recvAllBombs( );
 }
 void cClientAdapter::recvAllPlayers( )
 {
@@ -38,7 +39,7 @@ void cClientAdapter::recvAllPlayers( )
         auto players = Game::cPlayerManager::getInstance( )->getPlayers( );
         for ( auto& o : packet->mPlayerFormats )
         {
-            //players[o.playerId]->setPos( o.position );
+            players[o.playerId]->setPos( o.position );
         }
     }
 }
@@ -80,10 +81,7 @@ void cClientAdapter::recvAllGems( )
     }
     while ( auto packet = eve->getEveGetJemPlayer( ) )
     {
-        //Game::cPlayerManager::getInstance( )->mineGem(
-        //    packet->mPlayerId,
-        //    packet->mGemId
-        //);
+		// TODO: プレイヤーが宝石を取得する。
     }
     auto res = ::Network::cResponseManager::getInstance( );
     while ( auto packet = res->getResCheckGetJemQuarry( ) )
@@ -97,10 +95,7 @@ void cClientAdapter::recvAllGems( )
     while ( auto packet = res->getResCheckGetJemPlayer( ) )
     {
         if ( !packet->mIsSuccessed ) continue;
-        //Game::cPlayerManager::getInstance( )->mineGem(
-        //    packet->mPlayerId,
-        //    packet->mGemId
-        //);
+		// TODO: プレイヤーが宝石を取得する。
     }
 }
 void cClientAdapter::recvAllBreakBlocks( )
@@ -115,6 +110,14 @@ void cClientAdapter::recvAllBreakBlocks( )
             );
         }
     }
+}
+void cClientAdapter::recvAllBombs( )
+{
+	auto eve = ::Network::cEventManager::getInstance( );
+	while ( auto packet = eve->getEveLightBomb( ) )
+	{
+		// TODO: ボムを実際に投げる。
+	}
 }
 void cClientAdapter::sendBreakBlock( cinder::vec3 const & position, float radius, Network::ubyte1 type )
 {
@@ -135,7 +138,7 @@ void cClientAdapter::sendPlayer( cinder::vec3 const & position, cinder::quat con
     packet->mFormat.playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
     packet->mFormat.position = position;
     packet->mFormat.rotation = rotation;
-    //Network::cUDPClientManager::getInstance( )->send( packet );
+    Network::cUDPClientManager::getInstance( )->send( packet );
 }
 void cClientAdapter::sendGetGemPlayer( Network::ubyte2 gemId )
 {
@@ -150,6 +153,14 @@ void cClientAdapter::sendGetGemQuarry( Network::ubyte2 drillId, Network::ubyte2 
     packet->mDrillId = drillId;
     packet->mGemId = gemId;
     Network::cUDPClientManager::getInstance( )->send( packet );
+}
+void cClientAdapter::sendLightBomb( cinder::vec3 const & position, cinder::vec3 const & speed )
+{
+	auto packet = new Network::Packet::Request::cReqCheckLightBomb( );
+	packet->playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
+	packet->position = position;
+	packet->speed = speed;
+	Network::cUDPClientManager::getInstance( )->send( packet );
 }
 void cClientAdapter::sendBreakBlocks( )
 {

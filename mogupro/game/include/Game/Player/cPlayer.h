@@ -67,7 +67,8 @@ namespace Game {
 			bool drilling;
 			//ジャンプ中はtrue
 			bool jump_flag;
-
+			//スタン時（動けない状態）
+			bool stan;
 			//クォータニオンの例外用の角度
 			float save_rotate_y;
 			float save_rotate_x;
@@ -132,6 +133,9 @@ namespace Game {
 				if(active_user) return;
 				mCollider.setPosition(pos);
 			}
+			bool getStan() {
+				return stan;
+			}
 
 			void resetPos() {
 				mCollider.setPosition(ci::vec3(0,70,0));
@@ -160,6 +164,9 @@ namespace Game {
 			}
 			float getDrillSpeed() {
 				return status.drill_speed;
+			}
+			void setStan(const bool& stan) {
+				this->stan = stan;
 			}
 			void setSpeed(const float& speed) {
 				status.speed = speed;

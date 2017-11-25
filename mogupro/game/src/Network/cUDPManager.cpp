@@ -147,6 +147,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
+        case Network::Packet::PacketId::EVE_LIGHT_BOMB:
+        {
+            if ( cEventManager::getInstance( )->isNewEveLightBomb( packetHeader ) )
+			{
+                Packet::Event::cEveLightBomb data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cEventManager::getInstance( )->ungetEveLightBomb( std::move( data ) );
+            }
+            break;
+        }
         case Network::Packet::PacketId::EVE_TEAM_MEMBER:
         {
             if ( cEventManager::getInstance( )->isNewEveTeamMember( packetHeader ) )
@@ -294,6 +304,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
                 Packet::Request::cReqCheckPlayerDeath data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
                 cRequestManager::getInstance( )->ungetReqCheckPlayerDeath( std::move( data ) );
+            }
+            break;
+        }
+        case Network::Packet::PacketId::REQ_CHECK_LIGHT_BOMB:
+        {
+            if ( cRequestManager::getInstance( )->isNewReqCheckLightBomb( packetHeader ) )
+			{
+                Packet::Request::cReqCheckLightBomb data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cRequestManager::getInstance( )->ungetReqCheckLightBomb( std::move( data ) );
             }
             break;
         }

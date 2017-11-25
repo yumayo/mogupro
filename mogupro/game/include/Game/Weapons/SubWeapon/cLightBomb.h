@@ -34,6 +34,7 @@ namespace Game
 				Utility::softptr<Game::Light::cPointLightParam>light;
 				std::vector<Utility::softptr<Game::Light::cPointLightParam>>mAroundLights;
 				float lightsinrotate = 0.0f;
+				std::vector<Utility::softptr<Game::Light::cLineLightParam>>mAroundLineLight;
 				std::vector<float>mAroundLightAngle;
 				std::vector<float>mAroundLightColorH;
 				float mAroundLightLength;

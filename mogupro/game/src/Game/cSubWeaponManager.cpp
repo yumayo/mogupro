@@ -1,6 +1,7 @@
 #include <Game/cSubWeaponManager.h>
 #include <Game/Weapons/SubWeapon/cLightBomb.h>
 #include <Game/Weapons/UseSubWeapon/cUseLightBomb.h>
+#include <Game/Weapons/UseSubWeapon/cUseQuarry.h>
 namespace Game
 {
 cSubWeaponManager::cSubWeaponManager( )
@@ -63,6 +64,10 @@ void cSubWeaponManager::createUseSubWeapon(const Game::Weapons::SubWeapon::SubWe
 	{
 	case Game::Weapons::SubWeapon::SubWeaponType::LIGHT_BOMB:
 		usesubweapons.push_back(std::make_shared<Game::Weapons::UseSubWeapon::cUseLightBomb>());
+		usesubweapons.back()->setup(playerid);
+		return;
+	case Game::Weapons::SubWeapon::SubWeaponType::QUARRY:
+		usesubweapons.push_back(std::make_shared<Game::Weapons::UseSubWeapon::cUseQuarry>());
 		usesubweapons.back()->setup(playerid);
 		return;
 	default:
