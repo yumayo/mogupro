@@ -48,9 +48,10 @@ void cBlock::toBreak()
                 .color( ColorA8u( 95, 66, 41, 255 ) )
                 .vanishTime( 0.5f )
                 .effectTime( 0 )
-                .speed( 0.7f )
+                .speed( 1.0f )
+                .addVec( vec3( 0, 3.0f, 0 ) )
                 .count( 1 )
-                .gravity( 0.1f )
+                .gravity( 0.5f )
                 .isTrajectory( false )
                 .isCube( true ) );
     mCollider.removeWorld();

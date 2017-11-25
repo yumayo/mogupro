@@ -59,11 +59,12 @@ ParticleParam::ParticleParam() :
     mMoveType( ParticleType::EXPROTION ),
     mTextureType( ParticleTextureType::NONE ),
     mColor( ci::ColorA::white() ),
-    mCount( 10 ),
+    mCount( 1 ),
     mVanishTime( 2.0f ),
     mVanishTimeRange( 1.0f ),
     mEffectTime( 5.0f ),
     mSpeed( 0.2f ),
+    mAddVec( ci::vec3( 0 ) ),
     mIsLighting( false ),
     mIsTrajectory( false ),
     mGravity( 0 ),
@@ -118,6 +119,11 @@ ParticleParam & ParticleParam::effectTime( const float & effect_time )
 ParticleParam & ParticleParam::speed( const float & speed )
 {
     mSpeed = speed;
+    return *this;
+}
+ParticleParam & ParticleParam::addVec( const ci::vec3 & add_vec )
+{
+    mAddVec = add_vec;
     return *this;
 }
 ParticleParam & ParticleParam::isLighting( const bool & is_lighting )
@@ -255,7 +261,10 @@ void cParticleHolder::update( const float& delta_time )
 {
     if ( mParam.mEffectTime >= 0 )
         if ( mParam.mMoveType != ParticleType::EXPROTION )
-            create( vec3( 0 ), mParam.mVanishTime );
+        {
+            for ( int i = 0; i < mParam.mCount; i++ )
+                create( vec3( 0 ), mParam.mVanishTime );
+        }
 
 
     for ( auto& it = mParticles.begin(); it != mParticles.end(); )
@@ -322,7 +331,7 @@ void cParticleHolder::create( const ci::vec3& position,
     vec3 rand_vec = vec3( rv(), rv(), rv() );
     rand_vec = glm::normalize( rand_vec );
     rand_vec *= mParam.mSpeed;
-
+    rand_vec += mParam.mAddVec;
     Utility::RandomFloat rt( time, time + mParam.mVanishTimeRange );
     mParticles.emplace_back( std::make_shared<cParticle>( position, rand_vec, rt() ) );
 }

@@ -28,21 +28,38 @@ class ParticleParam
 public:
     friend class cParticleHolder;
 
+    // デフォルトの設定
     ParticleParam();
 
+    // 生成の中心位置
     ParticleParam& position( const ci::vec3& position );
+    // パーティクルのスケール
     ParticleParam& scale( const float& scale );
+    // パーティクルの移動の仕方
     ParticleParam& moveType( const ParticleType& move_type );
+    // パーティクルの画像の種類
     ParticleParam& textureType( const ParticleTextureType& texture_type );
+    // 色
     ParticleParam& color( const ci::ColorA& color );
+    // 一フレームでパーティクルが生成される数
     ParticleParam& count( const int& count );
+    // 消滅時間
     ParticleParam& vanishTime( const float& vanish_time );
+    // 消滅時間のランダムの範囲
     ParticleParam& vanishTimeRange( const float& vanish_time_range );
+    // 生成時間
     ParticleParam& effectTime( const float& effect_time );
+    // パーティクルの移動速度
     ParticleParam& speed( const float& speed );
+    // ベクトルの追加量 ( ベクトルに偏りを持たせる )
+    ParticleParam& addVec( const ci::vec3& add_vec );
+    // 生成の中心位置にライトを生成するかどうか
     ParticleParam& isLighting( const bool& is_lighting );
+    // パーティクルの軌跡を生成するかどうか
     ParticleParam& isTrajectory( const bool& is_trajectory );
+    // 重力の強さ ( vec.y - gravity )
     ParticleParam& gravity( const float& gravity );
+    // パーティクルをCubeにするかどうか
     ParticleParam& isCube( const bool& is_cube );
 
 
@@ -58,6 +75,7 @@ private:
     float mVanishTimeRange;
     float mEffectTime;
     float mSpeed;
+    ci::vec3 mAddVec;
     bool mIsLighting;
     bool mIsTrajectory;
     float mGravity;
@@ -125,6 +143,9 @@ public:
     Utility::softptr<Game::Light::cPointLightParam> mHandle;
     std::vector<std::shared_ptr<cParticle>> mParticles;
     std::deque<std::shared_ptr<cParticle>> mTrajectoryParticles;
+
+    ci::TriMeshRef mMesh;
+    ci::gl::VboMeshRef mVbo;
 
 };
 
