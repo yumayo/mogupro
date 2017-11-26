@@ -23,6 +23,7 @@ public:
 };
 void gameApp::setup( )
 {
+	ENV->setup( );
     cSceneManager::getInstance( )->shift<Scene::Member::cBegin>( );
 }
 void gameApp::mouseDown( cinder::app::MouseEvent event )
@@ -55,6 +56,8 @@ void gameApp::update( )
     float delta = elapsedSeconds - prevSeconds;
     prevSeconds = elapsedSeconds;
 
+	ENV->update( delta );
+
     cSceneManager::getInstance( )->now( ).update( delta );
 	CAMERA->update( delta );
 }
@@ -74,6 +77,7 @@ void gameApp::draw( )
 }
 void gameApp::cleanup()
 {
+	ENV->cleanup( );
     cSceneManager::getInstance()->now().shutDown();
 }
 CINDER_APP( gameApp, cinder::app::RendererGl, [ ] ( cinder::app::App::AppBase::Settings* s ) { s->setWindowSize( 1600, 900 ); } )

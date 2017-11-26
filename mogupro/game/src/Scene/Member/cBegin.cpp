@@ -12,13 +12,13 @@ void cBegin::setup( )
 {
 	Resource::cObjectManager::getInstance( );
 	Resource::cSoundManager::getInstance( );
-	cSceneManager::getInstance( )->shift<cTitle>( );
 }
 void cBegin::shutDown( )
 {
 }
 void cBegin::update( float t )
 {
+	cSceneManager::getInstance( )->shift<cTitle>( );
 }
 void cBegin::draw( )
 {
