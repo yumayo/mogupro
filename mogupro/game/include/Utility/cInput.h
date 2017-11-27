@@ -4,6 +4,7 @@
 #include <set>
 #include <Utility/cSingletonAble.h>
 #include <Node/node.h>
+#include <Utility/Schedule.h>
 #define ENV Utility::cInputAll::getInstance()
 class gameApp;
 namespace Utility
@@ -33,29 +34,29 @@ public:
 		BUTTON_12 = 11,
 	};
 public:
-    cInputAll();
+	cInputAll( );
 	void setMouseControl( const bool& flag );
-	inline void disableKeyButton( ) { mKeyButton = false; }
-	inline void enableKeyButton( ) { mKeyButton = true; }
-	inline void disablePadButton( ) { mPadButton = false; }
-	inline void enablePadButton( ) { mPadButton = true; }
-	inline void disablePadAxis( ) { mPadAxis = false; }
-	inline void enablePadAxis( ) { mPadAxis = true; }
+	void disableKeyWithMouseButton( );
+	void enableKeyWithMouseButton( );
+	void disablePadButton( );
+	void enablePadButton( );
+	void disablePadAxis( );
+	void enablePadAxis( );
 	ci::vec2 getMouseVec( );
 	ci::vec2 getMousePos( );
-    bool pressKey( const int& pressed_key );
-    bool pushKey( const int& pressed_key );
-    bool pullKey( const int& pressed_key );
+	bool pressKey( const int& pressed_key );
+	bool pushKey( const int& pressed_key );
+	bool pullKey( const int& pressed_key );
 	bool anyKey( );
 	float getPadAxis( const int& pad_num );
 	bool isPadPush( const int& num );
 	bool isPadPress( const int& num );
 	bool isPadPull( const int& num );
-    void flashInput();
+	void flashInput( );
 private:
 	friend class gameApp;
 	void setup( );
-	void update( float delta );
+	void preUpdate( float delta );
 	void cleanup( );
 	void keyDown( const ci::app::KeyEvent& event );
 	void keyUp( const ci::app::KeyEvent& event );
@@ -68,16 +69,99 @@ private:
 	void padDown( const int& num );
 	void padUp( const int& num );
 private:
-	bool mKeyButton = true;
-	bool mPadButton = true;
-	bool mPadAxis = true;
+	class State
+	{
+	private:
+		struct
+		{
+			std::set<int> press;
+			std::set<int> push;
+			std::set<int> pull;
+		}front, back;
+		// 1 enable 2 disable;
+		int button;
+	public:
+		void enable( )
+		{
+			button = 1;
+			back = front;
+		}
+		void disable( )
+		{
+			button = 2;
+			back = front;
+		}
+		void preUpdate( )
+		{
+			switch ( button )
+			{
+			case 1:// enable
+			{
+				front = back;
+				front.pull.clear( );
+				for ( auto& code : front.press )
+				{
+					front.push.insert( code );
+				}
+			}
+				break;
+			case 2:// disable
+			{
+				front = back;
+				front.push.clear( );
+				for ( auto& code : front.press )
+				{
+					front.pull.insert( code );
+				}
+				front.press.clear( );
+			}
+				break;
+			default:
+				break;
+			}
+			button = 0;
+		}
+		bool push( int value )
+		{
+			return front.push.find( value ) != front.push.end( );
+		}
+		bool press( int value )
+		{
+			return front.press.find( value ) != front.press.end( );
+		}
+		bool pull( int value )
+		{
+			return front.pull.find( value ) != front.pull.end( );
+		}
+		bool any( )
+		{
+			return !front.press.empty( );
+		}
+		void down( int value )
+		{
+			if ( !press( value ) )
+			{
+				front.push.insert( value );
+			}
+			front.press.insert( value );
+		}
+		void up( int value )
+		{
+			front.press.erase( value );
+			front.pull.insert( value );
+		}
+		void flush( )
+		{
+			front.push.clear( );
+			front.pull.clear( );
+		}
+	};
+
+	State keyWithMouseState;
 
 	//キーボード
 	std::unordered_map<std::string, int> serch;
 	std::unordered_map<int, int> keys;
-	std::set<int> press;
-	std::set<int> push;
-	std::set<int> pull;
 
 	//マウス
 	ci::vec2 inc_pos;
@@ -86,16 +170,15 @@ private:
 	bool mouse_active;
 
 	//ゲームパッド
-	std::set<int> padpush;
-	std::set<int> padpress;
-	std::set<int> padpull;
+	State padState;
 	std::map<int, float> pad_stick_axis_value;
+	bool usePadAxis = true;
 
 	//前のフレームと今のフレームのマウスのベクトル
 	ci::vec2 mouse_vec;
 	//マウスの位置
 	ci::vec2 mouse_pos;
 
-	hardptr<Node::node> mPadScheduler;
+	Utility::ScheduleHandle handle;
 };
 }

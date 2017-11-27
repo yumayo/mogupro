@@ -27,6 +27,7 @@
 #include<Game/cSubWeaponManager.h>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time.hpp>
+#include <Game/cGameManager.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -81,14 +82,17 @@ void cGameMain::setup( )
 						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Y,
 						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Z),Game::Field::BLOCK_SIZE,0.5,100,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
-    //Network::cUDPClientManager::getInstance( )->open( );
-    //Network::cUDPServerManager::getInstance( )->open( );
-    //Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
 	Game::cLightManager::getInstance( )->setup( );
 	Game::cShaderManager::getInstance( )->setup( );
 	Game::cCapsuleManager::getInstance()->setup();
 	Game::cSubWeaponManager::getInstance()->setup();
 	Game::cUIManager::getInstance( )->setup( );
+
+	auto now = boost::posix_time::microsec_clock::local_time( );
+	auto ready = now + boost::posix_time::seconds( 3 );
+	auto battle = ready + boost::posix_time::seconds( 3 );
+	auto result = ready + boost::posix_time::minutes( 10 );
+	Game::cGameManager::getInstance( )->setup( ready, battle, result );
 
 	sendEndSetup = false;
 	endTimer = false;
@@ -132,7 +136,8 @@ void cGameMain::update( float deltaTime )
 			}
 		}
 		
-
+		// 他のアップデートよりも先に行います。
+		Game::cGameManager::getInstance( )->preUpdate( deltaTime );
 
 		Game::cDebugManager::getInstance( )->update( deltaTime );
         Game::cClientAdapter::getInstance( )->update( );
@@ -150,6 +155,7 @@ void cGameMain::update( float deltaTime )
 		Game::cLightManager::getInstance( )->update( );
         Game::cShaderManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
         Particle::cParticleManager::getInstance()->update( deltaTime );
+		Game::cGameManager::getInstance( )->update( deltaTime );
     }
 }
 

@@ -25,6 +25,30 @@ void cInputAll::setMouseControl( const bool & flag )
 {
 	mouse_active = flag;
 }
+void cInputAll::disableKeyWithMouseButton( )
+{
+	keyWithMouseState.disable( );
+}
+void cInputAll::enableKeyWithMouseButton( )
+{
+	keyWithMouseState.enable( );
+}
+void cInputAll::disablePadButton( )
+{
+	padState.disable( );
+}
+void cInputAll::enablePadButton( )
+{
+	padState.enable( );
+}
+void cInputAll::disablePadAxis( )
+{
+	usePadAxis = false;
+}
+void cInputAll::enablePadAxis( )
+{
+	usePadAxis = true;
+}
 ci::vec2 cInputAll::getMouseVec( )
 {
 	return mouse_vec;
@@ -35,45 +59,38 @@ ci::vec2 cInputAll::getMousePos( )
 }
 bool cInputAll::pressKey( const int& pressed_key )
 {
-	if ( !mKeyButton ) return false;
-	return press.find( pressed_key ) != press.end( );
+	return keyWithMouseState.press( pressed_key );
 }
 bool cInputAll::pushKey( const int & pressed_key )
 {
-	if ( !mKeyButton ) return false;
-	return push.find( pressed_key ) != push.end( );
+	return keyWithMouseState.push( pressed_key );
 }
 bool cInputAll::pullKey( const int & pressed_key )
 {
-	if ( !mKeyButton ) return false;
-	return pull.find( pressed_key ) != pull.end( );
+	return keyWithMouseState.pull( pressed_key );
 }
 bool cInputAll::anyKey( )
 {
-	if ( !mKeyButton ) return false;
-	return !press.empty( );
+	return keyWithMouseState.any( );
 }
 bool cInputAll::isPadPush( const int & num )
 {
-	if ( !mPadButton ) return false;
-	return padpush.find( num ) != padpush.end( );
+	return padState.push( num );
 }
 bool cInputAll::isPadPress( const int & num )
 {
-	if ( !mPadButton ) return false;
-	return padpress.find( num ) != padpress.end( );
+	return padState.press( num );
 }
 bool cInputAll::isPadPull( const int & num )
 {
-	if ( !mPadButton ) return false;
-	return padpull.find( num ) != padpull.end( );
+	return padState.pull( num );
 }
 //０で左スティックの左右（ｘ）
 //１で左スティックの上下（ｙ）※注意　上下が逆
 //２、３が右スティック
 float cInputAll::getPadAxis( const int & pad_num )
 {
-	if ( !mPadAxis ) return 0.0F;
+	if ( !usePadAxis ) return 0.0F;
 	if ( pad_stick_axis_value.find( pad_num ) == pad_stick_axis_value.cend( ) )
 		return 0.0f;
 
@@ -85,10 +102,8 @@ float cInputAll::getPadAxis( const int & pad_num )
 }
 void cInputAll::flashInput( )
 {
-	push.clear( );
-	pull.clear( );
-	padpush.clear( );
-	padpull.clear( );
+	keyWithMouseState.flush( );
+	padState.flush( );
 }
 #pragma endregion
 #pragma region プライベート関数群
@@ -129,34 +144,28 @@ void cInputAll::setup( )
 	pad_stick_axis_value.insert( std::make_pair( CROSS_VERTICAL, 0.0f ) );
 
 	// ゲームパッドの抜き差し状況の更新をします。
-	using namespace Node::Action;
-	mPadScheduler = Node::node::create( );
-	mPadScheduler->set_schedule_update( );
-	mPadScheduler->run_action( repeat_forever::create( sequence::create( delay::create( 1.0F ), call_func::create( [ this ]
+	handle = Utility::schedule( 1.0F, [ this ]
 	{
 		Gamepad_detectDevices( );
-	} ) ) ) );
+	} );
 }
-void cInputAll::update( float delta )
+void cInputAll::preUpdate( float delta )
 {
-	mPadScheduler->entry_update( delta );
+	keyWithMouseState.preUpdate( );
+	padState.preUpdate( );
+	Gamepad_processEvents( );
 }
 void cInputAll::cleanup( )
 {
-	Gamepad_processEvents( );
+	Gamepad_shutdown( );
 }
 void cInputAll::keyDown( const ci::app::KeyEvent& event )
 {
-	if ( !pressKey( event.getCode( ) ) )
-	{
-		push.insert( event.getCode( ) );
-	}
-	press.insert( event.getCode( ) );
+	keyWithMouseState.down( event.getCode( ) );
 }
 void cInputAll::keyUp( const ci::app::KeyEvent& event )
 {
-	press.erase( event.getCode( ) );
-	pull.insert( event.getCode( ) );
+	keyWithMouseState.up( event.getCode( ) );
 }
 void cInputAll::padAxis( const int & num, const float & value )
 {
@@ -164,16 +173,11 @@ void cInputAll::padAxis( const int & num, const float & value )
 }
 void cInputAll::padDown( const int & num )
 {
-	if ( !pressKey( num ) )
-	{
-		padpush.insert( num );
-	}
-	padpress.insert( num );
+	padState.down( num );
 }
 void cInputAll::padUp( const int & num )
 {
-	padpress.erase( num );
-	padpull.insert( num );
+	padState.up( num );
 }
 void mouseCursolFixed( const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 					   ci::vec2& mouse_vec, bool& cursor_captured, ci::ivec2& last_cursor_pos ) {
@@ -188,7 +192,7 @@ void mouseCursolFixed( const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 
 		if ( delta.x != 0 || delta.y != 0 ) {
 			SetCursorPos( last_cursor_pos.x, last_cursor_pos.y );
-			CAMERA->setCameraAngle( ci::vec2( -delta.x, -delta.y ) * 0.005f );
+			CAMERA->addCameraAngle( ci::vec2( -delta.x, -delta.y ) * 0.005f );
 		}
 	}
 	//１フレーム目は何もしない
@@ -226,36 +230,30 @@ void cInputAll::mouseDown( const ci::app::MouseEvent& event )
 {
 	if ( event.isLeft( ) )
 	{
-		press.insert( ci::app::MouseEvent::LEFT_DOWN );
-		push.insert( ci::app::MouseEvent::LEFT_DOWN );
+		keyWithMouseState.down( ci::app::MouseEvent::LEFT_DOWN );
 	}
 	if ( event.isRight( ) )
 	{
-		press.insert( ci::app::MouseEvent::RIGHT_DOWN );
-		push.insert( ci::app::MouseEvent::RIGHT_DOWN );
+		keyWithMouseState.down( ci::app::MouseEvent::RIGHT_DOWN );
 	}
 	if ( event.isMiddle( ) )
 	{
-		press.insert( ci::app::MouseEvent::MIDDLE_DOWN );
-		push.insert( ci::app::MouseEvent::MIDDLE_DOWN );
+		keyWithMouseState.down( ci::app::MouseEvent::MIDDLE_DOWN );
 	}
 }
 void cInputAll::mouseUp( const ci::app::MouseEvent& event )
 {
 	if ( event.isLeft( ) )
 	{
-		pull.insert( ci::app::MouseEvent::LEFT_DOWN );
-		press.erase( ci::app::MouseEvent::LEFT_DOWN );
+		keyWithMouseState.up( ci::app::MouseEvent::LEFT_DOWN );
 	}
 	if ( event.isRight( ) )
 	{
-		pull.insert( ci::app::MouseEvent::RIGHT_DOWN );
-		press.erase( ci::app::MouseEvent::RIGHT_DOWN );
+		keyWithMouseState.up( ci::app::MouseEvent::RIGHT_DOWN );
 	}
 	if ( event.isMiddle( ) )
 	{
-		pull.insert( ci::app::MouseEvent::MIDDLE_DOWN );
-		press.erase( ci::app::MouseEvent::MIDDLE_DOWN );
+		keyWithMouseState.up( ci::app::MouseEvent::MIDDLE_DOWN );
 	}
 }
 #pragma endregion

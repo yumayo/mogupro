@@ -83,8 +83,10 @@ public:
         return camera;
     }
 
-
-    void setCameraAngle( const ci::vec2& angle ) {
+	// set‚Æadd‚É•ª‚¯‚Ü‚µ‚½B
+	// 11.27ˆÈ‘O‚ÌŠÖ”‚ÍaddCameraAngle‚É‚È‚è‚Ü‚µ‚½B
+	void setCameraAngle( ci::vec2 const& angle );
+    void addCameraAngle( const ci::vec2& angle ) {
         camera_angle += angle;
         camera_angle.y = std::min( float( M_PI / 2 ) - 0.01f,
                                    std::max( camera_angle.y, -float( M_PI / 2 ) + 0.01f ) );
