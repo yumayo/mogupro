@@ -33,6 +33,7 @@ void cServerAdapter::update( )
 	sendGetGemPlayer( );
 	sendGetGemQuarry( );
 	sendBreakBlocks( );
+	sendLightBombs( );
 }
 void cServerAdapter::sendPlayers( )
 {
@@ -152,6 +153,18 @@ void cServerAdapter::sendBreakBlocks( )
 	if ( !breakBlocksPacket->mBreakFormats.empty( ) )
 	{
 		Network::cUDPServerManager::getInstance( )->broadcast( breakBlocksPacket );
+	}
+}
+void cServerAdapter::sendLightBombs( )
+{
+	auto req = Network::cRequestManager::getInstance( );
+	while ( auto packet = req->getReqCheckLightBomb( ) )
+	{
+		auto eventPack = new Network::Packet::Event::cEveLightBomb( );
+		eventPack->playerId = packet->playerId;
+		eventPack->position = packet->position;
+		eventPack->speed = packet->speed;
+		Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
 	}
 }
 }
