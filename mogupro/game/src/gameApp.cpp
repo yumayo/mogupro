@@ -5,6 +5,7 @@
 #include <CameraManager/cCameraManager.h>
 #include <Utility/cInput.h>
 #include <Scene/Member/cBegin.h>
+#include <Utility/cScheduler.h>
 class gameApp : public cinder::app::App
 {
 private:
@@ -60,6 +61,8 @@ void gameApp::update( )
 
     cSceneManager::getInstance( )->now( ).update( delta );
 	CAMERA->update( delta );
+
+	Utility::cScheduler::getInstance( )->update( delta );
 }
 void gameApp::draw( )
 {
