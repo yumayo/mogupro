@@ -33,46 +33,47 @@ ci::vec2 cInputAll::getMousePos( )
 {
 	return mouse_pos;
 }
-bool cInputAll::pressKey( const int& pressed_key ) {
+bool cInputAll::pressKey( const int& pressed_key )
+{
+	if ( !mKeyButton ) return false;
 	return press.find( pressed_key ) != press.end( );
 }
 bool cInputAll::pushKey( const int & pressed_key )
 {
+	if ( !mKeyButton ) return false;
 	return push.find( pressed_key ) != push.end( );
 }
 bool cInputAll::pullKey( const int & pressed_key )
 {
+	if ( !mKeyButton ) return false;
 	return pull.find( pressed_key ) != pull.end( );
 }
 bool cInputAll::anyKey( )
 {
+	if ( !mKeyButton ) return false;
 	return !press.empty( );
 }
 bool cInputAll::isPadPush( const int & num )
 {
-	if ( padpush.find( num ) == padpush.end( ) )
-		return false;
-	padpush.erase( padpush.find( num ) );
-	return true;
+	if ( !mPadButton ) return false;
+	return padpush.find( num ) != padpush.end( );
 }
 bool cInputAll::isPadPress( const int & num )
 {
-	if ( padpress.find( num ) == padpress.end( ) )
-		return false;
-	return true;
+	if ( !mPadButton ) return false;
+	return padpress.find( num ) != padpress.end( );
 }
 bool cInputAll::isPadPull( const int & num )
 {
-	if ( padpull.find( num ) == padpull.end( ) )
-		return false;
-	padpull.erase( padpull.find( num ) );
-	return true;
+	if ( !mPadButton ) return false;
+	return padpull.find( num ) != padpull.end( );
 }
 //０で左スティックの左右（ｘ）
 //１で左スティックの上下（ｙ）※注意　上下が逆
 //２、３が右スティック
 float cInputAll::getPadAxis( const int & pad_num )
 {
+	if ( !mPadAxis ) return 0.0F;
 	if ( pad_stick_axis_value.find( pad_num ) == pad_stick_axis_value.cend( ) )
 		return 0.0f;
 
@@ -105,19 +106,17 @@ void cInputAll::setup( )
 	}, (void *)0x2 );
 	Gamepad_buttonDownFunc( [ ] ( Gamepad_device* device, unsigned int buttonID, double timestamp, void * context )
 	{
-		ENV->setPadPush( buttonID );
-		ENV->setPadPress( buttonID );
+		ENV->padDown( buttonID );
 	}, (void *)0x3 );
 	Gamepad_buttonUpFunc( [ ] ( Gamepad_device* device, unsigned int buttonID, double timestamp, void * context )
 	{
-		ENV->setPadPull( buttonID );
-		ENV->erasePadPress( buttonID );
+		ENV->padUp( buttonID );
 	}, (void *)0x4 );
 	Gamepad_axisMoveFunc( [ ] ( Gamepad_device* device, unsigned int axisID, float value, float lastValue, double timestamp, void * context )
 	{
 		if ( value < 0.3f || value > 0.3f )
 		{
-			ENV->setPadAxis( axisID, value );
+			ENV->padAxis( axisID, value );
 		}
 	}, (void *)0x5 );
 	Gamepad_init( );
@@ -129,7 +128,7 @@ void cInputAll::setup( )
 	pad_stick_axis_value.insert( std::make_pair( CROSS_HORIZONTAL, 0.0f ) );
 	pad_stick_axis_value.insert( std::make_pair( CROSS_VERTICAL, 0.0f ) );
 
-	// ゲームパッドが抜き差し状況の更新をします。
+	// ゲームパッドの抜き差し状況の更新をします。
 	using namespace Node::Action;
 	mPadScheduler = Node::node::create( );
 	mPadScheduler->set_schedule_update( );
@@ -146,29 +145,8 @@ void cInputAll::cleanup( )
 {
 	Gamepad_processEvents( );
 }
-void cInputAll::setPadPush( const int & num )
+void cInputAll::keyDown( const ci::app::KeyEvent& event )
 {
-	if ( padpress.find( num ) == padpress.end( ) )
-		padpush.emplace( num );
-}
-void cInputAll::setPadPress( const int & num )
-{
-	padpress.emplace( num );
-}
-void cInputAll::setPadPull( const int & num )
-{
-	padpull.emplace( num );
-}
-void cInputAll::erasePadPress( const int & num )
-{
-	padpress.erase( padpress.find( num ) );
-}
-
-void cInputAll::setPadAxis( const int & num, const float & value_ )
-{
-	pad_stick_axis_value.find( num )->second = value_;
-}
-void cInputAll::keyDown( const ci::app::KeyEvent& event ) {
 	if ( !pressKey( event.getCode( ) ) )
 	{
 		push.insert( event.getCode( ) );
@@ -178,8 +156,24 @@ void cInputAll::keyDown( const ci::app::KeyEvent& event ) {
 void cInputAll::keyUp( const ci::app::KeyEvent& event )
 {
 	press.erase( event.getCode( ) );
-
 	pull.insert( event.getCode( ) );
+}
+void cInputAll::padAxis( const int & num, const float & value )
+{
+	pad_stick_axis_value.find( num )->second = value;
+}
+void cInputAll::padDown( const int & num )
+{
+	if ( !pressKey( num ) )
+	{
+		padpush.insert( num );
+	}
+	padpress.insert( num );
+}
+void cInputAll::padUp( const int & num )
+{
+	padpress.erase( num );
+	padpull.insert( num );
 }
 void mouseCursolFixed( const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 					   ci::vec2& mouse_vec, bool& cursor_captured, ci::ivec2& last_cursor_pos ) {
