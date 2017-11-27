@@ -35,6 +35,12 @@ public:
 public:
     cInputAll();
 	void setMouseControl( const bool& flag );
+	inline void disableKeyButton( ) { mKeyButton = false; }
+	inline void enableKeyButton( ) { mKeyButton = true; }
+	inline void disablePadButton( ) { mPadButton = false; }
+	inline void enablePadButton( ) { mPadButton = true; }
+	inline void disablePadAxis( ) { mPadAxis = false; }
+	inline void enablePadAxis( ) { mPadAxis = true; }
 	ci::vec2 getMouseVec( );
 	ci::vec2 getMousePos( );
     bool pressKey( const int& pressed_key );
@@ -58,12 +64,14 @@ private:
 	void mouseDown( const ci::app::MouseEvent& event );
 	void mouseUp( const ci::app::MouseEvent& event );
 private:
-	void setPadAxis( const int& num, const float& value_ );
-	void setPadPush( const int& num );
-	void setPadPress( const int& num );
-	void setPadPull( const int& num );
-	void erasePadPress( const int& num );
+	void padAxis( const int& num, const float& value );
+	void padDown( const int& num );
+	void padUp( const int& num );
 private:
+	bool mKeyButton = true;
+	bool mPadButton = true;
+	bool mPadAxis = true;
+
 	//キーボード
 	std::unordered_map<std::string, int> serch;
 	std::unordered_map<int, int> keys;
