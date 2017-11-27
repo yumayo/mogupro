@@ -50,6 +50,12 @@ void cUIManager::setup( )
 	l->set_color( ColorA( 0, 0, 0 ) );
 	l->set_scale( vec2( 1, -1 ) );
 
+	//プレイヤーがダメージを受けた時の画面の周りの光
+	mPlayerScreenEffect = mRoot->add_child(Node::node::create());
+	auto damage_effect = mPlayerScreenEffect->add_child(Node::Renderer::sprite::create("Player/screeneffect.png"));
+	damage_effect->set_scale(vec2(1, -1));
+	damage_effect->set_name("player_screen_effect");
+
 	mLive = mRoot->add_child( Node::node::create( ) );
 	mLive->set_position( mRoot->get_content_size( ) * vec2( 0.0F, 0.5F ) - vec2(0.0F, 64.0F * 0.5F) );
 	int offset = cPlayerManager::getInstance( )->getPlayers( ).size( ) / 2 * -1;
@@ -133,6 +139,11 @@ void cUIManager::update( float delta )
 		mLive->get_child_by_name( "ikiteru" + std::to_string( player->getPlayerId( ) ) )->set_visible( !player->isDead( ) );
 		mLive->get_child_by_name( "yarareta" + std::to_string( player->getPlayerId( ) ) )->set_visible( player->isDead( ) );
 	}
+
+	//プレイヤーがダメージを受けた時の画面の周りの光
+	int player_hp = cPlayerManager::getInstance()->getActivePlayer()->getStatus().hp;
+	mPlayerScreenEffect->get_child_by_name("player_screen_effect")->set_color(ci::ColorA(1, 1, 1, 1 - (player_hp / 100)));
+
 }
 void cUIManager::draw( )
 {
