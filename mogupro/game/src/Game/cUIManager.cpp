@@ -4,6 +4,7 @@
 #include <cinder/gl/gl.h>
 #include <Node/action.hpp>
 #include <Game/cPlayerManager.h>
+#include <Game/cGameManager.h>
 using namespace ci;
 namespace Game
 {
@@ -111,18 +112,8 @@ void cUIManager::update( float delta )
 	mRoot->entry_update( delta );
 
 	{
-		//http://kkayataka.hatenablog.com/entry/2013/05/04/184549
-		//https://stackoverflow.com/questions/22975077/how-to-convert-a-boostptime-to-string
-		std::stringstream stream;
-		boost::posix_time::time_facet* facet = new boost::posix_time::time_facet( );
-		facet->format( "%H:%M" );
-		stream.imbue( std::locale( std::locale::classic( ), facet ) );
-
-		auto now = boost::date_time::second_clock<boost::posix_time::ptime>::local_time( );
-		stream << now;
-
 		auto l = mTime->get_child_by_name( "label" ).dynamicptr<Node::Renderer::label>( );
-		l->set_text( stream.str( ) );
+		l->set_text( cGameManager::getInstance( )->getLeftBattleTime( ) );
 	}
 
 	static float myA = 1.0F; myA += delta;

@@ -113,7 +113,7 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 			mouse_on = true;
 		}
 	}
-	CAMERA->setCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
+	CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
 	
 	//プレイヤーが死んでいたらカメラ以外操作不能
 	if (active_player->isDead())return;
@@ -161,16 +161,16 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 		active_player->receiveDamage(110.0f, 5);
 	}
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_UP)) {
-		CAMERA->setCameraAngle(ci::vec2(0, 0.05f));
+		CAMERA->addCameraAngle(ci::vec2(0, 0.05f));
 	}
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_DOWN))
-		CAMERA->setCameraAngle(ci::vec2(0, -0.05f));
+		CAMERA->addCameraAngle(ci::vec2(0, -0.05f));
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_RIGHT))
-		CAMERA->setCameraAngle(ci::vec2(-0.05f, 0));
+		CAMERA->addCameraAngle(ci::vec2(-0.05f, 0));
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_LEFT))
-		CAMERA->setCameraAngle(ci::vec2(0.05f, 0));
+		CAMERA->addCameraAngle(ci::vec2(0.05f, 0));
 
 	///////////////////デバックでライトボムを増やす
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_h)) {

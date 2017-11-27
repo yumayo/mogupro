@@ -57,6 +57,13 @@ void cCameraManager::ScatterCamera( )
     my_scatter = ci::vec2( buf_x, buf_y );
 
 }
+void cCameraManager::setCameraAngle( ci::vec2 const & angle )
+{
+	camera_angle = angle;
+	camera_angle.y = std::min( float( M_PI / 2 ) - 0.01f,
+							   std::max( camera_angle.y, -float( M_PI / 2 ) + 0.01f ) );
+	camera_angle.x = std::fmod( camera_angle.x, M_PI * 2.0 );
+}
 void cCameraManager::update( const float& delta_time ) {
 
     //ブレるカメラの秒数をデルタタイムで引く
