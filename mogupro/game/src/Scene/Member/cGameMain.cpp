@@ -43,7 +43,6 @@ void cGameMain::setup( )
 
     skydome.setup( );
     CAMERA->setup( );
-    ENV->padSetup( );
 
     Game::cUIManager::getInstance( )->setup( );
 
@@ -133,8 +132,6 @@ void cGameMain::update( float deltaTime )
         Game::cServerAdapter::getInstance( )->update( );
         Game::cUIManager::getInstance( )->update( deltaTime );
         Game::cFieldManager::getInstance( )->update( deltaTime );
-        ENV->padUpdate( );
-        ENV->padProcessEvent( );
         Game::cPlayerManager::getInstance( )->update( deltaTime );
         Game::cStrategyManager::getInstance( )->update( deltaTime );
 		Game::cCapsuleManager::getInstance()->update(deltaTime);
