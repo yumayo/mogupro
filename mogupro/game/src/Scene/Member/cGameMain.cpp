@@ -43,9 +43,6 @@ void cGameMain::setup( )
 
     skydome.setup( );
     CAMERA->setup( );
-    ENV->padSetup( );
-
-    Game::cUIManager::getInstance( )->setup( );
 
     Shader::cShadowManager::getInstance( )->setup( );
     Game::cFieldManager::getInstance( )->setup( );
@@ -91,6 +88,7 @@ void cGameMain::setup( )
 	Game::cShaderManager::getInstance( )->setup( );
 	Game::cCapsuleManager::getInstance()->setup();
 	Game::cSubWeaponManager::getInstance()->setup();
+	Game::cUIManager::getInstance( )->setup( );
 
 	sendEndSetup = false;
 	endTimer = false;
@@ -141,8 +139,6 @@ void cGameMain::update( float deltaTime )
         Game::cServerAdapter::getInstance( )->update( );
         Game::cUIManager::getInstance( )->update( deltaTime );
         Game::cFieldManager::getInstance( )->update( deltaTime );
-        ENV->padUpdate( );
-        ENV->padProcessEvent( );
         Game::cPlayerManager::getInstance( )->update( deltaTime );
         Game::cStrategyManager::getInstance( )->update( deltaTime );
 		Game::cCapsuleManager::getInstance()->update(deltaTime);

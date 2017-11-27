@@ -43,7 +43,6 @@ namespace Scene
 			mWaitClassState = ClassState::NOT;
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mCanSend = true;
-			ENV->padSetup();
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mSelectTag = 0;
 			mPrevSelectTag = 0;

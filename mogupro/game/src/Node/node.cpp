@@ -355,7 +355,7 @@ void node::entry_render( cinder::mat4 m )
     m = translate( m, -get_content_size_3d( ) * get_anchor_point_3d( ) );
     gl::color( _color );
     gl::setModelMatrix( m );
-    this->render( );
+    if( _visible ) this->render( );
     m = translate( m, get_content_size_3d( ) * get_pivot_3d( ) );
     scoped_iteration_increment scp_increment( *this );
     for ( _iterator = 0; _iterator < (int)_children.size( ); ++_iterator )
@@ -524,7 +524,7 @@ softptr<node> node::_get_root( )
 }
 void node::run_action( hardptr<Action::action> action )
 {
-    _action_manager.add_action( action, shared_from_this( ), !_running );
+    _action_manager.add_action( action, shared_from_this( ) );
     action->setup( );
 }
 softptr<Action::action> node::get_action_by_name( std::string const & name ) const

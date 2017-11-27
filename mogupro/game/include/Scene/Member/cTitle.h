@@ -8,10 +8,8 @@ namespace Member
 {
 class cTitle final : public cSceneBase
 {
-    hardptr<Node::node> mRoot;
-    int mSelectTag;
-    std::vector<std::function<void( )>> mScenes;
-	Utility::cFont font;
+	hardptr<Node::node> mBackGround;
+	hardptr<Node::node> mContentsRoot;
 public:
     cTitle( );
     ~cTitle( );

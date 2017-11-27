@@ -31,7 +31,10 @@ public:
 	template<class scene, class... T>
 	void shift(T...args)
 	{
-		mSceneBase->shutDown();
+		if ( mSceneBase )
+		{
+			mSceneBase->shutDown( );
+		}
 		change<scene>(args...);
 		mSceneBase->setup();
 	}
