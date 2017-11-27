@@ -41,6 +41,12 @@ void cUIManager::setup( )
 	mRoot->set_anchor_point( vec2( 0.5F ) );
 	mRoot->set_pivot( vec2( 0.5F ) );
 
+	//プレイヤーがダメージを受けた時の画面の周りの光
+	mPlayerScreenEffect = mRoot->add_child( Node::node::create( ) );
+	auto damage_effect = mPlayerScreenEffect->add_child( Node::Renderer::sprite::create( "Player/screeneffect.png" ) );
+	damage_effect->set_scale( vec2( 1, -1 ) );
+	damage_effect->set_name( "player_screen_effect" );
+
 	mTime = mRoot->add_child( Node::Renderer::rect::create( vec2( 150, 60 ) ) );
 	mTime->set_anchor_point( vec2( 0.0F, 1.0F ) );
 	mTime->set_position( vec2( -mRoot->get_content_size( ).x / 2.0F, mRoot->get_content_size( ).y / 2.0F ) );
@@ -49,12 +55,6 @@ void cUIManager::setup( )
 	l->set_text( "12:34" );
 	l->set_color( ColorA( 0, 0, 0 ) );
 	l->set_scale( vec2( 1, -1 ) );
-
-	//プレイヤーがダメージを受けた時の画面の周りの光
-	mPlayerScreenEffect = mRoot->add_child(Node::node::create());
-	auto damage_effect = mPlayerScreenEffect->add_child(Node::Renderer::sprite::create("Player/screeneffect.png"));
-	damage_effect->set_scale(vec2(1, -1));
-	damage_effect->set_name("player_screen_effect");
 
 	mLive = mRoot->add_child( Node::node::create( ) );
 	mLive->set_position( mRoot->get_content_size( ) * vec2( 0.0F, 0.5F ) - vec2(0.0F, 64.0F * 0.5F) );
@@ -142,7 +142,7 @@ void cUIManager::update( float delta )
 
 	//プレイヤーがダメージを受けた時の画面の周りの光
 	int player_hp = cPlayerManager::getInstance()->getActivePlayer()->getStatus().hp;
-	mPlayerScreenEffect->get_child_by_name("player_screen_effect")->set_color(ci::ColorA(1, 1, 1, 1 - (player_hp / 100)));
+	mPlayerScreenEffect->get_child_by_name("player_screen_effect")->set_color(ci::ColorA(1, 1, 1, 1 - ( player_hp / 100)));
 
 }
 void cUIManager::draw( )
