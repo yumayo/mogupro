@@ -211,11 +211,6 @@ public:
 private:
     size_t _hash = 0;
 protected:
-    bool _running = true;
-public:
-    virtual void set_running( bool const& value = true ) { _running = value; }
-    inline bool const& get_running( ) const { return _running; }
-protected:
     bool _visible = true;
 public:
     virtual void set_visible( bool const& value = true ) { _visible = value; }

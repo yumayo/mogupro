@@ -5,10 +5,9 @@ namespace Node
 {
 namespace Action
 {
-void action_manager::add_action( hardptr<action> act, hardptr<node> target, bool pause )
+void action_manager::add_action( hardptr<action> act, hardptr<node> target )
 {
     act->set_target( target );
-    act->set_pause( pause );
     _actions.emplace_back( act );
 }
 softptr<action> action_manager::get_action_by_name( std::string const & name ) const

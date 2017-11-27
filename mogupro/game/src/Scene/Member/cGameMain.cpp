@@ -44,8 +44,6 @@ void cGameMain::setup( )
     skydome.setup( );
     CAMERA->setup( );
 
-    Game::cUIManager::getInstance( )->setup( );
-
     Shader::cShadowManager::getInstance( )->setup( );
     Game::cFieldManager::getInstance( )->setup( );
     Game::cStrategyManager::getInstance( )->setup( );
@@ -90,6 +88,7 @@ void cGameMain::setup( )
 	Game::cShaderManager::getInstance( )->setup( );
 	Game::cCapsuleManager::getInstance()->setup();
 	Game::cSubWeaponManager::getInstance()->setup();
+	Game::cUIManager::getInstance( )->setup( );
 
 	sendEndSetup = false;
 	endTimer = false;

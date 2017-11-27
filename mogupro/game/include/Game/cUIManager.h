@@ -15,6 +15,7 @@ public:
 private:
 	hardptr<Node::node> mRoot;
 	softptr<Node::node> mTime;
+	softptr<Node::node> mLive;
 	softptr<Node::node> mCapsule1;
 	softptr<Node::node> mCapsule2;
 	softptr<Node::node> mMyTeamCannonPower;
