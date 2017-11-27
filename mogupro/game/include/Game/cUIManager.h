@@ -20,5 +20,6 @@ private:
 	softptr<Node::node> mCapsule2;
 	softptr<Node::node> mMyTeamCannonPower;
 	softptr<Node::node> mEnemyTeamCannonPower;
+	softptr<Node::node> mPlayerScreenEffect;
 };
 }
