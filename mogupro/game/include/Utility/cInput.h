@@ -56,7 +56,7 @@ public:
 private:
 	friend class gameApp;
 	void setup( );
-	void update( float delta );
+	void preUpdate( float delta );
 	void cleanup( );
 	void keyDown( const ci::app::KeyEvent& event );
 	void keyUp( const ci::app::KeyEvent& event );

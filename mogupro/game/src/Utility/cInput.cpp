@@ -149,8 +149,10 @@ void cInputAll::setup( )
 		Gamepad_detectDevices( );
 	} );
 }
-void cInputAll::update( float delta )
+void cInputAll::preUpdate( float delta )
 {
+	keyWithMouseState.preUpdate( );
+	padState.preUpdate( );
 	Gamepad_processEvents( );
 }
 void cInputAll::cleanup( )

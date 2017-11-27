@@ -82,9 +82,6 @@ void cGameMain::setup( )
 						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Y,
 						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Z),Game::Field::BLOCK_SIZE,0.5,100,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
-    //Network::cUDPClientManager::getInstance( )->open( );
-    //Network::cUDPServerManager::getInstance( )->open( );
-    //Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
 	Game::cLightManager::getInstance( )->setup( );
 	Game::cShaderManager::getInstance( )->setup( );
 	Game::cCapsuleManager::getInstance()->setup();
