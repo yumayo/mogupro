@@ -42,7 +42,7 @@ namespace Weapons
 
 		void cLightBomb::dmageToPlayer(const int playerid)
 		{
-			cPlayerManager::getInstance()->getPlayers()[playerid]->receiveDamage(100.f);
+			cPlayerManager::getInstance()->getPlayers()[playerid]->receiveDamage(100.f, cPlayerManager::getInstance()->getActivePlayer()->getPlayerId());
 		}
 
 		void cLightBomb::hitObject()

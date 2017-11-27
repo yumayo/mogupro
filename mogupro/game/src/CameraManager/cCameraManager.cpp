@@ -24,21 +24,26 @@ void cCameraManager::setup( ) {
 //慣性つきカメラ移動
 void cCameraManager::MovingCamera( )
 {
-	//カメラが近すぎたらその位置にする
-	if (refPosition.x - pos.x <  1.0f||
-		refPosition.x - pos.x > -1.0f&&
-		refPosition.y - pos.y <  1.0f ||
-		refPosition.y - pos.y > -1.0f &&
-		refPosition.z - pos.z <  1.0f ||
-		refPosition.z - pos.z > -1.0f) {
-		pos = refPosition;
-	}
-	//遠いなら慣性移動
-	else {
-		buf_pos = refPosition - pos;
-		buf_pos *= 0.8f;
-		pos += buf_pos;
-	}
+	//慣性移動
+	buf_pos = refPosition - pos;
+	buf_pos *= 0.25f;
+	pos += buf_pos;
+
+	//なんか言われたら戻す↓
+
+	////カメラが近すぎたらその位置にする
+	//if (refPosition.x - pos.x <  0.2f&&
+	//	refPosition.x - pos.x > -0.2f&&
+	//	refPosition.y - pos.y <  0.2f &&
+	//	refPosition.y - pos.y > -0.2f &&
+	//	refPosition.z - pos.z <  0.2f &&
+	//	refPosition.z - pos.z > -0.2f) {
+	//	pos = refPosition;
+	//}
+	////遠いなら慣性移動
+	//else {
+	//	
+	//}
 }
 void cCameraManager::ScatterCamera( )
 {
