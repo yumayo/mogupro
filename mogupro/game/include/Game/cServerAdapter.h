@@ -18,7 +18,8 @@ private:
     void sendSetQuarry( );
     void sendGetGemPlayer( );
     void sendGetGemQuarry( );
-    void sendBreakBlocks( );
+	void sendBreakBlocks( );
+	void sendLightBombs( );
 private:
     std::map<Network::ubyte1, Network::Packet::PlayerFormat> mPlayerFormats;
     std::set<Network::ubyte2> mQuarrys;
