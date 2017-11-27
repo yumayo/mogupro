@@ -3,6 +3,7 @@
 #include <boost/date_time.hpp>
 #include <cinder/gl/gl.h>
 #include <Node/action.hpp>
+#include <Game/cPlayerManager.h>
 using namespace ci;
 namespace Game
 {
@@ -32,7 +33,6 @@ public:
 		gl::drawColorCube( get_content_size_3d( ) / 2.0F, get_content_size_3d( ) );
 	}
 };
-
 void cUIManager::setup( )
 {
 	mRoot = Node::node::create( );
@@ -43,12 +43,28 @@ void cUIManager::setup( )
 	mTime = mRoot->add_child( Node::Renderer::rect::create( vec2( 150, 60 ) ) );
 	mTime->set_anchor_point( vec2( 0.0F, 1.0F ) );
 	mTime->set_position( vec2( -mRoot->get_content_size( ).x / 2.0F, mRoot->get_content_size( ).y / 2.0F ) );
-
 	auto l = mTime->add_child( Node::Renderer::label::create( "sawarabi-gothic-medium.ttf", 60.0F ) );
 	l->set_name( "label" );
 	l->set_text( "12:34" );
 	l->set_color( ColorA( 0, 0, 0 ) );
 	l->set_scale( vec2( 1, -1 ) );
+
+	mLive = mRoot->add_child( Node::node::create( ) );
+	mLive->set_position( mRoot->get_content_size( ) * vec2( 0.0F, 0.5F ) - vec2(0.0F, 64.0F * 0.5F) );
+	int offset = cPlayerManager::getInstance( )->getPlayers( ).size( ) / 2 * -1;
+	for ( auto player : cPlayerManager::getInstance( )->getPlayers( ) )
+	{
+		auto ikiteru = mLive->add_child( Node::Renderer::sprite::create( "ikiteru.png" ) );
+		ikiteru->set_scale( vec2( 1, -1 ) );
+		ikiteru->set_name( "ikiteru" + std::to_string( player->getPlayerId( ) ) );
+		ikiteru->set_position( ikiteru->get_content_size( ) * vec2( offset, 0.0F ) );
+		auto yarareta = mLive->add_child( Node::Renderer::sprite::create( "yarareta.png" ) );
+		yarareta->set_scale( vec2( 1, -1 ) );
+		yarareta->set_name( "yarareta" + std::to_string( player->getPlayerId( ) ) );
+		yarareta->set_position( yarareta->get_content_size( ) * vec2( offset, 0.0F ) );
+		yarareta->set_visible( false );
+		if ( ++offset == 0 ) offset++;
+	}
 
 	mCapsule1 = mRoot->add_child( Node::Renderer::circle::create( 30.0F ) );
 	mCapsule1->set_anchor_point( vec2( 1.0F, 1.0F ) );
@@ -119,6 +135,12 @@ void cUIManager::update( float delta )
 	{
 		auto g = mEnemyTeamCannonPower->get_child_by_name( "gauge" );
 		g->set_scale( vec2( 1.0F, sin( enA ) * 0.5F + 0.5F ) );
+	}
+
+	for ( auto player : cPlayerManager::getInstance( )->getPlayers( ) )
+	{
+		mLive->get_child_by_name( "ikiteru" + std::to_string( player->getPlayerId( ) ) )->set_visible( !player->isDead( ) );
+		mLive->get_child_by_name( "yarareta" + std::to_string( player->getPlayerId( ) ) )->set_visible( player->isDead( ) );
 	}
 }
 void cUIManager::draw( )
