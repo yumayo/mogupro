@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/Gem/cGem.h"
+#include "Game/Gem/cGemStone.h"
 #include "Utility/cSingletonAble.h"
 #include "cinder\/Surface.h"
 #include "cinder/app/RendererGl.h"
@@ -8,6 +8,7 @@
 #include "CameraManager\cCameraManager.h"
 #include "Utility\cTimeMeasurement.h"
 #include "cPlayerManager.h"
+#include "Game/Gem/cFragmentGem.h"
 #include <Utility/cSingletonAble.h>
 #include <memory>
 #include <cinder/Rand.h>
@@ -40,15 +41,13 @@ namespace Game
 		void update(float deltaTime);
 
 		void create();
-		// team     0‚ªfirst,1‚ªsecond
-		void gemCountUp(int team, Gem::GemType type);
-		void gemDelete(int it);
 		void buildMesh();
 		//oldcode-----------
-		std::vector<std::shared_ptr<Gem::cGem>> getGems() { return mStaticGem; }
+		std::vector<std::shared_ptr<Gem::cGemStone>> getGems() { return mStaticGem; }
 		//-------------------
-		std::shared_ptr<Gem::cGem> FindGem(int id);
-		std::shared_ptr<Gem::cGem> AcquisitionGem(int id);
+		std::shared_ptr<Gem::cGemStone> getGemStone(int id);
+		std::shared_ptr<Gem::cGemStone> breakeGemStone(int id);
+		std::shared_ptr<Gem::cFragmentGem> getFragmentGem(int id);
 
 	private:
 
@@ -56,12 +55,11 @@ namespace Game
 
 		const int mDrawNum = 100;
 
-		std::vector<std::shared_ptr<Gem::cGem>> mStaticGem;
-		std::vector<std::shared_ptr<Gem::cGem>> mActiveGem;
+		std::vector<std::shared_ptr<Gem::cGemStone>> mStaticGem;
+		std::vector<std::shared_ptr<Gem::cFragmentGem>> mFragmentGems;
 		ci::TriMeshRef mesh;
 
-		std::vector<std::shared_ptr<Gem::cGem>> mGemsptr;
-		std::map<Gem::GemType, int> mTeamGems[2];
+		std::vector<std::shared_ptr<Gem::cGemStone>> mGemsptr;
 		ci::vec3 mPosition;
 		ci::vec3 mRandomRange;
 		float mMapChipSize;

@@ -118,7 +118,7 @@ namespace Game
 		{
 			if (!ismyobject)return;
 
-			getgems.push_back(GemManager->FindGem(_gemid));
+			getgems.push_back(GemManager->getGemStone(_gemid));
 
 			int index = getgems.size() - 1;
 
