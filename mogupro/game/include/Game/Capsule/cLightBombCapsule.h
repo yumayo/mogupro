@@ -14,7 +14,6 @@ public:
 	void draw()override;
 	bool deleteThis()override;
 private:
-	ci::vec3 rotate;
 	int count = 0;
 };
 }

@@ -17,10 +17,16 @@ bool cSubWeaponBase::deleteThis()
 {
 	return false;
 }
-int cSubWeaponBase::getId()
+int cSubWeaponBase::getPlayerId()
 {
 	return mPlayerId;
 }
+
+int cSubWeaponBase::getObjectId()
+{
+	return mObjectId;
+}
+
 }
 }
 }

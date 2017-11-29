@@ -17,36 +17,53 @@ namespace Game
 {
 	namespace Strategy
 	{
-		cCannon::cCannon(const ci::vec3 _pos, const float _direction, const bool _ismyobject)
-		{
-			mPos = _pos;
-			scale = vec3(Field::CHUNK_RANGE_X, Field::CHUNK_RANGE_X, Field::CHUNK_RANGE_X);
-			id = 0;
-			ismyobject = _ismyobject;
-			direction = _direction;
 
+		cCannon::cCannon(const ci::vec3 pos, const ci::vec3 scale, const ci::vec3 Foundationpos, const ci::vec3 Foundationscale, const Game::Player::Team team)
+			: mAABB(pos, scale) , mFoundatioAABB(Foundationpos, Foundationscale) {
+			mPos = pos;
+			mScale = scale;
+			mTeam = team;
+			mFoundationPos = Foundationpos;
+			mFoundationScale = Foundationscale;
+			mGemStorePos = mPos+ci::vec3(0,mScale.y/5.f,0);
+			if (team == Game::Player::Team::Red) {
+				direction = 1.f;
+				mColor = ci::ColorA(1, 0, 0, 1);
+			}
+			else {
+				direction = -1.f;
+				mColor = ci::ColorA(0, 0, 1, 1);
+			}
 		}
 		cCannon::~cCannon()
 		{
+			mAABB.removeWorld();
+			mFoundatioAABB.removeWorld();
+		    //rb.removeWorld();
 		}
 
 		void cCannon::draw()
 		{
-			float rate = scale.x;
-			///////////////“y‘ä
-			vec3 dpos = mPos + vec3(0, -rate*0.45f, 0);
-			STRM->drawCube(dpos, vec3(rate,rate*0.1f,rate), vec3(0, 0, 0), ColorA(0.5, 0.5,0.5, 1));
-			////////////////
-			
-			///////////////ƒLƒƒƒmƒ“
-			STRM->drawCube(mPos+vec3(0,0,direction*rate*0.15f),vec3(rate*0.5f,rate*1.5f,rate*0.5f*direction), vec3(45*direction, 0, 0), ColorA(0.2, 0.2, 0.2, 1));
-			////////////////
+			float rate = mScale.x;
+			/////////////////“y‘ä
+			STRM->drawCube(mFoundationPos, mFoundationScale, vec3(0, 0, 0), ColorA(0.5, 0.5, 0.5, 1));
+			//////////////////
 
-			///////////////ƒTƒCƒh
-			STRM->drawCube(mPos+vec3(rate*0.3f,-rate*0.2f, -rate*0.15f*direction), vec3(rate*0.1f, rate*0.5f, rate*0.5), vec3(0, 0, 0), ColorA(0, 0, 1, 1));
-			STRM->drawCube(mPos+vec3(-rate*0.3f,-rate*0.2f, -rate*0.15f*direction), vec3(rate*0.1f, rate*0.5f, rate*0.5), vec3(0, 0, 0), ColorA(0, 0, 1, 1));
-			////////////////
-			//STRM->drawCube(mPos, scale, vec3(0, 0, 0), ColorA(0.2, 0.2, 0.2, 1));
+			/////////////////ƒLƒƒƒmƒ“
+			STRM->drawCube(mPos+vec3(0, rate*0.25f,direction*rate*0.4f),vec3(rate*0.3f,rate,rate*0.3f*direction), vec3(-30*direction, 0, 0), ColorA(0, 0, 0, 1));
+			//////////////////
+
+			/////////////////ƒXƒtƒBƒA
+			STRM->drawShere(mPos, ci::vec3(mScale.x / 2.f), vec3(0, 0, 0), ColorA(1, 1, 1, 1), 30);
+			/////////////////
+
+			/////////////////–{‘Ì
+			STRM->drawCube(mPos - ci::vec3(0, mScale.y / 4.f, 0), ci::vec3(mScale.x, mScale.y / 2.f, mScale.z), vec3(0, 0, 0), mColor);
+			/////////////////
+
+			////////////////AABB‚ð•`‰æ
+			//STRM->drawCube(mPos, mScale, vec3(0, 0, 0), ColorA(0, 0, 0, 1));
+			//////////////////
 		}
 
 		void cCannon::update(const float & delta_time)
@@ -54,23 +71,46 @@ namespace Game
 
 		}
 
-		void cCannon::updateCollisionAfterUpdate(const float & delta_time)
-		{
-		}
-
 		void cCannon::setup()
 		{
-
+			mAABB.addWorld();
+			mFoundatioAABB.addWorld();
 		}
 
-		bool cCannon::DeleteThis()
+		Game::Player::Team cCannon::getTeam()
 		{
-			return false;
+			return mTeam;
 		}
 
-		void cCannon::setField(const ci::vec3 pos)
+		ci::AxisAlignedBox cCannon::getAABB()
 		{
+			return mToPlayerAABB;
+		}
 
+		void cCannon::receivePlayerGem( const std::vector<std::shared_ptr<Game::Gem::cGem>> getgems)
+		{
+			ci::app::console() << "‚¢‚¦‚é‚à‚Ì‚Í‚¶‚ß" << std::endl;
+			for (int i = 0; i < getgems.size(); i++) {
+				ci::app::console() << getgems[i]->getType() << std::endl;
+				mGetgems.push_back(getgems[i]);
+			}
+			ci::app::console() << "‚¢‚¦‚é‚à‚Ì‚¨‚í‚è" << std::endl;
+
+
+			ci::app::console() << "‚º‚ñ‚Ô‚Í‚¶‚ß" << std::endl;
+			for (int i = 0; i < mGetgems.size(); i++) {
+				ci::app::console() << mGetgems[i]->getType() << std::endl;
+			}
+			ci::app::console() << "‚º‚ñ‚Ô‚¨‚í‚è" << std::endl;
+		}
+		ci::vec3 cCannon::getGemStorePos()
+		{
+			return mGemStorePos;
+		}
+
+		std::vector<std::shared_ptr<Game::Gem::cGem>> cCannon::getStoregems()
+		{
+			return mGetgems;
 		}
 
 	}

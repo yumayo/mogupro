@@ -17,12 +17,14 @@ public:
 	virtual void updateCollisionAfterUpdate(const float& delta_time) = 0;
 	virtual void draw() = 0;
 	virtual bool deleteThis();
-	int getId();
+	int getPlayerId();
+	int getObjectId();
 	bool ismyobject;
 protected:
 	ci::vec3 mPos = ci::vec3(0, 0, 0);
 	ci::vec3 mScale = ci::vec3(1, 1, 1);
 	int mPlayerId;
+	int mObjectId;
 private:
 
 };

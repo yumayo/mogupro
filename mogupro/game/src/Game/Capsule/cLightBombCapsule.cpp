@@ -26,13 +26,13 @@ void cLightBombCapsule::update(const float & delta_time)
 		count++;
 	}
 	else {
-		rotate += ci::vec3(0, delta_time, 0);
+		mRotate += ci::vec3(0, delta_time, 0);
 	}
 	
 }
 void cLightBombCapsule::draw()
 {
-	STRM->drawCube(mPos, mScale, rotate, ci::ColorA(1, 0, 0, 1));
+	STRM->drawCube(mPos, mScale, mRotate, ci::ColorA(1, 0, 0, 1));
 }
 bool cLightBombCapsule::deleteThis()
 {
