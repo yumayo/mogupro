@@ -42,9 +42,9 @@ namespace Game
 
 		void create();
 		void buildMesh();
-		//oldcode-----------
-		std::vector<std::shared_ptr<Gem::cGemStone>> getGems() { return mStaticGem; }
-		//-------------------
+
+		std::vector<std::shared_ptr<Gem::cGemStone>> getGemStones() { return mGemStone; }
+		std::vector<std::shared_ptr<Gem::cFragmentGem>> getFragmentGems() { return mFragmentGems; }
 		std::shared_ptr<Gem::cGemStone> getGemStone(int id);
 		std::shared_ptr<Gem::cGemStone> breakeGemStone(int id);
 		std::shared_ptr<Gem::cFragmentGem> getFragmentGem(int id);
@@ -52,15 +52,13 @@ namespace Game
 
 	private:
 
-		void sort();
 
 		const int mDrawNum = 100;
 
-		std::vector<std::shared_ptr<Gem::cGemStone>> mStaticGem;
+		std::vector<std::shared_ptr<Gem::cGemStone>> mGemStone;
 		std::vector<std::shared_ptr<Gem::cFragmentGem>> mFragmentGems;
 		ci::TriMeshRef mesh;
 
-		std::vector<std::shared_ptr<Gem::cGemStone>> mGemsptr;
 		ci::vec3 mPosition;
 		ci::vec3 mRandomRange;
 		float mMapChipSize;
@@ -68,12 +66,10 @@ namespace Game
 		int mGemMaxNum;
 		ci::gl::FboRef mGemBuffer;
 		ci::gl::GlslProgRef mShader;
-		ci::gl::GlslProgRef mHShader;
-		ci::gl::GlslProgRef mVShader;
+		//ci::gl::GlslProgRef mHShader;
+		//ci::gl::GlslProgRef mVShader;
 		ci::gl::GlslProgRef mVboShader;
 		ci::gl::VboMeshRef mGemsVbo;
-		float blurSize;
-		float mBloom;
 		unsigned long mSeed;
 		float mTime;
 		float mLightingSpeed;

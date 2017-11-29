@@ -10,7 +10,6 @@ namespace Game
 		mMapChipSize = mapChipSize;
 		mGemScale = gemScale;
 		mGemMaxNum = gemMaxNum;
-		mBloom = 1.0f;
 		mSeed = seed;
 		mTime = 0.0f;
 		mLightingSpeed = 0.4;
@@ -73,7 +72,6 @@ namespace Game
 		ci::randSeed(uint32_t(mSeed));
 		for (int i = 0; i < mGemMaxNum; i += 2)
 		{
-			//DeBug:本来はサーバーからもらってくる
 			int x = ci::randInt(0, mRandomRange.x - 1);
 			int y = ci::randInt(0, mRandomRange.y - 1);
 			int z = ci::randInt(0, mRandomRange.z - 1);
@@ -102,18 +100,13 @@ namespace Game
 			}
 			color.a = cinder::randFloat(0,1);
 
-			
-			//oldcode-------
-			mGemsptr.push_back(std::make_shared<Gem::cGemStone>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type, delay));
-			mGemsptr.push_back(std::make_shared<Gem::cGemStone>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type, delay));
-			//--------------
 
-			mStaticGem.push_back(std::make_shared<Gem::cGemStone>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type, delay));
-			mStaticGem.push_back(std::make_shared<Gem::cGemStone>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type, delay));
+			mGemStone.push_back(std::make_shared<Gem::cGemStone>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type));
+			mGemStone.push_back(std::make_shared<Gem::cGemStone>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type));
 		}
 
 		int offset = 0;
-		for each (auto& g in mStaticGem)
+		for each (auto& g in mGemStone)
 		{
 			g->setIndices(offset);
 			g->setColorAs();
@@ -127,14 +120,14 @@ namespace Game
 	void cGemManager::buildMesh()
 	{
 		mesh->clear();
-		for (int i = 0; i < mStaticGem.size(); i++)
+		for (int i = 0; i < mGemStone.size(); i++)
 		{
-			auto indices = mStaticGem[i]->getIndices();
+			auto indices = mGemStone[i]->getIndices();
 			mesh->appendIndices(&indices[0], indices.size());
-			mesh->appendNormals(&mStaticGem[i]->getNomals()[0], mStaticGem[i]->getNomals().size());
-			mesh->appendColors(&mStaticGem[i]->getColorAs()[0], mStaticGem[i]->getColorAs().size());
-			ci::vec3 pos = mStaticGem[i]->getPos();
-			ci::vec3 scale = mStaticGem[i]->getScale() / 2.0f;
+			mesh->appendNormals(&mGemStone[i]->getNomals()[0], mGemStone[i]->getNomals().size());
+			mesh->appendColors(&mGemStone[i]->getColorAs()[0], mGemStone[i]->getColorAs().size());
+			ci::vec3 pos = mGemStone[i]->getPos();
+			ci::vec3 scale = mGemStone[i]->getScale() / 2.0f;
 			mesh->appendPosition(pos + ci::vec3(scale.x, scale.y, scale.z));
 			mesh->appendPosition(pos + ci::vec3(scale.x, -scale.y, scale.z));
 			mesh->appendPosition(pos + ci::vec3(scale.x, -scale.y, -scale.z));
@@ -172,11 +165,11 @@ namespace Game
 
 	std::shared_ptr<Gem::cGemStone> cGemManager::getGemStone(int id)
 	{
-		for (int i = 0; i < mStaticGem.size(); i++)
+		for (int i = 0; i < mGemStone.size(); i++)
 		{
-			if (mStaticGem[i]->getId() == id)
+			if (mGemStone[i]->getId() == id)
 			{
-				return  mStaticGem[i];
+				return  mGemStone[i];
 			}
 		}
 		ci::app::console() << "This is no GemStone that has that " << id << std::endl;
@@ -186,16 +179,16 @@ namespace Game
 
 	std::shared_ptr<Gem::cGemStone> cGemManager::breakeGemStone(int id)
 	{
-		for (int i = 0; i < mStaticGem.size(); i++)
+		for (int i = 0; i < mGemStone.size(); i++)
 		{
-			if (mStaticGem[i]->getId() == id)
+			if (mGemStone[i]->getId() == id)
 			{
-				if (!mStaticGem[i]->isActive()) return nullptr;
-				mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mStaticGem[i]->getPos(), mStaticGem[i]->getScale() / 2.0f, mStaticGem[i]->getColor(),mStaticGem[i]->getType()));
-				mStaticGem[i]->deleteGem();
+				if (!mGemStone[i]->isActive()) return nullptr;
+				mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mGemStone[i]->getPos(), mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType()));
+				mGemStone[i]->deleteGem();
 				buildMesh();
-				mStaticGem[i]->setIsActive(false);
-				return  mStaticGem[i];
+				mGemStone[i]->setIsActive(false);
+				return  mGemStone[i];
 			}
 		}
 		ci::app::console() << "This is no GemStone that has that " << id << std::endl;

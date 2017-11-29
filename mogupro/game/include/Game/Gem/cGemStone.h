@@ -21,11 +21,11 @@ namespace Game
 			// scale       大きさ
 			// color       カラー（ここは本来Texture）
 			// type        Gemの種類(これ入れたらtexture引数にいらないかも)
-			cGemStone(int id,ci::vec3 postion, ci::vec3 scale, ci::ColorA color, GemType type, float delay)
-				: mId(id),mPosition(postion), mScale(scale), mColor(color), mType(type), mDelay(delay), mIsActive(true){};
+			cGemStone(int id,ci::vec3 postion, ci::vec3 scale, ci::ColorA color, GemType type)
+				: mId(id),mPosition(postion), mScale(scale), mColor(color), mType(type), mIsActive(true){};
 			~cGemStone() {};
 
-			void setUp(ci::vec3 postion, ci::vec3 scale, ci::ColorA color, GemType type, float delay);
+			void setUp(ci::vec3 postion, ci::vec3 scale, ci::ColorA color, GemType type);
 			void draw();
 			void drawFbo();
 			void update();
@@ -65,7 +65,6 @@ namespace Game
 			ci::vec3 mScale;
 			ci::vec3 mRotation;
 			ci::Color mColor;
-			float mDelay;
 			bool mIsActive;
 			GemType mType;
 			std::vector<uint32_t> indices;

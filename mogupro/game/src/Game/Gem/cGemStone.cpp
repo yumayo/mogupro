@@ -4,12 +4,11 @@ namespace Game
 {
 	namespace Gem
 	{
-		void cGemStone::setUp(ci::vec3 positin, ci::vec3 scale, ci::ColorA color, GemType type, float delay)
+		void cGemStone::setUp(ci::vec3 positin, ci::vec3 scale, ci::ColorA color, GemType type)
 		{
 			mPosition = positin;
 			mScale = scale;
 			mColor = color;
-			mDelay = delay;
 		}
 
 		void cGemStone::draw()
