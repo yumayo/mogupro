@@ -3,7 +3,7 @@
 #include"Game/cGemManager.h"
 #include"Node\node.h"
 #include"Node\action.hpp"
-#include"Game\Gem\cGem.h"
+#include"Game\Gem/cGemStone.h"
 #include"Game/Player/cPlayer.h"
 #include"Collision\cRigidBody.h"
 #include"Collision\cAABBCollider.h"
@@ -23,12 +23,12 @@ namespace Game
 			Game::Player::Team getTeam();
 			ci::AxisAlignedBox getAABB();
 			//////////•óÎ‚ğ‚à‚ç‚¢‚Ü‚·
-			void receivePlayerGem(const std::vector<std::shared_ptr<Game::Gem::cGem>>getgems);
+			void receivePlayerGem(const std::vector<std::shared_ptr<Game::Gem::cGemStone>>getgems);
 			/////////////•óÎ‚ğ’™‚ß‚éêŠ
 			ci::vec3 getGemStorePos();
-			std::vector<std::shared_ptr<Game::Gem::cGem>>getStoregems();
+			std::vector<std::shared_ptr<Game::Gem::cGemStone>>getStoregems();
 		private:
-			std::vector<std::shared_ptr<Game::Gem::cGem>>mGetgems;
+			std::vector<std::shared_ptr<Game::Gem::cGemStone>>mGetgems;
 			Collision::cAABBCollider mAABB;
 			Collision::cAABBCollider mFoundatioAABB;
 			Game::Player::Team mTeam;

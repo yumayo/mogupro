@@ -23,6 +23,7 @@ public:
 	void HitDrillToGem(const int _objectid,const int _gemid);
 	void CreateDrill(const ci::vec3 _pos, const int _id,const Strategy::cDrill::DrillType _type,const bool _ismyobject);
 	void CreateBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale, const int _id);
+	std::vector<std::shared_ptr<Game::Strategy::cCannon>> getCannons();
 	//テスト用です
 	void drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color);
 	void drawShere(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color,int segment);
