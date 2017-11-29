@@ -37,80 +37,82 @@ public:
 void cUIManager::setup( )
 {
 	mRoot = Node::node::create( );
-	mRoot->set_content_size( app::getWindowSize( ) - ivec2( 100 ) );
-	mRoot->set_anchor_point( vec2( 0.5F ) );
-	mRoot->set_pivot( vec2( 0.5F ) );
+	mRoot->set_content_size( app::getWindowSize( ) - ivec2( 100, 100 ) );
+	mRoot->set_schedule_update( );
+	mRoot->set_scale( vec2( 1, -1 ) );
+	mRoot->set_position( mRoot->get_content_size( ) * vec2( -0.5F, 0.5F ) );
+
+	//プレイヤーがダメージを受けた時の画面の周りの光
+	mPlayerScreenEffect = mRoot->add_child( Node::node::create( ) );
+	auto damage_effect = mPlayerScreenEffect->add_child( Node::Renderer::sprite::create( "Player/screeneffect.png" ) );
+	damage_effect->set_name( "player_screen_effect" );
+	damage_effect->set_position( mRoot->get_content_size( ) * vec2( 0.5F ) );
 
 	mTime = mRoot->add_child( Node::Renderer::rect::create( vec2( 150, 60 ) ) );
-	mTime->set_anchor_point( vec2( 0.0F, 1.0F ) );
-	mTime->set_position( vec2( -mRoot->get_content_size( ).x / 2.0F, mRoot->get_content_size( ).y / 2.0F ) );
+	mTime->set_anchor_point( vec2( 0.0F, 0.0F ) );
 	auto l = mTime->add_child( Node::Renderer::label::create( "sawarabi-gothic-medium.ttf", 60.0F ) );
 	l->set_name( "label" );
 	l->set_text( "12:34" );
 	l->set_color( ColorA( 0, 0, 0 ) );
-	l->set_scale( vec2( 1, -1 ) );
-
-	//プレイヤーがダメージを受けた時の画面の周りの光
-	mPlayerScreenEffect = mRoot->add_child(Node::node::create());
-	auto damage_effect = mPlayerScreenEffect->add_child(Node::Renderer::sprite::create("Player/screeneffect.png"));
-	damage_effect->set_scale(vec2(1, -1));
-	damage_effect->set_name("player_screen_effect");
 
 	mLive = mRoot->add_child( Node::node::create( ) );
-	mLive->set_position( mRoot->get_content_size( ) * vec2( 0.0F, 0.5F ) - vec2(0.0F, 64.0F * 0.5F) );
+	mLive->set_position( mRoot->get_content_size( ) * vec2( 0.5F, 0.0F ) );
 	int offset = cPlayerManager::getInstance( )->getPlayers( ).size( ) / 2 * -1;
 	for ( auto player : cPlayerManager::getInstance( )->getPlayers( ) )
 	{
 		auto ikiteru = mLive->add_child( Node::Renderer::sprite::create( "ikiteru.png" ) );
-		ikiteru->set_scale( vec2( 1, -1 ) );
 		ikiteru->set_name( "ikiteru" + std::to_string( player->getPlayerId( ) ) );
 		ikiteru->set_position( ikiteru->get_content_size( ) * vec2( offset, 0.0F ) );
 		auto yarareta = mLive->add_child( Node::Renderer::sprite::create( "yarareta.png" ) );
-		yarareta->set_scale( vec2( 1, -1 ) );
 		yarareta->set_name( "yarareta" + std::to_string( player->getPlayerId( ) ) );
 		yarareta->set_position( yarareta->get_content_size( ) * vec2( offset, 0.0F ) );
 		yarareta->set_visible( false );
 		if ( ++offset == 0 ) offset++;
 	}
 
-	mCapsule1 = mRoot->add_child( Node::Renderer::circle::create( 30.0F ) );
-	mCapsule1->set_anchor_point( vec2( 1.0F, 1.0F ) );
-	mCapsule1->set_position( mRoot->get_content_size( ) / 2.0F - vec2( mCapsule1->get_content_size( ).x, 0.0F ) - vec2( 10.0F * 1, 0.0F ) );
+	auto mCapsuleGauge = Node::Renderer::sprite::create( "itemGauge.png" );
+	mCapsuleGauge->set_anchor_point( vec2( 1, 0 ) );
+	mCapsuleGauge->set_pivot( vec2( 0, 0 ) );
+	mCapsuleGauge->set_position( mRoot->get_content_size( ) * vec2( 1, 0 ) );
+	mCapsule = mRoot->add_child( Node::node::create( ) );
+	mCapsule->set_content_size( mCapsuleGauge->get_content_size( ) );
+	mCapsule->set_anchor_point( mCapsuleGauge->get_anchor_point( ) );
+	mCapsule->set_position( mCapsuleGauge->get_position( ) );
+	mCapsule->set_pivot( mCapsuleGauge->get_pivot( ) );
 	{
-		auto c = mCapsule1->add_child( lambertCube::create( vec3( 30.0F ) ) );
+		auto c = mCapsule->add_child( lambertCube::create( vec3( 25.0F ) ) );
+		c->set_position( vec2( 182, 47 ) );
 	}
-
-	mCapsule2 = mRoot->add_child( Node::Renderer::circle::create( 30.0F ) );
-	mCapsule2->set_anchor_point( vec2( 1.0F, 1.0F ) );
-	mCapsule2->set_position( mRoot->get_content_size( ) / 2.0F );
 	{
-		auto c = mCapsule2->add_child( lambertCube::create( vec3( 30.0F ) ) );
+		auto c = mCapsule->add_child( lambertCube::create( vec3( 53.0F ) ) );
+		c->set_position( vec2( 87, 123 ) );
 	}
+	mRoot->add_child( mCapsuleGauge );
 
 	mMyTeamCannonPower = mRoot->add_child( Node::Renderer::rect::create( vec2( 30, 300 ) ) );
 	mMyTeamCannonPower->set_anchor_point( vec2( 0.5F, 0.0F ) );
-	mMyTeamCannonPower->set_pivot( vec2( 0.5F, 0.0F ) );
-	mMyTeamCannonPower->set_position( vec2( -mRoot->get_content_size( ).x / 2.0F + mMyTeamCannonPower->get_content_size( ).x / 2.0F,
+	mMyTeamCannonPower->set_pivot( vec2( 0.5F, 1.0F ) );
+	mMyTeamCannonPower->set_position( mRoot->get_content_size() * vec2( 0, 0.5F ) + vec2( mMyTeamCannonPower->get_content_size( ).x / 2.0F,
 											-mMyTeamCannonPower->get_content_size( ).y / 2.0F ) );
 	{
 		auto g = mMyTeamCannonPower->add_child( Node::Renderer::rect::create( mMyTeamCannonPower->get_content_size( ) ) );
 		g->set_name( "gauge" );
 		g->set_scale( vec2( 1.0F, 0.0F ) );
 		g->set_color( ColorA( 0.8, 0.2, 0.2 ) );
-		g->set_anchor_point( vec2( 0.5F, 0.0F ) );
+		g->set_anchor_point( vec2( 0.5F, 1.0F ) );
 	}
 
 	mEnemyTeamCannonPower = mRoot->add_child( Node::Renderer::rect::create( vec2( 30, 300 ) ) );
 	mEnemyTeamCannonPower->set_anchor_point( vec2( 0.5F, 0.0F ) );
-	mEnemyTeamCannonPower->set_pivot( vec2( 0.5F, 0.0F ) );
-	mEnemyTeamCannonPower->set_position( vec2( mRoot->get_content_size( ).x / 2.0F - mEnemyTeamCannonPower->get_content_size( ).x / 2.0F,
+	mEnemyTeamCannonPower->set_pivot( vec2( 0.5F, 1.0F ) );
+	mEnemyTeamCannonPower->set_position( mRoot->get_content_size( ) * vec2( 1, 0.5F ) + vec2( -mEnemyTeamCannonPower->get_content_size( ).x / 2.0F,
 											   -mEnemyTeamCannonPower->get_content_size( ).y / 2.0F ) );
 	{
 		auto g = mEnemyTeamCannonPower->add_child( Node::Renderer::rect::create( mEnemyTeamCannonPower->get_content_size( ) ) );
 		g->set_name( "gauge" );
 		g->set_scale( vec2( 1.0F, 0.0F ) );
 		g->set_color( ColorA( 0.2, 0.2, 0.8 ) );
-		g->set_anchor_point( vec2( 0.5F, 0.0F ) );
+		g->set_anchor_point( vec2( 0.5F, 1.0F ) );
 	}
 }
 void cUIManager::update( float delta )
@@ -141,8 +143,8 @@ void cUIManager::update( float delta )
 	}
 
 	//プレイヤーがダメージを受けた時の画面の周りの光
-	int player_hp = cPlayerManager::getInstance()->getActivePlayer()->getStatus().hp;
-	mPlayerScreenEffect->get_child_by_name("player_screen_effect")->set_color(ci::ColorA(1, 1, 1, 1 - (player_hp / 100)));
+	int player_hp = cPlayerManager::getInstance( )->getActivePlayer( )->getStatus( ).hp;
+	mPlayerScreenEffect->get_child_by_name( "player_screen_effect" )->set_color( ci::ColorA( 1, 1, 1, 1 - ( player_hp / 100 ) ) );
 
 }
 void cUIManager::draw( )
