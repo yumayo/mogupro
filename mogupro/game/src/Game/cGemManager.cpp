@@ -186,8 +186,6 @@ namespace Game
 
 	std::shared_ptr<Gem::cGemStone> cGemManager::breakeGemStone(int id)
 	{
-
-		std::vector<std::shared_ptr<Gem::cGemStone>>::iterator iterator = mStaticGem.begin();
 		for (int i = 0; i < mStaticGem.size(); i++)
 		{
 			if (mStaticGem[i]->getId() == id)
@@ -199,9 +197,8 @@ namespace Game
 				mStaticGem[i]->setIsActive(false);
 				return  mStaticGem[i];
 			}
-			iterator++;
 		}
-		ci::app::console() << "This is no Gem that has that " << id << std::endl;
+		ci::app::console() << "This is no GemStone that has that " << id << std::endl;
 		return nullptr;
 	}
 
@@ -215,7 +212,22 @@ namespace Game
 				return  mFragmentGems[i];
 			}
 		}
-		ci::app::console() << "This is no Gem that has that " << id << std::endl;
+		ci::app::console() << "This is no FragmentGem that has that " << id << std::endl;
 		return nullptr;
 	}
+	void  cGemManager::AcquisitionFragmentGem(int id)
+	{
+		std::vector<std::shared_ptr<Gem::cFragmentGem>>::iterator iterator = mFragmentGems.begin();
+		for (int i = 0; i < mFragmentGems.size(); i++)
+		{
+			if (mFragmentGems[i]->getId() == id)
+			{
+				mFragmentGems.erase(iterator);
+				return;
+			}
+			iterator++;
+		}
+		ci::app::console() << "This is no FragmentGem that has that " << id << std::endl;
+		return;
+	};
 }

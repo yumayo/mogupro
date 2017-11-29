@@ -48,6 +48,7 @@ namespace Game
 		std::shared_ptr<Gem::cGemStone> getGemStone(int id);
 		std::shared_ptr<Gem::cGemStone> breakeGemStone(int id);
 		std::shared_ptr<Gem::cFragmentGem> getFragmentGem(int id);
+		void  AcquisitionFragmentGem(int id);
 
 	private:
 
