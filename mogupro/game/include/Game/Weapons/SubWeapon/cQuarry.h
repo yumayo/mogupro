@@ -61,7 +61,7 @@ private://先端のドリル
 
 private://ジェム関係
 	void moveGetGem(const float delttime);
-	std::vector<std::shared_ptr<Game::Gem::cGem>>getgems;
+	std::vector<std::shared_ptr<Game::Gem::cGemStone>>getgems;
 private:
 	void drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color);
 	bool isretun = false;

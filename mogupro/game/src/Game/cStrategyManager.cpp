@@ -153,6 +153,11 @@ void cStrategyManager::CreateBomb(const ci::vec3 _pos, const ci::vec3 _speed, co
 	bombs.insert(std::make_pair(_id, std::make_shared<Game::Strategy::cBomb>(_pos, _speed, _scale, true)));
 	bombs[_id]->setup();
 }
+std::vector<std::shared_ptr<Game::Strategy::cCannon>> cStrategyManager::getCannons()
+{
+	return cannons;
+}
+
 void cStrategyManager::drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color)
 {
 		gl::pushModelView();
