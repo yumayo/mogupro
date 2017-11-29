@@ -9,7 +9,7 @@
 #include<Game/Weapons/UseSubWeapon/cUseSubWeapon.h>
 namespace Game {
 	namespace Gem {
-		class cGem;
+		class cGemStone;
 	}
 	namespace Field
 	{
@@ -100,7 +100,7 @@ namespace Game {
 			//イージング用
 			ci::vec3 begin_pos;
 			Utility::hardptr<Node::node> root;
-			std::vector<std::shared_ptr<Game::Gem::cGem>>getgems;
+			std::vector<std::shared_ptr<Game::Gem::cGemStone>>getgems;
 			std::unordered_map<int,bool> gem_production_end;
 
 			//Y軸回転

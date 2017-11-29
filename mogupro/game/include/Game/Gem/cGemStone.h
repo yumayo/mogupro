@@ -5,22 +5,15 @@
 #include "Node/action.hpp"
 #include "../cPlayerManager.h"
 #include "Utility\cTimeMeasurement.h"
+#include "GemData.h"
 
 namespace Game
 {
 	namespace Gem
 	{
-		const float visibleRange = 20;
 
-		enum GemType
-		{
-			Dia,
-			Gold,
-			Iron,
-			Coal,
-		};
 
-		class cGem
+		class cGemStone
 		{
 		public:
 			// id          id
@@ -28,9 +21,9 @@ namespace Game
 			// scale       大きさ
 			// color       カラー（ここは本来Texture）
 			// type        Gemの種類(これ入れたらtexture引数にいらないかも)
-			cGem(int id,ci::vec3 postion, ci::vec3 scale, ci::ColorA color, GemType type, float delay)
-				: mId(id),mPosition(postion), mScale(scale), mColor(color), mType(type), mDelay(delay) {};
-			~cGem() {};
+			cGemStone(int id,ci::vec3 postion, ci::vec3 scale, ci::ColorA color, GemType type, float delay)
+				: mId(id),mPosition(postion), mScale(scale), mColor(color), mType(type), mDelay(delay), mIsActive(true){};
+			~cGemStone() {};
 
 			void setUp(ci::vec3 postion, ci::vec3 scale, ci::ColorA color, GemType type, float delay);
 			void draw();
@@ -44,6 +37,7 @@ namespace Game
 			ci::vec3 getScale() { return mScale; }
 			GemType getType() { return mType; }
 			ci::ColorA getColor() { return mColor; }
+			bool isActive() { return mIsActive; }
 			float getSinRotate() { return mSinrotate; }
 			bool getIsDrillhit() { return misdrillhit; }
 			std::vector<uint32_t> getIndices() { return indices; }
@@ -54,10 +48,11 @@ namespace Game
 			void setSinRotate(float rotate) { mSinrotate = rotate; }
 			void setIsDrillhit(bool ishit) { misdrillhit = ishit; }
 			void setIndices(int offset);
-			void setNomals() { for (int i = 0; i < 24; i++) { nomals.push_back(BOXNOMAL[i]); } };
+			void setIsActive(bool isActive) { mIsActive = isActive; }
+			void setNomals() { for (int i = 0; i < 24; i++) { nomals.push_back(BOXNOMAL[i]); } }
 			void setColorAs() { for (int i = 0; i < 24; i++) { colorAs.push_back(mColor); } }
+			void deleteGem();
 			hardptr<Node::node> root;
-			void cGem::deleteGem();
 			
 
 		private:
@@ -71,6 +66,7 @@ namespace Game
 			ci::vec3 mRotation;
 			ci::Color mColor;
 			float mDelay;
+			bool mIsActive;
 			GemType mType;
 			std::vector<uint32_t> indices;
 			std::vector<ci::vec3> nomals;
@@ -91,7 +87,7 @@ namespace Game
 			};
 
 			ci::vec3 BOXNOMAL[24] =
-			{ ci::vec3(1,0,0),ci::vec3(1,0,0),ci::vec3(1,0,0),ci::vec3(1,0,0),
+			  { ci::vec3(1,0,0),ci::vec3(1,0,0),ci::vec3(1,0,0),ci::vec3(1,0,0),
 				ci::vec3(0,1,0),ci::vec3(0,1,0),ci::vec3(0,1,0),ci::vec3(0,1,0),
 				ci::vec3(0,0,1),ci::vec3(0,0,1),ci::vec3(0,0,1),ci::vec3(0,0,1),
 				ci::vec3(-1,0,0),ci::vec3(-1,0,0),ci::vec3(-1,0,0),ci::vec3(-1,0,0),

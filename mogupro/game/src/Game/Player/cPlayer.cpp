@@ -125,7 +125,7 @@ void Game::Player::cPlayer::playerRotationX()
 void Game::Player::cPlayer::getGems(const int& _gemid)
 {
 	//自分の所持しているジェムにプッシュバック
-	getgems.push_back(GemManager->FindGem(_gemid));
+	getgems.push_back(GemManager->getGemStone(_gemid));
 	gem_production_end.insert(std::make_pair(_gemid, false));
 	int index = getgems.size() - 1;
 
@@ -169,7 +169,7 @@ void Game::Player::cPlayer::collisionGems()
 			//プレイヤー用のパケットを作らないと
 			getGems(GemManager->getGems()[i]->getId());
 			//cClientAdapter::getInstance()->sendGetGemQuarry(player_id, GemManager->getGems()[i]->getId());
-			GemManager->AcquisitionGem(i);
+			GemManager->breakeGemStone(i);
 		}
 	}
 }

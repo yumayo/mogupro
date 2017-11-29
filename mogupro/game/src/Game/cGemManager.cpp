@@ -2,6 +2,7 @@
 
 namespace Game
 {
+
 	void cGemManager::setUp(ci::vec3 position, ci::vec3 randomRange, float mapChipSize, float gemScale, int gemMaxNum, unsigned long seed)
 	{
 		mPosition = position;
@@ -13,13 +14,6 @@ namespace Game
 		mSeed = seed;
 		mTime = 0.0f;
 		mLightingSpeed = 0.4;
-		for (int i = 0; i < 2; i++)
-		{
-			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Dia, 0));
-			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Gold, 0));
-			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Iron, 0));
-			mTeamGems[i].insert(std::map<Gem::GemType, int>::value_type(Gem::GemType::Coal, 0));
-		}
 
 		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth(), ci::app::getWindowHeight(), true);
 		mShader = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/GemManager.frag"));
@@ -28,16 +22,23 @@ namespace Game
 		create();
 	}
 
+
 	void cGemManager::draw()
 	{
+
 		ci::gl::draw(mGemsVbo);
+
+		for (int i = 0; i < mFragmentGems.size(); i++)
+		{
+			mFragmentGems[i]->draw();
+		}
 		ci::gl::color(ci::Color(1, 1, 1));
 	};
+
 
 	void cGemManager::drawFbo()
 	{
 			using namespace ci;
-
 
 			auto rect = ci::Rectf(-ci::app::getWindowSize() / 2, ci::app::getWindowSize() / 2);
 			ci::gl::ScopedGlslProg glsl(mShader);
@@ -50,10 +51,10 @@ namespace Game
 			ci::gl::drawSolidRect(rect);
 	}
 
+
 	void cGemManager::update(float deltaTime)
 	{
 		mTime += deltaTime * mLightingSpeed;
-		//sort();
 		ci::gl::ScopedFramebuffer fbScp(mGemBuffer);
 		ci::gl::ScopedViewport scpVp2(ci::ivec2(0), mGemBuffer->getSize());
 
@@ -65,6 +66,7 @@ namespace Game
 		ci::gl::draw(mGemsVbo);
 		ci::gl::color(ci::Color(1, 1, 1));
 	};
+
 
 	void cGemManager::create()
 	{
@@ -98,15 +100,16 @@ namespace Game
 			default:
 				break;
 			}
-
 			color.a = cinder::randFloat(0,1);
+
 			
 			//oldcode-------
-			mGemsptr.push_back(std::make_shared<Gem::cGem>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type, delay));
-			mGemsptr.push_back(std::make_shared<Gem::cGem>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type, delay));
+			mGemsptr.push_back(std::make_shared<Gem::cGemStone>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type, delay));
+			mGemsptr.push_back(std::make_shared<Gem::cGemStone>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type, delay));
 			//--------------
-			mStaticGem.push_back(std::make_shared<Gem::cGem>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type, delay));
-			mStaticGem.push_back(std::make_shared<Gem::cGem>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type, delay));
+
+			mStaticGem.push_back(std::make_shared<Gem::cGemStone>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type, delay));
+			mStaticGem.push_back(std::make_shared<Gem::cGemStone>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type, delay));
 		}
 
 		int offset = 0;
@@ -120,9 +123,9 @@ namespace Game
 		buildMesh();
 	};
 
+
 	void cGemManager::buildMesh()
 	{
-
 		mesh->clear();
 		for (int i = 0; i < mStaticGem.size(); i++)
 		{
@@ -166,34 +169,9 @@ namespace Game
 		mGemsVbo = ci::gl::VboMesh::create(*mesh);
 	}
 
-	//プレイヤーが現在持っているジェムでやった方がいいかも
-	void cGemManager::gemCountUp(int team, Gem::GemType type)
-	{
-		//ゲームマネージャーに通知
-	}
 
-	void cGemManager::gemDelete(int id)
+	std::shared_ptr<Gem::cGemStone> cGemManager::getGemStone(int id)
 	{
-		std::vector<std::shared_ptr<Gem::cGem>>::iterator iterator = mActiveGem.begin();
-		bool isNothig = true;
-		//指定の宝石があるか
-		for (int i = 0; i < mActiveGem.size(); i++)
-		{
-			if (mActiveGem[i]->getId() == id)
-			{
-				isNothig = false;
-				break;
-			}
-			iterator++;
-		}
-		if (isNothig) return;
-
-		mActiveGem.erase(iterator);
-	}
-
-	std::shared_ptr<Gem::cGem> cGemManager::FindGem(int id)
-	{
-		bool isNothig = true;
 		for (int i = 0; i < mStaticGem.size(); i++)
 		{
 			if (mStaticGem[i]->getId() == id)
@@ -201,48 +179,55 @@ namespace Game
 				return  mStaticGem[i];
 			}
 		}
-		ci::app::console() << "This is no Gem that has that " << id << std::endl;
+		ci::app::console() << "This is no GemStone that has that " << id << std::endl;
 		return nullptr;
 	}
 
-	std::shared_ptr<Gem::cGem> cGemManager::AcquisitionGem(int id)
+
+	std::shared_ptr<Gem::cGemStone> cGemManager::breakeGemStone(int id)
 	{
-		std::vector<std::shared_ptr<Gem::cGem>>::iterator iterator = mStaticGem.begin();
-		bool isNothig = true;
 		for (int i = 0; i < mStaticGem.size(); i++)
 		{
 			if (mStaticGem[i]->getId() == id)
 			{
-				mActiveGem.push_back(mStaticGem[i]);
-				//該当する□のindicesを一点に
-				//std::vector<uint32_t> indices = std::vector<uint32_t>(mStaticGem[i]->getIndices().size());
-				//ci::app::console() << mStaticGem[i]->getIndices().size() << std::endl;
-				//auto vbo = mGemsVbo->getIndexVbo();
-				//vbo->bufferSubData(mStaticGem[i]->getIndices()[0] * 4, indices.size() * 4, &indices[0]);
-				//ci::app::console() << "delete" << i << std::endl;
-				//mStaticGem[i]->deleteGem();
-				//mStaticGem.erase(iterator);
+				if (!mStaticGem[i]->isActive()) return nullptr;
+				mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mStaticGem[i]->getPos(), mStaticGem[i]->getScale() / 2.0f, mStaticGem[i]->getColor(),mStaticGem[i]->getType()));
 				mStaticGem[i]->deleteGem();
-				ci::app::console() << "delete" << id << std::endl;
 				buildMesh();
-				//mStaticGem.erase(iterator);
-				return  mActiveGem[mActiveGem.size() - 1];
+				mStaticGem[i]->setIsActive(false);
+				return  mStaticGem[i];
 			}
-			iterator++;
 		}
-		ci::app::console() << "This is no Gem that has that " << id << std::endl;
+		ci::app::console() << "This is no GemStone that has that " << id << std::endl;
 		return nullptr;
 	}
 
-	//VBOにしたらいらないかも
-	void cGemManager::sort()
-	{
-		ci::vec3 pPos = Game::cPlayerManager::getInstance()->getActivePlayer()->getPos();
-		std::sort(mStaticGem.begin(), mStaticGem.end(),
-			[&](const std::shared_ptr<Gem::cGem> a, const std::shared_ptr<Gem::cGem> b)
-		{
-			return glm::distance(pPos, a->getPos()) < glm::distance(pPos, b->getPos());
-		});
 
+	std::shared_ptr<Gem::cFragmentGem> cGemManager::getFragmentGem(int id)
+	{
+		for (int i = 0; i < mFragmentGems.size(); i++)
+		{
+			if (mFragmentGems[i]->getId() == id)
+			{
+				return  mFragmentGems[i];
+			}
+		}
+		ci::app::console() << "This is no FragmentGem that has that " << id << std::endl;
+		return nullptr;
 	}
+	void  cGemManager::AcquisitionFragmentGem(int id)
+	{
+		std::vector<std::shared_ptr<Gem::cFragmentGem>>::iterator iterator = mFragmentGems.begin();
+		for (int i = 0; i < mFragmentGems.size(); i++)
+		{
+			if (mFragmentGems[i]->getId() == id)
+			{
+				mFragmentGems.erase(iterator);
+				return;
+			}
+			iterator++;
+		}
+		ci::app::console() << "This is no FragmentGem that has that " << id << std::endl;
+		return;
+	};
 }
