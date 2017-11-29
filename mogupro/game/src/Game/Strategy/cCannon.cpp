@@ -75,6 +75,7 @@ namespace Game
 		{
 			mAABB.addWorld();
 			mFoundatioAABB.addWorld();
+			mToPlayerAABB.set(mAABB.getPosition() - mAABB.getSize()*0.55f, mAABB.getPosition() + mAABB.getSize()*0.55f);
 		}
 
 		Game::Player::Team cCannon::getTeam()
@@ -87,22 +88,27 @@ namespace Game
 			return mToPlayerAABB;
 		}
 
-		void cCannon::receivePlayerGem( const std::vector<std::shared_ptr<Game::Gem::cGemStone>> getgems)
+		void cCannon::receivePlayerGem(std::vector<std::shared_ptr<Game::Gem::cGemStone>>& getgems)
 		{
-			ci::app::console() << "いえるものはじめ" << std::endl;
+			ci::app::console() << "いれるものはじめ" << std::endl;
 			for (int i = 0; i < getgems.size(); i++) {
 				ci::app::console() << getgems[i]->getType() << std::endl;
 				mGetgems.push_back(getgems[i]);
 			}
-			ci::app::console() << "いえるものおわり" << std::endl;
+			ci::app::console() << "いれるものおわり" << std::endl;
 
+			getgems.clear();
 
+			//////////////////////デバック
 			ci::app::console() << "ぜんぶはじめ" << std::endl;
 			for (int i = 0; i < mGetgems.size(); i++) {
 				ci::app::console() << mGetgems[i]->getType() << std::endl;
 			}
 			ci::app::console() << "ぜんぶおわり" << std::endl;
+			//////////////////////デバック
 		}
+
+	
 		ci::vec3 cCannon::getGemStorePos()
 		{
 			return mGemStorePos;
