@@ -42,25 +42,22 @@ namespace Game
 			}
 			void cQuarry::update(const float & delta_time)
 			{
-				//switch (state)
-				//{
-				//case Game::Weapons::SubWeapon::cQuarry::DRILLMOVE:
-				//	move(delta_time);
-				//	Game::cFieldManager::getInstance()->blockBreak(mPos, mScale.z);
-				//	collisionFieldGems();
-				//	updateSlope(1.0f, delta_time);
-				//	y_rotate++;
-				//	break;
-				//case Game::Weapons::SubWeapon::cQuarry::DRILLRETURN:
-				//	y_rotate--;
-				//	updateSlope(-1.0f, delta_time);
-				//	mPos.y += drillspeed*delta_time;;
-				//	break;
-				//case Game::Weapons::SubWeapon::cQuarry::DRILLSTOP:
-				//	break;
-				//default:
-				//	break;
-				//}
+				switch (state)
+				{
+				case Game::Weapons::SubWeapon::cQuarry::DRILLMOVE:
+					Drillmove(delta_time);
+					Game::cFieldManager::getInstance()->blockBreak(mDrillPos, mDrillScale.x);
+					collisionFieldGems();
+					updateSlope(delta_time);
+					break;
+				case Game::Weapons::SubWeapon::cQuarry::DRILLRETURN:
+					updateSlope(delta_time);
+					break;
+				case Game::Weapons::SubWeapon::cQuarry::DRILLSTOP:
+					break;
+				default:
+					break;
+				}
 
 
 				state = changeState();
@@ -298,7 +295,7 @@ namespace Game
 			ci::vec3 cQuarry::getNextEasingPos()
 			{
 				//int num = int(scale.x) + 2;
-				//vec3 buf;
+				vec3 buf = ci::vec3(0);
 				//int z_direction = easingcount / (num*num) % 2 == 0 ? 1 : -1;
 				//int direction = 1 * z_direction;
 				//if ((easingcount % (num*num) / num) % 2 == 1) {
@@ -312,7 +309,7 @@ namespace Game
 				//	buf = vec3(beginpos.x - direction*((num - 1) / 2) + direction*(easingcount%num), beginpos.y - (easingcount / (num*num)), beginpos.z + ((num - 1) / 2) - ((easingcount % (num*num)) / num));
 				//}
 
-				//return buf;
+				return buf;
 			}
 		}
 	}
