@@ -87,7 +87,7 @@ namespace Game
 			return mToPlayerAABB;
 		}
 
-		void cCannon::receivePlayerGem( const std::vector<std::shared_ptr<Game::Gem::cGem>> getgems)
+		void cCannon::receivePlayerGem( const std::vector<std::shared_ptr<Game::Gem::cGemStone>> getgems)
 		{
 			ci::app::console() << "‚¢‚¦‚é‚à‚Ì‚Í‚¶‚ß" << std::endl;
 			for (int i = 0; i < getgems.size(); i++) {
@@ -108,7 +108,7 @@ namespace Game
 			return mGemStorePos;
 		}
 
-		std::vector<std::shared_ptr<Game::Gem::cGem>> cCannon::getStoregems()
+		std::vector<std::shared_ptr<Game::Gem::cGemStone>> cCannon::getStoregems()
 		{
 			return mGetgems;
 		}
