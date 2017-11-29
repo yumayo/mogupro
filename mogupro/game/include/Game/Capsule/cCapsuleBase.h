@@ -27,6 +27,7 @@ public:
 protected:
 	ci::vec3 mPos;
 	ci::vec3 mScale;
+	ci::vec3 mRotate;
 	ci::AxisAlignedBox mAABB;
 	Game::Weapons::SubWeapon::SubWeaponType mType;
 	bool mIsget = false;

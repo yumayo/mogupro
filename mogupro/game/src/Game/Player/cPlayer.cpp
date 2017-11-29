@@ -125,7 +125,7 @@ void Game::Player::cPlayer::playerRotationX()
 void Game::Player::cPlayer::getGems(const int& _gemid)
 {
 	//自分の所持しているジェムにプッシュバック
-	getgems.push_back(GemManager->FindGem(_gemid));
+	getgems.push_back(GemManager->getGemStone(_gemid));
 	gem_production_end.insert(std::make_pair(_gemid, false));
 	int index = getgems.size() - 1;
 
@@ -153,11 +153,11 @@ void Game::Player::cPlayer::collisionGems()
 	ci::vec3 aabb_end_pos = mPos + ci::vec3(float(size.x) / 2.f, float(size.y) / 2.f, float(size.z) / 2.f);
 	ci::AxisAlignedBox player_aabb(aabb_begin_pos, aabb_end_pos);
 
-	for (int i = 0; i < int(GemManager->getGems().size()); i++)
+	for (int i = 0; i < int(GemManager->getGemStones().size()); i++)
 	{
-		if (GemManager->getGems()[i]->getIsDrillhit())continue;
-		ci::vec3 gempos = GemManager->getGems()[i]->getCenterPos();
-		ci::vec3 gemscale = GemManager->getGems()[i]->getScale();
+		if (GemManager->getGemStones()[i]->getIsDrillhit())continue;
+		ci::vec3 gempos = GemManager->getGemStones()[i]->getCenterPos();
+		ci::vec3 gemscale = GemManager->getGemStones()[i]->getScale();
 
 		//ジェムのAABBを生成
 		ci::AxisAlignedBox gem_aabb(gempos - ci::vec3(float(gemscale.x) / 2.f, float(gemscale.y) / 2.f, float(gemscale.z) / 2.f),
@@ -167,9 +167,9 @@ void Game::Player::cPlayer::collisionGems()
 		if (player_aabb.intersects(gem_aabb))
 		{
 			//プレイヤー用のパケットを作らないと
-			getGems(GemManager->getGems()[i]->getId());
+			getGems(GemManager->getGemStones()[i]->getId());
 			//cClientAdapter::getInstance()->sendGetGemQuarry(player_id, GemManager->getGems()[i]->getId());
-			GemManager->AcquisitionGem(i);
+			GemManager->breakeGemStone(i);
 		}
 	}
 }

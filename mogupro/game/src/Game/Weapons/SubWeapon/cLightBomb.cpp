@@ -32,9 +32,6 @@ namespace Weapons
 			rb.removeWorld();
 			cLightManager::getInstance()->removePointLight(light);
 
-		/*	for (int i = 0; i < mAroundLights.size(); i++) {
-				cLightManager::getInstance()->removePointLight(mAroundLights[i]);
-			}*/
 			for (int i = 0; i < mAroundLineLight.size(); i++) {
 				cLightManager::getInstance()->removeLineLight(mAroundLineLight[i]);
 			}
@@ -63,17 +60,6 @@ namespace Weapons
 			if (mIsHitObject) {
 				lightsinrotate += mLandcount;
 
-				//for (int i = 0; i < mAroundLights.size(); i++) {
-				//	mAroundLights[i]->reAttachPosition(mAroundLights[i], mPos + ci::vec3(mAroundLightLength*cos(mAroundLightAngle[i]),
-				//		0, mAroundLightLength*sin(mAroundLightAngle[i])));
-
-				//	mAroundLightColorH[i] += delta_time;
-				//	float h = std::fmodf(mAroundLightColorH[i], 1.0f);
-				//	ci::Colorf hsv = ci::hsvToRgb(ci::vec3(h, 1.0f, 1.0f));
-				//	mAroundLights[i]->color = ci::vec3(hsv.r, hsv.g, hsv.b);
-				//	//mAroundLightAngle[i] += mLandcount/10.f;
-				//}
-
 				for (int i = 0; i < mAroundLineLight.size(); i++) {
 					mAroundLineLight[i]->reAttachLine(mAroundLineLight[i], mPos + ci::vec3(mAroundLightLength*cos(mAroundLightAngle[i]),
 						-0.1f, mAroundLightLength*sin(mAroundLightAngle[i])),
@@ -95,17 +81,6 @@ namespace Weapons
 		{
 			const float createnum = 20.f;
 
-		/*	for (float i = 0.0f; i < createnum; i++) {
-				float angle = (i / createnum)*2.f*M_PI;
-				mAroundLightAngle.emplace_back(angle);
-				mAroundLightColorH.emplace_back(i / createnum);
-				ci::vec3 pos = mPos + ci::vec3(mAroundLightLength*cos(angle), 0, mAroundLightLength*sin(angle));
-				float h = (i / createnum);
-				ci::Colorf hsv = ci::hsvToRgb(ci::vec3(h, 1.0f, 1.f));
-
-				mAroundLights.emplace_back(cLightManager::getInstance()->addPointLight(pos, ci::vec3(hsv.r, hsv.g, hsv.b), 0.5f));
-			}*/
-
 			for (float i = 0; i < 3; i++) {
 				float angle = (i / 3.f)*2.f*M_PI;
 				mAroundLightAngle.emplace_back(angle);
@@ -124,7 +99,7 @@ namespace Weapons
 			mDrawScaleSinAngle += mLandcount*mLandcount*delta_time*5.f;
 			float scale = mScale.x/2.f + (0.25f*mScale.x)*sin((mDrawScaleSinAngle));
 
-			mDrawscale = ci::vec3(scale, scale, scale);
+			mDrawscale = ci::vec3(scale);
 		}
 		void cLightBomb::exprosion()
 		{
@@ -186,7 +161,6 @@ namespace Weapons
 				if (cPlayerManager::getInstance()->getPlayers()[i]->getWhichTeam() == mTeamNum)continue;
 				if (glm::distance2(cPlayerManager::getInstance()->getPlayers()[i]->getPos(), mPos) < mExprosionLength) {
 					dmageToPlayer(i);
-					ci::app::console() << "‚ ‚Á‚½‚Á‚½" << std::endl;
 				}
 
 

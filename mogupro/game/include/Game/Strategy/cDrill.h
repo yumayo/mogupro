@@ -40,7 +40,7 @@ private:
     void drawCube( const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color );
 	void collisionFieldGems();
     DrillSlope drillslopes;
-	std::vector<std::shared_ptr<Game::Gem::cGem>>getgems;
+	std::vector<std::shared_ptr<Game::Gem::cGemStone>>getgems;
 	void drawBasket();
     void createDrills();
     void move(float delttime);

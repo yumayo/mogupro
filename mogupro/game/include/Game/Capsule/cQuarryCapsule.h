@@ -14,7 +14,7 @@ public:
 	void draw()override;
 	bool deleteThis()override;
 private:
-
+	int count = 0;
 };
 }
 }
