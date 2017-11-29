@@ -118,7 +118,7 @@ namespace Game
 		{
 			if (!ismyobject)return;
 
-			getgems.push_back(GemManager->FindGem(_gemid));
+			getgems.push_back(GemManager->getGemStone(_gemid));
 
 			int index = getgems.size() - 1;
 
@@ -136,7 +136,7 @@ namespace Game
 				getgems[index]->root->set_position_3d(p);
 			}), call_func::create([] {; })));
 
-			GemManager->getGems()[_gemid]->setIsDrillhit(true);
+			GemManager->getGemStones()[_gemid]->setIsDrillhit(true);
 
 		}
 
@@ -178,18 +178,18 @@ namespace Game
 			AxisAlignedBox drill_aabb(mPos - vec3(float(scale.x) / 2.f, float(scale.y) / 2.f, float(scale.z) / 2.f),
 				mPos + vec3(float(scale.x) / 2.f, float(scale.y) / 2.f, float(scale.z) / 2.f));
 
-			for (int i = 0; i < int(GemManager->getGems().size()); i++)
+			for (int i = 0; i < int(GemManager->getGemStones().size()); i++)
 			{
-				if (GemManager->getGems()[i]->getIsDrillhit())continue;
-				vec3 gempos = GemManager->getGems()[i]->getPos();
-				vec3 gemscale = GemManager->getGems()[i]->getScale();
+				if (GemManager->getGemStones()[i]->getIsDrillhit())continue;
+				vec3 gempos = GemManager->getGemStones()[i]->getPos();
+				vec3 gemscale = GemManager->getGemStones()[i]->getScale();
 
 				AxisAlignedBox gem_aabb(gempos - vec3(float(gemscale.x) / 2.f, float(gemscale.y) / 2.f, float(gemscale.z) / 2.f),
 					gempos + vec3(float(gemscale.x) / 2.f, float(gemscale.y) / 2.f, float(gemscale.z) / 2.f));
 
 				if (STRM->isAABB(drill_aabb, gem_aabb))
 				{
-					cClientAdapter::getInstance()->sendGetGemQuarry(id, GemManager->getGems()[i]->getId());
+					cClientAdapter::getInstance()->sendGetGemQuarry(id, GemManager->getGemStones()[i]->getId());
 				}
 			}
 
