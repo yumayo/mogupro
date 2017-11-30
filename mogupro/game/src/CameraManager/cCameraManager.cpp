@@ -100,6 +100,8 @@ void cCameraManager::update( const float& delta_time ) {
 
 void cCameraManager::bind3D( )
 {
+	ci::gl::enableDepthRead( );
+	ci::gl::enableDepthWrite( );
     ci::gl::pushMatrices( );
     ci::gl::setMatrices( camera );
 }
@@ -111,6 +113,8 @@ void cCameraManager::unBind3D( )
 
 void cCameraManager::bind2D( )
 {
+	ci::gl::disableDepthRead( );
+	ci::gl::disableDepthWrite( );
     ci::gl::pushMatrices( );
     ci::gl::setMatrices( camera_2d );
 }

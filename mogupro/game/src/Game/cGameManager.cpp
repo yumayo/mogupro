@@ -53,7 +53,7 @@ cGameManager::cGameManager( )
 		CAMERA->refPosition = worldSize * cinder::vec3( 0.5F, 2.5F, 0.5F );
 		CAMERA->setCameraAngle( cinder::vec2( -M_PI / 2, -M_PI ) );
 
-		if ( ENV->anyKey( ) )
+		if ( ENV->pushKey( ) )
 		{
 			cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( );
 		}

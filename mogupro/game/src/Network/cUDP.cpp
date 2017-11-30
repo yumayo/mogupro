@@ -9,6 +9,10 @@ cUDP::cUDP( )
 {
     mRemoteBuffer.fill( 0 );
 }
+cUDP::~cUDP( )
+{
+	close( );
+}
 void cUDP::write( cNetworkHandle const& networkHandle, size_t sendDataByteNumber, char const * sendData )
 {
     try
@@ -100,8 +104,8 @@ void cUDP::receive( )
         {
             // 受信できなかった時に呼ばれます。
             // 外側からソケットを閉じられたときなど。
-            MES_ERR( e.message( ),
-                     [ ] { } );
+            //MES_ERR( e.message( ),
+            //         [ ] { } );
         }
         else
         {
