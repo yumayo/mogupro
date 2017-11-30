@@ -62,8 +62,21 @@ namespace Game
 		mVboShader->uniform("deltaTime", mTime);
 		ci::gl::clear(ci::ColorA(0, 0, 0, 0));
 		
+		for (int i = 0; i < mFragmentGems.size(); i++)
+		{
+			mFragmentGems[i]->update();
+		}
+
 		ci::gl::draw(mGemsVbo);
 		ci::gl::color(ci::Color(1, 1, 1));
+	};
+
+	void cGemManager::lateUpdate(const float& delta_time)
+	{
+		for(int i = 0; i < mFragmentGems.size(); i++)
+		{
+			mFragmentGems[i]->lateUpdate(delta_time);
+		}
 	};
 
 
@@ -185,6 +198,7 @@ namespace Game
 			{
 				if (!mGemStone[i]->isActive()) return nullptr;
 				mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mGemStone[i]->getPos(), mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType()));
+				mFragmentGems[mFragmentGems.size() - 1]->setup();
 				mGemStone[i]->deleteGem();
 				buildMesh();
 				mGemStone[i]->setIsActive(false);

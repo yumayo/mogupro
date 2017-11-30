@@ -6,6 +6,8 @@
 #include "../cPlayerManager.h"
 #include "Utility\cTimeMeasurement.h"
 #include "GemData.h"
+#include "Collision/cRigidBody.h"
+#include "Collision/cAABBCollider.h"
 
 namespace Game
 {
@@ -22,10 +24,10 @@ namespace Game
 			// color       カラー（ここは本来Texture）
 			// type        Gemの種類(これ入れたらtexture引数にいらないかも)
 			cGemStone(int id,ci::vec3 postion, ci::vec3 scale, ci::ColorA color, GemType type)
-				: mId(id),mPosition(postion), mScale(scale), mColor(color), mType(type), mIsActive(true){};
-			~cGemStone() {};
+				: mId(id),mPosition(postion), mScale(scale), mColor(color), mType(type), mIsActive(true), mAabb(postion,scale){};
+			~cGemStone();
 
-			void setUp(ci::vec3 postion, ci::vec3 scale, ci::ColorA color, GemType type);
+			void setUp();
 			void draw();
 			void drawFbo();
 			void update();
@@ -43,6 +45,8 @@ namespace Game
 			std::vector<uint32_t> getIndices() { return indices; }
 			std::vector<ci::vec3> getNomals() { return nomals; }
 			std::vector<ci::ColorA> getColorAs() { return colorAs; }
+			Collision::cAABBCollider getAabb() { return mAabb; }
+
 			void setPos(ci::vec3 pos) { mPosition = pos; }
 			void setPutPos(ci::vec3 pos) { mPutPosition = pos; }
 			void setSinRotate(float rotate) { mSinrotate = rotate; }
@@ -72,7 +76,7 @@ namespace Game
 			std::vector<ci::ColorA> colorAs;
 			float mSinrotate;
 			bool misdrillhit = false;
-			
+			Collision::cAABBCollider mAabb;
 	
 
 			uint32_t BOXINDICES[36] = 
