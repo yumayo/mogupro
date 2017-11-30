@@ -46,14 +46,17 @@ private://スロープ
 	Collision::cAABBCollider mSlopeAABB;
 	void updateSlope(float delttime);
 	void createSlope();
+	void drawSlope();
 private://先端のドリル
 	Collision::cAABBCollider mDrillAABB;
+	ci::vec3 mBeginDrillPos;
 	ci::vec3 mDrillPos;
 	ci::vec3 mDrillScale;
 	float mDrillrotate_y;
-	void setupDrill();
 	void collisionFieldGems();
 	void Drillmove(float delttime);
+	void drillReturn(float delttime);
+	void drawDrill();
 	ci::vec3 getNextEasingPos();
 	Utility::hardptr<Node::node> root;
 	bool iseasingfinished = true;
@@ -61,7 +64,7 @@ private://先端のドリル
 
 private://ジェム関係
 	void moveGetGem(const float delttime);
-	std::vector<std::shared_ptr<Game::Gem::cGemStone>>getgems;
+	std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>getgems;
 private:
 	void drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color);
 	bool isretun = false;

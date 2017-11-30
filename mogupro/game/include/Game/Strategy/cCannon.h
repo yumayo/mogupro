@@ -23,12 +23,12 @@ namespace Game
 			Game::Player::Team getTeam();
 			ci::AxisAlignedBox getAABB();
 			//////////•óÎ‚ğ‚à‚ç‚¢‚Ü‚·
-			void receivePlayerGem(std::vector<std::shared_ptr<Game::Gem::cGemStone>>& getgems);
+			void receivePlayerGem(std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>& getgems);
 			/////////////•óÎ‚ğ’™‚ß‚éêŠ
 			ci::vec3 getGemStorePos();
-			std::vector<std::shared_ptr<Game::Gem::cGemStone>>getStoregems();
+			std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>getStoregems();
 		private:
-			std::vector<std::shared_ptr<Game::Gem::cGemStone>>mGetgems;
+			std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>mGetgems;
 			Collision::cAABBCollider mAABB;
 			Collision::cAABBCollider mFoundatioAABB;
 			Game::Player::Team mTeam;

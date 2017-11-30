@@ -60,7 +60,7 @@ namespace Weapons
 			if (mIsHitObject) {
 				lightsinrotate += mLandcount;
 
-				for (int i = 0; i < mAroundLineLight.size(); i++) {
+				for (int i = 0; i < int(mAroundLineLight.size()); i++) {
 					mAroundLineLight[i]->reAttachLine(mAroundLineLight[i], mPos + ci::vec3(mAroundLightLength*cos(mAroundLightAngle[i]),
 						-0.1f, mAroundLightLength*sin(mAroundLightAngle[i])),
 						mPos + ci::vec3(mAroundLightLength*cos(mAroundLightAngle[i]+2.f*M_PI / 3.f),
@@ -104,18 +104,25 @@ namespace Weapons
 		void cLightBomb::exprosion()
 		{
 			if (mIsExprosion)return;
+			float exprosiontime = 3.0f;
+
 			if (mLandcount >= 3.0f) {
-				collisonToPlayer();
-				Game::cFieldManager::getInstance()->blockBreak(mPos, mExprosionLength/2.f);
+				ci::app::console() << "ボム"<<mPlayerId <<"アクティブ"<< cPlayerManager::getInstance()->getActivePlayerId() << std::endl;
+				////////アクティブプレイヤーのみ行います
+				if (mPlayerId == cPlayerManager::getInstance()->getActivePlayerId()) {
+					ci::app::console() << "あああああああああああああああ" << std::endl;
+					collisonToPlayer();
+					Game::cFieldManager::getInstance()->blockBreak(mPos, mExprosionLength / 2.f);
+				}
 				mIsExprosion = true;
 
 				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
 					.scale(0.5f).
 					vanishTime(1.0f).
-					speed(0.5f).
+					speed(1.0f).
 					textureType(Particle::ParticleTextureType::SPARK).
 					color(ci::ColorA::white()).
-					moveType(Particle::ParticleType::EXPROTION).count(100).isTrajectory(true));
+					moveType(Particle::ParticleType::EXPROTION).count(100).isTrajectory(true).gravity(0.048f));
 
 			}
 		}

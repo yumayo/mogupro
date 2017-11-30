@@ -9,6 +9,7 @@
 #include<Game/Weapons/SubWeapon/cSubWeaponBase.h>
 #include<Game/Weapons/UseSubWeapon/cUseSubBase.h>
 #include<Game/Weapons/SubWeapon/SubWeaponType.h>
+#include<Game/Weapons/SubWeapon/cQuarry.h>
 namespace Game
 {
 class cSubWeaponManager : public Utility::cSingletonAble<cSubWeaponManager>
@@ -26,13 +27,16 @@ public:
 	//void CreateBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale, const int _id);
 	//テスト用です
 	void drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color);
+	void createLightBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale,const int objectid, const int _playerid);
 	void createLightBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale, const int _playerid);
+	void createQuarry(const ci::vec3 _pos, const int _objectid, const int playerid, const Game::Weapons::SubWeapon::cQuarry::DrillType type);
 	void createUseSubWeapon(const Game::Weapons::SubWeapon::SubWeaponType type, const int playerid);
 	void deleteWeapons();
+	int debugidcount = 0;
 private:
 	std::map<int, std::shared_ptr<Game::Weapons::SubWeapon::cSubWeaponBase>>subweapons;
 	std::list<std::shared_ptr<Game::Weapons::UseSubWeapon::cUseSubBase>>usesubweapons;
-	int debugidcount = 0;
+	
 };
 }
 #define SUBWM Game::cSubWeaponManager::getInstance()
