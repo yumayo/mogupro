@@ -123,7 +123,6 @@ void Game::Weapon::LightSaber::Attack(const float & delta_time)
 			//当たった時の演出として一瞬カメラを揺らす
 			CAMERA->shakeCamera(0.1f, 0.1f);
 			it->receiveDamage(attack, cPlayerManager::getInstance()->getActivePlayer()->getPlayerId());
-			ci::app::console() << i - 1 << std::endl;
 			//対象のhitをtrueにして
 			//対象限定でヒットストップをつけたり当たり判定をなくしたり
 			//するんご
@@ -172,6 +171,7 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 	}
 
 	if (pull) {
+		Resource::cSoundManager::getInstance()->findSe("Player/swing2.wav").setGain(0.2f);
 		Resource::cSoundManager::getInstance()->findSe("Player/swing2.wav").play();
 		if (light == nullptr) {
 			light = Game::cLightManager::getInstance()->addPointLight(player_pos + glm::normalize(ci::vec3(sin(rotate.x + player_rotate_x), sin(rotate.y), cos(rotate.x + player_rotate_x))), ci::vec3(0.5f, 0.5f, 0.0f), 0.5f);
@@ -207,7 +207,7 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 
 Game::Weapon::LightSaber::LightSaber()
 {
-	attack = 30;
+	attack = 40;
 	range = 2;
 	player_rotate_x = 0;
 	player_rotate_y = 0;
@@ -286,6 +286,10 @@ void Game::Weapon::LightSaber::DrawRotate3()
 void Game::Weapon::LightSaber::draw()
 {
 	if (!is_attack) return;
+	ci::gl::drawStrokedCube(aabb);
+	ci::gl::drawVector(ray[0].getOrigin(), ray[0].getDirection());
+	ci::gl::drawVector(ray[1].getOrigin(), ray[1].getDirection());
+	ci::gl::drawVector(ray[2].getOrigin(), ray[2].getDirection());
 	ci::gl::ScopedTextureBind tex(TEX->get("weapon"));
 	ci::gl::pushModelView();
 	DrawRotate1();

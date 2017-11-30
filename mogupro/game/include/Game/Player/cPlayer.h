@@ -37,6 +37,8 @@ namespace Game {
 		static const float DEFAULT_SPEED = 5.0f;
 		static const float DEFAULT_SIZE = 0.8f;
 
+		static const float MAX_HP = 100.0f;
+
 		class cPlayer : public Game::cObjectBase {
 		private:
 			ci::vec3 size;
@@ -100,7 +102,6 @@ namespace Game {
 			//イージング用
 			ci::vec3 begin_pos;
 			Utility::hardptr<Node::node> root;
-			std::vector<std::shared_ptr<Game::Gem::cGemStone>>getgems;
 			std::unordered_map<int,bool> gem_production_end;
 
 			//Y軸回転
@@ -129,7 +130,7 @@ namespace Game {
 				const Game::Player::Team& team);
 			/////アイテムを使用するのに使います
 			Game::Weapons::UseSubWeapon::cUseSubWeapon useSubWeapon;
-
+			std::vector<std::shared_ptr<Game::Gem::cGemStone>>getgems;
 			ci::vec3 getSize() {
 				return size;
 			}
@@ -148,7 +149,6 @@ namespace Game {
 			bool getStan() {
 				return stan;
 			}
-
 			//プレイヤーが死んでいるかどうか（死亡中はtrue）
 			bool isDead() {
 				return is_dead;
@@ -230,6 +230,10 @@ namespace Game {
 			bool isDrilling() {
 				return drilling;
 			}
+
+			//ジェムを大砲に渡すときのイージング
+			void sendCannonGems(const ci::vec3& cannon_pos);
+
 			//attack = 攻撃力
 			//player_id = 攻撃を仕掛けたプレイヤーのid
 			void receiveDamage(const float& attack, const float& player_id);

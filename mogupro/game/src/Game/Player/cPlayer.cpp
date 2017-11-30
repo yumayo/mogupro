@@ -188,6 +188,8 @@ void Game::Player::cPlayer::dead()
 		textureType(Particle::ParticleTextureType::SPARK).
 		color(ci::ColorA::white()).
 		moveType(Particle::ParticleType::EXPROTION).count(30).isTrajectory(false));
+	Resource::cSoundManager::getInstance()->findSe("Player/launcher1.wav").setGain(0.2f);
+	Resource::cSoundManager::getInstance()->findSe("Player/rare.wav").setGain(0.2f);
 	Resource::cSoundManager::getInstance()->findSe("Player/launcher1.wav").play();
 	Resource::cSoundManager::getInstance()->findSe("Player/rare.wav").play();
 }
@@ -234,6 +236,7 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 	drillingCamera(delta_time);
 	if (!drilling)return;
 	if (drill_sound > 0.1f) {
+		Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").setGain(0.2f);
 		Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").play();
 		drill_sound = 0;
 	}
@@ -304,10 +307,18 @@ Game::Player::cPlayer::cPlayer(
 }
 
 
+void Game::Player::cPlayer::sendCannonGems(const ci::vec3 & cannon_pos)
+{
+
+}
+
 void Game::Player::cPlayer::receiveDamage(const float & attack, const float& player_id)
 {
 	//死亡中はダメージを受けない
 	if (is_dead)return;
+
+	CAMERA->shakeCamera(0.1f, 0.2f);
+
 	//hpを減らす
 	status.hp -= attack;
 	//攻撃してきたプレイヤーのidを切り替える
@@ -326,6 +337,7 @@ void Game::Player::cPlayer::receiveDamage(const float & attack, const float& pla
 		textureType(Particle::ParticleTextureType::SPARK).
 		color(ci::ColorA::white()).
 		moveType(Particle::ParticleType::EXPROTION).count(6).isTrajectory(false));
+	Resource::cSoundManager::getInstance()->findSe("Player/damage6.wav").setGain(0.2f);
 	Resource::cSoundManager::getInstance()->findSe("Player/damage6.wav").play();
 }
 
@@ -374,6 +386,7 @@ void Game::Player::cPlayer::jump(bool flag)
 
 	if (jump_flag == true) {
 		if (mRigidbody.isLanding()) {
+			Resource::cSoundManager::getInstance()->findSe("Player/onground.wav").setGain(0.2f);
 			Resource::cSoundManager::getInstance()->findSe("Player/onground.wav").play();
 			mRigidbody.addSpeed( ci::vec3( 0, status.jump_force, 0 ) );
 			jump_flag = false;
