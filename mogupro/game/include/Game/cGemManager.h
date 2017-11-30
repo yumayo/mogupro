@@ -35,20 +35,20 @@ namespace Game
 		// gemScale           ジェム一個の大きさ
 		// gemMaxNum          gemの生成数
 		// seed               シード値(現在は入力しても変動なし)
-		void setUp(ci::vec3 position, ci::vec3 randomRange, float mapChipSize, float gemScale, int gemMaxNum, unsigned long seed);
-		void draw();
-		void drawFbo();
-		void update(float deltaTime);
-		void lateUpdate(const float& delta_time);
+		void      setUp(ci::vec3 position, ci::vec3 randomRange, float mapChipSize, float gemScale, int gemMaxNum, unsigned long seed);
+		void      draw();
+		void      drawFbo();
+		void      update(float deltaTime);
+		void      lateUpdate(const float& delta_time);
 
-		void create();
-		void buildMesh();
+		void      create();
+		void      buildMesh();
 
-		std::vector<std::shared_ptr<Gem::cGemStone>> getGemStones() { return mGemStone; }
-		std::vector<std::shared_ptr<Gem::cFragmentGem>> getFragmentGems() { return mFragmentGems; }
-		std::shared_ptr<Gem::cGemStone> getGemStone(int id);
-		std::shared_ptr<Gem::cGemStone> breakeGemStone(int id);
-		std::shared_ptr<Gem::cFragmentGem> getFragmentGem(int id);
+		std::vector<std::shared_ptr<Gem::cGemStone>>         getGemStones()          { return mGemStone; }
+		std::vector<std::shared_ptr<Gem::cFragmentGem>>      getFragmentGems()       { return mFragmentGems; }
+		std::shared_ptr<Gem::cGemStone>                      getGemStone(int id);
+		std::shared_ptr<Gem::cGemStone>                      breakeGemStone(int id);
+		std::shared_ptr<Gem::cFragmentGem>                   getFragmentGem(int id);
 		void  AcquisitionFragmentGem(int id);
 
 	private:
@@ -56,23 +56,23 @@ namespace Game
 
 		const int mDrawNum = 100;
 
-		std::vector<std::shared_ptr<Gem::cGemStone>> mGemStone;
-		std::vector<std::shared_ptr<Gem::cFragmentGem>> mFragmentGems;
-		ci::TriMeshRef mesh;
+		std::vector<std::shared_ptr<Gem::cGemStone>>      mGemStone;
+		std::vector<std::shared_ptr<Gem::cFragmentGem>>   mFragmentGems;
 
-		ci::vec3 mPosition;
-		ci::vec3 mRandomRange;
-		float mMapChipSize;
-		float mGemScale;
-		int mGemMaxNum;
-		ci::gl::FboRef mGemBuffer;
-		ci::gl::GlslProgRef mShader;
+		ci::vec3             mPosition;
+		ci::vec3             mRandomRange;
+		float                mMapChipSize;
+		float                mGemScale;
+		int                  mGemMaxNum;
+		ci::gl::FboRef       mGemBuffer;
+		ci::gl::GlslProgRef  mShader;
+		ci::gl::GlslProgRef  mVboShader;
+		ci::TriMeshRef       mesh;
+		ci::gl::VboMeshRef   mGemsVbo;
+		unsigned long        mSeed;
+		float                mTime;
+		float                mLightingSpeed;
 		//ci::gl::GlslProgRef mHShader;
 		//ci::gl::GlslProgRef mVShader;
-		ci::gl::GlslProgRef mVboShader;
-		ci::gl::VboMeshRef mGemsVbo;
-		unsigned long mSeed;
-		float mTime;
-		float mLightingSpeed;
 	};
 }

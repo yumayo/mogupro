@@ -5,19 +5,19 @@ namespace Game
 
 	void cGemManager::setUp(ci::vec3 position, ci::vec3 randomRange, float mapChipSize, float gemScale, int gemMaxNum, unsigned long seed)
 	{
-		mPosition = position;
-		mRandomRange = randomRange;
-		mMapChipSize = mapChipSize;
-		mGemScale = gemScale;
-		mGemMaxNum = gemMaxNum;
-		mSeed = seed;
-		mTime = 0.0f;
-		mLightingSpeed = 0.4;
+		mPosition      = position;
+		mRandomRange   = randomRange;
+		mMapChipSize   = mapChipSize;
+		mGemScale      = gemScale;
+		mGemMaxNum     = gemMaxNum;
+		mSeed          = seed;
+		mTime          = 0.0f;
+		mLightingSpeed = 0.4f;
 
-		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth(), ci::app::getWindowHeight(), true);
-		mShader = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/GemManager.frag"));
-		mVboShader = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemVbo.vert"), ci::app::loadAsset("Gem/GemVbo.frag"));
-		mesh = ci::TriMesh::create(ci::TriMesh::Format().colors(4).positions().normals().texCoords0());
+		mGemBuffer     = ci::gl::Fbo::create(ci::app::getWindowWidth(), ci::app::getWindowHeight(), true);
+		mShader        = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/GemManager.frag"));
+		mVboShader     = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemVbo.vert"), ci::app::loadAsset("Gem/GemVbo.frag"));
+		mesh           = ci::TriMesh::create(ci::TriMesh::Format().colors(4).positions().normals().texCoords0());
 		create();
 	}
 
@@ -26,8 +26,7 @@ namespace Game
 	{
 
 		ci::gl::draw(mGemsVbo);
-
-		for (int i = 0; i < mFragmentGems.size(); i++)
+		for (size_t i = 0; i < mFragmentGems.size(); i++)
 		{
 			mFragmentGems[i]->draw();
 		}
@@ -40,7 +39,7 @@ namespace Game
 			using namespace ci;
 
 			auto rect = ci::Rectf(-ci::app::getWindowSize() / 2, ci::app::getWindowSize() / 2);
-			ci::gl::ScopedGlslProg glsl(mShader);
+			ci::gl::ScopedGlslProg    glsl(mShader);
 			ci::gl::ScopedTextureBind tex(mGemBuffer->getColorTexture());
 
 			mShader->uniform("uTex0", 0);
@@ -55,16 +54,17 @@ namespace Game
 	{
 		mTime += deltaTime * mLightingSpeed;
 		ci::gl::ScopedFramebuffer fbScp(mGemBuffer);
-		ci::gl::ScopedViewport scpVp2(ci::ivec2(0), mGemBuffer->getSize());
-
+		ci::gl::ScopedViewport    scpVp2(ci::ivec2(0), mGemBuffer->getSize());
 		ci::gl::setMatrices(CAMERA->getCamera());
-		ci::gl::ScopedGlslProg shaderScp(mVboShader);
+
+		ci::gl::ScopedGlslProg    shaderScp(mVboShader);
 		mVboShader->uniform("deltaTime", mTime);
+
 		ci::gl::clear(ci::ColorA(0, 0, 0, 0));
-		
-		for (int i = 0; i < mFragmentGems.size(); i++)
+		for (size_t i = 0; i < mFragmentGems.size(); i++)
 		{
 			mFragmentGems[i]->update();
+			mFragmentGems[i]->draw();
 		}
 
 		ci::gl::draw(mGemsVbo);
@@ -73,7 +73,7 @@ namespace Game
 
 	void cGemManager::lateUpdate(const float& delta_time)
 	{
-		for(int i = 0; i < mFragmentGems.size(); i++)
+		for(size_t i = 0; i < mFragmentGems.size(); i++)
 		{
 			mFragmentGems[i]->lateUpdate(delta_time);
 		}
@@ -85,11 +85,12 @@ namespace Game
 		ci::randSeed(uint32_t(mSeed));
 		for (int i = 0; i < mGemMaxNum; i += 2)
 		{
-			int x = ci::randInt(0, mRandomRange.x - 1);
-			int y = ci::randInt(0, mRandomRange.y - 1);
-			int z = ci::randInt(0, mRandomRange.z - 1);
-			float delay = ci::randFloat(0, 20);
-			Game::Gem::GemType type = Game::Gem::GemType(ci::randInt(0, Game::Gem::GemType::Coal + 1));
+
+			int x             = ci::randInt(0, int32_t(mRandomRange.x - 1));
+			int y             = ci::randInt(0, int32_t(mRandomRange.y - 1));
+			int z             = ci::randInt(0, int32_t(mRandomRange.z - 1));
+			float delay       = ci::randFloat(0, 20);
+			Gem::GemType type = Game::Gem::GemType(ci::randInt(0, Game::Gem::GemType::Coal + 1));
 
 
 			//テクスチャーの張替え
@@ -111,8 +112,8 @@ namespace Game
 			default:
 				break;
 			}
-			color.a = cinder::randFloat(0,1);
 
+			color.a = cinder::randFloat(0,1);
 
 			mGemStone.push_back(std::make_shared<Gem::cGemStone>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type));
 			mGemStone.push_back(std::make_shared<Gem::cGemStone>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type));
@@ -133,14 +134,17 @@ namespace Game
 	void cGemManager::buildMesh()
 	{
 		mesh->clear();
-		for (int i = 0; i < mGemStone.size(); i++)
+		for (size_t i = 0; i < mGemStone.size(); i++)
 		{
-			auto indices = mGemStone[i]->getIndices();
+			auto indices       = mGemStone[i]->getIndices();
+			ci::vec3 pos       = mGemStone[i]->getPos();
+			ci::vec3 scale     = mGemStone[i]->getScale() / 2.0f;
+
 			mesh->appendIndices(&indices[0], indices.size());
 			mesh->appendNormals(&mGemStone[i]->getNomals()[0], mGemStone[i]->getNomals().size());
 			mesh->appendColors(&mGemStone[i]->getColorAs()[0], mGemStone[i]->getColorAs().size());
-			ci::vec3 pos = mGemStone[i]->getPos();
-			ci::vec3 scale = mGemStone[i]->getScale() / 2.0f;
+
+			//Vert
 			mesh->appendPosition(pos + ci::vec3(scale.x, scale.y, scale.z));
 			mesh->appendPosition(pos + ci::vec3(scale.x, -scale.y, scale.z));
 			mesh->appendPosition(pos + ci::vec3(scale.x, -scale.y, -scale.z));
@@ -178,13 +182,14 @@ namespace Game
 
 	std::shared_ptr<Gem::cGemStone> cGemManager::getGemStone(int id)
 	{
-		for (int i = 0; i < mGemStone.size(); i++)
+		for (size_t i = 0; i < mGemStone.size(); i++)
 		{
 			if (mGemStone[i]->getId() == id)
 			{
 				return  mGemStone[i];
 			}
 		}
+
 		ci::app::console() << "This is no GemStone that has that " << id << std::endl;
 		return nullptr;
 	}
@@ -192,11 +197,13 @@ namespace Game
 
 	std::shared_ptr<Gem::cGemStone> cGemManager::breakeGemStone(int id)
 	{
-		for (int i = 0; i < mGemStone.size(); i++)
+		for (size_t i = 0; i < mGemStone.size(); i++)
 		{
 			if (mGemStone[i]->getId() == id)
 			{
+
 				if (!mGemStone[i]->isActive()) return nullptr;
+
 				mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mGemStone[i]->getPos(), mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType()));
 				mFragmentGems[mFragmentGems.size() - 1]->setup();
 				mGemStone[i]->deleteGem();
@@ -205,6 +212,7 @@ namespace Game
 				return  mGemStone[i];
 			}
 		}
+
 		ci::app::console() << "This is no GemStone that has that " << id << std::endl;
 		return nullptr;
 	}
@@ -212,20 +220,21 @@ namespace Game
 
 	std::shared_ptr<Gem::cFragmentGem> cGemManager::getFragmentGem(int id)
 	{
-		for (int i = 0; i < mFragmentGems.size(); i++)
+		for (size_t i = 0; i < mFragmentGems.size(); i++)
 		{
 			if (mFragmentGems[i]->getId() == id)
 			{
 				return  mFragmentGems[i];
 			}
 		}
+
 		ci::app::console() << "This is no FragmentGem that has that " << id << std::endl;
 		return nullptr;
 	}
 	void  cGemManager::AcquisitionFragmentGem(int id)
 	{
 		std::vector<std::shared_ptr<Gem::cFragmentGem>>::iterator iterator = mFragmentGems.begin();
-		for (int i = 0; i < mFragmentGems.size(); i++)
+		for (size_t i = 0; i < mFragmentGems.size(); i++)
 		{
 			if (mFragmentGems[i]->getId() == id)
 			{
@@ -234,6 +243,7 @@ namespace Game
 			}
 			iterator++;
 		}
+
 		ci::app::console() << "This is no FragmentGem that has that " << id << std::endl;
 		return;
 	};

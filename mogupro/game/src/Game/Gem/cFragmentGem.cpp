@@ -8,11 +8,13 @@ namespace Game
 		{
 		};
 
+
 		cFragmentGem::~cFragmentGem()
 		{
 			mAabb.removeWorld();
 			mRb.removeWorld();
 		}
+
 
 		void cFragmentGem::setup()
 		{
@@ -22,18 +24,21 @@ namespace Game
 			mRb.setFriction(1.0f);
 		}
 
+
 		void cFragmentGem::draw()
 		{
 			ci::gl::color(ci::Color(mColorA));
-			drawCube(vec3(mPosition),vec3(mScale));
+			drawCube(vec3(mPosition), vec3(mScale));
 			color(ColorA(1,1,1,1));
 		}
+
 
 		void cFragmentGem::lateUpdate(const float& delta_time)
 		{
 			mPosition = mAabb.getPosition();
 			mSpeed = mRb.getSpeed();
 		}
+
 
 		void cFragmentGem::update()
 		{
