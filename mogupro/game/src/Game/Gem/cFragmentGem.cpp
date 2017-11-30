@@ -6,6 +6,10 @@ namespace Game
 		cFragmentGem::cFragmentGem(int id, vec3 position, vec3 scale, ColorA color, GemType type) :
 			mId(id), mPosition(position), mScale(scale), mColorA(color), mType(type), mAabb(position, scale), mRb(mAabb)
 		{
+			mIsActive    = true;
+			mSinRotate   = 0.0f;
+			mPutPos      = vec3(0.0f);
+			mSpeed       = vec3(0, 5, 0);
 		};
 
 
