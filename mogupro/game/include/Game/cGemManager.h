@@ -39,6 +39,7 @@ namespace Game
 		void draw();
 		void drawFbo();
 		void update(float deltaTime);
+		void lateUpdate(const float& delta_time);
 
 		void create();
 		void buildMesh();
