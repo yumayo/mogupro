@@ -116,7 +116,7 @@ namespace Game
 
 		void cDrill::HitGem(const int _gemid)
 		{
-			if (!ismyobject)return;
+		/*	if (!ismyobject)return;
 
 			getgems.push_back(GemManager->getGemStone(_gemid));
 
@@ -135,8 +135,8 @@ namespace Game
 				p.y = t;
 				getgems[index]->root->set_position_3d(p);
 			}), call_func::create([] {; })));
-
-			GemManager->getGemStones()[_gemid]->setIsDrillhit(true);
+*/
+			//GemManager->getGemStones()[_gemid]->setIsDrillhit(true);
 
 		}
 
@@ -173,7 +173,7 @@ namespace Game
 		}
 		void cDrill::collisionFieldGems()
 		{
-			if (!ismyobject)return;
+		/*	if (!ismyobject)return;
 
 			AxisAlignedBox drill_aabb(mPos - vec3(float(scale.x) / 2.f, float(scale.y) / 2.f, float(scale.z) / 2.f),
 				mPos + vec3(float(scale.x) / 2.f, float(scale.y) / 2.f, float(scale.z) / 2.f));
@@ -191,7 +191,7 @@ namespace Game
 				{
 					cClientAdapter::getInstance()->sendGetGemQuarry(id, GemManager->getGemStones()[i]->getId());
 				}
-			}
+			}*/
 
 		}
 		void cDrill::drawBasket()
@@ -258,7 +258,7 @@ namespace Game
 
 		void cDrill::moveGetGem(const float delttime)
 		{
-			for (int i = 0; i < int(getgems.size()); i++)
+			/*for (int i = 0; i < int(getgems.size()); i++)
 			{
 
 				if (!(getgems[i]->getPos().y >= beginpos.y + (scale.y + 1.f))) {
@@ -274,7 +274,7 @@ namespace Game
 						getgems[i]->getPutPos().z + ((scale.z / 2.f) + 0.5f)*sin(getgems[i]->getSinRotate())));
 
 				}
-			}
+			}*/
 
 		}
 		void cDrill::updateSlope(const float direction, float delttime)

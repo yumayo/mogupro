@@ -33,13 +33,13 @@ void cStrategyManager::setup()
 	ci::vec3 scale = ci::vec3((x_max / 6.f));
 	ci::vec3 foundationscale = ci::vec3(scale.x*1.4f, scale.y*0.1f, scale.z*1.4f);
 	{
-		ci::vec3 pos = ci::vec3(x_max / 2.f, y_max + scale.y / 2.f- Field::BLOCK_SIZE/2.f+foundationscale.y, scale.z / 2.f -Field::BLOCK_SIZE / 2.f);
+		ci::vec3 pos = ci::vec3(x_max / 2.f, y_max + scale.y / 2.f- Field::BLOCK_SIZE/2.f+foundationscale.y, scale.z / 2.f - Field::BLOCK_SIZE / 2.f);
 		ci::vec3 foundationpos= ci::vec3(x_max / 2.f, y_max + foundationscale.y / 2.f - Field::BLOCK_SIZE / 2.f, foundationscale.z / 2.f - Field::BLOCK_SIZE / 2.f);
 		cannons.push_back(std::make_shared<Game::Strategy::cCannon>(pos,scale, foundationpos, foundationscale, Game::Player::Team::Red));
 	}
 	{
-		ci::vec3 pos = vec3(x_max / 2.f, y_max + scale.y / 2.f + foundationscale.y, z_max - scale.z/2.f + Field::BLOCK_SIZE / 2.f);
-		ci::vec3 foundationpos = ci::vec3(x_max / 2.f, y_max + foundationscale.y / 2.f - Field::BLOCK_SIZE / 2.f, z_max -foundationscale.z / 2.f + Field::BLOCK_SIZE / 2.f);
+		ci::vec3 pos = vec3(x_max / 2.f, y_max + scale.y / 2.f - Field::BLOCK_SIZE / 2.f + foundationscale.y, z_max - scale.z/2.f - Field::BLOCK_SIZE / 2.f);
+		ci::vec3 foundationpos = ci::vec3(x_max / 2.f, y_max + foundationscale.y / 2.f - Field::BLOCK_SIZE / 2.f, z_max -foundationscale.z / 2.f - Field::BLOCK_SIZE / 2.f);
 		cannons.push_back(std::make_shared<Game::Strategy::cCannon>(pos, scale, foundationpos, foundationscale, Game::Player::Team::Blue));
 	}
 

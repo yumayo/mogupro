@@ -2,6 +2,7 @@
 #include <Game/Weapons/SubWeapon/cLightBomb.h>
 #include <Game/Weapons/UseSubWeapon/cUseLightBomb.h>
 #include <Game/Weapons/UseSubWeapon/cUseQuarry.h>
+
 namespace Game
 {
 cSubWeaponManager::cSubWeaponManager( )
@@ -14,7 +15,7 @@ cSubWeaponManager::~cSubWeaponManager( )
 }
 void cSubWeaponManager::setup()
 {
-
+	cPlayerManager::getInstance()->getActivePlayer()->useSubWeapon.addSubWeapon(Game::Weapons::SubWeapon::SubWeaponType::QUARRY);
 }
 void cSubWeaponManager::draw()
 {
@@ -44,17 +45,32 @@ void cSubWeaponManager::updateCollisionAfterUpdate(const float & deltaTime)
 
 void cSubWeaponManager::HitDrillToGem(const int _objectid, const int _gemid)
 {
+	auto quarry = std::static_pointer_cast<Game::Weapons::SubWeapon::cQuarry>(subweapons[_objectid]);
 
+	quarry->HitGem(_gemid);
 }
 
 void cSubWeaponManager::drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color)
 {
 
 }
+void cSubWeaponManager::createLightBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale, const int objectid, const int _playerid)
+{
+	subweapons.insert(std::make_pair(objectid, std::make_shared<Game::Weapons::SubWeapon::cLightBomb>(_pos, _scale, _speed, _playerid)));
+	subweapons[objectid]->setup();
+	debugidcount++;
+}
 void cSubWeaponManager::createLightBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale, const int _playerid)
 {
 	subweapons.insert(std::make_pair(debugidcount, std::make_shared<Game::Weapons::SubWeapon::cLightBomb>(_pos, _scale, _speed, _playerid)));
 	subweapons[debugidcount]->setup();
+	debugidcount++;
+}
+
+void cSubWeaponManager::createQuarry(const ci::vec3 _pos, const int objectid, const int playerid, const Game::Weapons::SubWeapon::cQuarry::DrillType type)
+{
+	subweapons.insert(std::make_pair(objectid, std::make_shared<Game::Weapons::SubWeapon::cQuarry>(_pos, objectid, playerid, type)));
+	subweapons[objectid]->setup();
 	debugidcount++;
 }
 
