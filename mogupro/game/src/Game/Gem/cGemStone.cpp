@@ -4,11 +4,14 @@ namespace Game
 {
 	namespace Gem
 	{
-		void cGemStone::setUp(ci::vec3 positin, ci::vec3 scale, ci::ColorA color, GemType type)
+
+		cGemStone::~cGemStone()
 		{
-			mPosition = positin;
-			mScale = scale;
-			mColor = color;
+			mAabb.removeWorld();
+		};
+		void cGemStone::setUp()
+		{
+			mAabb.addWorld();
 		}
 
 		void cGemStone::draw()
