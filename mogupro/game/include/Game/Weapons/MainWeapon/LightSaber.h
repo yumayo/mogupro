@@ -36,6 +36,9 @@ namespace Game {
 
 			void Attack1();
 			void Attack2();
+			void CollisionPlayers();
+			void CollisionDrills();
+			void CollisionGems();
 			void Attack(const float & delta_time);
 			void Rotation1(ci::vec2 rotate_buf, float rotation);
 			void Operation(const float & delta_time);

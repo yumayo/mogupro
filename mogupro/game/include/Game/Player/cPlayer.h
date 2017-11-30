@@ -9,7 +9,7 @@
 #include<Game/Weapons/UseSubWeapon/cUseSubWeapon.h>
 namespace Game {
 	namespace Gem {
-		class cGemStone;
+		class cFragmentGem;
 	}
 	namespace Field
 	{
@@ -128,9 +128,13 @@ namespace Game {
 				const int& main_weapon_id,
 				const int& sub_weapon_id,
 				const Game::Player::Team& team);
+			~cPlayer() {
+				mCollider.removeWorld();
+				mRigidbody.removeWorld();
+			}
 			/////アイテムを使用するのに使います
 			Game::Weapons::UseSubWeapon::cUseSubWeapon useSubWeapon;
-			std::vector<std::shared_ptr<Game::Gem::cGemStone>>getgems;
+			std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>getgems;
 			ci::vec3 getSize() {
 				return size;
 			}
