@@ -91,7 +91,7 @@ void cGameMain::setup( )
 	auto now = boost::posix_time::microsec_clock::local_time( );
 	auto ready = now + boost::posix_time::seconds( 3 );
 	auto battle = ready + boost::posix_time::seconds( 3 );
-	auto result = ready + boost::posix_time::minutes( 10 );
+	auto result = battle + boost::posix_time::minutes( 10 );
 	Game::cGameManager::getInstance( )->setup( ready, battle, result );
 
 	sendEndSetup = false;
@@ -103,7 +103,24 @@ void cGameMain::setup( )
 
 void cGameMain::shutDown( )
 {
-    Game::cFieldManager::getInstance()->shutdown();
+	Network::cUDPClientManager::removeInstance( );
+	Network::cUDPServerManager::removeInstance( );
+	Game::cDebugManager::removeInstance( );
+	Game::cClientAdapter::removeInstance( );
+	Game::cServerAdapter::removeInstance( );
+	Game::cUIManager::removeInstance( );
+	Game::cStrategyManager::removeInstance( );
+	Game::cCapsuleManager::removeInstance( );
+	Game::cSubWeaponManager::removeInstance( );
+	Game::cPlayerManager::removeInstance( );
+	Game::cShaderManager::removeInstance( );
+	Particle::cParticleManager::removeInstance( );
+	Game::cFieldManager::getInstance( )->shutdown( );
+	Game::cFieldManager::removeInstance( );
+	Game::cGemManager::removeInstance( );
+	Game::cLightManager::removeInstance( );
+	Collision::cCollisionManager::removeInstance( );
+	Game::cGameManager::removeInstance( );
 }
 
 void cGameMain::update( float deltaTime )

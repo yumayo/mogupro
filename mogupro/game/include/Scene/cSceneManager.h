@@ -3,6 +3,7 @@
 #include <Utility/cSingletonAble.h>
 #include <memory>
 #include "cSceneBase.h"
+#include <Utility/cInput.h>
 
 //! @file cSceneManager
 //! @brief SceneØ‚è‘Ö‚¦‚ðŠÜ‚ßŒ»Ý‚ÌScene‚Ì‚·‚×‚Ä‚ðŠÇ—‚·‚éƒNƒ‰ƒX‚Å‚·
@@ -34,6 +35,7 @@ public:
 		if ( mSceneBase )
 		{
 			mSceneBase->shutDown( );
+			ENV->flashInput( );
 		}
 		change<scene>(args...);
 		mSceneBase->setup();

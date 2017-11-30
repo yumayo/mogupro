@@ -70,7 +70,7 @@ void cTitle::update( float deltaTime )
 	}
 	else
 	{
-		if ( Utility::cInputAll::getInstance( )->anyKey( ) )
+		if ( Utility::cInputAll::getInstance( )->pushKey( ) )
 		{
 			Network::cUDPClientManager::getInstance( )->open( );
 			Network::cUDPServerManager::getInstance( )->open( );
