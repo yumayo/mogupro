@@ -3,6 +3,7 @@
 #include <cinder/gl/gl.h>
 #include <Utility/cInput.h>
 #include <Collision/cCollisionManager.h>
+#include <Game/cPlayerManager.h>
 namespace CameraManager
 {
 void cCameraManager::shakeCamera( const float & scatter, const float & seconds )
@@ -24,26 +25,19 @@ void cCameraManager::setup( ) {
 //慣性つきカメラ移動
 void cCameraManager::MovingCamera( )
 {
-	//慣性移動
-	buf_pos = refPosition - pos;
-	buf_pos *= 0.25f;
-	pos += buf_pos;
-
-	//なんか言われたら戻す↓
-
-	////カメラが近すぎたらその位置にする
-	//if (refPosition.x - pos.x <  0.2f&&
-	//	refPosition.x - pos.x > -0.2f&&
-	//	refPosition.y - pos.y <  0.2f &&
-	//	refPosition.y - pos.y > -0.2f &&
-	//	refPosition.z - pos.z <  0.2f &&
-	//	refPosition.z - pos.z > -0.2f) {
-	//	pos = refPosition;
-	//}
-	////遠いなら慣性移動
-	//else {
-	//	
-	//}
+	//プレイヤーが死んだらキルカメラ
+	if (Game::cPlayerManager::getInstance()->getActivePlayer() != nullptr &&
+		Game::cPlayerManager::getInstance()->getActivePlayer()->isDead()) {
+		//慣性移動
+		buf_pos = refPosition - pos;
+		buf_pos *= 0.25f;
+		pos += buf_pos;
+		
+	}
+	else {
+		//生きているときは常にプレイヤーの位置
+		pos = refPosition;
+	}
 }
 void cCameraManager::ScatterCamera( )
 {
