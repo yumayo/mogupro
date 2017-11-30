@@ -9,22 +9,28 @@ namespace Game
 		{
 			mAabb.removeWorld();
 		};
+
+
 		void cGemStone::setUp()
 		{
 			mAabb.addWorld();
 		}
 
+
 		void cGemStone::draw()
 		{
 		}
+
 
 		void cGemStone::drawFbo()
 		{
 		}
 
+
 		void cGemStone::update()
 		{
 		}
+
 
 		void cGemStone::setIndices(int offset)
 		{
@@ -37,11 +43,10 @@ namespace Game
 
 		void cGemStone::deleteGem()
 		{
-			for (int i = 0; i < indices.size(); i++)
+			for (size_t i = 0; i < indices.size(); i++)
 			{
 				indices[i] = 0;
 			}
 		}
-
 	}
 }
