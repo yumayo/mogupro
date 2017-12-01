@@ -12,7 +12,7 @@ enum class ParticleType
     NONE,
     SCATTER,    // 飛び散り
     EXPROTION,  // 爆発
-    GLITTER,    // 動きなしキラキラ
+    GLITTER,    // キラキラ
     CONVERGE,   // 収束
 };
 
@@ -47,21 +47,24 @@ public:
     ParticleParam& vanishTime( const float& vanish_time );
     // 消滅時間のランダムの範囲
     ParticleParam& vanishTimeRange( const float& vanish_time_range );
-    // 生成時間
+    // 消滅し始める時間
+    ParticleParam& vanishBeginTime( const float& vanish_begin_time );
+    // 生成時間 ( time < 0 になると生成終了 )
     ParticleParam& effectTime( const float& effect_time );
     // パーティクルの移動速度
     ParticleParam& speed( const float& speed );
     // ベクトルの追加量 ( ベクトルに偏りを持たせる )
     ParticleParam& addVec( const ci::vec3& add_vec );
-    // 生成の中心位置にライトを生成するかどうか
-    ParticleParam& isLighting( const bool& is_lighting );
-    // パーティクルの軌跡を生成するかどうか
-    ParticleParam& isTrajectory( const bool& is_trajectory );
     // 重力の強さ ( vec.y - gravity )
     ParticleParam& gravity( const float& gravity );
+    // パーティクルの効果範囲　( moveType == GLITTER or CONVERGE )
+    ParticleParam& effectRange( const float& effect_range );
+    // 生成の中心位置にライトを生成するかどうか
+    ParticleParam& isLighting( const bool& is_lighting = true );
+    // パーティクルの軌跡を生成するかどうか
+    ParticleParam& isTrajectory( const bool& is_trajectory = true );
     // パーティクルをCubeにするかどうか
-    ParticleParam& isCube( const bool& is_cube );
-
+    ParticleParam& isCube( const bool& is_cube = true );
 
 private:
 
@@ -73,12 +76,15 @@ private:
     int mCount;
     float mVanishTime;
     float mVanishTimeRange;
+    float mVainshBeginTime;
     float mEffectTime;
     float mSpeed;
     ci::vec3 mAddVec;
+    float mGravity;
+    float mEffectRange;
+    float mEaseTime;
     bool mIsLighting;
     bool mIsTrajectory;
-    float mGravity;
     bool mIsCube;
 
 };
@@ -89,7 +95,8 @@ public:
 
     cParticle( const ci::vec3& position,
                const ci::vec3& vec,
-               const float& time );
+               const float& time,
+               const float& vanish_begin_time );
     ~cParticle();
 
     void update( const float& delta_time, const float& gravity );
@@ -97,12 +104,19 @@ public:
     void cubeDraw( const ci::ColorA& color );
     bool isActive();
 
+private:
+
+    void alphaUpdate(const float& delta_time);
+    float getAlpha();
+
 public:
 
     ci::vec3 mPosition;
     ci::vec3 mPrevPosition;
     ci::vec3 mVec;
     float mTime;
+    float mVanishBeginTime;
+    float mAlpha;
     int mTrajectoryCount;
 };
 
@@ -129,9 +143,11 @@ public:
 
 private:
 
-    void sort();
-    void create( const ci::vec3& position, const float& time );
-    void trajectoryCreate( const ci::vec3& position, const float& vanish_time, const float& delta_time );
+    void createParticle();
+    ci::vec3 createPosition();
+    ci::vec3 createVec( const ci::vec3& particle_position );
+    float createVanishTime();
+    void createTrajectory( const ci::vec3& position, const float& vanish_time, const float& delta_time );
     void particleDraw( const glm::quat& rotation );
     void setTexture( const ParticleTextureType& texture_type );
     void setLight( bool is_lighting );
