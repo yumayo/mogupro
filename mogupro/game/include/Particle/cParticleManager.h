@@ -4,6 +4,7 @@
 #include <Utility/cUserPointer.hpp>
 #include <Game/Light/cPointLightParam.h>
 #include <Utility/cSingletonAble.h>
+#include <Particle/Easing/EaseType.h>
 
 namespace Particle
 {
@@ -13,7 +14,7 @@ enum class ParticleType
     SCATTER,    // 飛び散り
     EXPROTION,  // 爆発
     GLITTER,    // キラキラ
-    CONVERGE,   // 収束
+    CONVERGE,   // 収束 ( Easing ) 
 };
 
 enum class ParticleTextureType
@@ -35,12 +36,14 @@ public:
     ParticleParam& position( const ci::vec3& position );
     // パーティクルのスケール
     ParticleParam& scale( const float& scale );
+
     // パーティクルの移動の仕方
     ParticleParam& moveType( const ParticleType& move_type );
     // パーティクルの画像の種類
     ParticleParam& textureType( const ParticleTextureType& texture_type );
     // 色
     ParticleParam& color( const ci::ColorA& color );
+
     // 一フレームでパーティクルが生成される数
     ParticleParam& count( const int& count );
     // 消滅時間
@@ -59,6 +62,12 @@ public:
     ParticleParam& gravity( const float& gravity );
     // パーティクルの効果範囲　( moveType == GLITTER or CONVERGE )
     ParticleParam& effectRange( const float& effect_range );
+
+    // イージングにかける時間 ( frame )
+    ParticleParam& easeTime( const float& ease_speed );
+    // イージングの種類 ( EaseType:: )
+    ParticleParam& easeType( const EaseType& ease_type );
+
     // 生成の中心位置にライトを生成するかどうか
     ParticleParam& isLighting( const bool& is_lighting = true );
     // パーティクルの軌跡を生成するかどうか
@@ -83,6 +92,7 @@ private:
     float mGravity;
     float mEffectRange;
     float mEaseTime;
+    EaseType mEaseType;
     bool mIsLighting;
     bool mIsTrajectory;
     bool mIsCube;
@@ -103,10 +113,11 @@ public:
     void draw( const glm::quat& rotation, const ci::ColorA& color );
     void cubeDraw( const ci::ColorA& color );
     bool isActive();
+    ci::vec3 getVec();
 
 private:
 
-    void alphaUpdate(const float& delta_time);
+    void alphaUpdate( const float& delta_time );
     float getAlpha();
 
 public:
@@ -166,25 +177,12 @@ public:
 };
 
 // /* 使い方 */
-// /* コンストラクタ法 */
-//
-// Particle::cParticleManager::getInstance()->
-//     create( vec3( 0, get_map_top_pos, 0 ),         // 生成位置の中心
-//             Particle::ParticleType::SCATTER,       // 飛ばし方
-//             Particle::ParticleTextureType::SPARK,  // 画像の種類
-//             100.0f,                                // 生成時間
-//             10,                                    // 生成個数
-//             0.1f,                                  // 玉の速度 (内部でrandomをしている
-//             false,                                 // ライトのenable
-//             color);                                // カラー
-//
-
 // /* 変更したいパラメーターだけ変更していくチェーン記法 */
 //
 // Particle::cParticleManager::getInstance()->
 //     create( Particle::ParticleParam()
 //             .position( mCollider.getPosition()
-//             .scale( vec3( 0.5f ) ) );    // 生成位置の中心
+//             .scale( vec3( 0.5f ) ) );    
 //
 
 class cParticleManager : public Utility::cSingletonAble<cParticleManager>

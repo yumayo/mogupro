@@ -4,8 +4,9 @@
 #include <Game/cLightManager.h>
 #include <Utility/cTimeMeasurement.h>
 #include <Utility/cRandom.h>
-#include "cinder/ip/Fill.h"
-#include "cinder/ip/Blend.h"
+#include <cinder/ip/Fill.h>
+#include <cinder/ip/Blend.h>
+#include <Particle/Easing/cEase.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -73,6 +74,8 @@ ParticleParam::ParticleParam() :
     mAddVec( ci::vec3( 0 ) ),
     mGravity( 0 ),
     mEffectRange( 3.0f ),
+    mEaseTime( 30.0f ),
+    mEaseType( EaseType::Linear ),
     mIsLighting( false ),
     mIsTrajectory( false ),
     mIsCube( false )
@@ -148,6 +151,16 @@ ParticleParam & ParticleParam::effectRange( const float & effect_range )
     mEffectRange = effect_range;
     return *this;
 }
+ParticleParam & ParticleParam::easeTime( const float & ease_time )
+{
+    mEaseTime = ease_time;
+    return *this;
+}
+ParticleParam & ParticleParam::easeType( const EaseType & ease_type )
+{
+    mEaseType = ease_type;
+    return *this;
+}
 ParticleParam & ParticleParam::isLighting( const bool & is_lighting )
 {
     mIsLighting = is_lighting;
@@ -167,7 +180,7 @@ ParticleParam & ParticleParam::isCube( const bool & is_cube )
 cParticle::cParticle( const ci::vec3& position,
                       const ci::vec3& vec,
                       const float& time,
-                      const float& vanish_begin_time) :
+                      const float& vanish_begin_time ) :
     mPosition( position )
     , mVec( vec )
     , mTime( time )
@@ -186,6 +199,7 @@ void cParticle::update( const float& delta_time, const float& gravity )
 {
     mPrevPosition = mPosition;
     mPosition += mVec;
+
     mVec.y -= gravity;
 
     alphaUpdate( delta_time );
@@ -225,6 +239,11 @@ void cParticle::cubeDraw( const ci::ColorA& color )
 bool cParticle::isActive()
 {
     return mTime > 0;
+}
+
+ci::vec3 cParticle::getVec()
+{
+    return mPosition - mPrevPosition;
 }
 
 void cParticle::alphaUpdate( const float& delta_time )
@@ -361,10 +380,18 @@ void cParticleHolder::createParticle()
     const vec3& position = createPosition();
     const auto& rand_vec = createVec( mParam.mPosition + position );
     const float& vanish_time = createVanishTime();
-    mParticles.emplace_back( std::make_shared<cParticle>( position, 
-                                                          rand_vec, 
+
+
+    mParticles.emplace_back( std::make_shared<cParticle>( position,
+                                                          rand_vec,
                                                           vanish_time,
-                                                          mParam.mVainshBeginTime) );
+                                                          mParam.mVainshBeginTime ) );
+
+    if ( mParam.mMoveType == ParticleType::CONVERGE )
+        Easing->add( mParticles.back()->mPosition,
+                     vec3( 0 ),
+                     mParam.mEaseTime,
+                     mParam.mEaseType );
 }
 
 ci::vec3 cParticleHolder::createPosition()
@@ -396,9 +423,9 @@ ci::vec3 cParticleHolder::createVec( const ci::vec3& particle_position )
     }
     else if ( mParam.mMoveType == ParticleType::CONVERGE )
     {
-        vec3 center_vec = mParam.mPosition - particle_position;
-        vec = glm::normalize( center_vec );
-        vec *= mParam.mSpeed;
+        //vec3 center_vec = mParam.mPosition - particle_position;
+        //vec = glm::normalize( center_vec );
+        //vec *= mParam.mSpeed;
     }
     else if ( mParam.mMoveType == ParticleType::GLITTER )
     {
@@ -419,7 +446,7 @@ void cParticleHolder::createTrajectory( const ci::vec3 & position,
 {
     for ( size_t i = 0; i < mParticles.size(); i++ )
     {
-        const vec3& c_vec = mParticles[i]->mVec;
+        const vec3& c_vec = mParticles[i]->getVec();
         const float& length = glm::length( c_vec * 1.0f );
         const float& count = ceil( length / mParam.mScale );
         const vec3& one_vec = c_vec / (float) count;
@@ -437,7 +464,7 @@ void cParticleHolder::createTrajectory( const ci::vec3 & position,
             const vec3& t_pos = prev_pos + ( one_vec * (float) i );
             mTrajectoryParticles.push_back( std::make_shared<cParticle>( t_pos,
                                                                          vec3( 0 ),
-                                                                         current_time ,
+                                                                         current_time,
                                                                          mParam.mVainshBeginTime ) );
         }
 
@@ -494,6 +521,7 @@ void cParticleManager::setup()
 
 void cParticleManager::update( const float& delta_time )
 {
+    Easing->update();
     builbordUpdate();
     for ( auto& it = mParticleHolders.begin(); it != mParticleHolders.end(); )
     {
