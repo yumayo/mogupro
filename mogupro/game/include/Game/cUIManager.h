@@ -15,9 +15,10 @@ public:
 private:
 	hardptr<Node::node> mRoot;
 	softptr<Node::node> mTime;
-	softptr<Node::node> mCapsule1;
-	softptr<Node::node> mCapsule2;
+	softptr<Node::node> mLive;
+	softptr<Node::node> mCapsule;
 	softptr<Node::node> mMyTeamCannonPower;
 	softptr<Node::node> mEnemyTeamCannonPower;
+	softptr<Node::node> mPlayerScreenEffect;
 };
 }

@@ -3,6 +3,7 @@
 #include <cinder/gl/gl.h>
 #include <Utility/cInput.h>
 #include <Collision/cCollisionManager.h>
+#include <Game/cPlayerManager.h>
 namespace CameraManager
 {
 void cCameraManager::shakeCamera( const float & scatter, const float & seconds )
@@ -24,20 +25,18 @@ void cCameraManager::setup( ) {
 //慣性つきカメラ移動
 void cCameraManager::MovingCamera( )
 {
-	//カメラが近すぎたらその位置にする
-	if (refPosition.x - pos.x <  1.0f||
-		refPosition.x - pos.x > -1.0f&&
-		refPosition.y - pos.y <  1.0f ||
-		refPosition.y - pos.y > -1.0f &&
-		refPosition.z - pos.z <  1.0f ||
-		refPosition.z - pos.z > -1.0f) {
-		pos = refPosition;
-	}
-	//遠いなら慣性移動
-	else {
+	//プレイヤーが死んだらキルカメラ
+	if (Game::cPlayerManager::getInstance()->getActivePlayer() != nullptr &&
+		Game::cPlayerManager::getInstance()->getActivePlayer()->isDead()) {
+		//慣性移動
 		buf_pos = refPosition - pos;
-		buf_pos *= 0.8f;
+		buf_pos *= 0.25f;
 		pos += buf_pos;
+		
+	}
+	else {
+		//生きているときは常にプレイヤーの位置
+		pos = refPosition;
 	}
 }
 void cCameraManager::ScatterCamera( )
@@ -51,6 +50,13 @@ void cCameraManager::ScatterCamera( )
     float buf_y = random_y( mt );
     my_scatter = ci::vec2( buf_x, buf_y );
 
+}
+void cCameraManager::setCameraAngle( ci::vec2 const & angle )
+{
+	camera_angle = angle;
+	camera_angle.y = std::min( float( M_PI / 2 ) - 0.01f,
+							   std::max( camera_angle.y, -float( M_PI / 2 ) + 0.01f ) );
+	camera_angle.x = std::fmod( camera_angle.x, M_PI * 2.0 );
 }
 void cCameraManager::update( const float& delta_time ) {
 
@@ -94,6 +100,8 @@ void cCameraManager::update( const float& delta_time ) {
 
 void cCameraManager::bind3D( )
 {
+	ci::gl::enableDepthRead( );
+	ci::gl::enableDepthWrite( );
     ci::gl::pushMatrices( );
     ci::gl::setMatrices( camera );
 }
@@ -105,6 +113,8 @@ void cCameraManager::unBind3D( )
 
 void cCameraManager::bind2D( )
 {
+	ci::gl::disableDepthRead( );
+	ci::gl::disableDepthWrite( );
     ci::gl::pushMatrices( );
     ci::gl::setMatrices( camera_2d );
 }

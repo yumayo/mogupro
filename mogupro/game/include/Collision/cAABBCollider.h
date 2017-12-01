@@ -12,6 +12,7 @@ public:
     void addWorld( );
     void removeWorld( );
     cinder::AxisAlignedBox createAABB( cinder::vec3 calcedPosition ) const override;
+	void setSize( cinder::vec3 const& value );
     cinder::vec3 const& getSize( ) const;
 private:
     cinder::vec3 mSize;

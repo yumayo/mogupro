@@ -1,11 +1,11 @@
 #include <Game/Weapons/MainWeapon/LightSaber.h>
 #include <cinder/gl/gl.h>
-#include <Game/cPlayerManager.h>
 #include <Utility/cInput.h>
 #include <CameraManager/cCameraManager.h>
 #include <Resource/cObjectManager.h>
 #include <Resource/TextureManager.h>
 #include <Resource/cSoundManager.h>
+#include <Game/cGemManager.h>
 float Linear(float t, float b, float e) {
 	return (e - b) * t + b;
 }
@@ -53,19 +53,18 @@ void Game::Weapon::LightSaber::Attack2()
 
 }
 
-void Game::Weapon::LightSaber::Attack(const float & delta_time)
+void Game::Weapon::LightSaber::CollisionPlayers()
 {
-	if (!is_attack)return;
-	weapon_draw_pos = player_pos + glm::normalize(ci::vec3(sin(rotate.x + player_rotate_x), sin(rotate.y), cos(rotate.x + player_rotate_x)));
-	aabb = ci::AxisAlignedBox(weapon_draw_pos - ci::vec3(range / 2), weapon_draw_pos + ci::vec3(range / 2));
-	if(light != nullptr)
-	light->reAttachPositionWithRadius(light, weapon_draw_pos, 2);
 	//hitsのベクターに入れるためのi
 	int i = -1;
 	for (auto& it : cPlayerManager::getInstance()->getPlayers()) {
 		i++;
 		//自分の操作しているプレイヤーなら返す
 		if (it->getActiveUser()) {
+			continue;
+		}
+		//自分のチームのプレイヤーなら当たらないので返す
+		if (it->getWhichTeam() == team) {
 			continue;
 		}
 		//既に当たっていたら返す
@@ -119,15 +118,91 @@ void Game::Weapon::LightSaber::Attack(const float & delta_time)
 		if (is_hit) {
 			//当たった時の演出として一瞬カメラを揺らす
 			CAMERA->shakeCamera(0.1f, 0.1f);
-			it->receiveDamage(attack);
-			ci::app::console() << i - 1 << std::endl;
+			it->receiveDamage(attack, cPlayerManager::getInstance()->getActivePlayer()->getPlayerId());
 			//対象のhitをtrueにして
 			//対象限定でヒットストップをつけたり当たり判定をなくしたり
 			//するんご
 			hits[i - 1] = true;
 		}
+	}
+}
+
+void Game::Weapon::LightSaber::CollisionDrills()
+{
+}
+
+void Game::Weapon::LightSaber::CollisionGems()
+{
+	for (auto& it : cGemManager::getInstance()->getGemStones()) {
+		
+		//既に所得されていたら返す
+		if (!it->isActive()) {
+			continue;
+		}
+		ci::app::console() << it->getAabb().createAABB(it->getCenterPos()).getCenter() << std::endl;
+		ci::app::console() << it->getAabb().createAABB(it->getCenterPos()).getSize() << std::endl;
+		//rayが当たったらis_hitがtrueになる
+		bool is_hit = false;
+
+		float min = 0.0F, max = 0.0F;
+
+		ci::vec2 rotate_buf;
+		//速度が速くても当たるように１フレームに５０分割
+		int split = 50;
+		for (int k = 0; k < split; k++) {
+
+			rotate_buf.x = Linear((float)k / split, rotate_before_frame.x, rotate.x);
+			rotate_buf.y = Linear((float)k / split, rotate_before_frame.y, rotate.y);
+
+			weapon_pos = player_pos + glm::normalize(ci::vec3(sin(rotate_buf.x + player_rotate_x), sin(rotate_buf.y), cos(rotate_buf.x + player_rotate_x))) / ci::vec3(10);
+
+			weapon_vec = player_pos + glm::normalize(ci::vec3(sin(rotate_buf.x + player_rotate_x), sin(rotate_buf.y), cos(rotate_buf.x + player_rotate_x))) * ci::vec3(10) * ci::vec3(range);
+
+			//プレイヤーの位置からrayかaabbを生成
+			ray[0].setOrigin(weapon_pos);
+			ray[0].setDirection(weapon_vec);
+
+			//１回目の攻撃
+			Rotation1(rotate_buf, M_PI / 5);
+
+			for (int m = 0; m < 3; m++) {
+
+				if (it->getAabb().createAABB(it->getCenterPos()).intersect(ray[m], &min, &max) != 0)
+				{
+					if (min >= 0.0F && min <= 1.0F)
+					{
+						if (min < std::numeric_limits<float>::max())
+						{
+							is_hit = true;
+						}
+					}
+				}
+				if (is_hit)break;
+			}
+			if (is_hit)break;
+		}
+		//対象のプレイヤーがhitしたら
+		if (is_hit) {
+			ci::app::console() << true << std::endl;
+			//当たった時の演出として一瞬カメラを揺らす
+			CAMERA->shakeCamera(0.1f, 0.1f);
+			cGemManager::getInstance()->breakeGemStone(it->getId());
+		}
 
 	}
+}
+
+void Game::Weapon::LightSaber::Attack(const float & delta_time)
+{
+	if (!is_attack)return;
+	weapon_draw_pos = player_pos + glm::normalize(ci::vec3(sin(rotate.x + player_rotate_x), sin(rotate.y), cos(rotate.x + player_rotate_x)));
+	aabb = ci::AxisAlignedBox(weapon_draw_pos - ci::vec3(range / 2), weapon_draw_pos + ci::vec3(range / 2));
+	if(light != nullptr)
+	light->reAttachPositionWithRadius(light, weapon_draw_pos, 2);
+	
+	CollisionPlayers();
+	CollisionDrills();
+	CollisionGems();
 
 	rotate_before_frame = rotate;
 }
@@ -169,6 +244,7 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 	}
 
 	if (pull) {
+		Resource::cSoundManager::getInstance()->findSe("Player/swing2.wav").setGain(0.2f);
 		Resource::cSoundManager::getInstance()->findSe("Player/swing2.wav").play();
 		if (light == nullptr) {
 			light = Game::cLightManager::getInstance()->addPointLight(player_pos + glm::normalize(ci::vec3(sin(rotate.x + player_rotate_x), sin(rotate.y), cos(rotate.x + player_rotate_x))), ci::vec3(0.5f, 0.5f, 0.0f), 0.5f);
@@ -204,7 +280,7 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 
 Game::Weapon::LightSaber::LightSaber()
 {
-	attack = 30;
+	attack = 40;
 	range = 2;
 	player_rotate_x = 0;
 	player_rotate_y = 0;
@@ -227,6 +303,7 @@ void Game::Weapon::LightSaber::setup()
 	for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size();i++) {
 		hits.push_back(false);
 	}
+	team = cPlayerManager::getInstance()->getActivePlayer()->getWhichTeam();
 	root_x = Node::node::create();
 	root_x->set_schedule_update();
 	root_y = Node::node::create();
@@ -282,9 +359,10 @@ void Game::Weapon::LightSaber::DrawRotate3()
 void Game::Weapon::LightSaber::draw()
 {
 	if (!is_attack) return;
+	ci::gl::drawStrokedCube(aabb);
 	ci::gl::drawVector(ray[0].getOrigin(), ray[0].getDirection());
-	//ci::gl::drawVector(ray[1].getOrigin(), ray[1].getDirection());
-	//ci::gl::drawVector(ray[2].getOrigin(), ray[2].getDirection());
+	ci::gl::drawVector(ray[1].getOrigin(), ray[1].getDirection());
+	ci::gl::drawVector(ray[2].getOrigin(), ray[2].getDirection());
 	ci::gl::ScopedTextureBind tex(TEX->get("weapon"));
 	ci::gl::pushModelView();
 	DrawRotate1();

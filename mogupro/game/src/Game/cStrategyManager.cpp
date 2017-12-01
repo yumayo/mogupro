@@ -29,8 +29,26 @@ void cStrategyManager::setup()
 	float y_max = Field::CHUNK_RANGE_Y * Field::CHUNK_SIZE*Field::BLOCK_SIZE;
 	float z_max = Field::CHUNK_RANGE_Z * Field::CHUNK_SIZE*Field::BLOCK_SIZE;
 
-	CreateCannon(vec3(x_max / 2.f, y_max + Field::CHUNK_RANGE_X/2.f - 0.5f, Field::CHUNK_RANGE_X / 2.f -0.5),1.f,0, true);
-	CreateCannon(vec3(x_max / 2.f, y_max + Field::CHUNK_RANGE_X / 2.f -0.5f, z_max- Field::CHUNK_RANGE_X / 2.f -0.5),-1.f,1, false);
+
+	ci::vec3 scale = ci::vec3((x_max / 6.f));
+	ci::vec3 foundationscale = ci::vec3(scale.x*1.4f, scale.y*0.1f, scale.z*1.4f);
+	{
+		ci::vec3 pos = ci::vec3(x_max / 2.f, y_max + scale.y / 2.f- Field::BLOCK_SIZE/2.f+foundationscale.y, scale.z / 2.f - Field::BLOCK_SIZE / 2.f);
+		ci::vec3 foundationpos= ci::vec3(x_max / 2.f, y_max + foundationscale.y / 2.f - Field::BLOCK_SIZE / 2.f, foundationscale.z / 2.f - Field::BLOCK_SIZE / 2.f);
+		cannons.push_back(std::make_shared<Game::Strategy::cCannon>(pos,scale, foundationpos, foundationscale, Game::Player::Team::Red));
+	}
+	{
+		ci::vec3 pos = vec3(x_max / 2.f, y_max + scale.y / 2.f - Field::BLOCK_SIZE / 2.f + foundationscale.y, z_max - scale.z/2.f - Field::BLOCK_SIZE / 2.f);
+		ci::vec3 foundationpos = ci::vec3(x_max / 2.f, y_max + foundationscale.y / 2.f - Field::BLOCK_SIZE / 2.f, z_max -foundationscale.z / 2.f - Field::BLOCK_SIZE / 2.f);
+		cannons.push_back(std::make_shared<Game::Strategy::cCannon>(pos, scale, foundationpos, foundationscale, Game::Player::Team::Blue));
+	}
+
+
+
+	for (int i = 0; i < cannons.size(); i++) {
+		cannons[i]->setup();
+	}
+
 	///////ƒLƒƒƒmƒ“ì‚è‚Ü‚·
 }
 void cStrategyManager::draw()
@@ -39,7 +57,7 @@ void cStrategyManager::draw()
 		it.second->draw();
 	}
 	for (auto it :cannons) {
-		it.second->draw();
+		it->draw();
 	}
 	for (auto it : bombs) {
 		it.second->draw();
@@ -52,7 +70,7 @@ void cStrategyManager::update(const float & deltatime)
 		it.second->update(deltatime);
 	}
 	for (auto& it : cannons) {
-		it.second->update(deltatime);
+		it->update(deltatime);
 	}
 	for (auto& it : bombs) {
 		it.second->update(deltatime);
@@ -67,9 +85,6 @@ void cStrategyManager::update(const float & deltatime)
 
 void cStrategyManager::updateCollisionAfterUpdate(const float & deltaTime)
 {
-	for (auto& it : cannons) {
-		it.second->updateCollisionAfterUpdate(deltaTime);
-	}
 	for (auto& it : bombs) {
 		it.second->updateCollisionAfterUpdate(deltaTime);
 	}
@@ -89,15 +104,7 @@ void cStrategyManager::deleteObject()
 			itr++;
 		}
 	}
-	for (auto itr = cannons.begin();
-		itr != cannons.end();) {
-		if (itr->second->DeleteThis()) {
-			itr = cannons.erase(itr);
-		}
-		else {
-			itr++;
-		}
-	}
+
 	for (auto itr = bombs.begin();
 		itr != bombs.end();) {
 		if (itr->second->DeleteThis()) {
@@ -139,17 +146,19 @@ void cStrategyManager::CreateDrill(const ci::vec3 _pos, const int _id, const Str
 	drills.insert(std::make_pair(_id, std::make_shared<Game::Strategy::cDrill>(_pos, _id, _type, _ismyobject)));
 	drills[_id]->setup();
 }
-void cStrategyManager::CreateCannon(const ci::vec3 _pos, const float _direction, const int _id, const bool _ismyobject)
-{
-	cannons.insert(std::make_pair(_id, std::make_shared<Game::Strategy::cCannon>(_pos, _direction, _ismyobject)));
-	cannons[_id]->setup();
-}
+
 
 void cStrategyManager::CreateBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale, const int _id)
 {
 	bombs.insert(std::make_pair(_id, std::make_shared<Game::Strategy::cBomb>(_pos, _speed, _scale, true)));
 	bombs[_id]->setup();
 }
+
+std::vector<std::shared_ptr<Game::Strategy::cCannon>> cStrategyManager::getCannons()
+{
+	return cannons;
+}
+
 void cStrategyManager::drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color)
 {
 		gl::pushModelView();
@@ -171,7 +180,7 @@ void cStrategyManager::drawShere(const ci::vec3 pos, const ci::vec3 size, const 
 	gl::rotate(rotate.z, vec3(0, 0, 1));
 	gl::scale(size);
 	gl::color(color);
-	gl::drawSphere(vec3(0, 0, 0), 1, segment);
+	gl::drawSphere(vec3(0, 0, 0), 1.f, segment);
 	gl::popModelView();
 }
 }

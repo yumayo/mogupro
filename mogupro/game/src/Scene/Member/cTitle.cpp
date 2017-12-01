@@ -8,7 +8,7 @@
 #include <Scene/Member/cMatchingServer.h>
 #include <Scene/cSceneManager.h>
 #include <Network.hpp>
-using namespace Node::Action;
+using namespace cinder;
 namespace Scene
 {
 namespace Member
@@ -23,75 +23,29 @@ cTitle::~cTitle( )
 }
 void cTitle::setup( )
 {
-    CAMERA->setup( );
+	CAMERA->setup( );
 
-    mSelectTag = 0;
+	mBackGround = Node::Renderer::sprite::create( "titleBack.png" );
+	mBackGround->set_scale( vec2( app::getWindowSize( ) ) / mBackGround->get_content_size( ) * vec2( 1, -1 ) );
 
-    mRoot = Node::node::create( );
-    mRoot->set_schedule_update( );
+	mContentsRoot = Node::node::create( );
+	mContentsRoot->set_content_size( app::getWindowSize( ) - ivec2( 100, 100 ) );
+	mContentsRoot->set_schedule_update( );
+	mContentsRoot->set_scale( vec2( 1, -1 ) );
+	mContentsRoot->set_position( mContentsRoot->get_content_size( ) / 2.0F * vec2( -1, 1 ) );
 
-    auto logo = Node::Renderer::sprite::create( "titleLogo.png" );
-    logo->set_position( ci::vec2(0, 256) );
-    logo->set_scale( ci::vec2( 1, -1 ) );
-    mRoot->add_child( logo );
+	auto logo = mContentsRoot->add_child( Node::Renderer::sprite::create( "titleLogo.png" ) );
+	logo->set_anchor_point( vec2( 0.0F ) );
+	logo->set_position( vec2( 0.0F ) );
 
-    auto toMatching = Node::Renderer::rect::create( ci::vec2( 200, 200 ) );
-    toMatching->set_position( ci::vec2( -250, 0 ) );
-    toMatching->set_color( ci::ColorA( 1, 0, 0 ) );
-    toMatching->set_tag( 0 );
-    toMatching->set_schedule_update( );
-    mRoot->add_child( toMatching );
-    {
-        auto f = Node::Renderer::label::create( "sawarabi-gothic-medium.ttf", 32 );
-        f->set_text( u8"マッチング" );
-        f->set_scale( glm::vec2( 1, -1 ) );
-        toMatching->add_child( f );
-    }
-    mScenes.emplace_back( [ ] { cSceneManager::getInstance( )->shift<Scene::Member::cMatching>( ); } );
+	auto pushanybutton = mContentsRoot->add_child( Node::Renderer::sprite::create( "pushanybutton.png" ) );
+	pushanybutton->set_anchor_point( vec2( 1, 1 ) );
+	pushanybutton->set_position( mContentsRoot->get_content_size( ) );
 
-    auto toMatchingServer = Node::Renderer::rect::create( ci::vec2( 200, 200 ) );
-    toMatchingServer->set_position( ci::vec2( 0, 0 ) );
-    toMatchingServer->set_color( ci::ColorA( 0, 1, 0 ) );
-    toMatchingServer->set_tag( 1 );
-    toMatchingServer->set_schedule_update( );
-    mRoot->add_child( toMatchingServer );
-    {
-        auto f = Node::Renderer::label::create( "sawarabi-gothic-medium.ttf", 32 );
-        f->set_text( u8"マッチングサーバー" );
-        f->set_scale( glm::vec2( 1, -1 ) );
-        toMatchingServer->add_child( f );
-    }
-    mScenes.emplace_back( [ ] { cSceneManager::getInstance( )->shift<Scene::Member::cMatchingServer>( ); } );
-
-    auto toGameMain = Node::Renderer::rect::create( ci::vec2( 200, 200 ) );
-    toGameMain->set_position( ci::vec2( 250, 0 ) );
-    toGameMain->set_color( ci::ColorA( 0, 0, 1 ) );
-    toGameMain->set_tag( 2 );
-    toGameMain->set_schedule_update( );
-    mRoot->add_child( toGameMain );
-    {
-        auto f = Node::Renderer::label::create( "sawarabi-gothic-medium.ttf", 32 );
-        f->set_text( u8"ゲームメイン" );
-        f->set_scale( glm::vec2( 1, -1 ) );
-        toGameMain->add_child( f );
-    }
-    mScenes.emplace_back( [ ] { 
-		Network::cUDPClientManager::getInstance()->open();
-		Network::cUDPServerManager::getInstance()->open();
-		Network::cUDPClientManager::getInstance()->connectOfflineServer();
-		cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( ); 
-	} );
-
-    mRoot->get_child_by_tag( mSelectTag )->run_action(
-        repeat_forever::create(
-            sequence::create(
-                ease<ci::EaseInOutCirc>::create( scale_by::create( 0.26F, ci::vec2( 0.2F ) ) ),
-                ease<ci::EaseInOutCirc>::create( scale_by::create( 0.26F, ci::vec2( -0.2F ) ) )
-            )
-        )
-    );
-
-	font.setup( "sawarabi-gothic-medium.ttf", 64 );
+	auto version = mContentsRoot->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
+	version->set_anchor_point( vec2( 0, 1 ) );
+	version->set_position( mContentsRoot->get_content_size( ) * vec2( 0, 1 ) );
+	version->set_text( "ver0.1.0" );
 }
 void cTitle::shutDown( )
 {
@@ -101,51 +55,37 @@ void cTitle::resize( )
 }
 void cTitle::update( float deltaTime )
 {
-    int prevSelectTag = mSelectTag;
-    if ( ENV->pushKey( ci::app::KeyEvent::KEY_RIGHT ) )
-    {
-        mSelectTag = std::min( mSelectTag + 1, 2 );
-    }
-    if ( ENV->pushKey( ci::app::KeyEvent::KEY_LEFT ) )
-    {
-        mSelectTag = std::max( mSelectTag - 1, 0 );
-    }
+	mContentsRoot->entry_update( deltaTime );
 
-    if ( ENV->pushKey( ci::app::KeyEvent::KEY_RETURN ) )
-    {
-        mScenes[mSelectTag]( );
-        return;
-    }
-
-    if ( prevSelectTag != mSelectTag )
-    {
-        mRoot->get_child_by_tag( prevSelectTag )->remove_all_actions( );
-        mRoot->get_child_by_tag( prevSelectTag )->set_scale( ci::vec2( 1.0F ) );
-        mRoot->get_child_by_tag( mSelectTag )->run_action(
-            repeat_forever::create(
-                sequence::create(
-                    ease<ci::EaseInOutCirc>::create( scale_by::create( 0.26F, ci::vec2( 0.2F ) ) ),
-                    ease<ci::EaseInOutCirc>::create( scale_by::create( 0.26F, ci::vec2( -0.2F ) ) )
-                )
-            )
-        );
-    }
-
-    mRoot->entry_update( deltaTime );
+	if ( ENV->pressKey( cinder::app::KeyEvent::KEY_LCTRL ) )
+	{
+		if ( ENV->pushKey( cinder::app::KeyEvent::KEY_F1 ) )
+		{
+			cSceneManager::getInstance( )->shift<Scene::Member::cMatching>( );
+		}
+		else if ( ENV->pushKey( cinder::app::KeyEvent::KEY_F2 ) )
+		{
+			cSceneManager::getInstance( )->shift<Scene::Member::cMatchingServer>( );
+		}
+	}
+	else
+	{
+		if ( Utility::cInputAll::getInstance( )->pushKey( ) )
+		{
+			Network::cUDPClientManager::getInstance( )->open( );
+			Network::cUDPServerManager::getInstance( )->open( );
+			Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
+			cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
+		}
+	}
 }
 void cTitle::draw( )
 {
-
 }
-
 void cTitle::draw2D( )
 {
-    ci::gl::enableFaceCulling( false );
-    ci::gl::disableDepthRead( );
-    ci::gl::disableDepthWrite( );
-    mRoot->entry_render( cinder::mat4( ) );
-	font.draw( ci::vec2(0, -300), u8"日本語ほげほげ" );
-
+	mBackGround->entry_render( cinder::mat4( ) );
+	mContentsRoot->entry_render( cinder::mat4( ) );
 }
 }
 }

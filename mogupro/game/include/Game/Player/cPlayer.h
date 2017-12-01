@@ -9,7 +9,7 @@
 #include<Game/Weapons/UseSubWeapon/cUseSubWeapon.h>
 namespace Game {
 	namespace Gem {
-		class cGem;
+		class cFragmentGem;
 	}
 	namespace Field
 	{
@@ -25,6 +25,7 @@ namespace Game {
 			float jump_force;
 			float speed;
 			float drill_speed;
+			float respawn_time;
 		};
 
 		enum Team {
@@ -35,6 +36,8 @@ namespace Game {
 		//基準スピード
 		static const float DEFAULT_SPEED = 5.0f;
 		static const float DEFAULT_SIZE = 0.8f;
+
+		static const float MAX_HP = 100.0f;
 
 		class cPlayer : public Game::cObjectBase {
 		private:
@@ -52,10 +55,15 @@ namespace Game {
 			ci::vec3 normalized_player_vec;
 			//チーム
 			Team team;
-
+			//死んでいるかどうか(true時、死亡中)
+			bool is_dead;
+			//再出撃までの待機時間のカウント
+			float respawn_count;
+			//攻撃された時の敵のid
+			int damaged_id;
 			//プレイヤーのAABB
 			ci::AxisAlignedBox aabb;
-			bool damage;
+
 			//メイン武器
 			std::unique_ptr<Weapon::WeaponBase> main_weapon;
 
@@ -76,6 +84,9 @@ namespace Game {
 			//プレイヤーからのカメラの位置
 			float player_far;
 
+			//掘削時に６０フレームで音がならないように
+			float drill_sound;
+
 			//当たり判定登録
 			Collision::cAABBCollider mCollider;
 			Collision::cRigidBody mRigidbody;
@@ -91,7 +102,6 @@ namespace Game {
 			//イージング用
 			ci::vec3 begin_pos;
 			Utility::hardptr<Node::node> root;
-			std::vector<std::shared_ptr<Game::Gem::cGem>>getgems;
 			std::unordered_map<int,bool> gem_production_end;
 
 			//Y軸回転
@@ -107,7 +117,9 @@ namespace Game {
 			void getGems(const int& _gemid);
 			void collisionGems();
 			
-			
+			void dead();
+			void respawn(const float& delta_time);
+			void resetPlayerStatus();
 		public:
 			cPlayer(
 				const ci::vec3& pos,
@@ -116,9 +128,13 @@ namespace Game {
 				const int& main_weapon_id,
 				const int& sub_weapon_id,
 				const Game::Player::Team& team);
+			~cPlayer() {
+				mCollider.removeWorld();
+				mRigidbody.removeWorld();
+			}
 			/////アイテムを使用するのに使います
 			Game::Weapons::UseSubWeapon::cUseSubWeapon useSubWeapon;
-
+			std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>getgems;
 			ci::vec3 getSize() {
 				return size;
 			}
@@ -133,8 +149,20 @@ namespace Game {
 				if(active_user) return;
 				mCollider.setPosition(pos);
 			}
+			//プレイヤーが動けない状態かどうか
 			bool getStan() {
 				return stan;
+			}
+			//プレイヤーが死んでいるかどうか（死亡中はtrue）
+			bool isDead() {
+				return is_dead;
+			}
+			//攻撃してきた敵のid
+			int getDamagedId() {
+				return damaged_id;
+			}
+			int getRespawnCount() {
+				return respawn_count;
 			}
 
 			void resetPos() {
@@ -206,7 +234,13 @@ namespace Game {
 			bool isDrilling() {
 				return drilling;
 			}
-			void receiveDamage(const float& attack);
+
+			//ジェムを大砲に渡すときのイージング
+			void sendCannonGems(const ci::vec3& cannon_pos);
+
+			//attack = 攻撃力
+			//player_id = 攻撃を仕掛けたプレイヤーのid
+			void receiveDamage(const float& attack, const float& player_id);
 			void weaponUpdae(const float& delta_time);
 			void move(const ci::vec3& velocity);
 			void jump(bool flag);

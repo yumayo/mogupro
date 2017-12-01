@@ -22,6 +22,7 @@ private:
 	void playerAttack(const float& delta_time);
 	void playerMove(const float& delta_time);
 	void padMove(const float & delta_time);
+	void killCamera(const float & delta_time);
 public:
     int getActivePlayerId( )
     {

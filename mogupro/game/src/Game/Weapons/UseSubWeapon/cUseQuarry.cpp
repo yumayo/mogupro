@@ -5,6 +5,9 @@
 #include "cinder/gl/gl.h"
 #include<Game/cStrategyManager.h>
 #include<Game/cFieldManager.h>
+#include <Utility/cInput.h>
+#include<Game/Weapons/SubWeapon/cQuarry.h>
+#include<Game/cSubWeaponManager.h>
 using namespace ci;
 using namespace ci::app;
 namespace Game
@@ -31,12 +34,16 @@ void cUseQuarry::setup(const int playerid) {
 }
 void cUseQuarry::update(const float& delta_time) {
 	calcPos(mLength, mPlayerId);
-	mScale = ci::vec3(1, 1, 1);
+	mScale = ci::vec3(3, 3, 3);
+	if (!ENV->pressKey(ci::app::KeyEvent::KEY_g)) {
+		createSubWeapon();
+		mIsdelete = true;
+	}
 }
 void cUseQuarry::calcPos(const float length, const int playerid) {
 
-	mSetPos = Game::cFieldManager::getInstance()->getBlockTopPosition(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getPos()
-		+ Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getPlayerVec());
+	mSetPos = Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getPos()
+		+ glm::normalize(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getPlayerVec())*mScale.x;
 
 	/*mSetPos = Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getPos()
 		+ Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getPlayerVec();*/
@@ -48,16 +55,16 @@ void cUseQuarry::draw() {
 	gl::enableAlphaBlending();
 	cinder::gl::ScopedTextureBind a(TEX->get("drill.png"));
 	gl::ScopedGlslProg shader(gl::getStockShader(gl::ShaderDef().texture()));
-	STRM->drawCube(mSetPos, ci::vec3(mScale.x*1.1f, mScale.y*1.1f, mScale.z*1.1f), ci::vec3(0, 0, 0), ci::ColorA(1, 1, 1, 0.5f));
+	STRM->drawCube(mSetPos + ci::vec3(0,mScale.y/2.f,0), ci::vec3(mScale.x, mScale.y, mScale.z), ci::vec3(0, 0, 0), ci::ColorA(1, 1, 1, 0.5f));
 	//gl::disableAlphaBlending();
 }
 bool cUseQuarry::deleteThis() {
 
-	return false;
+	return mIsdelete;
 }
 void cUseQuarry::createSubWeapon() {
-
-
+	Game::cSubWeaponManager::getInstance()->createQuarry(mSetPos + ci::vec3(0, mScale.y / 2.f, 0), cSubWeaponManager::getInstance()->debugidcount,
+		cPlayerManager::getInstance()->getActivePlayerId(), Game::Weapons::SubWeapon::cQuarry::DrillType::Level1);
 }
 }
 }

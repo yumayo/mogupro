@@ -1,4 +1,5 @@
 #pragma once
+#include <Utility/MessageBox.h>
 namespace Utility
 {
 template<class Ty>
@@ -7,7 +8,7 @@ class cSingletonAble
 public:
     virtual ~cSingletonAble( )
     {
-        removeInstance( );
+
     }
     static Ty* getInstance( )
     {

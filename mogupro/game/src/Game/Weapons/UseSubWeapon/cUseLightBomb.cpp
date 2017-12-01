@@ -2,6 +2,7 @@
 #include<Game/cSubWeaponManager.h>
 #include <Utility/cInput.h>
 #include<Game/cPlayerManager.h>
+#include <Game/cClientAdapter.h>
 
 namespace Game
 {
@@ -44,8 +45,6 @@ bool cUseLightBomb::deleteThis()
 }
 void cUseLightBomb::createSubWeapon()
 {
-	
-	ci::vec3 scale = ci::vec3(0.5f, 0.5f, 0.5f);
 	ci::vec3 playerDir = cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getInstallationPosition();
 	playerDir = glm::normalize(playerDir);
 	ci::vec3 pos = cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getPos();
@@ -55,7 +54,7 @@ void cUseLightBomb::createSubWeapon()
 
 	float power = 10.0F;
 
-	SUBWM->createLightBomb(pos, normalizedSpeed * power, scale, mPlayerId);
+	cClientAdapter::getInstance( )->sendLightBomb( pos, normalizedSpeed * power );
 }
 }
 }

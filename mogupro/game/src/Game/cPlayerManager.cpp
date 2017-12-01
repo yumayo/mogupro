@@ -29,12 +29,12 @@ void Game::cPlayerManager::playerDrillMove(const float & delta_time)
 {
 	//CAMERA->shakeCamera(0.1f, 0.1f);
 	//カメラの方向に移動
-	active_player->move( CAMERA->getCameraLook( ) * active_player->getDrillSpeed( ) );
+	active_player->move(CAMERA->getCameraLook() * active_player->getDrillSpeed());
 }
 
 void Game::cPlayerManager::playerAttack(const float & delta_time)
 {
-
+	if (active_player->isDead())return;
 	active_player->getMainWeapon()->pushCall(ENV->pushKey(ci::app::KeyEvent::KEY_t));
 	active_player->getMainWeapon()->pressCall(ENV->pushKey(ci::app::KeyEvent::KEY_t));
 	active_player->getMainWeapon()->pullCall(ENV->pushKey(ci::app::KeyEvent::KEY_t));
@@ -85,7 +85,7 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 		std::sqrtf(keybord_velocity.z);
 	}
 
-	
+
 	active_player->move(keybord_velocity);
 
 	//ジャンプはMoveの後に呼ぶ
@@ -102,6 +102,7 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 }
 void Game::cPlayerManager::playerMove(const float & delta_time)
 {
+	
 	//カメラのマウス操作ON　OFF
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_ESCAPE)) {
 		ENV->setMouseControl(mouse_on);
@@ -112,6 +113,10 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 			mouse_on = true;
 		}
 	}
+	CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
+	
+	//プレイヤーが死んでいたらカメラ以外操作不能
+	if (active_player->isDead())return;
 
 	//掘削中はtrue 
 	if (ENV->pressKey(ci::app::MouseEvent::LEFT_DOWN) &&
@@ -141,7 +146,7 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	if (ENV->isPadPush(ENV->BUTTON_1)) {
 		CAMERA->shakeCamera(0.1f, 0.1f);
 	}
-	CAMERA->setCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
+	
 
 	padMove(delta_time);
 
@@ -152,18 +157,33 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	else {
 		playerNormalMove(delta_time);
 	}
-
+	//G-BACK
+	if (ENV->pressKey(ci::app::KeyEvent::KEY_l)) {
+		active_player->receiveDamage(10.0f, 5);
+	}
+	//大砲にジェムを入れる
+	if (ENV->pressKey(ci::app::KeyEvent::KEY_f)) {
+		auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];
+		if (cannon->getAABB().intersects(active_player->getAABB())) {
+			//cannon->receivePlayerGem(active_player->getgems);
+			active_player->sendCannonGems(cannon->getGemStorePos());
+			ci::app::console() << active_player->getgems.size() << std::endl;
+		}
+		else {
+			ci::app::console() << active_player->getgems.size() << std::endl;
+		}
+	}
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_UP)) {
-		CAMERA->setCameraAngle(ci::vec2(0, 0.05f));
+		CAMERA->addCameraAngle(ci::vec2(0, 0.05f));
 	}
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_DOWN))
-		CAMERA->setCameraAngle(ci::vec2(0, -0.05f));
+		CAMERA->addCameraAngle(ci::vec2(0, -0.05f));
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_RIGHT))
-		CAMERA->setCameraAngle(ci::vec2(-0.05f, 0));
+		CAMERA->addCameraAngle(ci::vec2(-0.05f, 0));
 
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_LEFT))
-		CAMERA->setCameraAngle(ci::vec2(0.05f, 0));
+		CAMERA->addCameraAngle(ci::vec2(0.05f, 0));
 
 	///////////////////デバックでライトボムを増やす
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_h)) {
@@ -188,6 +208,18 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 	pad_velocity += ci::vec3(x_axis*cos(CAMERA->getCameraAngle().x), 0.0f, -x_axis*sin(CAMERA->getCameraAngle().x));
 
 	active_player->move(pad_velocity*ci::vec3(3));
+}
+void Game::cPlayerManager::killCamera(const float & delta_time)
+{
+	if (!active_player->isDead())return;
+	if (active_player->getRespawnCount() > 1.5f) {
+		for (auto& it : players) {
+			if (active_player->getDamagedId() == it->getPlayerId()) {
+				
+				CAMERA->refPosition = it->getPos() + ci::vec3(0, 0, 0);
+			}
+		}
+	}
 }
 void Game::cPlayerManager::setPlayersPosition(std::vector<ci::vec3> positions)
 {
@@ -217,11 +249,14 @@ void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& pla
 }
 void Game::cPlayerManager::update(const float& delta_time)
 {
-	CAMERA->refPosition = active_player->getPos() + ci::vec3(0, 0, 0);
+	if (!active_player->isDead()) {
+		CAMERA->refPosition = active_player->getPos() + ci::vec3(0, 0, 0);
+	}
 	playerMove(delta_time);
 	for (auto& it : players) {
 		it->update(delta_time);
 	}
+	killCamera(delta_time);
 	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), ci::quat());
 }
 

@@ -27,6 +27,7 @@
 #include<Game/cSubWeaponManager.h>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time.hpp>
+#include <Game/cGameManager.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -43,9 +44,6 @@ void cGameMain::setup( )
 
     skydome.setup( );
     CAMERA->setup( );
-    ENV->padSetup( );
-
-    Game::cUIManager::getInstance( )->setup( );
 
     Shader::cShadowManager::getInstance( )->setup( );
     Game::cFieldManager::getInstance( )->setup( );
@@ -61,6 +59,14 @@ void cGameMain::setup( )
 	float get_map_top_pos = Game::cFieldManager::getInstance()->getBlockTopPosition(ci::vec3(0,0,0)).y;
 	for (int i = 0; i < player_numbers; i++) {
 		positions.push_back(ci::vec3(0, get_map_top_pos, i * 2));
+
+		//デバッグ用にチーム分け//////
+		if (i > 3) {
+			teams.emplace_back(1);
+			continue;
+		}
+		//////////////////////////////
+
         teams.emplace_back( 0 );
 	}
     for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
@@ -76,13 +82,17 @@ void cGameMain::setup( )
 						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Y,
 						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Z),Game::Field::BLOCK_SIZE,0.5,100,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
-    //Network::cUDPClientManager::getInstance( )->open( );
-    //Network::cUDPServerManager::getInstance( )->open( );
-    //Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
 	Game::cLightManager::getInstance( )->setup( );
 	Game::cShaderManager::getInstance( )->setup( );
 	Game::cCapsuleManager::getInstance()->setup();
 	Game::cSubWeaponManager::getInstance()->setup();
+	Game::cUIManager::getInstance( )->setup( );
+
+	auto now = boost::posix_time::microsec_clock::local_time( );
+	auto ready = now + boost::posix_time::seconds( 3 );
+	auto battle = ready + boost::posix_time::seconds( 3 );
+	auto result = battle + boost::posix_time::minutes( 10 );
+	Game::cGameManager::getInstance( )->setup( ready, battle, result );
 
 	sendEndSetup = false;
 	endTimer = false;
@@ -93,7 +103,24 @@ void cGameMain::setup( )
 
 void cGameMain::shutDown( )
 {
-    Game::cFieldManager::getInstance()->shutdown();
+	Network::cUDPClientManager::removeInstance( );
+	Network::cUDPServerManager::removeInstance( );
+	Game::cDebugManager::removeInstance( );
+	Game::cClientAdapter::removeInstance( );
+	Game::cServerAdapter::removeInstance( );
+	Game::cUIManager::removeInstance( );
+	Game::cStrategyManager::removeInstance( );
+	Game::cCapsuleManager::removeInstance( );
+	Game::cSubWeaponManager::removeInstance( );
+	Game::cPlayerManager::removeInstance( );
+	Game::cShaderManager::removeInstance( );
+	Particle::cParticleManager::removeInstance( );
+	Game::cFieldManager::getInstance( )->shutdown( );
+	Game::cFieldManager::removeInstance( );
+	Game::cGemManager::removeInstance( );
+	Game::cLightManager::removeInstance( );
+	Collision::cCollisionManager::removeInstance( );
+	Game::cGameManager::removeInstance( );
 }
 
 void cGameMain::update( float deltaTime )
@@ -126,15 +153,14 @@ void cGameMain::update( float deltaTime )
 			}
 		}
 		
-
+		// 他のアップデートよりも先に行います。
+		Game::cGameManager::getInstance( )->preUpdate( deltaTime );
 
 		Game::cDebugManager::getInstance( )->update( deltaTime );
         Game::cClientAdapter::getInstance( )->update( );
         Game::cServerAdapter::getInstance( )->update( );
         Game::cUIManager::getInstance( )->update( deltaTime );
         Game::cFieldManager::getInstance( )->update( deltaTime );
-        ENV->padUpdate( );
-        ENV->padProcessEvent( );
         Game::cPlayerManager::getInstance( )->update( deltaTime );
         Game::cStrategyManager::getInstance( )->update( deltaTime );
 		Game::cCapsuleManager::getInstance()->update(deltaTime);
@@ -146,6 +172,8 @@ void cGameMain::update( float deltaTime )
 		Game::cLightManager::getInstance( )->update( );
         Game::cShaderManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
         Particle::cParticleManager::getInstance()->update( deltaTime );
+		GemManager->lateUpdate(deltaTime);
+		Game::cGameManager::getInstance( )->update( deltaTime );
     }
 }
 
