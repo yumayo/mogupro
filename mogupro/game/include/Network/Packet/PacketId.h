@@ -49,12 +49,13 @@ enum class PacketId : ubyte1
     // 他のプレイヤーに倒されたと通知します。
     // ※この瞬間にプレイヤーはステータスを変えてください。
     EVE_PLAYER_DEATH,
+	EVE_RESPAWN,
 	// 他のプレイヤーがボムを投げたと通知します。
 	EVE_LIGHT_BOMB,
     //Memberがどこに所属しているかの送信
     EVE_TEAM_MEMBER,
-    // プレイヤーのリスポーン位置を通知します。
-    EVE_PLAYERS_RESPAWN,
+	// ダメージがあったことを知らせます。
+	EVE_DAMAGE,
 
     //=========================================================//
     //                        Request                          //
@@ -84,8 +85,12 @@ enum class PacketId : ubyte1
     // 他のプレイヤーを倒した情報をサーバーに送る。
     // ※このタイミングでは倒せません。サーバーからのレスポンスを待ってください。
     REQ_CHECK_PLAYER_DEATH,
+	// 
+	REQ_RESPAWN,
 	// プレイヤーがボムを投げます。
 	REQ_CHECK_LIGHT_BOMB,
+	// 他のプレイヤーにダメージを与えたことを知らせます。
+	REQ_DAMAGE,
 	//Matching時にクライアントが部屋を作る申請
 	REQ_MAKE_ROOM,
 	//Matching時にクライアントが部屋に入る申請
@@ -125,8 +130,6 @@ enum class PacketId : ubyte1
     RES_CHECK_SET_QUARRY,
     // 他のプレイヤーのキルに成功したか失敗したか、について通知します。
     RES_CHECK_PLAYER_DEATH,
-	// プレイヤーがボムを投げます。
-//	RES_CHECK_LIGHT_BOMB,
 	//Matching時にクライアントが部屋を作る申請をうけ、作れたかどうか
 	RES_MAKE_ROOM,
 	//Matching時にクライアントが部屋に入る申請をうけ、入れたかどうか

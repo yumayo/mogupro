@@ -1,28 +1,22 @@
 #include <Network/Packet/Event/cEvePlayerDeath.h>
+#include <Network/PackFunction.hpp>
 namespace Network
 {
 namespace Packet
 {
 namespace Event
 {
-cEvePlayerDeath::cEvePlayerDeath( )
-    : mPlayerName( )
-{
-
-}
-cEvePlayerDeath::cEvePlayerDeath( std::string const & playerName )
-    : mPlayerName( playerName )
-{
-
-}
 void cEvePlayerDeath::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
-    mPlayerName = data;
+	this->networkHandle = networkHandle;
+	cImporter imp( data );
+	imp >> playerId >> enemyId;
 }
 ubyte2 cEvePlayerDeath::packetExport( char* const data )
 {
-    memcpy( data, mPlayerName.data( ), mPlayerName.size( ) );
-    return mPlayerName.size( );
+	cExporter exp( data );
+	exp << playerId << enemyId;
+	return exp;
 }
 }
 }

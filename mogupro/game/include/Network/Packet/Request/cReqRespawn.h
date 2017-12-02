@@ -7,14 +7,13 @@ namespace Packet
 {
 namespace Request
 {
-class cReqCheckPlayerDeath : public cPacketBase<cReqCheckPlayerDeath, PacketId::REQ_CHECK_PLAYER_DEATH>
+class cReqRespawn : public cPacketBase<cReqRespawn, PacketId::REQ_RESPAWN>
 {
 public:
-    cReqCheckPlayerDeath( );
+    cReqRespawn( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
 	cNetworkHandle networkHandle;
-	ubyte1 enemyId;
 	ubyte1 playerId;
 };
 }

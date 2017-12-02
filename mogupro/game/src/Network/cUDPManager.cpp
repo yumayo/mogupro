@@ -147,6 +147,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
+        case Network::Packet::PacketId::EVE_RESPAWN:
+        {
+            if ( cEventManager::getInstance( )->isNewEveRespawn( packetHeader ) )
+			{
+                Packet::Event::cEveRespawn data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cEventManager::getInstance( )->ungetEveRespawn( std::move( data ) );
+            }
+            break;
+        }
         case Network::Packet::PacketId::EVE_LIGHT_BOMB:
         {
             if ( cEventManager::getInstance( )->isNewEveLightBomb( packetHeader ) )
@@ -167,13 +177,13 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
-        case Network::Packet::PacketId::EVE_PLAYERS_RESPAWN:
+        case Network::Packet::PacketId::EVE_DAMAGE:
         {
-            if ( cEventManager::getInstance( )->isNewEvePlayersRespawn( packetHeader ) )
+            if ( cEventManager::getInstance( )->isNewEveDamage( packetHeader ) )
 			{
-                Packet::Event::cEvePlayersRespawn data;
+                Packet::Event::cEveDamage data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEvePlayersRespawn( std::move( data ) );
+                cEventManager::getInstance( )->ungetEveDamage( std::move( data ) );
             }
             break;
         }
@@ -307,6 +317,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
+        case Network::Packet::PacketId::REQ_RESPAWN:
+        {
+            if ( cRequestManager::getInstance( )->isNewReqRespawn( packetHeader ) )
+			{
+                Packet::Request::cReqRespawn data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cRequestManager::getInstance( )->ungetReqRespawn( std::move( data ) );
+            }
+            break;
+        }
         case Network::Packet::PacketId::REQ_CHECK_LIGHT_BOMB:
         {
             if ( cRequestManager::getInstance( )->isNewReqCheckLightBomb( packetHeader ) )
@@ -314,6 +334,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
                 Packet::Request::cReqCheckLightBomb data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
                 cRequestManager::getInstance( )->ungetReqCheckLightBomb( std::move( data ) );
+            }
+            break;
+        }
+        case Network::Packet::PacketId::REQ_DAMAGE:
+        {
+            if ( cRequestManager::getInstance( )->isNewReqDamage( packetHeader ) )
+			{
+                Packet::Request::cReqDamage data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cRequestManager::getInstance( )->ungetReqDamage( std::move( data ) );
             }
             break;
         }
