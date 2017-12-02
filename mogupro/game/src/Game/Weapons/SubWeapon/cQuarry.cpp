@@ -122,7 +122,7 @@ namespace Game
 						getgems[index]->node->set_schedule_update();
 
 						getgems[index]->node->run_action(sequence::create(float_to::create((mPos.y - getgems[index]->getPos().y)*0.1f,
-							getgems[index]->getPos().y, mPos.y + (mScale.y / 2.f + 1.f), [this, index](float t)
+							getgems[index]->getPos().y, mPos.y + mScale.y, [this, index](float t)
 						{
 							auto p = getgems[index]->node->get_position_3d();
 							p.y = t;
@@ -289,10 +289,11 @@ namespace Game
 
 			void cQuarry::moveGetGem(const float delttime)
 			{
+				ci::app::console() <<"‚Ü‚µ‚ñ"<<mPos.y << std::endl;
 				for (int i = 0; i < int(getgems.size()); i++)
 				{
-					
-					if (!(getgems[i]->getPos().y >= mPos.y + (mScale.y))) {
+					ci::app::console() << "‚È‚©‚Ý1 " << getgems[i]->getPos().y << std::endl;
+					if (getgems[i]->getPos().y < mPos.y) {
 						getgems[i]->node->entry_update(delttime);
 						vec3 p = getgems[i]->node->get_position_3d();
 
@@ -300,12 +301,17 @@ namespace Game
 
 						getgems[i]->setSinRotate(getgems[i]->getSinRotate() + rotate_speed);
 
-						getgems[i]->setPos(vec3(getgems[i]->getPutPos().x + ((mScale.x / 2.f) + 0.5f)*cos(getgems[i]->getSinRotate()),
+						getgems[i]->setPos(vec3(getgems[i]->getPutPos().x + (mScale.x / 2.f)*cos(getgems[i]->getSinRotate()),
 							p.y,
-							getgems[i]->getPutPos().z + ((mScale.z / 2.f) + 0.5f)*sin(getgems[i]->getSinRotate())));
-
+							getgems[i]->getPutPos().z + (mScale.z / 2.f)*sin(getgems[i]->getSinRotate())));
+						
+						ci::app::console() << "‚È‚©‚Ý2 " << getgems[i]->getPos().y << std::endl;
 					}
-					//ci::app::console() << getgems[i]->getPos() << std::endl;
+					else {
+					
+						//getgems[i]->setPos(ci::vec3(getgems[i]->getPos().x, mPos.y + mScale.y, getgems[i]->getPos().z));
+					}
+					
 				}
 			}
 
