@@ -46,6 +46,7 @@ namespace Weapons
 		{
 			if (!mIsHitObject) {
 				if (rb.isLanding()) {
+			
 					mIsHitObject = true;
 					createAroundLight();
 				}
@@ -112,6 +113,7 @@ namespace Weapons
 				if (mPlayerId == cPlayerManager::getInstance()->getActivePlayerId()) {
 					ci::app::console() << "‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ ‚ " << std::endl;
 					collisonToPlayer();
+
 					Game::cFieldManager::getInstance()->blockBreak(mPos, mExprosionLength / 2.f);
 				}
 				mIsExprosion = true;
@@ -124,6 +126,20 @@ namespace Weapons
 					color(ci::ColorA::white()).
 					moveType(Particle::ParticleType::EXPROTION).count(100).isTrajectory(true).gravity(0.048f));
 
+			}
+		}
+		void cLightBomb::createContractionEffect()
+		{
+			if (mIsContraction)return;
+			if (mLandcount >= 2.0f) {
+				mIsContraction = true;
+				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
+					.scale(1.3f).vanishBeginTime(0.f).vanishTime(12.f/60.f).
+					easeTime(12.f).
+					speed(100.0f).
+					textureType(Particle::ParticleTextureType::SPARK).
+					color(ci::ColorA(1,1,0)).
+					moveType(Particle::ParticleType::CONVERGE).count(10).isTrajectory(true).effectTime(0.8f).easeType(EaseType::BackIn));
 			}
 		}
 		void cLightBomb::setup()
@@ -147,7 +163,9 @@ namespace Weapons
 			}
 			updateLight(delta_time);
 			updateScale(delta_time);
+			createContractionEffect();
 			exprosion();
+		
 		}
 		void cLightBomb::updateCollisionAfterUpdate(const float & delta_time)
 		{
