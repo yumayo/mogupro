@@ -73,6 +73,13 @@ private:
     std::stack<Packet::Event::cEvePlayerDeath> mEvePlayerDeath;
     std::map<ubyte4, double> mEvePlayerDeathSequenceIds;
 public:
+    boost::optional<Packet::Event::cEveRespawn> getEveRespawn( );
+    void ungetEveRespawn( Packet::Event::cEveRespawn&& data );
+    bool isNewEveRespawn( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Event::cEveRespawn> mEveRespawn;
+    std::map<ubyte4, double> mEveRespawnSequenceIds;
+public:
     boost::optional<Packet::Event::cEveLightBomb> getEveLightBomb( );
     void ungetEveLightBomb( Packet::Event::cEveLightBomb&& data );
     bool isNewEveLightBomb( Packet::PacketHeader const& header );
@@ -87,12 +94,12 @@ private:
     std::stack<Packet::Event::cEveTeamMember> mEveTeamMember;
     std::map<ubyte4, double> mEveTeamMemberSequenceIds;
 public:
-    boost::optional<Packet::Event::cEvePlayersRespawn> getEvePlayersRespawn( );
-    void ungetEvePlayersRespawn( Packet::Event::cEvePlayersRespawn&& data );
-    bool isNewEvePlayersRespawn( Packet::PacketHeader const& header );
+    boost::optional<Packet::Event::cEveDamage> getEveDamage( );
+    void ungetEveDamage( Packet::Event::cEveDamage&& data );
+    bool isNewEveDamage( Packet::PacketHeader const& header );
 private:
-    std::stack<Packet::Event::cEvePlayersRespawn> mEvePlayersRespawn;
-    std::map<ubyte4, double> mEvePlayersRespawnSequenceIds;
+    std::stack<Packet::Event::cEveDamage> mEveDamage;
+    std::map<ubyte4, double> mEveDamageSequenceIds;
     // P=====END=====P
 };
 }

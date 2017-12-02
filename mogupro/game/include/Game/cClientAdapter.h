@@ -25,7 +25,7 @@ public:
 public:
     void update( );
 private:
-    // 全てのプレイヤーの座標を行う。
+    // 全てのプレイヤーの更新を行う。
     void recvAllPlayers( );
     // 全ての掘削機の設置イベントを行う。
     void recvAllQuarrys( );
@@ -48,6 +48,12 @@ public:
     void sendGetGemQuarry( Network::ubyte2 drillId, Network::ubyte2 gemId );
 	// ライトボムを投げる。
 	void sendLightBomb( cinder::vec3 const& position, cinder::vec3 const& speed );
+	// 誰かをキルしたら呼んでください。
+	void sendKill( Network::ubyte1 enemyId );
+	// 誰かにダメージを与えたら呼んでください。
+	void sendDamage( Network::ubyte1 enemyId, float damage );
+
+	void sendRespawn( );
 private:
     // 上記でたまったブロックを実際に送ります。
     void sendBreakBlocks( );

@@ -11,10 +11,15 @@
 #include <Game/cSubWeaponManager.h>
 using namespace cinder;
 using namespace Network;
+using namespace Network::Packet;
+using namespace Network::Packet::Deliver;
+using namespace Network::Packet::Event;
+using namespace Network::Packet::Request;
+using namespace Network::Packet::Response;
 namespace Game
 {
 cClientAdapter::cClientAdapter( )
-    : mBreakBlocksPecket( new Packet::Deliver::cDliBreakBlocks( ) )
+    : mBreakBlocksPecket( new cDliBreakBlocks( ) )
 {
 }
 cClientAdapter::~cClientAdapter( )
@@ -36,8 +41,10 @@ void cClientAdapter::update( )
 }
 void cClientAdapter::recvAllPlayers( )
 {
-    auto m = cEventManager::getInstance( );
-    while ( auto packet = m->getEvePlayers( ) )
+    auto e = cEventManager::getInstance( );
+	auto s = cResponseManager::getInstance( );
+
+    while ( auto packet = e->getEvePlayers( ) )
     {
         auto players = Game::cPlayerManager::getInstance( )->getPlayers( );
         for ( auto& o : packet->mPlayerFormats )
@@ -45,6 +52,23 @@ void cClientAdapter::recvAllPlayers( )
             players[o.playerId]->setPos( o.position );
         }
     }
+	while ( auto packet = e->getEveDamage( ) )
+	{
+		// TODO:プレイヤーにダメージを与える。
+	}
+	while ( auto packet = e->getEvePlayerDeath( ) )
+	{
+		// TODO:プレイヤーをキルする。
+	}
+	while ( auto packet = s->getResCheckPlayerDeath( ) )
+	{
+		if ( !packet->isSuccess ) continue;
+		// TODO:プレイヤーをキルする。かつ成功ならキル表示をする。
+	}
+	while ( auto packet = e->getEveRespawn( ) )
+	{
+		// TODO:プレイヤーをリスポーンさせる。
+	}
 }
 void cClientAdapter::recvAllQuarrys( )
 {
@@ -129,7 +153,7 @@ void cClientAdapter::sendBreakBlock( cinder::vec3 const & position, float radius
 }
 void cClientAdapter::sendSetQuarry( cinder::vec3 const & position, Network::ubyte1 drillType )
 {
-    auto packet = new Packet::Request::cReqCheckSetQuarry( );
+    auto packet = new cReqCheckSetQuarry( );
     packet->mPosition = position;
     packet->mType = drillType;
     packet->mTeamId = cPlayerManager::getInstance( )->getActivePlayerTeamId( );
@@ -137,7 +161,7 @@ void cClientAdapter::sendSetQuarry( cinder::vec3 const & position, Network::ubyt
 }
 void cClientAdapter::sendPlayer( cinder::vec3 const & position, cinder::quat const & rotation )
 {
-    auto packet = new Packet::Deliver::cDliPlayer( );
+    auto packet = new cDliPlayer( );
     packet->mFormat.playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
     packet->mFormat.position = position;
     packet->mFormat.rotation = rotation;
@@ -145,25 +169,46 @@ void cClientAdapter::sendPlayer( cinder::vec3 const & position, cinder::quat con
 }
 void cClientAdapter::sendGetGemPlayer( Network::ubyte2 gemId )
 {
-    auto packet = new Packet::Request::cReqCheckGetJemPlayer( );
+    auto packet = new cReqCheckGetJemPlayer( );
     packet->mPlayerId = cPlayerManager::getInstance( )->getActivePlayerId( );
     packet->mGemId = gemId;
     cUDPClientManager::getInstance( )->send( packet );
 }
 void cClientAdapter::sendGetGemQuarry( Network::ubyte2 drillId, Network::ubyte2 gemId )
 {
-    auto packet = new Packet::Request::cReqCheckGetJemQuarry( );
+    auto packet = new cReqCheckGetJemQuarry( );
     packet->mDrillId = drillId;
     packet->mGemId = gemId;
     cUDPClientManager::getInstance( )->send( packet );
 }
 void cClientAdapter::sendLightBomb( cinder::vec3 const & position, cinder::vec3 const & speed )
 {
-	auto packet = new Packet::Request::cReqCheckLightBomb( );
+	auto packet = new cReqCheckLightBomb( );
 	packet->playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
 	packet->position = position;
 	packet->speed = speed;
 	cUDPClientManager::getInstance( )->send( packet );
+}
+void cClientAdapter::sendKill( Network::ubyte1 enemyId )
+{
+	auto p = new cReqCheckPlayerDeath( );
+	p->enemyId = enemyId;
+	p->playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
+	cUDPClientManager::getInstance( )->send( p );
+}
+void cClientAdapter::sendDamage( Network::ubyte1 enemyId, float damage )
+{
+	auto p = new cReqDamage( );
+	p->enemyId = enemyId;
+	p->playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
+	p->damage = damage;
+	cUDPClientManager::getInstance( )->send( p );
+}
+void cClientAdapter::sendRespawn( )
+{
+	auto p = new cReqRespawn( );
+	p->playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
+	cUDPClientManager::getInstance( )->send( p );
 }
 void cClientAdapter::sendBreakBlocks( )
 {

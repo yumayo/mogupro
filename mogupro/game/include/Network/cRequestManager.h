@@ -73,12 +73,26 @@ private:
     std::stack<Packet::Request::cReqCheckPlayerDeath> mReqCheckPlayerDeath;
     std::map<ubyte4, double> mReqCheckPlayerDeathSequenceIds;
 public:
+    boost::optional<Packet::Request::cReqRespawn> getReqRespawn( );
+    void ungetReqRespawn( Packet::Request::cReqRespawn&& data );
+    bool isNewReqRespawn( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Request::cReqRespawn> mReqRespawn;
+    std::map<ubyte4, double> mReqRespawnSequenceIds;
+public:
     boost::optional<Packet::Request::cReqCheckLightBomb> getReqCheckLightBomb( );
     void ungetReqCheckLightBomb( Packet::Request::cReqCheckLightBomb&& data );
     bool isNewReqCheckLightBomb( Packet::PacketHeader const& header );
 private:
     std::stack<Packet::Request::cReqCheckLightBomb> mReqCheckLightBomb;
     std::map<ubyte4, double> mReqCheckLightBombSequenceIds;
+public:
+    boost::optional<Packet::Request::cReqDamage> getReqDamage( );
+    void ungetReqDamage( Packet::Request::cReqDamage&& data );
+    bool isNewReqDamage( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Request::cReqDamage> mReqDamage;
+    std::map<ubyte4, double> mReqDamageSequenceIds;
 public:
     boost::optional<Packet::Request::cReqMakeRoom> getReqMakeRoom( );
     void ungetReqMakeRoom( Packet::Request::cReqMakeRoom&& data );

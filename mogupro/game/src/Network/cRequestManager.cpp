@@ -300,6 +300,39 @@ bool cRequestManager::isNewReqCheckPlayerDeath( Packet::PacketHeader const& head
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
+boost::optional<Packet::Request::cReqRespawn> cRequestManager::getReqRespawn( )
+{
+    if ( mReqRespawn.empty( ) )
+    {
+        auto it = mReqRespawnSequenceIds.begin( );
+		while ( it != mReqRespawnSequenceIds.end( ) ) 
+		{
+			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
+			{
+				mReqRespawnSequenceIds.erase( it++ );
+			}
+			else ++it;
+		}
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqRespawn.top( );
+        mReqRespawn.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqRespawn( Packet::Request::cReqRespawn&& data )
+{
+    mReqRespawn.push( std::move( data ) );
+}
+bool cRequestManager::isNewReqRespawn( Packet::PacketHeader const& header )
+{
+	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
+    auto status = mReqRespawnSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    status.first->second = cinder::app::getElapsedSeconds( );
+	return status.second;
+}
 boost::optional<Packet::Request::cReqCheckLightBomb> cRequestManager::getReqCheckLightBomb( )
 {
     if ( mReqCheckLightBomb.empty( ) )
@@ -330,6 +363,39 @@ bool cRequestManager::isNewReqCheckLightBomb( Packet::PacketHeader const& header
 {
 	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
     auto status = mReqCheckLightBombSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    status.first->second = cinder::app::getElapsedSeconds( );
+	return status.second;
+}
+boost::optional<Packet::Request::cReqDamage> cRequestManager::getReqDamage( )
+{
+    if ( mReqDamage.empty( ) )
+    {
+        auto it = mReqDamageSequenceIds.begin( );
+		while ( it != mReqDamageSequenceIds.end( ) ) 
+		{
+			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
+			{
+				mReqDamageSequenceIds.erase( it++ );
+			}
+			else ++it;
+		}
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqDamage.top( );
+        mReqDamage.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqDamage( Packet::Request::cReqDamage&& data )
+{
+    mReqDamage.push( std::move( data ) );
+}
+bool cRequestManager::isNewReqDamage( Packet::PacketHeader const& header )
+{
+	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
+    auto status = mReqDamageSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }

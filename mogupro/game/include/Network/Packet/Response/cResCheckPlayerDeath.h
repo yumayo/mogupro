@@ -13,6 +13,9 @@ public:
     cResCheckPlayerDeath( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
+	ubyte1 isSuccess;
+	ubyte1 playerId;
+	ubyte1 enemyId;
 };
 }
 }
