@@ -125,59 +125,64 @@ void Game::Player::cPlayer::playerRotationX()
 void Game::Player::cPlayer::getGems(const int& _gemid)
 {
 	//自分の所持しているジェムにプッシュバック
-	/*getgems.push_back(GemManager->getGemStone(_gemid));
+	getgems.push_back(GemManager->getFragmentGem(_gemid));
+	GemManager->getFragmentGem(_gemid)->setIsActive(false);
+	
+	//無重力状態
+
+	Resource::cSoundManager::getInstance()->findSe("Player/gem.wav").setGain(0.2f);
+	Resource::cSoundManager::getInstance()->findSe("Player/gem.wav").play();
 	gem_production_end.insert(std::make_pair(_gemid, false));
 	int index = getgems.size() - 1;
 
 	getgems[index]->setPutPos(ci::vec3(begin_pos.x, mPos.y, begin_pos.z));
 
-	getgems[index]->root = Node::node::create();
-	getgems[index]->root->set_schedule_update();
-	getgems[index]->root->set_position_3d(getgems[index]->getCenterPos());
-	getgems[index]->root->set_scale_3d(getgems[index]->getScale());
+	getgems[index]->node = Node::node::create();
+	getgems[index]->node->set_schedule_update();
+	getgems[index]->node->set_position_3d(getgems[index]->getPos());
+	getgems[index]->node->set_scale_3d(getgems[index]->getScale());
 
-	getgems[index]->root->run_action(Node::Action::move_to::create(2, mPos));
+	getgems[index]->node->run_action(Node::Action::sequence::create(
+		Node::Action::ease<ci::EaseOutCirc>::create(
+			Node::Action::move_to::create(0.5f, getgems[index]->getPos() + ci::vec3(0, 1, 0))
+			)));
 
-	getgems[index]->root->run_action(Node::Action::sequence::create(
+	getgems[index]->node->run_action(Node::Action::sequence::create(
 		Node::Action::scale_to::create(2, ci::vec3(0.1f)),
 		Node::Action::call_func::create([this, _gemid]() {
 		gem_production_end[_gemid] = true;
-	})));*/
+	})));
 
 }
 
 void Game::Player::cPlayer::collisionGems()
 {
 	//自分のAABBを生成
-	ci::vec3 aabb_begin_pos = mPos - size;
-	ci::vec3 aabb_end_pos = mPos + size;
+	ci::vec3 aabb_begin_pos = mPos - size * ci::vec3(1.3f);
+	ci::vec3 aabb_end_pos = mPos + size * ci::vec3(1.3f);
 
-	//プレイヤーのAABBのrigitbodyでおｋなのか？
-	//取得できたらイーじんぐ
-	//
-
+	ci::AxisAlignedBox player_aabb(aabb_begin_pos, aabb_end_pos);
 	//ci::AxisAlignedBox player_aabb(aabb_begin_pos, aabb_end_pos);
-	//ci::AxisAlignedBox player_aabb(aabb_begin_pos, aabb_end_pos);
-	//for (int i = 0; i < GemManager->getFragmentGems().size(); i++)
-	//{
-	//	//ジェムが取られていたら返す
-	//	if (!GemManager->getFragmentGems()[i]->isActive())continue;
+	for (int i = 0; i < GemManager->getFragmentGems().size(); i++)
+	{
+		//ジェムが取られていたら返す
+		if (!GemManager->getFragmentGems()[i]->isActive())continue;
 
-	//	//ジェムのAABBを生成
-	//	ci::AxisAlignedBox gem_aabb = GemManager->getFragmentGems()[i]->getAabb().createAABB(GemManager->getFragmentGems()[i]->getPos());
-	//	
-	//	//プレイヤーの近くのジェム以外は返す
-	//	if (!gem_aabb.intersects(player_aabb)) continue;
-	//	
-	//	//接触していたらidをsend
-	//	if (player_aabb.intersects(gem_aabb))
-	//	{
-	//		//プレイヤー用のパケットを作らないと
-	//		getGems(GemManager->getGemStones()[i]->getId());
-	//		//cClientAdapter::getInstance()->sendGetGemQuarry(player_id, GemManager->getGems()[i]->getId());
-	//		GemManager->breakeGemStone(i);
-	//	}
-	//}
+		//ジェムのAABBを生成
+		ci::AxisAlignedBox gem_aabb = GemManager->getFragmentGems()[i]->getAabb().createAABB(GemManager->getFragmentGems()[i]->getPos());
+		
+		//プレイヤーの近くのジェム以外は返す
+		if (!gem_aabb.intersects(player_aabb)) continue;
+		
+		//接触していたらidをsend
+		if (player_aabb.intersects(gem_aabb))
+		{
+			//プレイヤー用のパケットを作らないと
+			getGems(GemManager->getFragmentGems()[i]->getId());
+			//cClientAdapter::getInstance()->sendGetGemQuarry(player_id, GemManager->getGems()[i]->getId());
+			GemManager->breakeGemStone(i);
+		}
+	}
 }
 
 void Game::Player::cPlayer::dead()
@@ -250,21 +255,20 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 	Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition() + ( normalized_player_vec * ci::vec3(status.drill_speed / 4)), status.drill_range, *block_type);
 	//Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition(), status.drill_range, *block_type);
 
-	collisionGems();
 }
 
 void Game::Player::cPlayer::gemsUpdate(const float& delta_time)
 {
 
-	//for (auto& it : getgems) {
-	//	it->root->entry_update(delta_time);
-	//	ci::vec3 buf_pos = it->root->get_position_3d();
-	//	it->setPos(buf_pos);
-	//	//演出が終わったら
-	//	if (gem_production_end[it->getId()] == true) {
-	//		it->setPos(mCollider.getPosition() - (installation_position * ci::vec3(0.3f)));
-	//	}
-	//}
+	for (auto& it : getgems) {
+		it->node->entry_update(delta_time);
+		ci::vec3 buf_pos = it->node->get_position_3d();
+		it->setPos(buf_pos);
+		//演出が終わったら
+		if (gem_production_end[it->getId()] == true) {
+			it->setPos(mCollider.getPosition() - (normalized_player_vec * ci::vec3(0.1f)));
+		}
+	}
 }
 
 
@@ -291,6 +295,7 @@ Game::Player::cPlayer::cPlayer(
 	drill_sound = 0;
 	drilling = false;
 	jump_flag = false;
+	stan = false;
 	//プレイヤーのステータス
 	status.attack = 10;
 	status.hp = 100;
@@ -438,6 +443,8 @@ void Game::Player::cPlayer::update(const float & delta_time)
 	root->entry_update(delta_time);
 	aabb = mCollider.createAABB(mCollider.getPosition());
 	respawn(delta_time);
+
+	collisionGems();
 }
 
 void Game::Player::cPlayer::draw()
