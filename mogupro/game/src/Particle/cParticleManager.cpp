@@ -182,6 +182,7 @@ cParticle::cParticle( const ci::vec3& position,
                       const float& time,
                       const float& vanish_begin_time ) :
     mPosition( position )
+    , mPrevPosition( position )
     , mVec( vec )
     , mTime( time )
     , mVanishBeginTime( vanish_begin_time )
@@ -193,6 +194,7 @@ cParticle::cParticle( const ci::vec3& position,
 
 cParticle::~cParticle()
 {
+    Easing->kill( mPosition );
 }
 
 void cParticle::update( const float& delta_time, const float& gravity )
@@ -310,6 +312,9 @@ cParticleHolder::~cParticleHolder()
 {
     if ( mParam.mIsLighting )
         Game::cLightManager::getInstance()->removePointLight( mHandle );
+
+    for ( auto& it : mParticles )
+        Easing->kill( it->mPosition );
     mParticles.clear();
     mTrajectoryParticles.clear();
 }
@@ -446,8 +451,8 @@ void cParticleHolder::createTrajectory( const ci::vec3 & position,
 {
     for ( size_t i = 0; i < mParticles.size(); i++ )
     {
-        const vec3& c_vec = mParticles[i]->getVec();
-        const float& length = glm::length( c_vec * 1.0f );
+        const vec3& c_vec = mParticles[i]->mVec;
+        const float& length = glm::length( c_vec * 2.0f );
         const float& count = ceil( length / mParam.mScale );
         const vec3& one_vec = c_vec / (float) count;
 
