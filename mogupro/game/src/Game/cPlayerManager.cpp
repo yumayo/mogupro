@@ -36,8 +36,8 @@ void Game::cPlayerManager::playerAttack(const float & delta_time)
 {
 	if (active_player->isDead())return;
 	active_player->getMainWeapon()->pushCall(ENV->pushKey(ci::app::KeyEvent::KEY_t));
-	active_player->getMainWeapon()->pressCall(ENV->pushKey(ci::app::KeyEvent::KEY_t));
-	active_player->getMainWeapon()->pullCall(ENV->pushKey(ci::app::KeyEvent::KEY_t));
+	active_player->getMainWeapon()->pressCall(ENV->pressKey(ci::app::KeyEvent::KEY_t));
+	active_player->getMainWeapon()->pullCall(ENV->pullKey(ci::app::KeyEvent::KEY_t));
 }
 
 void Game::cPlayerManager::playerNormalMove(const float& delta_time)
@@ -120,7 +120,7 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 
 	//Œ@í’†‚Ítrue 
 	if (ENV->pressKey(ci::app::MouseEvent::LEFT_DOWN) &&
-		Game::cFieldManager::getInstance()->isBreakBlock(active_player->getPos() + (glm::normalize(CAMERA->getCamera().getViewDirection()) * ci::vec3(active_player->getStatus().drill_speed / 4)), 0.5f)) {
+		Game::cFieldManager::getInstance()->isBreakBlock(active_player->getPos() + (glm::normalize(CAMERA->getCamera().getViewDirection()) * ci::vec3(active_player->getStatus().drill_speed / 3)), 0.5f)) {
 		active_player->Drilling(true);
 	}
 	else {
@@ -232,12 +232,12 @@ void Game::cPlayerManager::setPlayersPosition(std::vector<ci::vec3> positions)
 //Œã‚ÉŒÄ‚Ô
 void Game::cPlayerManager::playerCollisionAfterUpdate(const float& delta_time)
 {
+	playerAttack(delta_time);
 	for (auto& it : players) {
 		it->setColliderSpeed();
 		it->gemsUpdate(delta_time);
 		it->weaponUpdae(delta_time);
 	}
-	playerAttack(delta_time);
 }
 void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
