@@ -47,7 +47,9 @@ public:
 	bool pressKey( const int& pressed_key );
 	bool pushKey( const int& pressed_key );
 	bool pullKey( const int& pressed_key );
-	bool anyKey( );
+	bool pushKey( );
+	bool pressKey( );
+	bool pullKey( );
 	float getPadAxis( const int& pad_num );
 	bool isPadPush( const int& num );
 	bool isPadPress( const int& num );
@@ -133,9 +135,17 @@ private:
 		{
 			return front.pull.find( value ) != front.pull.end( );
 		}
-		bool any( )
+		bool push( )
+		{
+			return !front.push.empty( );
+		}
+		bool press( )
 		{
 			return !front.press.empty( );
+		}
+		bool pull( )
+		{
+			return !front.pull.empty( );
 		}
 		void down( int value )
 		{

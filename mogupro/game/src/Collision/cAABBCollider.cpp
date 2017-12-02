@@ -25,6 +25,12 @@ cinder::AxisAlignedBox cAABBCollider::createAABB( cinder::vec3 calcedPosition ) 
     aabb.transform( translate( cinder::mat4( ), calcedPosition ) );
     return aabb;
 }
+void cAABBCollider::setSize( cinder::vec3 const & value )
+{
+	cCollisionManager::getInstance( )->remove( *this );
+	mSize = value;
+	cCollisionManager::getInstance( )->add( *this );
+}
 cinder::vec3 const & cAABBCollider::getSize( ) const
 {
     return mSize;

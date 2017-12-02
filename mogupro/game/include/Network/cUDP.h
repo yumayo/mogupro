@@ -14,6 +14,7 @@ class cUDP
 {
 public:
     cUDP( );
+	~cUDP( );
     void write( cNetworkHandle const& networkHandle, size_t sendDataByteNumber, char const * const sendData );
     void close( );
     void open( );
