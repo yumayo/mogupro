@@ -16,7 +16,7 @@ public:
 
     void setup( float begin, float end, int end_frame, EaseType type );
 
-    void update();
+    void update( const float& delta_time );
 
     float currentTargetValue();
 
@@ -45,7 +45,7 @@ public:
     RunEase();
 
     // 値の更新
-    void update();
+    void update( const float& delta_time );
 
     // イージングがすべて終わっているかどうか
     bool isEaseEnd() { return ease_accum.empty(); }
@@ -65,7 +65,7 @@ public:
 private:
 
     // イージングの更新
-    void action();
+    void action( const float& delta_time );
 
     // スタックをpop_frontする関数
     void pop();
@@ -100,7 +100,7 @@ class cEase : public Utility::cSingletonAble<cEase>
 public:
  
     // イージングの更新
-    void update();
+    void update( const float& delta_time );
 
     // イージングを追加する関数
     // target       イージングする float の値
@@ -165,7 +165,12 @@ public:
 
     // 引数の値のイージングが終わっているかどうかを返す関数
     // target       終わったか調べるfloatの値
-    bool isEaseEnd( float& target ) { return ease[&target].isEaseEnd(); }
+    bool isEaseEnd( float& target );
+
+    // 引数の値のイージングが終わっているかどうかを返す関数
+    // target       終わったか調べるfloatの値
+    bool isEaseEnd( ci::vec3& target );
+
 
     // 全てのイージングを終了させる関数
     void allClear();

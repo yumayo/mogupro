@@ -240,7 +240,7 @@ void cParticle::cubeDraw( const ci::ColorA& color )
 
 bool cParticle::isActive()
 {
-    return mTime > 0;
+    return mTime > 0 || !Easing->isEaseEnd( mPosition );
 }
 
 ci::vec3 cParticle::getVec()
@@ -526,7 +526,7 @@ void cParticleManager::setup()
 
 void cParticleManager::update( const float& delta_time )
 {
-    Easing->update();
+    Easing->update( delta_time );
     builbordUpdate();
     for ( auto& it = mParticleHolders.begin(); it != mParticleHolders.end(); )
     {
