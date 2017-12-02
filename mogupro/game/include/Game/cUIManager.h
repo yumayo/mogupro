@@ -12,13 +12,25 @@ public:
 	void setup( );
 	void update( float delta );
 	void draw( );
+public:
+	// 0.0 ~ 1.0
+	void setRedCannonPower( float value );
+	// 0.0 ~ 1.0
+	void setBlueCannonPower( float value );
+	// 
+	void appendItem( );
+	// 
+	void useItem( );
 private:
 	hardptr<Node::node> mRoot;
 	softptr<Node::node> mTime;
 	softptr<Node::node> mLive;
+	softptr<Node::node> mSlot;
 	softptr<Node::node> mCapsule;
-	softptr<Node::node> mMyTeamCannonPower;
-	softptr<Node::node> mEnemyTeamCannonPower;
+	softptr<Node::node> mRedTeamCannonPower;
+	softptr<Node::node> mBlueTeamCannonPower;
 	softptr<Node::node> mPlayerScreenEffect;
+
+	cinder::vec2 mAnimationSlot = cinder::vec2( 0.0F, 300.0F );
 };
 }
