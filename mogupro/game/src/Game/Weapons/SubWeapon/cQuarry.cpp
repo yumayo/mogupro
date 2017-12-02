@@ -292,7 +292,7 @@ namespace Game
 				ci::app::console() <<"‚Ü‚µ‚ñ"<<mPos.y << std::endl;
 				for (int i = 0; i < int(getgems.size()); i++)
 				{
-					ci::app::console() << "‚È‚©‚Ý1 " << getgems[i]->getPos().y << std::endl;
+					//ci::app::console() << "‚È‚©‚Ý1 " << getgems[i]->getPos().y << std::endl;
 					if (getgems[i]->getPos().y < mPos.y) {
 						getgems[i]->node->entry_update(delttime);
 						vec3 p = getgems[i]->node->get_position_3d();
@@ -305,7 +305,7 @@ namespace Game
 							p.y,
 							getgems[i]->getPutPos().z + (mScale.z / 2.f)*sin(getgems[i]->getSinRotate())));
 						
-						ci::app::console() << "‚È‚©‚Ý2 " << getgems[i]->getPos().y << std::endl;
+						//ci::app::console() << "‚È‚©‚Ý2 " << getgems[i]->getPos().y << std::endl;
 					}
 					else {
 					

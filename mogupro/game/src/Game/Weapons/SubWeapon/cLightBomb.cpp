@@ -108,10 +108,8 @@ namespace Weapons
 			float exprosiontime = 3.0f;
 
 			if (mLandcount >= 3.0f) {
-				ci::app::console() << "ボム"<<mPlayerId <<"アクティブ"<< cPlayerManager::getInstance()->getActivePlayerId() << std::endl;
 				////////アクティブプレイヤーのみ行います
 				if (mPlayerId == cPlayerManager::getInstance()->getActivePlayerId()) {
-					ci::app::console() << "あああああああああああああああ" << std::endl;
 					collisonToPlayer();
 
 					Game::cFieldManager::getInstance()->blockBreak(mPos, mExprosionLength / 2.f);
@@ -134,12 +132,12 @@ namespace Weapons
 			if (mLandcount >= 2.0f) {
 				mIsContraction = true;
 				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
-					.scale(1.3f).vanishBeginTime(0.f).vanishTime(12.f/60.f).
-					easeTime(12.f).
-					speed(100.0f).
+					.scale(1.3f).vanishBeginTime(0.f).vanishTime(24.f/60.f).vanishTimeRange(0.0f).
+					easeTime(24.f).
+					speed(0.0f).
 					textureType(Particle::ParticleTextureType::SPARK).
 					color(ci::ColorA(1,1,0)).
-					moveType(Particle::ParticleType::CONVERGE).count(10).isTrajectory(true).effectTime(0.8f).easeType(EaseType::BackIn));
+					moveType(Particle::ParticleType::CONVERGE).count(10).isTrajectory(true).effectTime(0.6f).easeType(EaseType::BackIn));
 			}
 		}
 		void cLightBomb::setup()
