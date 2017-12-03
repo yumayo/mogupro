@@ -9,7 +9,7 @@ namespace Game
 {
 void cShaderManager::setup( )
 {
-	int scale = 8192;
+	int scale = 4096;
 	gl::Texture2d::Format depthFormat;
 	depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
 	depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );

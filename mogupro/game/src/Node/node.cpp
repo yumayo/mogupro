@@ -44,8 +44,8 @@ bool node::entry_mouse_began( cinder::app::MouseEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                MES_ERR( e.what( ),
-                         [ ] { } );
+                /*MES_ERR( e.what( ),
+                         [ ] { } );*/
             }
         }
     }
@@ -75,8 +75,8 @@ bool node::entry_mouse_moved( cinder::app::MouseEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                MES_ERR( e.what( ),
-                         [ ] { } );
+                /*MES_ERR( e.what( ),
+                         [ ] { } );*/
             }
         }
     }
@@ -106,8 +106,8 @@ bool node::entry_mouse_ended( cinder::app::MouseEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                MES_ERR( e.what( ),
-                         [ ] { } );
+               /* MES_ERR( e.what( ),
+                         [ ] { } );*/
             }
         }
     }
@@ -139,8 +139,8 @@ bool node::entry_touch_began( cinder::app::TouchEvent::Touch event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                MES_ERR( e.what( ),
-                         [ ] { } );
+                /*MES_ERR( e.what( ),
+                         [ ] { } );*/
             }
         }
     }
@@ -170,8 +170,8 @@ bool node::entry_touch_moved( cinder::app::TouchEvent::Touch event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                MES_ERR( e.what( ),
-                         [ ] { } );
+                /*MES_ERR( e.what( ),
+                         [ ] { } );*/
             }
         }
     }
@@ -201,8 +201,8 @@ bool node::entry_touch_ended( cinder::app::TouchEvent::Touch event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                MES_ERR( e.what( ),
-                         [ ] { } );
+                /*MES_ERR( e.what( ),
+                         [ ] { } );*/
             }
         }
     }
@@ -230,8 +230,8 @@ void node::entry_touches_began( cinder::app::TouchEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                MES_ERR( e.what( ),
-                         [ ] { } );
+                /*MES_ERR( e.what( ),
+                         [ ] { } );*/
             }
         }
     }
@@ -253,8 +253,8 @@ void node::entry_touches_moved( cinder::app::TouchEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                MES_ERR( e.what( ),
-                         [ ] { } );
+                /*MES_ERR( e.what( ),
+                         [ ] { } );*/
             }
         }
     }
@@ -276,8 +276,8 @@ void node::entry_touches_ended( cinder::app::TouchEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                MES_ERR( e.what( ),
-                         [ ] { } );
+                /*MES_ERR( e.what( ),
+                         [ ] { } );*/
             }
         }
     }
@@ -299,8 +299,8 @@ void node::entry_key_down( cinder::app::KeyEvent event )
             }
             catch ( exception_node_remove_self const& e )
             {
-                MES_ERR( e.what( ),
-                         [ ] { } );
+                /*MES_ERR( e.what( ),
+                         [ ] { } );*/
             }
         }
     }
@@ -338,8 +338,8 @@ void node::entry_update( float delta )
             }
             catch ( exception_node_remove_self const& e )
             {
-                MES_ERR( e.what( ),
-                         [ ] { } );
+                /*MES_ERR( e.what( ),
+                         [ ] { } );*/
             }
         }
     }
@@ -366,8 +366,8 @@ void node::entry_render( cinder::mat4 m )
         }
         catch ( exception_node_remove_self const& e )
         {
-            MES_ERR( e.what( ),
-                     [ ] { } );
+            /*MES_ERR( e.what( ),
+                     [ ] { } );*/
         }
     }
 }
@@ -521,11 +521,6 @@ softptr<node> node::_get_root( )
     {
         return shared_from_this( );
     }
-}
-void node::run_action( hardptr<Action::action> action )
-{
-    _action_manager.add_action( action, shared_from_this( ) );
-    action->setup( );
 }
 softptr<Action::action> node::get_action_by_name( std::string const & name ) const
 {
