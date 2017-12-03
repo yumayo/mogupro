@@ -30,10 +30,15 @@ private:
     void sendGetGemQuarry( );
 	void sendBreakBlocks( );
 	void sendLightBombs( );
+	void sendResult( );
+	void sendCannonPower( );
+	void sendAddCannonPower( );
 private:
     std::map<Network::ubyte1, Player> mPlayers;
     std::set<Network::ubyte2> mQuarrys;
     Network::ubyte2 mQuarryId;
-    std::set<Network::ubyte2> mGems;
+	std::set<Network::ubyte2> mGems;
+	Network::ubyte1 mRedTeamPower;
+	Network::ubyte1 mBlueTeamPower;
 };
 }

@@ -630,5 +630,104 @@ bool cRequestManager::isNewReqEndStartTimer( Packet::PacketHeader const& header 
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
+boost::optional<Packet::Request::cReqAddCannonPower> cRequestManager::getReqAddCannonPower( )
+{
+    if ( mReqAddCannonPower.empty( ) )
+    {
+        auto it = mReqAddCannonPowerSequenceIds.begin( );
+		while ( it != mReqAddCannonPowerSequenceIds.end( ) ) 
+		{
+			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
+			{
+				mReqAddCannonPowerSequenceIds.erase( it++ );
+			}
+			else ++it;
+		}
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqAddCannonPower.top( );
+        mReqAddCannonPower.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqAddCannonPower( Packet::Request::cReqAddCannonPower&& data )
+{
+    mReqAddCannonPower.push( std::move( data ) );
+}
+bool cRequestManager::isNewReqAddCannonPower( Packet::PacketHeader const& header )
+{
+	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
+    auto status = mReqAddCannonPowerSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    status.first->second = cinder::app::getElapsedSeconds( );
+	return status.second;
+}
+boost::optional<Packet::Request::cReqCannonPower> cRequestManager::getReqCannonPower( )
+{
+    if ( mReqCannonPower.empty( ) )
+    {
+        auto it = mReqCannonPowerSequenceIds.begin( );
+		while ( it != mReqCannonPowerSequenceIds.end( ) ) 
+		{
+			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
+			{
+				mReqCannonPowerSequenceIds.erase( it++ );
+			}
+			else ++it;
+		}
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqCannonPower.top( );
+        mReqCannonPower.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqCannonPower( Packet::Request::cReqCannonPower&& data )
+{
+    mReqCannonPower.push( std::move( data ) );
+}
+bool cRequestManager::isNewReqCannonPower( Packet::PacketHeader const& header )
+{
+	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
+    auto status = mReqCannonPowerSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    status.first->second = cinder::app::getElapsedSeconds( );
+	return status.second;
+}
+boost::optional<Packet::Request::cReqResult> cRequestManager::getReqResult( )
+{
+    if ( mReqResult.empty( ) )
+    {
+        auto it = mReqResultSequenceIds.begin( );
+		while ( it != mReqResultSequenceIds.end( ) ) 
+		{
+			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
+			{
+				mReqResultSequenceIds.erase( it++ );
+			}
+			else ++it;
+		}
+        return boost::none;
+    }
+    else
+    {
+        auto top = mReqResult.top( );
+        mReqResult.pop( );
+        return top;
+    }
+}
+void cRequestManager::ungetReqResult( Packet::Request::cReqResult&& data )
+{
+    mReqResult.push( std::move( data ) );
+}
+bool cRequestManager::isNewReqResult( Packet::PacketHeader const& header )
+{
+	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
+    auto status = mReqResultSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    status.first->second = cinder::app::getElapsedSeconds( );
+	return status.second;
+}
 // P=====END=====P
 }

@@ -106,6 +106,12 @@ enum class PacketId : ubyte1
 	REQ_END_GAMEMAIN_SETUP,
 	//Game開始までのTimer終了通知
 	REQ_END_START_TIMER,
+	// 
+	REQ_ADD_CANNON_POWER,
+
+	REQ_CANNON_POWER,
+	// 
+	REQ_RESULT,
 
     //=========================================================//
     //                        Response                         //
@@ -144,6 +150,9 @@ enum class PacketId : ubyte1
 	RES_END_GAMEMAIN_SETUP,
 	//GameMainのSetupが終了した時点からの
 	RES_SET_GAMESTART_TIMER,
+	//
+	RES_CANNON_POWER,
+	RES_RESULT,
 };
 }
 }

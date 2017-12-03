@@ -38,6 +38,7 @@ void cClientAdapter::update( )
     recvAllGems( );
     recvAllBreakBlocks( );
 	recvAllBombs( );
+	recvAllCannons( );
 }
 void cClientAdapter::recvAllPlayers( )
 {
@@ -55,19 +56,27 @@ void cClientAdapter::recvAllPlayers( )
 	while ( auto packet = e->getEveDamage( ) )
 	{
 		// TODO:プレイヤーにダメージを与える。
+		packet->damage;
+		packet->enemyId;
+		packet->playerId;
 	}
 	while ( auto packet = e->getEvePlayerDeath( ) )
 	{
 		// TODO:プレイヤーをキルする。
+		packet->enemyId;
+		packet->playerId;
 	}
 	while ( auto packet = s->getResCheckPlayerDeath( ) )
 	{
 		if ( !packet->isSuccess ) continue;
 		// TODO:プレイヤーをキルする。かつ成功ならキル表示をする。
+		packet->enemyId;
+		packet->playerId;
 	}
 	while ( auto packet = e->getEveRespawn( ) )
 	{
 		// TODO:プレイヤーをリスポーンさせる。
+		packet->playerId;
 	}
 }
 void cClientAdapter::recvAllQuarrys( )
@@ -109,6 +118,8 @@ void cClientAdapter::recvAllGems( )
     while ( auto packet = eve->getEveGetJemPlayer( ) )
     {
 		// TODO: プレイヤーが宝石を取得する。
+		packet->mGemId;
+		packet->mPlayerId;
     }
     auto res = cResponseManager::getInstance( );
     while ( auto packet = res->getResCheckGetJemQuarry( ) )
@@ -123,6 +134,9 @@ void cClientAdapter::recvAllGems( )
     {
         if ( !packet->mIsSuccessed ) continue;
 		// TODO: プレイヤーが宝石を取得する。
+		packet->mGemId;
+		packet->mIsSuccessed;
+		packet->mPlayerId;
     }
 }
 void cClientAdapter::recvAllBreakBlocks( )
@@ -144,6 +158,16 @@ void cClientAdapter::recvAllBombs( )
 	while ( auto packet = eve->getEveLightBomb( ) )
 	{
 		SUBWM->createLightBomb( packet->position, packet->speed, cinder::vec3(0.5F), packet->playerId );
+	}
+}
+void cClientAdapter::recvAllCannons( )
+{
+	auto s = cResponseManager::getInstance( );
+	while ( auto packet = s->getResCannonPower( ) )
+	{
+		// TODO: 大砲のパワーを更新する。
+		packet->redTeamPower;
+		packet->blueTeamPower;
 	}
 }
 void cClientAdapter::sendBreakBlock( cinder::vec3 const & position, float radius, Network::ubyte1 type )
@@ -208,6 +232,23 @@ void cClientAdapter::sendRespawn( )
 {
 	auto p = new cReqRespawn( );
 	p->playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
+	cUDPClientManager::getInstance( )->send( p );
+}
+void cClientAdapter::sendGetCannonPower( )
+{
+	auto p = new cReqCannonPower( );
+	cUDPClientManager::getInstance( )->send( p );
+}
+void cClientAdapter::sendAddCannonPower( Network::ubyte1 teamId, Network::ubyte1 power )
+{
+	auto p = new cReqAddCannonPower( );
+	p->teamId = teamId;
+	p->power = power;
+	cUDPClientManager::getInstance( )->send( p );
+}
+void cClientAdapter::sendResult( )
+{
+	auto p = new cReqResult( );
 	cUDPClientManager::getInstance( )->send( p );
 }
 void cClientAdapter::sendBreakBlocks( )

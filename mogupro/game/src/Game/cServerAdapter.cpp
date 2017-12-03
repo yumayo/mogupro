@@ -7,6 +7,7 @@
 #include <Network/cResponseManager.h>
 #include <Game/Field/FieldData.h>
 #include <Game/cPlayerManager.h>
+#include <Game/Player/cPlayer.h>
 using namespace Network;
 using namespace Network::Packet;
 using namespace Network::Packet::Deliver;
@@ -41,6 +42,9 @@ void cServerAdapter::update( )
 	sendGetGemQuarry( );
 	sendBreakBlocks( );
 	sendLightBombs( );
+	sendResult( );
+	sendCannonPower( );
+	sendAddCannonPower( );
 }
 void cServerAdapter::sendPlayers( )
 {
@@ -198,6 +202,43 @@ void cServerAdapter::sendLightBombs( )
 		eventPack->position = packet->position;
 		eventPack->speed = packet->speed;
 		Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
+	}
+}
+void cServerAdapter::sendResult( )
+{
+	auto q = cRequestManager::getInstance( );
+	while ( auto p = q->getReqResult( ) )
+	{
+		auto s = new cResResult( );
+		s->redTeamPower = mRedTeamPower;
+		s->blueTeamPower = mBlueTeamPower;
+		cUDPServerManager::getInstance( )->send( p->networkHandle, s );
+	}
+}
+void cServerAdapter::sendCannonPower( )
+{
+	auto q = cRequestManager::getInstance( );
+	while ( auto p = q->getReqCannonPower( ) )
+	{
+		auto s = new cResCannonPower( );
+		s->redTeamPower = mRedTeamPower;
+		s->blueTeamPower = mBlueTeamPower;
+		cUDPServerManager::getInstance( )->send( p->networkHandle, s );
+	}
+}
+void cServerAdapter::sendAddCannonPower( )
+{
+	auto q = cRequestManager::getInstance( );
+	while ( auto p = q->getReqAddCannonPower( ) )
+	{
+		if ( p->teamId == Game::Player::Red )
+		{
+			mRedTeamPower += p->power;
+		}
+		else if ( p->teamId == Game::Player::Blue )
+		{
+			mBlueTeamPower += p->power;
+		}
 	}
 }
 void cServerAdapter::Player::respawn( )

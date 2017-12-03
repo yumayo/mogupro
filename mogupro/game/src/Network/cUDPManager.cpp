@@ -417,6 +417,36 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
+        case Network::Packet::PacketId::REQ_ADD_CANNON_POWER:
+        {
+            if ( cRequestManager::getInstance( )->isNewReqAddCannonPower( packetHeader ) )
+			{
+                Packet::Request::cReqAddCannonPower data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cRequestManager::getInstance( )->ungetReqAddCannonPower( std::move( data ) );
+            }
+            break;
+        }
+        case Network::Packet::PacketId::REQ_CANNON_POWER:
+        {
+            if ( cRequestManager::getInstance( )->isNewReqCannonPower( packetHeader ) )
+			{
+                Packet::Request::cReqCannonPower data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cRequestManager::getInstance( )->ungetReqCannonPower( std::move( data ) );
+            }
+            break;
+        }
+        case Network::Packet::PacketId::REQ_RESULT:
+        {
+            if ( cRequestManager::getInstance( )->isNewReqResult( packetHeader ) )
+			{
+                Packet::Request::cReqResult data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cRequestManager::getInstance( )->ungetReqResult( std::move( data ) );
+            }
+            break;
+        }
         case Network::Packet::PacketId::RES_STRING:
         {
             if ( cResponseManager::getInstance( )->isNewResString( packetHeader ) )
@@ -574,6 +604,26 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
                 Packet::Response::cResSetGamestartTimer data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
                 cResponseManager::getInstance( )->ungetResSetGamestartTimer( std::move( data ) );
+            }
+            break;
+        }
+        case Network::Packet::PacketId::RES_CANNON_POWER:
+        {
+            if ( cResponseManager::getInstance( )->isNewResCannonPower( packetHeader ) )
+			{
+                Packet::Response::cResCannonPower data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cResponseManager::getInstance( )->ungetResCannonPower( std::move( data ) );
+            }
+            break;
+        }
+        case Network::Packet::PacketId::RES_RESULT:
+        {
+            if ( cResponseManager::getInstance( )->isNewResResult( packetHeader ) )
+			{
+                Packet::Response::cResResult data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cResponseManager::getInstance( )->ungetResResult( std::move( data ) );
             }
             break;
         }

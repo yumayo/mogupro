@@ -5,15 +5,15 @@ namespace Network
 {
 namespace Packet
 {
-namespace _PACKET_TYPE_
+namespace Request
 {
-class _TEMPLATE_CLASS_ : public cPacketBase<_TEMPLATE_CLASS_, PacketId::_TEMPLATE_ENUM_>
+class cReqResult : public cPacketBase<cReqResult, PacketId::REQ_RESULT>
 {
 public:
-    _TEMPLATE_CLASS_( );
+    cReqResult( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-    cNetworkHandle networkHandle;
+	cNetworkHandle networkHandle;
 };
 }
 }

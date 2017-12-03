@@ -5,15 +5,16 @@ namespace Network
 {
 namespace Packet
 {
-namespace _PACKET_TYPE_
+namespace Response
 {
-class _TEMPLATE_CLASS_ : public cPacketBase<_TEMPLATE_CLASS_, PacketId::_TEMPLATE_ENUM_>
+class cResCannonPower : public cPacketBase<cResCannonPower, PacketId::RES_CANNON_POWER>
 {
 public:
-    _TEMPLATE_CLASS_( );
+    cResCannonPower( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-    cNetworkHandle networkHandle;
+	ubyte1 redTeamPower;
+	ubyte1 blueTeamPower;
 };
 }
 }

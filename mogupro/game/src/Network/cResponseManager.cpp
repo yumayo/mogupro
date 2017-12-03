@@ -531,5 +531,71 @@ bool cResponseManager::isNewResSetGamestartTimer( Packet::PacketHeader const& he
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
+boost::optional<Packet::Response::cResCannonPower> cResponseManager::getResCannonPower( )
+{
+    if ( mResCannonPower.empty( ) )
+    {
+        auto it = mResCannonPowerSequenceIds.begin( );
+		while ( it != mResCannonPowerSequenceIds.end( ) ) 
+		{
+			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
+			{
+				mResCannonPowerSequenceIds.erase( it++ );
+			}
+			else ++it;
+		}
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResCannonPower.top( );
+        mResCannonPower.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResCannonPower( Packet::Response::cResCannonPower&& data )
+{
+    mResCannonPower.push( std::move( data ) );
+}
+bool cResponseManager::isNewResCannonPower( Packet::PacketHeader const& header )
+{
+	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
+    auto status = mResCannonPowerSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    status.first->second = cinder::app::getElapsedSeconds( );
+	return status.second;
+}
+boost::optional<Packet::Response::cResResult> cResponseManager::getResResult( )
+{
+    if ( mResResult.empty( ) )
+    {
+        auto it = mResResultSequenceIds.begin( );
+		while ( it != mResResultSequenceIds.end( ) ) 
+		{
+			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
+			{
+				mResResultSequenceIds.erase( it++ );
+			}
+			else ++it;
+		}
+        return boost::none;
+    }
+    else
+    {
+        auto top = mResResult.top( );
+        mResResult.pop( );
+        return top;
+    }
+}
+void cResponseManager::ungetResResult( Packet::Response::cResResult&& data )
+{
+    mResResult.push( std::move( data ) );
+}
+bool cResponseManager::isNewResResult( Packet::PacketHeader const& header )
+{
+	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
+    auto status = mResResultSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    status.first->second = cinder::app::getElapsedSeconds( );
+	return status.second;
+}
 // P=====END=====P
 }

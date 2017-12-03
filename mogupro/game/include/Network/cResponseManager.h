@@ -121,6 +121,20 @@ public:
 private:
     std::stack<Packet::Response::cResSetGamestartTimer> mResSetGamestartTimer;
     std::map<ubyte4, double> mResSetGamestartTimerSequenceIds;
+public:
+    boost::optional<Packet::Response::cResCannonPower> getResCannonPower( );
+    void ungetResCannonPower( Packet::Response::cResCannonPower&& data );
+    bool isNewResCannonPower( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Response::cResCannonPower> mResCannonPower;
+    std::map<ubyte4, double> mResCannonPowerSequenceIds;
+public:
+    boost::optional<Packet::Response::cResResult> getResResult( );
+    void ungetResResult( Packet::Response::cResResult&& data );
+    bool isNewResResult( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Response::cResResult> mResResult;
+    std::map<ubyte4, double> mResResultSequenceIds;
     // P=====END=====P
 };
 }
