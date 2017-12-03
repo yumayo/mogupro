@@ -31,6 +31,7 @@ private:
 		//‚Æ‚è‚ ‚¦‚¸ƒQ[ƒ€ŠJn‚·‚é
 		BEGIN_GAME
 	};
+
 	PhaseState mPhaseState;
 	int mRoomID;
 	bool mOpenRoom;

@@ -9,6 +9,7 @@
 #include <Game/cServerAdapter.h>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time.hpp>
+#include <cinder/Rand.h>
 using namespace Network;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
@@ -188,13 +189,39 @@ namespace Scene
 		{
 			while (auto reqWantTeamIn = cRequestManager::getInstance()->getReqWantTeamIn())
 			{
-				if (cMatchingMemberManager::getInstance()->changeTeamNum(reqWantTeamIn->mTeamNum,
+				int teamNum = ci::randInt(0,2);
+ 				if (cMatchingMemberManager::getInstance()->changeTeamNum(teamNum,
 					reqWantTeamIn->mNetworkHandle) != true)
 				{
-					cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle, new cResWantTeamIn(0, reqWantTeamIn->mTeamNum));
+					cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle, new cResWantTeamIn(0, teamNum));
 					continue;
 				}
-				cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle, new cResWantTeamIn(1, reqWantTeamIn->mTeamNum));
+			
+				cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle, new cResWantTeamIn(1, teamNum));
+				//新規追加したPlayerの情報取得
+				std::string newPlayerStr;
+				int newPlayerID;
+				for each(auto& m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				{
+					if (m.networkHandle != reqWantTeamIn->mNetworkHandle)continue;
+					newPlayerStr = m.nameStr;
+					newPlayerID = m.playerID;
+				}
+
+				for each(auto& m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				{
+					if (m.networkHandle != reqWantTeamIn->mNetworkHandle)
+					{
+						//!@LookMe : マッチングがランダムになったから出来る事であって本来はできない
+						//メンバーに新規Playerの送信						
+						cUDPServerManager::getInstance()->send(m.networkHandle,
+							new cEveTeamMember(teamNum, newPlayerStr, newPlayerID));
+						//新規Playerに他の既存Playaerの送信
+						cUDPServerManager::getInstance()->send(m.networkHandle,
+							new cEveTeamMember(teamNum, newPlayerStr, newPlayerID));
+					}
+				}
+			
 			}
 		}
 
@@ -210,11 +237,6 @@ namespace Scene
 
 				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
 				{
-					for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
-					{
-						cUDPServerManager::getInstance()->send(m.networkHandle,
-							new cEveTeamMember(p.teamNum, p.nameStr, p.playerID));
-					}
 					cUDPServerManager::getInstance()->send(m.networkHandle, new cResCheckBeginGame(m.playerID));
 				}
 			}
