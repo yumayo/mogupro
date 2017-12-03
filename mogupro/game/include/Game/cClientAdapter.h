@@ -35,6 +35,8 @@ private:
     void recvAllBreakBlocks( );
 	// 全てのライトボムイベントを行う。
 	void recvAllBombs( );
+	// 全ての大砲イベントを行う。
+	void recvAllCannons( );
 public:
     // ブロックを破壊したら呼んでください。
     void sendBreakBlock( cinder::vec3 const& position, float radius, Network::ubyte1 type );
@@ -52,8 +54,14 @@ public:
 	void sendKill( Network::ubyte1 enemyId );
 	// 誰かにダメージを与えたら呼んでください。
 	void sendDamage( Network::ubyte1 enemyId, float damage );
-
+	//
 	void sendRespawn( );
+	//
+	void sendGetCannonPower( );
+	//
+	void sendAddCannonPower( Network::ubyte1 teamId, Network::ubyte1 power );
+	//
+	void sendResult( );
 private:
     // 上記でたまったブロックを実際に送ります。
     void sendBreakBlocks( );

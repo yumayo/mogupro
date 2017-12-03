@@ -142,6 +142,27 @@ public:
 private:
     std::stack<Packet::Request::cReqEndStartTimer> mReqEndStartTimer;
     std::map<ubyte4, double> mReqEndStartTimerSequenceIds;
+public:
+    boost::optional<Packet::Request::cReqAddCannonPower> getReqAddCannonPower( );
+    void ungetReqAddCannonPower( Packet::Request::cReqAddCannonPower&& data );
+    bool isNewReqAddCannonPower( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Request::cReqAddCannonPower> mReqAddCannonPower;
+    std::map<ubyte4, double> mReqAddCannonPowerSequenceIds;
+public:
+    boost::optional<Packet::Request::cReqCannonPower> getReqCannonPower( );
+    void ungetReqCannonPower( Packet::Request::cReqCannonPower&& data );
+    bool isNewReqCannonPower( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Request::cReqCannonPower> mReqCannonPower;
+    std::map<ubyte4, double> mReqCannonPowerSequenceIds;
+public:
+    boost::optional<Packet::Request::cReqResult> getReqResult( );
+    void ungetReqResult( Packet::Request::cReqResult&& data );
+    bool isNewReqResult( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Request::cReqResult> mReqResult;
+    std::map<ubyte4, double> mReqResultSequenceIds;
     // P=====END=====P
 };
 }
