@@ -8,6 +8,8 @@
 #include <Network/cMatchingMemberManager.h>
 #include <Node/renderer.hpp>
 #include <Node/action.hpp>
+#include "CameraManager\cCameraManager.h"
+#include <Resource/TextureManager.h>
 
 using namespace Network;
 using namespace Network::Packet::Event;
@@ -38,7 +40,7 @@ namespace Scene
 		void cMatching::setup()
 		{
 			Network::cUDPClientManager::getInstance()->open();
-			cUDPClientManager::getInstance()->connect("10.25.34.217");
+			cUDPClientManager::getInstance()->connect("192.168.199.1");
 			mClassState = ClassState::NOT;
 			mWaitClassState = ClassState::NOT;
 			mPhaseState = PhaseState::NOT_IN_ROOM;
@@ -48,15 +50,21 @@ namespace Scene
 			mPrevSelectTag = 0;
 			mAddMember = false;
 			mTeamNum = -1;
-
+			mBeginAnimation = false;
 			registerFunc();
+			mTrimeshAnimationFbo = ci::gl::Fbo::create(ci::app::getWindowWidth(),
+				ci::app::getWindowHeight(), true);
+			Resource::TextureManager::getInstance()->set("nightSky.png", "nightSky.png");
 		}
 
 		void cMatching::registerFunc()
 		{
 			mRoot = Node::node::create();
 			mRoot->set_schedule_update();
-
+			auto backView = Node::Renderer::sprite::create("nightSky.png");
+			backView->set_position(ci::vec2(0, 0));
+			backView->set_scale(ci::vec2(2.0f, -1.5f));
+			mRoot->add_child(backView);
 			auto makeRoom = Node::Renderer::rect::create(ci::vec2(300, 300));
 			makeRoom->set_position(ci::vec2(-250, 0));
 			makeRoom->set_color(ci::ColorA(1, 0, 0));
@@ -105,18 +113,6 @@ namespace Scene
 
 			inRoomFunc.emplace_back(
 				[this] {
-				cUDPClientManager::getInstance()->send(new cReqWantTeamIn(0));
-				mCanSend = false;
-			});
-
-			inRoomFunc.emplace_back(
-				[this] {
-				cUDPClientManager::getInstance()->send(new cReqWantTeamIn(1));
-				mCanSend = false;
-			});
-
-			inRoomFunc.emplace_back(
-				[this] {
 				if (mClassState == ClassState::MASTER)
 				{
 					cUDPClientManager::getInstance()->send(new cReqCheckBeginGame());
@@ -125,9 +121,76 @@ namespace Scene
 			});
 
 			mMemberRoot = Node::node::create();
+			mMemberRoot->set_scale(ci::vec2(1, 1));
 			mMemberRoot->set_schedule_update();
+			{
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				f->set_color(ci::ColorA(1, 0, 0));
+				f->set_position(ci::vec2(-350, 250));
+				f->set_text(u8"東軍");
+				f->set_scale(glm::vec2(1, -1));
+				mMemberRoot->add_child(f);
+			}
+			{
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				f->set_position(ci::vec2(350, 250));
+				f->set_text(u8"西軍");
+				f->set_scale(glm::vec2(1, -1));
+				mMemberRoot->add_child(f);
+			}
 		}
+		void cMatching::setAnimation()
+		{
+			auto m = Node::Renderer::rect::create(ci::vec2(100, 100));
+			m->set_position(ci::vec2(0, 0));
+			m->set_color(ci::ColorA(1, 0, 0));
+			m->set_schedule_update();
+			m->set_axis(ci::vec3(1, 1, 0));
+			m->run_action(sequence::create(spawn::create(ease<ci::EaseInOutCirc>::create(scale_by::create(3.0f, ci::vec2(2.2f))),
+				rotate_to::create(2.0F, M_PI * 2)),
+				fade_out::create(1.5f),
+				call_func::create([this] {
+				for (auto& m : drillUI1Ps)
+				{
+					ci::vec2 pos = m.mRoot->get_position();
+					m.mRoot->run_action(sequence::create(move_to::create(3.5F, ci::vec3(-1000, pos.y, 0)),
+						ease<ci::EaseOutCirc>::create(move_to::create(4.0F, ci::vec3(-200, pos.y, 0)))));
+				}
 
+				for (auto& m : drillUI2Ps)
+				{
+					ci::vec2 pos = m.mRoot->get_position();
+					m.mRoot->run_action(sequence::create(move_to::create(3.5F, ci::vec3(1000, pos.y, 0)),
+						ease<ci::EaseOutCirc>::create(move_to::create(4.0F, ci::vec3(200, pos.y, 0)))));
+				}
+			}),
+				delay::create(5.0f),
+				call_func::create([this]
+			{
+				ci::gl::ScopedFramebuffer fbScp(mTrimeshAnimationFbo);
+				ci::gl::ScopedViewport vp(ci::ivec2(0), mTrimeshAnimationFbo->getSize());
+				ci::gl::clear(ci::ColorA(0, 1, 0, 1));
+				ci::gl::disableDepthRead();
+				ci::gl::disableDepthWrite();
+				CAMERA->bind2D();
+				ci::gl::color(ci::ColorA(1, 0, 0, 1));
+				mRoot->entry_render(cinder::mat4());
+				for (auto& m : drillUI1Ps)
+					m.draw();
+				for (auto& m : drillUI2Ps)
+					m.draw();
+				mTrimeshAnimation.make(ci::vec2(1600, 900), ci::vec2(20, 15));
+				mBeginAnimation = true;
+			}),
+				delay::create(4.0f), 
+				call_func::create([this]
+			{
+				shutDown();
+				cSceneManager::getInstance()->change<Scene::Member::cGameMain>();
+				cSceneManager::getInstance()->now().setup();
+			})));
+			mMemberRoot->add_child(m);
+		}
 
 		void cMatching::shutDown()
 		{
@@ -138,12 +201,20 @@ namespace Scene
 		{
 			mPrevSelectTag = mSelectTag;
 			mRoot->entry_update(deltaTime);
+			mMemberRoot->entry_update(deltaTime);
+			for (auto& m : drillUI1Ps)
+				m.update(deltaTime);
+			for (auto& m : drillUI2Ps)
+				m.update(deltaTime);
+			if (mBeginAnimation == true)
+				mTrimeshAnimation.update();
 			Network::cUDPClientManager::getInstance()->update(deltaTime);
 			if (cUDPClientManager::getInstance()->isConnected() == false)return;
 			makeRoom();
 			inRoom();
 			updateBoxFunc();
 		}
+
 
 		void cMatching::updateBoxFunc()
 		{
@@ -167,9 +238,7 @@ namespace Scene
 				while (auto resCheckBeginGame = cResponseManager::getInstance()->getResCheckBeginGame())
 				{
 					cMatchingMemberManager::getInstance()->mPlayerID = resCheckBeginGame->mPlayerID;
-					shutDown();
-					cSceneManager::getInstance()->change<Scene::Member::cGameMain>();
-					cSceneManager::getInstance()->now().setup();
+					setAnimation();
 					continue;
 				}
 			}
@@ -217,7 +286,10 @@ namespace Scene
 					mCanSend = true;
 					mClassState = ClassState::CLIENT;
 					mPhaseState = PhaseState::IN_ROOM;
-					mRoot->remove_all_children();
+					//とりあえず0でTeamに入る申請
+					//結局ServerでTeamはランダムに決める
+					cUDPClientManager::getInstance()->send(new cReqWantTeamIn(0));
+					mCanSend = false;
 					addInRoomUI();
 				}
 			}
@@ -237,7 +309,10 @@ namespace Scene
 					mCanSend = true;
 					mClassState = ClassState::MASTER;
 					mPhaseState = PhaseState::IN_ROOM;
-					mRoot->remove_all_children();
+					//とりあえず0でTeamに入る申請
+					//結局ServerでTeamはランダムに決める
+					cUDPClientManager::getInstance()->send(new cReqWantTeamIn(0));
+					mCanSend = false;
 					addInRoomUI();
 				}
 			}
@@ -249,18 +324,6 @@ namespace Scene
 			mAddMember = false;
 			if (mClassState == ClassState::NOT)return;
 
-
-			if (ENV->pushKey(ci::app::KeyEvent::KEY_RIGHT))
-			{
-				if (mClassState == ClassState::MASTER)
-					mSelectTag = std::min(mSelectTag + 1, 2);
-				else
-					mSelectTag = std::min(mSelectTag + 1, 1);
-			}
-
-			if (ENV->pushKey(ci::app::KeyEvent::KEY_LEFT))
-				mSelectTag = std::max(mSelectTag - 1, 0);
-
 			if (ENV->pushKey(ci::app::KeyEvent::KEY_RETURN) && mCanSend)
 				inRoomFunc[mSelectTag]();
 
@@ -270,8 +333,13 @@ namespace Scene
 				//!@ TODO : Add Performance (Team%Dに入れました or Team%Dに入れませんでした)
 				if (resWantTeamIn->mFlag == 1)
 					mTeamNum = resWantTeamIn->mTeamNum;
-			
 				mCanSend = true;
+				if (resWantTeamIn->mTeamNum == 0)
+					drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * drillUI1Ps.size()),
+						ci::vec2(-200, 200 - 200 * drillUI1Ps.size()), "Mikuyama"));
+				else
+					drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * drillUI1Ps.size()),
+						ci::vec2(200, 200 - 200 * drillUI1Ps.size()), "Mikuyama"));
 			}
 			//TODO : 参加した場合とTeamが変更された場合は分けるべき
 			while (auto eveTeamMember = cEventManager::getInstance()->getEveTeamMember())
@@ -279,47 +347,25 @@ namespace Scene
 				cMatchingMemberManager::getInstance()->addPlayerDatas(
 					eveTeamMember->mNameStr, eveTeamMember->mTeamNum, eveTeamMember->mPlayerID, cNetworkHandle("", 0));
 				mAddMember = true;
+				if (eveTeamMember->mTeamNum == 0)
+					drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * drillUI1Ps.size()),
+						ci::vec2(-200, 200 - 200 * drillUI1Ps.size()), eveTeamMember->mNameStr));
+				else
+					drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * drillUI1Ps.size()),
+						ci::vec2(200, 200 - 200 * drillUI1Ps.size()), eveTeamMember->mNameStr));
+
 			}
 		}
 
 		void cMatching::addInRoomUI()
 		{
-			auto san = Node::Renderer::rect::create(ci::vec2(150, 150));
-			san->set_position(ci::vec2(100, -200));
-			san->set_color(ci::ColorA(1, 0, 0));
-			san->set_tag(0);
-			san->set_schedule_update();
-			mRoot->add_child(san);
-			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-				f->set_text(u8"赤組に入る");
-				f->set_scale(glm::vec2(1, -1));
-				san->add_child(f);
-			}
-
-			auto moon = Node::Renderer::rect::create(ci::vec2(150, 150));
-			moon->set_position(ci::vec2(300, -200));
-			moon->set_color(ci::ColorA(1, 1, 1));
-			moon->set_tag(1);
-			moon->set_schedule_update();
-			mRoot->add_child(moon);
-			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-				f->set_color(ci::ColorA(0, 0, 0));
-				f->set_text(u8"白組に入る");
-				f->set_scale(glm::vec2(1, -1));
-				moon->add_child(f);
-			}
-
+			mRoot->remove_all_children();
+			auto backView = Node::Renderer::sprite::create("nightSky.png");
+			backView->set_tag(1);
+			backView->set_position(ci::vec2(0, 0));
+			backView->set_scale(ci::vec2(1.0f, -1.0f));
+			mRoot->add_child(backView);
 			mSelectTag = 0;
-			mRoot->get_child_by_tag(mSelectTag)->run_action(
-				repeat_forever::create(
-					sequence::create(
-						ease<ci::EaseInOutCirc>::create(scale_by::create(0.26F, ci::vec2(0.2F))),
-						ease<ci::EaseInOutCirc>::create(scale_by::create(0.26F, ci::vec2(-0.2F)))
-					)
-				)
-			);
 
 			if (mClassState != ClassState::MASTER)
 				return;
@@ -327,7 +373,7 @@ namespace Scene
 			auto start = Node::Renderer::rect::create(ci::vec2(150, 150));
 			start->set_position(ci::vec2(500, -200));
 			start->set_color(ci::ColorA(0, 1, 0));
-			start->set_tag(2);
+			start->set_tag(0);
 			start->set_schedule_update();
 			mRoot->add_child(start);
 			{
@@ -336,6 +382,14 @@ namespace Scene
 				f->set_scale(glm::vec2(1, -1));
 				start->add_child(f);
 			}
+			mRoot->get_child_by_tag(mSelectTag)->run_action(
+				repeat_forever::create(
+					sequence::create(
+						ease<ci::EaseInOutCirc>::create(scale_by::create(0.26F, ci::vec2(0.2F))),
+						ease<ci::EaseInOutCirc>::create(scale_by::create(0.26F, ci::vec2(-0.2F)))
+					)
+				)
+			);
 		}
 
 		void cMatching::draw()
@@ -345,75 +399,30 @@ namespace Scene
 
 		void cMatching::draw2D()
 		{
-			mRoot->entry_render(cinder::mat4());
+			ci::gl::clear(ci::ColorA(0, 0, 0, 1));
+			if (mBeginAnimation != true)
+			{
+				mRoot->entry_render(cinder::mat4());
+				for (auto& m : drillUI1Ps)
+					m.draw();
+				for (auto& m : drillUI2Ps)
+					m.draw();
+			}
 			drawInRoom2D();
-			mMemberRoot->entry_render(cinder::mat4());
 		}
 
 		void cMatching::drawInRoom2D()
 		{
 			if (mPhaseState != PhaseState::IN_ROOM)return;
-			if (mAddMember != true)return;
-			mMemberRoot->remove_all_children();
+			if (mBeginAnimation != true)
+				mMemberRoot->entry_render(cinder::mat4());
+			if (mBeginAnimation == true)
 			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-				f->set_color(ci::ColorA(1, 0, 0));
-				f->set_position(ci::vec2(-350, 250));
-				f->set_text(u8"赤チーム");
-				f->set_scale(glm::vec2(1, -1));
-				mMemberRoot->add_child(f);
+				ci::gl::ScopedTextureBind p(mTrimeshAnimationFbo->getColorTexture());
+				ci::gl::ScopedGlslProg p2(ci::gl::getStockShader(ci::gl::ShaderDef().texture()));
+				mTrimeshAnimation.draw();
 			}
-			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-				f->set_color(ci::ColorA(0, 1, 1));
-				f->set_position(ci::vec2(0, 250));
-				f->set_text(u8"チームなし");
-				f->set_scale(glm::vec2(1, -1));
-				mMemberRoot->add_child(f);
-			}
-			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-				f->set_position(ci::vec2(350, 250));
-				f->set_text(u8"白チーム");
-				f->set_scale(glm::vec2(1, -1));
-				mMemberRoot->add_child(f);
-			}
-			int noTeamCount = 0;
-			int team1Count = 0;
-			int team2Count = 0;
-			for each (auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
-			{
-				auto nameTag = Node::Renderer::rect::create(ci::vec2(300, 50));
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-				if (m.teamNum == 0)
-				{
-					nameTag->set_color(ci::ColorA(1, 0, 0));
-					nameTag->set_position(ci::vec2(-350, 200 - 60 * team1Count));
-					team1Count++;
-				}
-
-				else if (m.teamNum == 1)
-				{
-					nameTag->set_color(ci::ColorA(1, 1, 1));
-					nameTag->set_position(ci::vec2(350, 200 - 60 * team2Count));
-					team2Count++;
-					f->set_color(ci::ColorA(0, 0, 0));
-				}
-
-				else
-				{
-					nameTag->set_color(ci::ColorA(0, 1, 0));
-					nameTag->set_position(ci::vec2(0, 200 - 60 * noTeamCount));
-					noTeamCount++;
-					f->set_color(ci::ColorA(0, 0, 0));
-				}
-
-				mMemberRoot->add_child(nameTag);
-				f->set_text(u8"" + m.nameStr);
-				f->set_scale(glm::vec2(1, -1));
-				nameTag->add_child(f);
-			}
-
+				
 		}
 
 		void cMatching::resize()
