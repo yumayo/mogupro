@@ -243,7 +243,13 @@ public:
 protected:
     Action::action_manager _action_manager;
 public:
-    void run_action( hardptr<Action::action> action );
+	template<class ty>
+	softptr<ty> run_action( hardptr<ty> action )
+	{
+		_action_manager.add_action( action, shared_from_this( ) );
+		action->setup( );
+		return action;
+	}
     softptr<Action::action> get_action_by_name( std::string const& name )const;
     softptr<Action::action> get_action_by_tag( int tag )const;
     void remove_all_actions( );

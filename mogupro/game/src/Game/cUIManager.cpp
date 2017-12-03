@@ -194,4 +194,12 @@ void cUIManager::useItem( )
 		}
 	}
 }
+void cUIManager::enable( )
+{
+	mRoot->set_block_visible( false );
+}
+void cUIManager::disable( )
+{
+	mRoot->set_block_visible( true );
+}
 }

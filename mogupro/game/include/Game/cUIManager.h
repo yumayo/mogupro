@@ -21,6 +21,9 @@ public:
 	void appendItem( );
 	// 
 	void useItem( );
+
+	void enable( );
+	void disable( );
 private:
 	hardptr<Node::node> mRoot;
 	softptr<Node::node> mTime;
