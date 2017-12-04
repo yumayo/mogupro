@@ -26,11 +26,14 @@ namespace Game
 			mRb.addWorld();
 			mRb.setSpeed(vec3(0,5,0));
 			mRb.setFriction(1.0f);
+			mIsRigid = true;
+			mVisible = true;
 		}
 
 
 		void cFragmentGem::draw()
 		{
+			if (!mVisible) return;
 			ci::gl::color(ci::Color(mColorA));
 			drawCube(vec3(mPosition), vec3(mScale));
 			color(ColorA(1,1,1,1));
@@ -47,6 +50,29 @@ namespace Game
 		void cFragmentGem::update()
 		{
 
+		}
+
+
+		void cFragmentGem::setIsRigid(bool isRigid)
+		{
+			if (isRigid == mIsRigid) return;
+
+			if (isRigid)
+			{
+				mRb.addWorld();
+				mIsRigid = true;
+			}
+			else
+			{
+				mRb.removeWorld();
+				mIsRigid = false;
+			}
+		}
+
+
+		void cFragmentGem::setVisible(bool visible)
+		{
+			mVisible = visible;
 		}
 	}
 }
