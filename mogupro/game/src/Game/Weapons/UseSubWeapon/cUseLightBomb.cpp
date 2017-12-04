@@ -3,7 +3,7 @@
 #include <Utility/cInput.h>
 #include<Game/cPlayerManager.h>
 #include <Game/cClientAdapter.h>
-
+#include"Resource\cSoundManager.h"
 namespace Game
 {
 namespace Weapons
@@ -55,6 +55,9 @@ void cUseLightBomb::createSubWeapon()
 	float power = 10.0F;
 
 	cClientAdapter::getInstance( )->sendLightBomb( pos, normalizedSpeed * power );
+
+	Resource::cSoundManager::getInstance()->findSe("SubWeapon/lightbombthrow.wav").setGain(0.4f);
+	Resource::cSoundManager::getInstance()->findSe("SubWeapon/lightbombthrow.wav").play();
 }
 }
 }
