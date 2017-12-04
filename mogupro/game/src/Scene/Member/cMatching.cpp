@@ -188,9 +188,6 @@ namespace Scene
 				call_func::create([this]
 			{
 				sceneChange = true;
-				shutDown();
-				cSceneManager::getInstance()->change<Scene::Member::cGameMain>();
-				cSceneManager::getInstance()->now().setup();
 			})));
 			mMemberRoot->add_child(m);
 		}
@@ -218,6 +215,13 @@ namespace Scene
 			makeRoom();
 			inRoom();
 			updateBoxFunc();
+			if (sceneChange == true)
+			{
+				shutDown();
+				cSceneManager::getInstance()->change<Scene::Member::cGameMain>();
+				cSceneManager::getInstance()->now().setup();
+			}
+
 		}
 
 
