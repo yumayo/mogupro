@@ -14,7 +14,7 @@ public:
     ubyte2 packetExport( char* const data ) override;
 public:
     cNetworkHandle mNetworkHandle;
-    ubyte2 mDrillId;
+    ubyte2 mObjectId;
     ubyte2 mGemId;
 };
 }

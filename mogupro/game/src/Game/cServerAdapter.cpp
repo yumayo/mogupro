@@ -159,7 +159,7 @@ void cServerAdapter::sendGetGemQuarry( )
 		auto resPack = new cResCheckGetJemQuarry( );
 		auto isSuccess = mGems.insert( packet->mGemId ).second;
 
-		resPack->mDrillId = packet->mDrillId;
+		resPack->mObjectId = packet->mObjectId;
 		resPack->mGemId = packet->mGemId;
 		resPack->mIsSuccessed = isSuccess;
 
@@ -167,7 +167,7 @@ void cServerAdapter::sendGetGemQuarry( )
 		if ( isSuccess )
 		{
 			auto eventPack = new cEveGetJemQuarry( );
-			eventPack->mDrillId = packet->mDrillId;
+			eventPack->mObjectId = packet->mObjectId;
 			eventPack->mGemId = packet->mGemId;
 			Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
 		}

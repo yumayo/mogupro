@@ -91,8 +91,6 @@ void cUIManager::setup( )
 		c2->set_position( vec2( 87, 123 ) );
 		c2->set_scale( vec2( 62.0F ) );
 		c2->set_name( "mainSlot" );
-
-		appendItem( );
 	}
 	mSlot->add_child( mCapsuleGauge );
 
@@ -163,7 +161,7 @@ void cUIManager::setBlueCannonPower( float value )
 	auto g = mBlueTeamCannonPower->get_child_by_name( "gauge" );
 	g->set_scale( vec2( value ) );
 }
-void cUIManager::appendItem( )
+void cUIManager::appendItem( int type )
 {
 	auto mainSlot = mCapsule->get_child_by_name( "mainSlot" );
 	auto subSlot = mCapsule->get_child_by_name( "subSlot" );
