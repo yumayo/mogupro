@@ -114,11 +114,11 @@ public:
     void cubeDraw( const ci::ColorA& color );
     bool isActive();
     ci::vec3 getVec();
+    float getAlpha();
 
 private:
 
     void alphaUpdate( const float& delta_time );
-    float getAlpha();
 
 public:
 
@@ -159,9 +159,11 @@ private:
     ci::vec3 createVec( const ci::vec3& particle_position );
     float createVanishTime();
     void createTrajectory( const ci::vec3& position, const float& vanish_time, const float& delta_time );
+    void createMesh( const glm::quat& rotation, std::vector<std::shared_ptr<cParticle>>& particles );
     void particleDraw( const glm::quat& rotation );
     void setTexture( const ParticleTextureType& texture_type );
     void setLight( bool is_lighting );
+    void clearMesh();
 
 public:
 
@@ -169,8 +171,10 @@ public:
     std::string mTextureName;
     Utility::softptr<Game::Light::cPointLightParam> mHandle;
     std::vector<std::shared_ptr<cParticle>> mParticles;
-    std::deque<std::shared_ptr<cParticle>> mTrajectoryParticles;
+    std::vector<std::shared_ptr<cParticle>> mTrajectoryParticles;
+    glm::quat mRotation;
 
+    unsigned int mIndicesIndex;
     ci::TriMeshRef mMesh;
     ci::gl::VboMeshRef mVbo;
 

@@ -12,9 +12,9 @@ class EaseOrigin
 {
 public:
     EaseOrigin() {}
-    EaseOrigin( float begin, float end, int end_frame, EaseType type );
+    EaseOrigin( float begin, float end, float end_frame, EaseType type );
 
-    void setup( float begin, float end, int end_frame, EaseType type );
+    void setup( float begin, float end, float end_frame, EaseType type );
 
     void update( const float& delta_time );
 
@@ -51,7 +51,7 @@ public:
     bool isEaseEnd() { return ease_accum.empty(); }
 
     // floatのイージングスタックを追加する関数
-    void add( float& target, float end, int end_frame, EaseType ease_type );
+    void add( float& target, float end, float end_frame, EaseType ease_type );
 
     // waitを追加する関数
     void addWait( float& target, int wait );
@@ -107,21 +107,21 @@ public:
     // end          イージングが終了したときになる値
     // end_frame    何フレームで終わるか
     // ease_type    どのイージング関数を使うか
-    void add( float& target, const float& end, int end_frame, EaseType ease_type );
+    void add( float& target, const float& end, float end_frame, EaseType ease_type );
 
     // イージングを追加する関数
     // target       イージングする vec3 の値
     // end          イージングが終了したときになる値
     // end_frame    何フレームで終わるか
     // ease_type    どのイージング関数を使うか
-    void add( ci::vec3 & target, const ci::vec3& end, int end_frame, EaseType ease_type );
+    void add( ci::vec3 & target, const ci::vec3& end, float end_frame, EaseType ease_type );
 
     // イージングを追加する関数
     // target       イージングする vec2 の値
     // end          イージングが終了したときになる値
     // end_frame    何フレームで終わるか
     // ease_type    どのイージング関数を使うか
-    void add( ci::vec2 & target, const ci::vec2& end, int end_frame, EaseType ease_type );
+    void add( ci::vec2 & target, const ci::vec2& end, float end_frame, EaseType ease_type );
 
     // イージングを止める処理を追加する関数
     // target       イージングを止めるfloatの値

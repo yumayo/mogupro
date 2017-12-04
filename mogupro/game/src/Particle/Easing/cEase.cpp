@@ -1,11 +1,11 @@
 #include "Particle/Easing/cEase.h"
 
-EaseOrigin::EaseOrigin( float begin, float end, int end_frame, EaseType type )
+EaseOrigin::EaseOrigin( float begin, float end, float end_frame, EaseType type )
 {
     setup( begin, end, end_frame, type );
 }
 
-void EaseOrigin::setup( float begin, float end, int end_frame, EaseType type )
+void EaseOrigin::setup( float begin, float end, float end_frame, EaseType type )
 {
     begin_ = begin;
     end_ = end;
@@ -51,7 +51,7 @@ void RunEase::update( const float& delta_time )
     action( delta_time );
 }
 
-void RunEase::add( float & target, float end, int end_frame, EaseType ease_type )
+void RunEase::add( float & target, float end, float end_frame, EaseType ease_type )
 {
     target_ = &target;
     ease_accum.push_back( EaseOrigin( target, end, end_frame, ease_type ) );
@@ -119,19 +119,19 @@ void cEase::update( const float& delta_time )
     }
 }
 
-void cEase::add( float & target, const float& end, int end_frame, EaseType ease_type )
+void cEase::add( float & target, const float& end, float end_frame, EaseType ease_type )
 {
     ease[&target].add( target, end, end_frame, ease_type );
 }
 
-void cEase::add( ci::vec3 & target, const ci::vec3& end, int end_frame, EaseType ease_type )
+void cEase::add( ci::vec3 & target, const ci::vec3& end, float end_frame, EaseType ease_type )
 {
     ease[&target.x].add( target.x, end.x, end_frame, ease_type );
     ease[&target.y].add( target.y, end.y, end_frame, ease_type );
     ease[&target.z].add( target.z, end.z, end_frame, ease_type );
 }
 
-void cEase::add( ci::vec2 & target, const ci::vec2 & end, int end_frame, EaseType ease_type )
+void cEase::add( ci::vec2 & target, const ci::vec2 & end, float end_frame, EaseType ease_type )
 {
     ease[&target.x].add( target.x, end.x, end_frame, ease_type );
     ease[&target.y].add( target.y, end.y, end_frame, ease_type );
