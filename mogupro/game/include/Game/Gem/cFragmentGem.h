@@ -25,12 +25,14 @@ namespace Game
 			void      update();
 			void      lateUpdate(const float& delta_time);
 
+
 			int       getId()		  { return mId; }
 			vec3      getPos()	      { return mPosition; }
 			vec3      getScale()      { return mScale; }
 			ColorA    getColorA()     { return mColorA; }
 			GemType   getType()       { return mType; }
 			bool      isActive()      { return mIsActive; }
+			bool      getVisible()    { return mVisible; }
 			float     getSinRotate()  { return mSinRotate; }
 			vec3      getPutPos()     { return mPutPos; }
 			Collision::cAABBCollider getAabb() { return mAabb; }
@@ -39,6 +41,8 @@ namespace Game
 			void      setScale(vec3 scale)              { mScale = scale; }
 			void      setColor(ColorA colorA)           { mColorA = colorA; }
 			void      setIsActive(bool isActive = true) { mIsActive = isActive; }
+			void      setVisible(bool visible);
+			void      setIsRigid(bool isRigid);
 			void      setType(GemType type)             { mType = type; }
 			void      setPutPos(vec3 putPos)            { mPutPos = putPos; }
 			void      setSinRotate(float sinRotate)     { mSinRotate = sinRotate; }
@@ -56,7 +60,9 @@ namespace Game
 			bool        mIsActive;
 			GemType     mType;
 			float       mSinRotate;
-			vec3    mPutPos;
+			vec3        mPutPos;
+			bool        mIsRigid;
+			bool        mVisible;
 			Collision::cRigidBody mRb;
 			Collision::cAABBCollider mAabb;
 		};
