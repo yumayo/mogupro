@@ -71,7 +71,7 @@ void cGameMain::setup( )
 	}
     for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
     {
-        teams.push_back( o.teamNum );
+        teams[o.playerID] = o.teamNum;
     }
 
     Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id, teams);
