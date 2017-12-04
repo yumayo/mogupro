@@ -43,6 +43,7 @@ namespace Game
 
 		void      create();
 		void      buildMesh();
+		void      clearMesh();
 
 		std::vector<std::shared_ptr<Gem::cGemStone>>         getGemStones()          { return mGemStone; }
 		std::vector<std::shared_ptr<Gem::cFragmentGem>>      getFragmentGems()       { return mFragmentGems; }

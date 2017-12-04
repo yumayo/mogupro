@@ -1,4 +1,5 @@
 #include <Game/Gem/cFragmentGem.h>
+#include "Log\Log.h"
 namespace Game
 {
 	namespace Gem
@@ -10,6 +11,7 @@ namespace Game
 			mSinRotate   = 0.0f;
 			mPutPos      = vec3(0.0f);
 			mSpeed       = vec3(0, 5, 0);
+			Log::cLogManager::getInstance()->add("remove");
 		};
 
 
@@ -24,7 +26,7 @@ namespace Game
 		{
 			mAabb.addWorld();
 			mRb.addWorld();
-			mRb.setSpeed(vec3(0,5,0));
+			mRb.setSpeed(vec3(0,10,0));
 			mRb.setFriction(1.0f);
 			mIsRigid = true;
 			mVisible = true;
@@ -42,6 +44,7 @@ namespace Game
 
 		void cFragmentGem::lateUpdate(const float& delta_time)
 		{
+			if (!mIsRigid) return;
 			mPosition = mAabb.getPosition();
 			mSpeed = mRb.getSpeed();
 		}
@@ -65,6 +68,8 @@ namespace Game
 			else
 			{
 				mRb.removeWorld();
+				
+				Log::cLogManager::getInstance()->writeLog("remove", "remove rigidbody");
 				mIsRigid = false;
 			}
 		}

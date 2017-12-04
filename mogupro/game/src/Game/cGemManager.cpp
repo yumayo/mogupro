@@ -17,7 +17,7 @@ namespace Game
 		mGemBuffer     = ci::gl::Fbo::create(ci::app::getWindowWidth(), ci::app::getWindowHeight(), true);
 		mShader        = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/GemManager.frag"));
 		mVboShader     = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemVbo.vert"), ci::app::loadAsset("Gem/GemVbo.frag"));
-		mesh           = ci::TriMesh::create(ci::TriMesh::Format().colors(4).positions().normals().texCoords0());
+		mesh           = ci::TriMesh::create(ci::TriMesh::Format().colors(4).positions().normals().texCoords());
 
 		create();
 	}
@@ -150,6 +150,8 @@ namespace Game
 			mesh->appendIndices(&indices[0], indices.size());
 			mesh->appendNormals(&mGemStone[i]->getNomals()[0], mGemStone[i]->getNomals().size());
 			mesh->appendColors(&mGemStone[i]->getColorAs()[0], mGemStone[i]->getColorAs().size());
+			for(int i = 0; i < 24; i++)
+			mesh->appendTexCoord(ci::vec2(0,0));
 
 			//Vert
 			mesh->appendPosition(pos + ci::vec3(scale.x, scale.y, scale.z));
@@ -186,6 +188,12 @@ namespace Game
 		mGemsVbo = ci::gl::VboMesh::create(*mesh);
 	}
 
+
+	void cGemManager::clearMesh()
+	{
+		if (mesh == nullptr) return;
+		mesh->clear();
+	}
 
 	std::shared_ptr<Gem::cGemStone> cGemManager::getGemStone(int id)
 	{
