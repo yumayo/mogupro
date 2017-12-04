@@ -86,23 +86,21 @@ void cClientAdapter::recvAllQuarrys( )
     {
         if ( packet->mIsSucceeded )
         {
-            Game::cStrategyManager::getInstance( )->CreateDrill(
-                packet->mPosition,
-                packet->mDrillId,
-                static_cast<Game::Strategy::cDrill::DrillType>( packet->mType ),
-                true
+            cSubWeaponManager::getInstance( )->createQuarry(
+                packet->mPosition
+                , packet->mObjectId
+				, packet->mPlayerId
             );
         }
     }
     auto eve = cEventManager::getInstance( );
     while ( auto packet = eve->getEveSetQuarry( ) )
     {
-        Game::cStrategyManager::getInstance( )->CreateDrill(
-            packet->mPosition,
-            packet->mDrillId,
-            static_cast<Game::Strategy::cDrill::DrillType>( packet->mType ),
-            packet->mTeamId == Game::cPlayerManager::getInstance()->getActivePlayerTeamId( )
-        );
+		cSubWeaponManager::getInstance( )->createQuarry(
+			packet->mPosition
+			, packet->mObjectId
+			, packet->mPlayerId
+		);
     }
 }
 void cClientAdapter::recvAllGems( )
@@ -157,7 +155,7 @@ void cClientAdapter::recvAllBombs( )
 	auto eve = cEventManager::getInstance( );
 	while ( auto packet = eve->getEveLightBomb( ) )
 	{
-		SUBWM->createLightBomb( packet->position, packet->speed, cinder::vec3(0.5F), packet->playerId );
+		cSubWeaponManager::getInstance( )->createLightBomb( packet->position, packet->speed, cinder::vec3(0.5F), packet->objectId, packet->playerId );
 	}
 }
 void cClientAdapter::recvAllCannons( )
@@ -175,12 +173,11 @@ void cClientAdapter::sendBreakBlock( cinder::vec3 const & position, float radius
     // ブロック破壊は一旦バッファに詰めておきます。
     mBreakBlocksPecket->mBreakFormats.emplace_back( position, radius, type );
 }
-void cClientAdapter::sendSetQuarry( cinder::vec3 const & position, Network::ubyte1 drillType )
+void cClientAdapter::sendSetQuarry( cinder::vec3 const & position )
 {
     auto packet = new cReqCheckSetQuarry( );
     packet->mPosition = position;
-    packet->mType = drillType;
-    packet->mTeamId = cPlayerManager::getInstance( )->getActivePlayerTeamId( );
+    packet->mPlayerId = cPlayerManager::getInstance( )->getActivePlayerId( );
     cUDPClientManager::getInstance( )->send( packet );
 }
 void cClientAdapter::sendPlayer( cinder::vec3 const & position, cinder::quat const & rotation )

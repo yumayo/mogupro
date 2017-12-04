@@ -38,6 +38,7 @@ private:
     std::set<Network::ubyte2> mQuarrys;
     Network::ubyte2 mQuarryId;
 	std::set<Network::ubyte2> mGems;
+	Network::ubyte2 mLightBombId;
 	Network::ubyte1 mRedTeamPower;
 	Network::ubyte1 mBlueTeamPower;
 };

@@ -92,13 +92,6 @@ void Game::cPlayerManager::playerNormalMove(const float& delta_time)
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_SPACE)) {
 		active_player->jump(true);
 	}
-
-	//Œ@í‹@Ý’u
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_o)) {
-		auto drill_pos = Game::cFieldManager::getInstance()->getBlockTopPosition(active_player->getPos() + active_player->getInstallationPosition());
-		cClientAdapter::getInstance()->sendSetQuarry(drill_pos, Game::Strategy::cDrill::DrillType::Level1);
-	}
-
 }
 void Game::cPlayerManager::playerMove(const float & delta_time)
 {

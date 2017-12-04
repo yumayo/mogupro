@@ -17,6 +17,7 @@ public:
 	ubyte1 playerId;
 	cinder::vec3 position;
 	cinder::vec3 speed;
+	ubyte2 objectId;
 };
 }
 }
