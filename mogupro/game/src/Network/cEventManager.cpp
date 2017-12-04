@@ -333,6 +333,39 @@ bool cEventManager::isNewEveRespawn( Packet::PacketHeader const& header )
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
+boost::optional<Packet::Event::cEveAddCannonPower> cEventManager::getEveAddCannonPower( )
+{
+    if ( mEveAddCannonPower.empty( ) )
+    {
+        auto it = mEveAddCannonPowerSequenceIds.begin( );
+		while ( it != mEveAddCannonPowerSequenceIds.end( ) ) 
+		{
+			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
+			{
+				mEveAddCannonPowerSequenceIds.erase( it++ );
+			}
+			else ++it;
+		}
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEveAddCannonPower.top( );
+        mEveAddCannonPower.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEveAddCannonPower( Packet::Event::cEveAddCannonPower&& data )
+{
+    mEveAddCannonPower.push( std::move( data ) );
+}
+bool cEventManager::isNewEveAddCannonPower( Packet::PacketHeader const& header )
+{
+	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
+    auto status = mEveAddCannonPowerSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    status.first->second = cinder::app::getElapsedSeconds( );
+	return status.second;
+}
 boost::optional<Packet::Event::cEveLightBomb> cEventManager::getEveLightBomb( )
 {
     if ( mEveLightBomb.empty( ) )

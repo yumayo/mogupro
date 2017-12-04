@@ -19,5 +19,4 @@
 #include<Network/Packet/Request/cReqEndGamemainSetup.h>
 #include<Network/Packet/Request/cReqEndStartTimer.h>
 #include<Network/Packet/Request/cReqAddCannonPower.h>
-#include<Network/Packet/Request/cReqCannonPower.h>
 #include<Network/Packet/Request/cReqResult.h>

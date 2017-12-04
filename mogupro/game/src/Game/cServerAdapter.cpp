@@ -21,6 +21,9 @@ cServerAdapter::cServerAdapter( )
 	ci::vec3 worldSize = ci::vec3( Game::Field::CHUNK_RANGE_X, Game::Field::CHUNK_RANGE_Y, Game::Field::CHUNK_RANGE_Z ) * Game::Field::BLOCK_SIZE * (float)Game::Field::CHUNK_SIZE;
 
 	mQuarryId = 0;
+
+	mLightBombId = 0;
+
 	mPlayers.insert( std::make_pair( 0, Player{ 0, true, cinder::vec3( worldSize.x / 2 - 1.5F, worldSize.y + 1.0F, 7.0F ), cinder::quat( ) } ) );
 	mPlayers.insert( std::make_pair( 1, Player{ 1, true, cinder::vec3( worldSize.x / 2 - 0.5F, worldSize.y + 1.0F, 7.0F ), cinder::quat( ) } ) );
 	mPlayers.insert( std::make_pair( 2, Player{ 2, true, cinder::vec3( worldSize.x / 2 + 0.5F, worldSize.y + 1.0F, 7.0F ), cinder::quat( ) } ) );
@@ -43,7 +46,6 @@ void cServerAdapter::update( )
 	sendBreakBlocks( );
 	sendLightBombs( );
 	sendResult( );
-	sendCannonPower( );
 	sendAddCannonPower( );
 }
 void cServerAdapter::sendPlayers( )
@@ -74,7 +76,7 @@ void cServerAdapter::sendPlayers( )
 			auto evePack = new cEvePlayerDeath( );
 			evePack->playerId = p->playerId;
 			evePack->enemyId = p->enemyId;
-			Network::cUDPServerManager::getInstance( )->send( p->networkHandle, evePack );
+			Network::cUDPServerManager::getInstance( )->broadcast( evePack );
 		}
 	}
 
@@ -92,7 +94,7 @@ void cServerAdapter::sendPlayers( )
 		auto eve = new cEveRespawn( );
 		eve->playerId = p->playerId;
 		mPlayers[p->playerId].respawn( );
-		cUDPServerManager::getInstance( )->broadcastOthers( p->networkHandle, eve );
+		cUDPServerManager::getInstance( )->broadcast( eve );
 	}
 }
 void cServerAdapter::sendSetQuarry( )
@@ -108,7 +110,7 @@ void cServerAdapter::sendSetQuarry( )
 			eventPack->mObjectId = mQuarryId;
 			eventPack->mPosition = packet->mPosition;
 			eventPack->mPlayerId = packet->mPlayerId;
-			Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, eventPack );
+			Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
 		}
 	}
 }
@@ -123,7 +125,7 @@ void cServerAdapter::sendGetGemPlayer( )
 			auto eventPack = new cEveGetJemPlayer( );
 			eventPack->mPlayerId = packet->mPlayerId;
 			eventPack->mGemId = packet->mGemId;
-			Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, eventPack );
+			Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
 		}
 	}
 }
@@ -138,7 +140,7 @@ void cServerAdapter::sendGetGemQuarry( )
 			auto eventPack = new cEveGetJemQuarry( );
 			eventPack->mObjectId = packet->mObjectId;
 			eventPack->mGemId = packet->mGemId;
-			Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, eventPack );
+			Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
 		}
 	}
 }
@@ -181,17 +183,6 @@ void cServerAdapter::sendResult( )
 		cUDPServerManager::getInstance( )->send( p->networkHandle, s );
 	}
 }
-void cServerAdapter::sendCannonPower( )
-{
-	auto q = cRequestManager::getInstance( );
-	while ( auto p = q->getReqCannonPower( ) )
-	{
-		auto s = new cResCannonPower( );
-		s->redTeamPower = mRedTeamPower;
-		s->blueTeamPower = mBlueTeamPower;
-		cUDPServerManager::getInstance( )->send( p->networkHandle, s );
-	}
-}
 void cServerAdapter::sendAddCannonPower( )
 {
 	auto q = cRequestManager::getInstance( );
@@ -205,6 +196,15 @@ void cServerAdapter::sendAddCannonPower( )
 		{
 			mBlueTeamPower += p->power;
 		}
+		else
+		{
+			continue;
+		}
+
+		auto e = new cEveAddCannonPower( );
+		e->teamId = p->teamId;
+		e->power = p->power;
+		cUDPServerManager::getInstance( )->broadcast( e );
 	}
 }
 void cServerAdapter::Player::respawn( )
