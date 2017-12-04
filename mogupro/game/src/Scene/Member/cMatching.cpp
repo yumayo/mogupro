@@ -40,7 +40,7 @@ namespace Scene
 		void cMatching::setup()
 		{
 			Network::cUDPClientManager::getInstance()->open();
-			cUDPClientManager::getInstance()->connect("192.168.199.1");
+			cUDPClientManager::getInstance()->connect("10.25.31.8");
 			mClassState = ClassState::NOT;
 			mWaitClassState = ClassState::NOT;
 			mPhaseState = PhaseState::NOT_IN_ROOM;
@@ -101,6 +101,7 @@ namespace Scene
 				cUDPClientManager::getInstance()->send(new cReqInRoom(100));
 				mCanSend = false;
 				mWaitClassState = ClassState::CLIENT;
+				mSelectTag = 0;
 			});
 			mRoot->get_child_by_tag(mSelectTag)->run_action(
 				repeat_forever::create(

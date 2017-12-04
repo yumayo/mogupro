@@ -189,7 +189,7 @@ namespace Scene
 		{
 			while (auto reqWantTeamIn = cRequestManager::getInstance()->getReqWantTeamIn())
 			{
-				int teamNum = ci::randInt(0,2);
+				int teamNum = ci::randInt(2);
  				if (cMatchingMemberManager::getInstance()->changeTeamNum(teamNum,
 					reqWantTeamIn->mNetworkHandle) != true)
 				{
@@ -216,9 +216,9 @@ namespace Scene
 						//メンバーに新規Playerの送信						
 						cUDPServerManager::getInstance()->send(m.networkHandle,
 							new cEveTeamMember(teamNum, newPlayerStr, newPlayerID));
-						//新規Playerに他の既存Playaerの送信
-						cUDPServerManager::getInstance()->send(m.networkHandle,
-							new cEveTeamMember(teamNum, newPlayerStr, newPlayerID));
+						//新規Playerに他の既存Playerの送信
+						cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle,
+							new cEveTeamMember(m.teamNum, m.nameStr, m.playerID));
 					}
 				}
 			
