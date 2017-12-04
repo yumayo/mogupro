@@ -6,7 +6,7 @@ namespace Weapons
 namespace SubWeapon
 {
 	enum SubWeaponType {
-		LIGHT_BOMB = 0, QUARRY
+		LIGHT_BOMB = 0, QUARRY,MAX
 };
 }
 }
