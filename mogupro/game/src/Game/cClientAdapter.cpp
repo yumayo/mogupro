@@ -64,13 +64,6 @@ void cClientAdapter::recvAllPlayers( )
 		packet->enemyId;
 		packet->playerId;
 	}
-	while ( auto packet = s->getResCheckPlayerDeath( ) )
-	{
-		if ( !packet->isSuccess ) continue;
-		// TODO:プレイヤーをキルする。かつ成功ならキル表示をする。
-		packet->enemyId;
-		packet->playerId;
-	}
 	while ( auto packet = e->getEveRespawn( ) )
 	{
 		// TODO:プレイヤーをリスポーンさせる。
@@ -79,18 +72,6 @@ void cClientAdapter::recvAllPlayers( )
 }
 void cClientAdapter::recvAllQuarrys( )
 {
-    auto res = cResponseManager::getInstance( );
-    while ( auto packet = res->getResCheckSetQuarry( ) )
-    {
-        if ( packet->mIsSucceeded )
-        {
-            cSubWeaponManager::getInstance( )->createQuarry(
-                packet->mPosition
-                , packet->mObjectId
-				, packet->mPlayerId
-            );
-        }
-    }
     auto eve = cEventManager::getInstance( );
     while ( auto packet = eve->getEveSetQuarry( ) )
     {
@@ -115,23 +96,6 @@ void cClientAdapter::recvAllGems( )
     {
 		// TODO: プレイヤーが宝石を取得する。
 		packet->mGemId;
-		packet->mPlayerId;
-    }
-    auto res = cResponseManager::getInstance( );
-    while ( auto packet = res->getResCheckGetJemQuarry( ) )
-    {
-        if ( !packet->mIsSuccessed ) continue;
-        Game::cStrategyManager::getInstance( )->HitDrillToGem(
-            packet->mObjectId,
-            packet->mGemId
-        );
-    }
-    while ( auto packet = res->getResCheckGetJemPlayer( ) )
-    {
-        if ( !packet->mIsSuccessed ) continue;
-		// TODO: プレイヤーが宝石を取得する。
-		packet->mGemId;
-		packet->mIsSuccessed;
 		packet->mPlayerId;
     }
 }
@@ -173,7 +137,7 @@ void cClientAdapter::sendBreakBlock( cinder::vec3 const & position, float radius
 }
 void cClientAdapter::sendSetQuarry( cinder::vec3 const & position )
 {
-    auto packet = new cReqCheckSetQuarry( );
+    auto packet = new cReqSetQuarry( );
     packet->mPosition = position;
     packet->mPlayerId = cPlayerManager::getInstance( )->getActivePlayerId( );
     cUDPClientManager::getInstance( )->send( packet );
@@ -188,21 +152,21 @@ void cClientAdapter::sendPlayer( cinder::vec3 const & position, cinder::quat con
 }
 void cClientAdapter::sendGetGemPlayer( Network::ubyte2 gemId )
 {
-    auto packet = new cReqCheckGetJemPlayer( );
+    auto packet = new cReqGetJemPlayer( );
     packet->mPlayerId = cPlayerManager::getInstance( )->getActivePlayerId( );
     packet->mGemId = gemId;
     cUDPClientManager::getInstance( )->send( packet );
 }
 void cClientAdapter::sendGetGemQuarry( Network::ubyte2 objectId, Network::ubyte2 gemId )
 {
-    auto packet = new cReqCheckGetJemQuarry( );
+    auto packet = new cReqGetJemQuarry( );
     packet->mObjectId = objectId;
     packet->mGemId = gemId;
     cUDPClientManager::getInstance( )->send( packet );
 }
 void cClientAdapter::sendLightBomb( cinder::vec3 const & position, cinder::vec3 const & speed )
 {
-	auto packet = new cReqCheckLightBomb( );
+	auto packet = new cReqLightBomb( );
 	packet->playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
 	packet->position = position;
 	packet->speed = speed;
@@ -210,7 +174,7 @@ void cClientAdapter::sendLightBomb( cinder::vec3 const & position, cinder::vec3 
 }
 void cClientAdapter::sendKill( Network::ubyte1 enemyId )
 {
-	auto p = new cReqCheckPlayerDeath( );
+	auto p = new cReqPlayerDeath( );
 	p->enemyId = enemyId;
 	p->playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
 	cUDPClientManager::getInstance( )->send( p );

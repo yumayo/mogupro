@@ -267,53 +267,53 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
-        case Network::Packet::PacketId::REQ_CHECK_GET_JEM_PLAYER:
+        case Network::Packet::PacketId::REQ_GET_JEM_PLAYER:
         {
-            if ( cRequestManager::getInstance( )->isNewReqCheckGetJemPlayer( packetHeader ) )
+            if ( cRequestManager::getInstance( )->isNewReqGetJemPlayer( packetHeader ) )
 			{
-                Packet::Request::cReqCheckGetJemPlayer data;
+                Packet::Request::cReqGetJemPlayer data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqCheckGetJemPlayer( std::move( data ) );
+                cRequestManager::getInstance( )->ungetReqGetJemPlayer( std::move( data ) );
             }
             break;
         }
-        case Network::Packet::PacketId::REQ_CHECK_GET_JEM_QUARRY:
+        case Network::Packet::PacketId::REQ_GET_JEM_QUARRY:
         {
-            if ( cRequestManager::getInstance( )->isNewReqCheckGetJemQuarry( packetHeader ) )
+            if ( cRequestManager::getInstance( )->isNewReqGetJemQuarry( packetHeader ) )
 			{
-                Packet::Request::cReqCheckGetJemQuarry data;
+                Packet::Request::cReqGetJemQuarry data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqCheckGetJemQuarry( std::move( data ) );
+                cRequestManager::getInstance( )->ungetReqGetJemQuarry( std::move( data ) );
             }
             break;
         }
-        case Network::Packet::PacketId::REQ_CHECK_PLAYER_ROB_JEM:
+        case Network::Packet::PacketId::REQ_PLAYER_ROB_JEM:
         {
-            if ( cRequestManager::getInstance( )->isNewReqCheckPlayerRobJem( packetHeader ) )
+            if ( cRequestManager::getInstance( )->isNewReqPlayerRobJem( packetHeader ) )
 			{
-                Packet::Request::cReqCheckPlayerRobJem data;
+                Packet::Request::cReqPlayerRobJem data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqCheckPlayerRobJem( std::move( data ) );
+                cRequestManager::getInstance( )->ungetReqPlayerRobJem( std::move( data ) );
             }
             break;
         }
-        case Network::Packet::PacketId::REQ_CHECK_SET_QUARRY:
+        case Network::Packet::PacketId::REQ_SET_QUARRY:
         {
-            if ( cRequestManager::getInstance( )->isNewReqCheckSetQuarry( packetHeader ) )
+            if ( cRequestManager::getInstance( )->isNewReqSetQuarry( packetHeader ) )
 			{
-                Packet::Request::cReqCheckSetQuarry data;
+                Packet::Request::cReqSetQuarry data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqCheckSetQuarry( std::move( data ) );
+                cRequestManager::getInstance( )->ungetReqSetQuarry( std::move( data ) );
             }
             break;
         }
-        case Network::Packet::PacketId::REQ_CHECK_PLAYER_DEATH:
+        case Network::Packet::PacketId::REQ_PLAYER_DEATH:
         {
-            if ( cRequestManager::getInstance( )->isNewReqCheckPlayerDeath( packetHeader ) )
+            if ( cRequestManager::getInstance( )->isNewReqPlayerDeath( packetHeader ) )
 			{
-                Packet::Request::cReqCheckPlayerDeath data;
+                Packet::Request::cReqPlayerDeath data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqCheckPlayerDeath( std::move( data ) );
+                cRequestManager::getInstance( )->ungetReqPlayerDeath( std::move( data ) );
             }
             break;
         }
@@ -327,13 +327,13 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
-        case Network::Packet::PacketId::REQ_CHECK_LIGHT_BOMB:
+        case Network::Packet::PacketId::REQ_LIGHT_BOMB:
         {
-            if ( cRequestManager::getInstance( )->isNewReqCheckLightBomb( packetHeader ) )
+            if ( cRequestManager::getInstance( )->isNewReqLightBomb( packetHeader ) )
 			{
-                Packet::Request::cReqCheckLightBomb data;
+                Packet::Request::cReqLightBomb data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqCheckLightBomb( std::move( data ) );
+                cRequestManager::getInstance( )->ungetReqLightBomb( std::move( data ) );
             }
             break;
         }
@@ -484,56 +484,6 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
                 Packet::Response::cResGetJemPoint data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
                 cResponseManager::getInstance( )->ungetResGetJemPoint( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_CHECK_GET_JEM_PLAYER:
-        {
-            if ( cResponseManager::getInstance( )->isNewResCheckGetJemPlayer( packetHeader ) )
-			{
-                Packet::Response::cResCheckGetJemPlayer data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResCheckGetJemPlayer( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_CHECK_GET_JEM_QUARRY:
-        {
-            if ( cResponseManager::getInstance( )->isNewResCheckGetJemQuarry( packetHeader ) )
-			{
-                Packet::Response::cResCheckGetJemQuarry data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResCheckGetJemQuarry( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_CHECK_PLAYER_ROB_JEM:
-        {
-            if ( cResponseManager::getInstance( )->isNewResCheckPlayerRobJem( packetHeader ) )
-			{
-                Packet::Response::cResCheckPlayerRobJem data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResCheckPlayerRobJem( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_CHECK_SET_QUARRY:
-        {
-            if ( cResponseManager::getInstance( )->isNewResCheckSetQuarry( packetHeader ) )
-			{
-                Packet::Response::cResCheckSetQuarry data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResCheckSetQuarry( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_CHECK_PLAYER_DEATH:
-        {
-            if ( cResponseManager::getInstance( )->isNewResCheckPlayerDeath( packetHeader ) )
-			{
-                Packet::Response::cResCheckPlayerDeath data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResCheckPlayerDeath( std::move( data ) );
             }
             break;
         }

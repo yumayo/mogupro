@@ -38,40 +38,40 @@ private:
     std::stack<Packet::Request::cReqGetJemPoint> mReqGetJemPoint;
     std::map<ubyte4, double> mReqGetJemPointSequenceIds;
 public:
-    boost::optional<Packet::Request::cReqCheckGetJemPlayer> getReqCheckGetJemPlayer( );
-    void ungetReqCheckGetJemPlayer( Packet::Request::cReqCheckGetJemPlayer&& data );
-    bool isNewReqCheckGetJemPlayer( Packet::PacketHeader const& header );
+    boost::optional<Packet::Request::cReqGetJemPlayer> getReqGetJemPlayer( );
+    void ungetReqGetJemPlayer( Packet::Request::cReqGetJemPlayer&& data );
+    bool isNewReqGetJemPlayer( Packet::PacketHeader const& header );
 private:
-    std::stack<Packet::Request::cReqCheckGetJemPlayer> mReqCheckGetJemPlayer;
-    std::map<ubyte4, double> mReqCheckGetJemPlayerSequenceIds;
+    std::stack<Packet::Request::cReqGetJemPlayer> mReqGetJemPlayer;
+    std::map<ubyte4, double> mReqGetJemPlayerSequenceIds;
 public:
-    boost::optional<Packet::Request::cReqCheckGetJemQuarry> getReqCheckGetJemQuarry( );
-    void ungetReqCheckGetJemQuarry( Packet::Request::cReqCheckGetJemQuarry&& data );
-    bool isNewReqCheckGetJemQuarry( Packet::PacketHeader const& header );
+    boost::optional<Packet::Request::cReqGetJemQuarry> getReqGetJemQuarry( );
+    void ungetReqGetJemQuarry( Packet::Request::cReqGetJemQuarry&& data );
+    bool isNewReqGetJemQuarry( Packet::PacketHeader const& header );
 private:
-    std::stack<Packet::Request::cReqCheckGetJemQuarry> mReqCheckGetJemQuarry;
-    std::map<ubyte4, double> mReqCheckGetJemQuarrySequenceIds;
+    std::stack<Packet::Request::cReqGetJemQuarry> mReqGetJemQuarry;
+    std::map<ubyte4, double> mReqGetJemQuarrySequenceIds;
 public:
-    boost::optional<Packet::Request::cReqCheckPlayerRobJem> getReqCheckPlayerRobJem( );
-    void ungetReqCheckPlayerRobJem( Packet::Request::cReqCheckPlayerRobJem&& data );
-    bool isNewReqCheckPlayerRobJem( Packet::PacketHeader const& header );
+    boost::optional<Packet::Request::cReqPlayerRobJem> getReqPlayerRobJem( );
+    void ungetReqPlayerRobJem( Packet::Request::cReqPlayerRobJem&& data );
+    bool isNewReqPlayerRobJem( Packet::PacketHeader const& header );
 private:
-    std::stack<Packet::Request::cReqCheckPlayerRobJem> mReqCheckPlayerRobJem;
-    std::map<ubyte4, double> mReqCheckPlayerRobJemSequenceIds;
+    std::stack<Packet::Request::cReqPlayerRobJem> mReqPlayerRobJem;
+    std::map<ubyte4, double> mReqPlayerRobJemSequenceIds;
 public:
-    boost::optional<Packet::Request::cReqCheckSetQuarry> getReqCheckSetQuarry( );
-    void ungetReqCheckSetQuarry( Packet::Request::cReqCheckSetQuarry&& data );
-    bool isNewReqCheckSetQuarry( Packet::PacketHeader const& header );
+    boost::optional<Packet::Request::cReqSetQuarry> getReqSetQuarry( );
+    void ungetReqSetQuarry( Packet::Request::cReqSetQuarry&& data );
+    bool isNewReqSetQuarry( Packet::PacketHeader const& header );
 private:
-    std::stack<Packet::Request::cReqCheckSetQuarry> mReqCheckSetQuarry;
-    std::map<ubyte4, double> mReqCheckSetQuarrySequenceIds;
+    std::stack<Packet::Request::cReqSetQuarry> mReqSetQuarry;
+    std::map<ubyte4, double> mReqSetQuarrySequenceIds;
 public:
-    boost::optional<Packet::Request::cReqCheckPlayerDeath> getReqCheckPlayerDeath( );
-    void ungetReqCheckPlayerDeath( Packet::Request::cReqCheckPlayerDeath&& data );
-    bool isNewReqCheckPlayerDeath( Packet::PacketHeader const& header );
+    boost::optional<Packet::Request::cReqPlayerDeath> getReqPlayerDeath( );
+    void ungetReqPlayerDeath( Packet::Request::cReqPlayerDeath&& data );
+    bool isNewReqPlayerDeath( Packet::PacketHeader const& header );
 private:
-    std::stack<Packet::Request::cReqCheckPlayerDeath> mReqCheckPlayerDeath;
-    std::map<ubyte4, double> mReqCheckPlayerDeathSequenceIds;
+    std::stack<Packet::Request::cReqPlayerDeath> mReqPlayerDeath;
+    std::map<ubyte4, double> mReqPlayerDeathSequenceIds;
 public:
     boost::optional<Packet::Request::cReqRespawn> getReqRespawn( );
     void ungetReqRespawn( Packet::Request::cReqRespawn&& data );
@@ -80,12 +80,12 @@ private:
     std::stack<Packet::Request::cReqRespawn> mReqRespawn;
     std::map<ubyte4, double> mReqRespawnSequenceIds;
 public:
-    boost::optional<Packet::Request::cReqCheckLightBomb> getReqCheckLightBomb( );
-    void ungetReqCheckLightBomb( Packet::Request::cReqCheckLightBomb&& data );
-    bool isNewReqCheckLightBomb( Packet::PacketHeader const& header );
+    boost::optional<Packet::Request::cReqLightBomb> getReqLightBomb( );
+    void ungetReqLightBomb( Packet::Request::cReqLightBomb&& data );
+    bool isNewReqLightBomb( Packet::PacketHeader const& header );
 private:
-    std::stack<Packet::Request::cReqCheckLightBomb> mReqCheckLightBomb;
-    std::map<ubyte4, double> mReqCheckLightBombSequenceIds;
+    std::stack<Packet::Request::cReqLightBomb> mReqLightBomb;
+    std::map<ubyte4, double> mReqLightBombSequenceIds;
 public:
     boost::optional<Packet::Request::cReqDamage> getReqDamage( );
     void ungetReqDamage( Packet::Request::cReqDamage&& data );
