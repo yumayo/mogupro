@@ -31,7 +31,6 @@ private:
 	void sendBreakBlocks( );
 	void sendLightBombs( );
 	void sendResult( );
-	void sendCannonPower( );
 	void sendAddCannonPower( );
 private:
     std::map<Network::ubyte1, Player> mPlayers;

@@ -80,6 +80,13 @@ private:
     std::stack<Packet::Event::cEveRespawn> mEveRespawn;
     std::map<ubyte4, double> mEveRespawnSequenceIds;
 public:
+    boost::optional<Packet::Event::cEveAddCannonPower> getEveAddCannonPower( );
+    void ungetEveAddCannonPower( Packet::Event::cEveAddCannonPower&& data );
+    bool isNewEveAddCannonPower( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Event::cEveAddCannonPower> mEveAddCannonPower;
+    std::map<ubyte4, double> mEveAddCannonPowerSequenceIds;
+public:
     boost::optional<Packet::Event::cEveLightBomb> getEveLightBomb( );
     void ungetEveLightBomb( Packet::Event::cEveLightBomb&& data );
     bool isNewEveLightBomb( Packet::PacketHeader const& header );

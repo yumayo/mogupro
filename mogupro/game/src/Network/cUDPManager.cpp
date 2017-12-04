@@ -157,6 +157,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
+        case Network::Packet::PacketId::EVE_ADD_CANNON_POWER:
+        {
+            if ( cEventManager::getInstance( )->isNewEveAddCannonPower( packetHeader ) )
+			{
+                Packet::Event::cEveAddCannonPower data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cEventManager::getInstance( )->ungetEveAddCannonPower( std::move( data ) );
+            }
+            break;
+        }
         case Network::Packet::PacketId::EVE_LIGHT_BOMB:
         {
             if ( cEventManager::getInstance( )->isNewEveLightBomb( packetHeader ) )
@@ -427,16 +437,6 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
-        case Network::Packet::PacketId::REQ_CANNON_POWER:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqCannonPower( packetHeader ) )
-			{
-                Packet::Request::cReqCannonPower data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqCannonPower( std::move( data ) );
-            }
-            break;
-        }
         case Network::Packet::PacketId::REQ_RESULT:
         {
             if ( cRequestManager::getInstance( )->isNewReqResult( packetHeader ) )
@@ -554,16 +554,6 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
                 Packet::Response::cResSetGamestartTimer data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
                 cResponseManager::getInstance( )->ungetResSetGamestartTimer( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_CANNON_POWER:
-        {
-            if ( cResponseManager::getInstance( )->isNewResCannonPower( packetHeader ) )
-			{
-                Packet::Response::cResCannonPower data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResCannonPower( std::move( data ) );
             }
             break;
         }

@@ -122,12 +122,12 @@ void cClientAdapter::recvAllBombs( )
 }
 void cClientAdapter::recvAllCannons( )
 {
-	auto s = cResponseManager::getInstance( );
-	while ( auto packet = s->getResCannonPower( ) )
+	auto e = cEventManager::getInstance( );
+	while ( auto packet = e->getEveAddCannonPower( ) )
 	{
 		// TODO: 大砲のパワーを更新する。
-		packet->redTeamPower;
-		packet->blueTeamPower;
+		packet->teamId;
+		packet->power;
 	}
 }
 void cClientAdapter::sendBreakBlock( cinder::vec3 const & position, float radius, Network::ubyte1 type )
@@ -191,11 +191,6 @@ void cClientAdapter::sendRespawn( )
 {
 	auto p = new cReqRespawn( );
 	p->playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
-	cUDPClientManager::getInstance( )->send( p );
-}
-void cClientAdapter::sendGetCannonPower( )
-{
-	auto p = new cReqCannonPower( );
 	cUDPClientManager::getInstance( )->send( p );
 }
 void cClientAdapter::sendAddCannonPower( Network::ubyte1 teamId, Network::ubyte1 power )

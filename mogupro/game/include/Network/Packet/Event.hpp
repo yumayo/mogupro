@@ -9,6 +9,7 @@
 #include<Network/Packet/Event/cEvePlayerRobJem.h>
 #include<Network/Packet/Event/cEvePlayerDeath.h>
 #include<Network/Packet/Event/cEveRespawn.h>
+#include<Network/Packet/Event/cEveAddCannonPower.h>
 #include<Network/Packet/Event/cEveLightBomb.h>
 #include<Network/Packet/Event/cEveTeamMember.h>
 #include<Network/Packet/Event/cEveDamage.h>

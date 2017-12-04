@@ -49,7 +49,10 @@ enum class PacketId : ubyte1
     // 他のプレイヤーに倒されたと通知します。
     // ※この瞬間にプレイヤーはステータスを変えてください。
     EVE_PLAYER_DEATH,
+	//
 	EVE_RESPAWN,
+	//
+	EVE_ADD_CANNON_POWER,
 	// 他のプレイヤーがボムを投げたと通知します。
 	EVE_LIGHT_BOMB,
     //Memberがどこに所属しているかの送信
@@ -108,8 +111,6 @@ enum class PacketId : ubyte1
 	REQ_END_START_TIMER,
 	// 
 	REQ_ADD_CANNON_POWER,
-
-	REQ_CANNON_POWER,
 	// 
 	REQ_RESULT,
 
@@ -141,7 +142,6 @@ enum class PacketId : ubyte1
 	//GameMainのSetupが終了した時点からの
 	RES_SET_GAMESTART_TIMER,
 	//
-	RES_CANNON_POWER,
 	RES_RESULT,
 };
 }

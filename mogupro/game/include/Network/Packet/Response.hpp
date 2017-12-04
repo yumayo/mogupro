@@ -10,5 +10,4 @@
 #include<Network/Packet/Response/cResCheckMember.h>
 #include<Network/Packet/Response/cResEndGamemainSetup.h>
 #include<Network/Packet/Response/cResSetGamestartTimer.h>
-#include<Network/Packet/Response/cResCannonPower.h>
 #include<Network/Packet/Response/cResResult.h>
