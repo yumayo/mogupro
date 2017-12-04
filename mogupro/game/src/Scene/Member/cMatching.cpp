@@ -55,6 +55,7 @@ namespace Scene
 			mTrimeshAnimationFbo = ci::gl::Fbo::create(ci::app::getWindowWidth(),
 				ci::app::getWindowHeight(), true);
 			Resource::TextureManager::getInstance()->set("nightSky.png", "nightSky.png");
+			sceneChange = false;
 		}
 
 		void cMatching::registerFunc()
@@ -186,6 +187,7 @@ namespace Scene
 				delay::create(4.0f), 
 				call_func::create([this]
 			{
+				sceneChange = true;
 				shutDown();
 				cSceneManager::getInstance()->change<Scene::Member::cGameMain>();
 				cSceneManager::getInstance()->now().setup();
@@ -200,6 +202,8 @@ namespace Scene
 
 		void cMatching::update(float deltaTime)
 		{
+			if (sceneChange == true)return;
+
 			mPrevSelectTag = mSelectTag;
 			mRoot->entry_update(deltaTime);
 			mMemberRoot->entry_update(deltaTime);

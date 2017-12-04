@@ -104,6 +104,7 @@ private:
 	std::vector<DrillUI> drillUI2Ps;
 	Utility::TriMeshAnimation mTrimeshAnimation;
 	ci::gl::FboRef mTrimeshAnimationFbo;
+	bool sceneChange;
 };
 }
 }
