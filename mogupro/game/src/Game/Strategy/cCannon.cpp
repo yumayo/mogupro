@@ -3,6 +3,7 @@
 #include"Game/cStrategyManager.h"
 #include"Game/cGemManager.h"
 #include<Network.hpp>
+#include"Game/cClientAdapter.h"
 #include"cinder\gl\scoped.h"
 #include"Game\cClientAdapter.h"
 #include"Game\cPlayerManager.h"
@@ -90,6 +91,10 @@ namespace Game
 
 		void cCannon::receivePlayerGem(std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>& getgems)
 		{
+
+			Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getActivePlayerTeamId(), getgems.size());
+
+
 			ci::app::console() << "いれるものはじめ" << std::endl;
 			for (int i = 0; i < getgems.size(); i++) {
 				ci::app::console() << getgems[i]->getType() << std::endl;
@@ -106,6 +111,9 @@ namespace Game
 			}
 			ci::app::console() << "ぜんぶおわり" << std::endl;
 			//////////////////////デバック
+
+		
+
 		}
 
 	
