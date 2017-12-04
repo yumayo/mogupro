@@ -8,11 +8,11 @@ namespace Response
 {
 void cResCheckSetQuarry::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
-    cImporter( data ) >> mIsSucceeded >> mPosition >> mTeamId >> mDrillId >> mType;
+    cImporter( data ) >> mIsSucceeded >> mPosition >> mObjectId >> mPlayerId;
 }
 ubyte2 cResCheckSetQuarry::packetExport( char* const data )
 {
-    return cExporter( data ) << mIsSucceeded << mPosition << mTeamId << mDrillId << mType;
+    return cExporter( data ) << mIsSucceeded << mPosition << mObjectId << mPlayerId;
 }
 }
 }

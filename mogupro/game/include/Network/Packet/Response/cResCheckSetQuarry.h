@@ -16,9 +16,8 @@ public:
 public:
     ubyte1 mIsSucceeded;
     cinder::vec3 mPosition;
-    ubyte1 mType;
-    ubyte2 mDrillId;
-    ubyte1 mTeamId;
+    ubyte2 mObjectId;
+    ubyte2 mPlayerId;
 };
 }
 }

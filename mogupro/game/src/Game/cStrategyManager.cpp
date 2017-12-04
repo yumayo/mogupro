@@ -76,11 +76,6 @@ void cStrategyManager::update(const float & deltatime)
 		it.second->update(deltatime);
 	}
 	deleteObject();
-
-	if (ENV->pushKey(KeyEvent::KEY_p)) {
-		cClientAdapter::getInstance()->sendSetQuarry(vec3(randInt(0, 10), 15, randInt(0, 10)),Strategy::cDrill::DrillType::Level1);
-
-	}
 }
 
 void cStrategyManager::updateCollisionAfterUpdate(const float & deltaTime)

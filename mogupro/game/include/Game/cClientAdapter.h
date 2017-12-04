@@ -41,7 +41,7 @@ public:
     // ブロックを破壊したら呼んでください。
     void sendBreakBlock( cinder::vec3 const& position, float radius, Network::ubyte1 type );
     // 掘削機を設置したら呼んでください。
-    void sendSetQuarry( cinder::vec3 const& position, Network::ubyte1 drillType );
+    void sendSetQuarry( cinder::vec3 const& position );
     // プレイヤーの位置情報をサーバーに送りますので呼んでください。
     void sendPlayer( cinder::vec3 const& position, cinder::quat const& rotation );
     // プレイヤーがジェムを取得したら呼んでください。

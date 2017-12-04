@@ -16,8 +16,7 @@ public:
 public:
     cNetworkHandle mNetworkHandle;
     cinder::vec3 mPosition;
-    ubyte1 mTeamId;
-    ubyte1 mType;
+    ubyte1 mPlayerId;
 };
 }
 }

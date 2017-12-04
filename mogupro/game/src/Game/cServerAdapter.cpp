@@ -110,19 +110,17 @@ void cServerAdapter::sendSetQuarry( )
 		mQuarryId += 1;
 		mQuarrys.insert( mQuarryId );
 		auto quarryPack = new cResCheckSetQuarry( );
-		quarryPack->mDrillId = mQuarryId;
+		quarryPack->mObjectId = mQuarryId;
 		quarryPack->mIsSucceeded = true;
 		quarryPack->mPosition = packet->mPosition;
-		quarryPack->mType = packet->mType;
-		quarryPack->mTeamId = packet->mTeamId;
+		quarryPack->mPlayerId = packet->mPlayerId;
 
 		if ( quarryPack->mIsSucceeded )
 		{
 			auto eventPack = new cEveSetQuarry( );
-			eventPack->mDrillId = quarryPack->mDrillId;
+			eventPack->mObjectId = quarryPack->mObjectId;
 			eventPack->mPosition = quarryPack->mPosition;
-			eventPack->mType = quarryPack->mType;
-			eventPack->mTeamId = quarryPack->mTeamId;
+			eventPack->mPlayerId = quarryPack->mPlayerId;
 			Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
 		}
 
@@ -200,6 +198,7 @@ void cServerAdapter::sendLightBombs( )
 		auto eventPack = new cEveLightBomb( );
 		eventPack->playerId = packet->playerId;
 		eventPack->position = packet->position;
+		eventPack->objectId = mLightBombId++;
 		eventPack->speed = packet->speed;
 		Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
 	}

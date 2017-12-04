@@ -11,14 +11,14 @@ void cEveSetQuarry::packetImport( cNetworkHandle networkHandle, ubyte2 transferr
     cImporter imp( data );
     // 使い方: vec2 pos1, pos2; ubyte2 a1, a2;
     // imp >> pos1 >> a1 >> pos2 >> a2;
-    imp >> mPosition >> mType >> mTeamId >> mDrillId;
+    imp >> mPosition >> mPlayerId >> mObjectId;
 }
 ubyte2 cEveSetQuarry::packetExport( char* const data )
 {
     cExporter exp( data );
     // 使い方: vec2 pos1, pos2; ubyte2 a1, a2;
     // exp << pos1 << a1 << pos2 << a2;
-    exp << mPosition << mType << mTeamId << mDrillId;
+    exp << mPosition << mPlayerId << mObjectId;
     return exp;
 }
 }
