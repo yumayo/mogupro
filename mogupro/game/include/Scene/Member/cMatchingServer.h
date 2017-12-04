@@ -42,6 +42,7 @@ private:
 	std::string mTimeStr;
 	boost::posix_time::ptime mGameStartTime;
 	bool mStartGame;
+	int teamCount;
 };
 }
 }

@@ -47,6 +47,7 @@ namespace Scene
 			}))));
 			mCanUpdateServerAdapter = false;
 			mStartGame = false;
+			teamCount = 0;
 		}
 		void cMatchingServer::shutDown()
 		{
@@ -189,7 +190,9 @@ namespace Scene
 		{
 			while (auto reqWantTeamIn = cRequestManager::getInstance()->getReqWantTeamIn())
 			{
-				int teamNum = ci::randInt(2);
+				//int teamNum = ci::randInt(2);
+				int teamNum = teamCount % 2;
+				++teamCount;
  				if (cMatchingMemberManager::getInstance()->changeTeamNum(teamNum,
 					reqWantTeamIn->mNetworkHandle) != true)
 				{
