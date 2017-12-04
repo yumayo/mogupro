@@ -8,11 +8,11 @@ namespace Response
 {
 void cResCheckGetJemQuarry::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
-    cImporter( data ) >> mIsSuccessed >> mDrillId >> mGemId;
+    cImporter( data ) >> mIsSuccessed >> mObjectId >> mGemId;
 }
 ubyte2 cResCheckGetJemQuarry::packetExport( char* const data )
 {
-    return cExporter( data ) << mIsSuccessed << mDrillId << mGemId;
+    return cExporter( data ) << mIsSuccessed << mObjectId << mGemId;
 }
 }
 }

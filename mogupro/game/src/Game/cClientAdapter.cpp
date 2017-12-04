@@ -106,8 +106,8 @@ void cClientAdapter::recvAllGems( )
     auto eve = cEventManager::getInstance( );
     while ( auto packet = eve->getEveGetJemQuarry( ) )
     {
-        Game::cStrategyManager::getInstance( )->HitDrillToGem(
-            packet->mDrillId,
+        cSubWeaponManager::getInstance( )->HitDrillToGem(
+            packet->mObjectId,
             packet->mGemId
         );
     }
@@ -122,7 +122,7 @@ void cClientAdapter::recvAllGems( )
     {
         if ( !packet->mIsSuccessed ) continue;
         Game::cStrategyManager::getInstance( )->HitDrillToGem(
-            packet->mDrillId,
+            packet->mObjectId,
             packet->mGemId
         );
     }
@@ -193,10 +193,10 @@ void cClientAdapter::sendGetGemPlayer( Network::ubyte2 gemId )
     packet->mGemId = gemId;
     cUDPClientManager::getInstance( )->send( packet );
 }
-void cClientAdapter::sendGetGemQuarry( Network::ubyte2 drillId, Network::ubyte2 gemId )
+void cClientAdapter::sendGetGemQuarry( Network::ubyte2 objectId, Network::ubyte2 gemId )
 {
     auto packet = new cReqCheckGetJemQuarry( );
-    packet->mDrillId = drillId;
+    packet->mObjectId = objectId;
     packet->mGemId = gemId;
     cUDPClientManager::getInstance( )->send( packet );
 }

@@ -47,7 +47,7 @@ public:
     // プレイヤーがジェムを取得したら呼んでください。
     void sendGetGemPlayer( Network::ubyte2 gemId );
     // 掘削機がジェムを取得したら呼んでください。
-    void sendGetGemQuarry( Network::ubyte2 drillId, Network::ubyte2 gemId );
+    void sendGetGemQuarry( Network::ubyte2 objectId, Network::ubyte2 gemId );
 	// ライトボムを投げる。
 	void sendLightBomb( cinder::vec3 const& position, cinder::vec3 const& speed );
 	// 誰かをキルしたら呼んでください。

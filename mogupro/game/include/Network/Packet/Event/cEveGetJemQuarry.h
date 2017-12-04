@@ -14,7 +14,7 @@ public:
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
 public:
-    ubyte2 mDrillId;
+    ubyte2 mObjectId;
     ubyte2 mGemId;
 };
 }

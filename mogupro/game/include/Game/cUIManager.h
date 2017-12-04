@@ -18,7 +18,7 @@ public:
 	// 0.0 ~ 1.0
 	void setBlueCannonPower( float value );
 	// 
-	void appendItem( );
+	void appendItem( int type );
 	// 
 	void useItem( );
 

@@ -14,7 +14,7 @@ public:
     ubyte2 packetExport( char* const data ) override;
 public:
     ubyte1 mIsSuccessed;
-    ubyte2 mDrillId;
+    ubyte2 mObjectId;
     ubyte2 mGemId;
 };
 }
