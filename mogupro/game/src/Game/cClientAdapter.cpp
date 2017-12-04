@@ -55,10 +55,8 @@ void cClientAdapter::recvAllPlayers( )
     }
 	while ( auto packet = e->getEveDamage( ) )
 	{
-		// TODO:プレイヤーにダメージを与える。
-		packet->damage;
-		packet->enemyId;
-		packet->playerId;
+		cPlayerManager::getInstance( )->getPlayers( )[packet->enemyId]->receiveDamage(
+			packet->damage, packet->playerId );
 	}
 	while ( auto packet = e->getEvePlayerDeath( ) )
 	{

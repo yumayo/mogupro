@@ -4,6 +4,7 @@
 #include<Game/cFieldManager.h>
 #include<Particle/cParticleManager.h>
 #include"Resource\cSoundManager.h"
+#include <Game/cClientAdapter.h>
 namespace Game
 {
 namespace Weapons
@@ -40,7 +41,7 @@ namespace Weapons
 
 		void cLightBomb::dmageToPlayer(const int playerid)
 		{
-			cPlayerManager::getInstance()->getPlayers()[playerid]->receiveDamage(100.f, cPlayerManager::getInstance()->getActivePlayer()->getPlayerId());
+			cClientAdapter::getInstance( )->sendDamage( playerid, 100.0F );
 		}
 
 		void cLightBomb::hitObject()
