@@ -135,16 +135,16 @@ bool cRequestManager::isNewReqGetJemPoint( Packet::PacketHeader const& header )
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
-boost::optional<Packet::Request::cReqCheckGetJemPlayer> cRequestManager::getReqCheckGetJemPlayer( )
+boost::optional<Packet::Request::cReqGetJemPlayer> cRequestManager::getReqGetJemPlayer( )
 {
-    if ( mReqCheckGetJemPlayer.empty( ) )
+    if ( mReqGetJemPlayer.empty( ) )
     {
-        auto it = mReqCheckGetJemPlayerSequenceIds.begin( );
-		while ( it != mReqCheckGetJemPlayerSequenceIds.end( ) ) 
+        auto it = mReqGetJemPlayerSequenceIds.begin( );
+		while ( it != mReqGetJemPlayerSequenceIds.end( ) ) 
 		{
 			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
 			{
-				mReqCheckGetJemPlayerSequenceIds.erase( it++ );
+				mReqGetJemPlayerSequenceIds.erase( it++ );
 			}
 			else ++it;
 		}
@@ -152,32 +152,32 @@ boost::optional<Packet::Request::cReqCheckGetJemPlayer> cRequestManager::getReqC
     }
     else
     {
-        auto top = mReqCheckGetJemPlayer.top( );
-        mReqCheckGetJemPlayer.pop( );
+        auto top = mReqGetJemPlayer.top( );
+        mReqGetJemPlayer.pop( );
         return top;
     }
 }
-void cRequestManager::ungetReqCheckGetJemPlayer( Packet::Request::cReqCheckGetJemPlayer&& data )
+void cRequestManager::ungetReqGetJemPlayer( Packet::Request::cReqGetJemPlayer&& data )
 {
-    mReqCheckGetJemPlayer.push( std::move( data ) );
+    mReqGetJemPlayer.push( std::move( data ) );
 }
-bool cRequestManager::isNewReqCheckGetJemPlayer( Packet::PacketHeader const& header )
+bool cRequestManager::isNewReqGetJemPlayer( Packet::PacketHeader const& header )
 {
 	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
-    auto status = mReqCheckGetJemPlayerSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    auto status = mReqGetJemPlayerSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
-boost::optional<Packet::Request::cReqCheckGetJemQuarry> cRequestManager::getReqCheckGetJemQuarry( )
+boost::optional<Packet::Request::cReqGetJemQuarry> cRequestManager::getReqGetJemQuarry( )
 {
-    if ( mReqCheckGetJemQuarry.empty( ) )
+    if ( mReqGetJemQuarry.empty( ) )
     {
-        auto it = mReqCheckGetJemQuarrySequenceIds.begin( );
-		while ( it != mReqCheckGetJemQuarrySequenceIds.end( ) ) 
+        auto it = mReqGetJemQuarrySequenceIds.begin( );
+		while ( it != mReqGetJemQuarrySequenceIds.end( ) ) 
 		{
 			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
 			{
-				mReqCheckGetJemQuarrySequenceIds.erase( it++ );
+				mReqGetJemQuarrySequenceIds.erase( it++ );
 			}
 			else ++it;
 		}
@@ -185,32 +185,32 @@ boost::optional<Packet::Request::cReqCheckGetJemQuarry> cRequestManager::getReqC
     }
     else
     {
-        auto top = mReqCheckGetJemQuarry.top( );
-        mReqCheckGetJemQuarry.pop( );
+        auto top = mReqGetJemQuarry.top( );
+        mReqGetJemQuarry.pop( );
         return top;
     }
 }
-void cRequestManager::ungetReqCheckGetJemQuarry( Packet::Request::cReqCheckGetJemQuarry&& data )
+void cRequestManager::ungetReqGetJemQuarry( Packet::Request::cReqGetJemQuarry&& data )
 {
-    mReqCheckGetJemQuarry.push( std::move( data ) );
+    mReqGetJemQuarry.push( std::move( data ) );
 }
-bool cRequestManager::isNewReqCheckGetJemQuarry( Packet::PacketHeader const& header )
+bool cRequestManager::isNewReqGetJemQuarry( Packet::PacketHeader const& header )
 {
 	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
-    auto status = mReqCheckGetJemQuarrySequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    auto status = mReqGetJemQuarrySequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
-boost::optional<Packet::Request::cReqCheckPlayerRobJem> cRequestManager::getReqCheckPlayerRobJem( )
+boost::optional<Packet::Request::cReqPlayerRobJem> cRequestManager::getReqPlayerRobJem( )
 {
-    if ( mReqCheckPlayerRobJem.empty( ) )
+    if ( mReqPlayerRobJem.empty( ) )
     {
-        auto it = mReqCheckPlayerRobJemSequenceIds.begin( );
-		while ( it != mReqCheckPlayerRobJemSequenceIds.end( ) ) 
+        auto it = mReqPlayerRobJemSequenceIds.begin( );
+		while ( it != mReqPlayerRobJemSequenceIds.end( ) ) 
 		{
 			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
 			{
-				mReqCheckPlayerRobJemSequenceIds.erase( it++ );
+				mReqPlayerRobJemSequenceIds.erase( it++ );
 			}
 			else ++it;
 		}
@@ -218,32 +218,32 @@ boost::optional<Packet::Request::cReqCheckPlayerRobJem> cRequestManager::getReqC
     }
     else
     {
-        auto top = mReqCheckPlayerRobJem.top( );
-        mReqCheckPlayerRobJem.pop( );
+        auto top = mReqPlayerRobJem.top( );
+        mReqPlayerRobJem.pop( );
         return top;
     }
 }
-void cRequestManager::ungetReqCheckPlayerRobJem( Packet::Request::cReqCheckPlayerRobJem&& data )
+void cRequestManager::ungetReqPlayerRobJem( Packet::Request::cReqPlayerRobJem&& data )
 {
-    mReqCheckPlayerRobJem.push( std::move( data ) );
+    mReqPlayerRobJem.push( std::move( data ) );
 }
-bool cRequestManager::isNewReqCheckPlayerRobJem( Packet::PacketHeader const& header )
+bool cRequestManager::isNewReqPlayerRobJem( Packet::PacketHeader const& header )
 {
 	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
-    auto status = mReqCheckPlayerRobJemSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    auto status = mReqPlayerRobJemSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
-boost::optional<Packet::Request::cReqCheckSetQuarry> cRequestManager::getReqCheckSetQuarry( )
+boost::optional<Packet::Request::cReqSetQuarry> cRequestManager::getReqSetQuarry( )
 {
-    if ( mReqCheckSetQuarry.empty( ) )
+    if ( mReqSetQuarry.empty( ) )
     {
-        auto it = mReqCheckSetQuarrySequenceIds.begin( );
-		while ( it != mReqCheckSetQuarrySequenceIds.end( ) ) 
+        auto it = mReqSetQuarrySequenceIds.begin( );
+		while ( it != mReqSetQuarrySequenceIds.end( ) ) 
 		{
 			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
 			{
-				mReqCheckSetQuarrySequenceIds.erase( it++ );
+				mReqSetQuarrySequenceIds.erase( it++ );
 			}
 			else ++it;
 		}
@@ -251,32 +251,32 @@ boost::optional<Packet::Request::cReqCheckSetQuarry> cRequestManager::getReqChec
     }
     else
     {
-        auto top = mReqCheckSetQuarry.top( );
-        mReqCheckSetQuarry.pop( );
+        auto top = mReqSetQuarry.top( );
+        mReqSetQuarry.pop( );
         return top;
     }
 }
-void cRequestManager::ungetReqCheckSetQuarry( Packet::Request::cReqCheckSetQuarry&& data )
+void cRequestManager::ungetReqSetQuarry( Packet::Request::cReqSetQuarry&& data )
 {
-    mReqCheckSetQuarry.push( std::move( data ) );
+    mReqSetQuarry.push( std::move( data ) );
 }
-bool cRequestManager::isNewReqCheckSetQuarry( Packet::PacketHeader const& header )
+bool cRequestManager::isNewReqSetQuarry( Packet::PacketHeader const& header )
 {
 	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
-    auto status = mReqCheckSetQuarrySequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    auto status = mReqSetQuarrySequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
-boost::optional<Packet::Request::cReqCheckPlayerDeath> cRequestManager::getReqCheckPlayerDeath( )
+boost::optional<Packet::Request::cReqPlayerDeath> cRequestManager::getReqPlayerDeath( )
 {
-    if ( mReqCheckPlayerDeath.empty( ) )
+    if ( mReqPlayerDeath.empty( ) )
     {
-        auto it = mReqCheckPlayerDeathSequenceIds.begin( );
-		while ( it != mReqCheckPlayerDeathSequenceIds.end( ) ) 
+        auto it = mReqPlayerDeathSequenceIds.begin( );
+		while ( it != mReqPlayerDeathSequenceIds.end( ) ) 
 		{
 			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
 			{
-				mReqCheckPlayerDeathSequenceIds.erase( it++ );
+				mReqPlayerDeathSequenceIds.erase( it++ );
 			}
 			else ++it;
 		}
@@ -284,19 +284,19 @@ boost::optional<Packet::Request::cReqCheckPlayerDeath> cRequestManager::getReqCh
     }
     else
     {
-        auto top = mReqCheckPlayerDeath.top( );
-        mReqCheckPlayerDeath.pop( );
+        auto top = mReqPlayerDeath.top( );
+        mReqPlayerDeath.pop( );
         return top;
     }
 }
-void cRequestManager::ungetReqCheckPlayerDeath( Packet::Request::cReqCheckPlayerDeath&& data )
+void cRequestManager::ungetReqPlayerDeath( Packet::Request::cReqPlayerDeath&& data )
 {
-    mReqCheckPlayerDeath.push( std::move( data ) );
+    mReqPlayerDeath.push( std::move( data ) );
 }
-bool cRequestManager::isNewReqCheckPlayerDeath( Packet::PacketHeader const& header )
+bool cRequestManager::isNewReqPlayerDeath( Packet::PacketHeader const& header )
 {
 	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
-    auto status = mReqCheckPlayerDeathSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    auto status = mReqPlayerDeathSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
@@ -333,16 +333,16 @@ bool cRequestManager::isNewReqRespawn( Packet::PacketHeader const& header )
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
-boost::optional<Packet::Request::cReqCheckLightBomb> cRequestManager::getReqCheckLightBomb( )
+boost::optional<Packet::Request::cReqLightBomb> cRequestManager::getReqLightBomb( )
 {
-    if ( mReqCheckLightBomb.empty( ) )
+    if ( mReqLightBomb.empty( ) )
     {
-        auto it = mReqCheckLightBombSequenceIds.begin( );
-		while ( it != mReqCheckLightBombSequenceIds.end( ) ) 
+        auto it = mReqLightBombSequenceIds.begin( );
+		while ( it != mReqLightBombSequenceIds.end( ) ) 
 		{
 			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
 			{
-				mReqCheckLightBombSequenceIds.erase( it++ );
+				mReqLightBombSequenceIds.erase( it++ );
 			}
 			else ++it;
 		}
@@ -350,19 +350,19 @@ boost::optional<Packet::Request::cReqCheckLightBomb> cRequestManager::getReqChec
     }
     else
     {
-        auto top = mReqCheckLightBomb.top( );
-        mReqCheckLightBomb.pop( );
+        auto top = mReqLightBomb.top( );
+        mReqLightBomb.pop( );
         return top;
     }
 }
-void cRequestManager::ungetReqCheckLightBomb( Packet::Request::cReqCheckLightBomb&& data )
+void cRequestManager::ungetReqLightBomb( Packet::Request::cReqLightBomb&& data )
 {
-    mReqCheckLightBomb.push( std::move( data ) );
+    mReqLightBomb.push( std::move( data ) );
 }
-bool cRequestManager::isNewReqCheckLightBomb( Packet::PacketHeader const& header )
+bool cRequestManager::isNewReqLightBomb( Packet::PacketHeader const& header )
 {
 	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
-    auto status = mReqCheckLightBombSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    auto status = mReqLightBombSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }

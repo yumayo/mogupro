@@ -3,11 +3,6 @@
 #include<Network/Packet/Response/cResConnect.h>
 #include<Network/Packet/Response/cResGetJemSeed.h>
 #include<Network/Packet/Response/cResGetJemPoint.h>
-#include<Network/Packet/Response/cResCheckGetJemPlayer.h>
-#include<Network/Packet/Response/cResCheckGetJemQuarry.h>
-#include<Network/Packet/Response/cResCheckPlayerRobJem.h>
-#include<Network/Packet/Response/cResCheckSetQuarry.h>
-#include<Network/Packet/Response/cResCheckPlayerDeath.h>
 #include<Network/Packet/Response/cResMakeRoom.h>
 #include<Network/Packet/Response/cResInRoom.h>
 #include<Network/Packet/Response/cResWantTeamIn.h>

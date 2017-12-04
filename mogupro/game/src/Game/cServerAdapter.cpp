@@ -67,22 +67,15 @@ void cServerAdapter::sendPlayers( )
 		Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
 	}
 
-	while ( auto p = req->getReqCheckPlayerDeath( ) )
+	while ( auto p = req->getReqPlayerDeath( ) )
 	{
-		auto resPack = new cResCheckPlayerDeath( );
-		resPack->playerId = p->playerId;
-		resPack->enemyId = p->enemyId;
-		resPack->isSuccess = mPlayers[p->enemyId].kill( );
-
-		if ( resPack->isSuccess )
+		if ( mPlayers[p->enemyId].kill( ) )
 		{
 			auto evePack = new cEvePlayerDeath( );
-			evePack->playerId = resPack->playerId;
-			evePack->enemyId = resPack->enemyId;
-			Network::cUDPServerManager::getInstance( )->broadcastOthers( p->networkHandle, evePack );
+			evePack->playerId = p->playerId;
+			evePack->enemyId = p->enemyId;
+			Network::cUDPServerManager::getInstance( )->send( p->networkHandle, evePack );
 		}
-
-		Network::cUDPServerManager::getInstance( )->send( p->networkHandle, resPack );
 	}
 
 	while ( auto p = req->getReqDamage( ) )
@@ -105,74 +98,48 @@ void cServerAdapter::sendPlayers( )
 void cServerAdapter::sendSetQuarry( )
 {
 	auto req = Network::cRequestManager::getInstance( );
-	while ( auto packet = req->getReqCheckSetQuarry( ) )
+	while ( auto packet = req->getReqSetQuarry( ) )
 	{
 		mQuarryId += 1;
 		mQuarrys.insert( mQuarryId );
-		auto quarryPack = new cResCheckSetQuarry( );
-		quarryPack->mObjectId = mQuarryId;
-		quarryPack->mIsSucceeded = true;
-		quarryPack->mPosition = packet->mPosition;
-		quarryPack->mPlayerId = packet->mPlayerId;
-
-		if ( quarryPack->mIsSucceeded )
+		if ( true )
 		{
 			auto eventPack = new cEveSetQuarry( );
-			eventPack->mObjectId = quarryPack->mObjectId;
-			eventPack->mPosition = quarryPack->mPosition;
-			eventPack->mPlayerId = quarryPack->mPlayerId;
-			Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
+			eventPack->mObjectId = mQuarryId;
+			eventPack->mPosition = packet->mPosition;
+			eventPack->mPlayerId = packet->mPlayerId;
+			Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, eventPack );
 		}
-
-		Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, quarryPack );
 	}
 }
 void cServerAdapter::sendGetGemPlayer( )
 {
 	auto req = Network::cRequestManager::getInstance( );
-	while ( auto packet = req->getReqCheckGetJemPlayer( ) )
+	while ( auto packet = req->getReqGetJemPlayer( ) )
 	{
-		auto resPack = new cResCheckGetJemPlayer( );
-		auto isSuccess = mGems.insert( packet->mGemId ).second;
-
-		resPack->mPlayerId = packet->mPlayerId;
-		resPack->mGemId = packet->mGemId;
-		resPack->mIsSuccessed = isSuccess;
-
 		// 成功なら他の人に俺、宝石採ったぜアピールをします。
-		if ( isSuccess )
+		if ( mGems.insert( packet->mGemId ).second )
 		{
 			auto eventPack = new cEveGetJemPlayer( );
 			eventPack->mPlayerId = packet->mPlayerId;
 			eventPack->mGemId = packet->mGemId;
-			Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
+			Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, eventPack );
 		}
-
-		Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, resPack );
 	}
 }
 void cServerAdapter::sendGetGemQuarry( )
 {
 	auto req = Network::cRequestManager::getInstance( );
-	while ( auto packet = req->getReqCheckGetJemQuarry( ) )
+	while ( auto packet = req->getReqGetJemQuarry( ) )
 	{
-		auto resPack = new cResCheckGetJemQuarry( );
-		auto isSuccess = mGems.insert( packet->mGemId ).second;
-
-		resPack->mObjectId = packet->mObjectId;
-		resPack->mGemId = packet->mGemId;
-		resPack->mIsSuccessed = isSuccess;
-
 		// 成功なら他の人に俺の掘削機、宝石採ったぜアピールをします。
-		if ( isSuccess )
+		if ( mGems.insert( packet->mGemId ).second )
 		{
 			auto eventPack = new cEveGetJemQuarry( );
 			eventPack->mObjectId = packet->mObjectId;
 			eventPack->mGemId = packet->mGemId;
-			Network::cUDPServerManager::getInstance( )->broadcastOthers( packet->mNetworkHandle, eventPack );
+			Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, eventPack );
 		}
-
-		Network::cUDPServerManager::getInstance( )->send( packet->mNetworkHandle, resPack );
 	}
 }
 void cServerAdapter::sendBreakBlocks( )
@@ -193,7 +160,7 @@ void cServerAdapter::sendBreakBlocks( )
 void cServerAdapter::sendLightBombs( )
 {
 	auto req = Network::cRequestManager::getInstance( );
-	while ( auto packet = req->getReqCheckLightBomb( ) )
+	while ( auto packet = req->getReqLightBomb( ) )
 	{
 		auto eventPack = new cEveLightBomb( );
 		eventPack->playerId = packet->playerId;
