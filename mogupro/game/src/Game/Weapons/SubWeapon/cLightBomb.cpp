@@ -19,7 +19,8 @@ namespace Weapons
 			mSpeed = speed;
 			mPlayerId = playerid;
 			mTeamNum = cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam();
-			
+			ci::app::console() << "playerID"<<mPlayerId << std::endl;
+			mPlayerId = playerid;
 			if (mTeamNum == 0) {
 				mDefaultcolor = ci::ColorA(1, 0, 0, 1);
 			}

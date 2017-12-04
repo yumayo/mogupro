@@ -45,8 +45,8 @@ void cSubWeaponManager::updateCollisionAfterUpdate(const float & deltaTime)
 
 void cSubWeaponManager::HitDrillToGem(const int _objectid, const int _gemid)
 {
+	ci::app::console() << "‚æ‚Ô‚æ" << std::endl;
 	auto quarry = std::static_pointer_cast<Game::Weapons::SubWeapon::cQuarry>(subweapons[_objectid]);
-
 	quarry->HitGem(_gemid);
 }
 

@@ -7,6 +7,8 @@
 #include"cinder\gl\scoped.h"
 #include"Resource\TextureManager.h"
 #include"Game\cClientAdapter.h"
+#include"Game\cStrategyManager.h"
+#include"cinder\Rand.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -41,12 +43,25 @@ namespace Game
 				mMachineAABB.removeWorld();
 				mDrillAABB.removeWorld();
 				mSlopeAABB.removeWorld();
+
+				for (auto& it : getgems) {
+					ci::vec3 randpos = ci::randVec3()*(mScale.x/4.f);
+					it->setPos(Game::cStrategyManager::getInstance()->getCannons()[int(cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam())]->getGemStorePos()+randpos);
+				}
+
+				Game::cStrategyManager::getInstance()->getCannons()[int(cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam())]->receiveQuarryGem(getgems);
 			}
 			void cQuarry::setup()
 			{
 				mMachineAABB.addWorld();
 				mDrillAABB.addWorld();
 				mSlopeAABB.addWorld();
+
+				mMachineAABB.setSize(mScale);
+				mDrillAABB.setSize(mDrillScale);
+				mSlopeAABB.setSize(slope.scale);
+
+				
 			}
 			void cQuarry::update(const float & delta_time)
 			{
@@ -98,22 +113,30 @@ namespace Game
 			}
 			void cQuarry::HitGem(const int _gemid)
 			{
+
 				if (!ismyobject)return;
-
+			
 				GemManager->breakeGemStone(_gemid);
+				GemManager->getGemStone(_gemid)->setIsActive(false);
 
-				AxisAlignedBox drill_aabb(mDrillAABB.getPosition() - mDrillAABB.getSize() / 2.f,
-					mDrillAABB.getPosition() + mDrillAABB.getSize() / 2.f);
+				/////////////////////////ópèCê≥AABBÇÇ≈Ç©Ç≠ÇµÇƒÇ®Ç´Ç‹Ç∑
+				AxisAlignedBox drill_aabb(mDrillAABB.getPosition() - mDrillAABB.getSize()*2.f,
+					mDrillAABB.getPosition() + mDrillAABB.getSize()*2.f);
 
+			
 				for (int i = 0; i < GemManager->getFragmentGems().size(); i++) {
-
+		
+					if (!GemManager->getFragmentGem(i)->isActive())continue;
+				
 					AxisAlignedBox fragmentgemaabb(GemManager->getFragmentGem(i)->getPos() - GemManager->getFragmentGem(i)->getScale()/ 2.f,
 						GemManager->getFragmentGem(i)->getPos() + GemManager->getFragmentGem(i)->getScale() / 2.f);
 					if (drill_aabb.intersects(fragmentgemaabb)) {
-
+						
 						getgems.push_back(GemManager->getFragmentGem(i));
+					
 						int index = getgems.size() - 1;
-
+			
+						getgems[index]->setIsRigid(false);
 						getgems[index]->setSinRotate(atan2f(getgems[index]->getPos().z - mPos.z, (getgems[index]->getPos().x - mPos.x)));
 						getgems[index]->setPutPos(vec3(mPos.x, mDrillPos.y, mPos.z));
 
@@ -121,14 +144,14 @@ namespace Game
 						getgems[index]->node->set_schedule_update();
 
 						getgems[index]->node->run_action(sequence::create(float_to::create((mPos.y - getgems[index]->getPos().y)*0.1f,
-							getgems[index]->getPos().y, mPos.y + mScale.y, [this, index](float t)
+							getgems[index]->getPos().y, mPos.y + mScale.y/2.f+1.f, [this, index](float t)
 						{
 							auto p = getgems[index]->node->get_position_3d();
 							p.y = t;
 							getgems[index]->node->set_position_3d(p);
 						}), call_func::create([] {; })));
 					
-						GemManager->getFragmentGem(i)->setIsActive(false);
+						getgems[index]->setIsActive(false);
 					}
 
 				}
@@ -162,6 +185,7 @@ namespace Game
 				slope.scale.y = ((mPos.y - mScale.y / 2.f) - (mDrillPos.y + mDrillScale.y / 2.f));
 				slope.rotate_y += 5.f*delttime;
 				mSlopeAABB.setPosition(slope.pos);
+				mSlopeAABB.setSize(slope.scale);
 			}
 			void cQuarry::createSlope()
 			{
@@ -195,7 +219,10 @@ namespace Game
 					if (STRM->isAABB(drill_aabb, gem_aabb))
 					{
 						/////////////////////////////í êM
-						HitGem(i);
+						
+						//HitGem(GemManager->getGemStone(i)->getId())
+					
+						cClientAdapter::getInstance()->sendGetGemQuarry(mObjectId, GemManager->getGemStone(i)->getId());
 						/////////////////////////////
 						//cClientAdapter::getInstance()->sendGetGemQuarry(id, GemManager->getGems()[i]->getId());
 					}
@@ -274,11 +301,9 @@ namespace Game
 
 			void cQuarry::moveGetGem(const float delttime)
 			{
-				ci::app::console() <<"Ç‹ÇµÇÒ"<<mPos.y << std::endl;
 				for (int i = 0; i < int(getgems.size()); i++)
 				{
-					//ci::app::console() << "Ç»Ç©Ç›1 " << getgems[i]->getPos().y << std::endl;
-					if (getgems[i]->getPos().y < mPos.y) {
+					if (getgems[i]->getPos().y < mPos.y + mScale.y / 2.f + 1.f) {
 						getgems[i]->node->entry_update(delttime);
 						vec3 p = getgems[i]->node->get_position_3d();
 
@@ -290,7 +315,6 @@ namespace Game
 							p.y,
 							getgems[i]->getPutPos().z + (mScale.z / 2.f)*sin(getgems[i]->getSinRotate())));
 						
-						//ci::app::console() << "Ç»Ç©Ç›2 " << getgems[i]->getPos().y << std::endl;
 					}
 					else {
 					

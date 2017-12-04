@@ -116,6 +116,31 @@ namespace Game
 
 		}
 
+		void cCannon::receiveQuarryGem(std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>& getgems)
+		{
+			Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getActivePlayerTeamId(), getgems.size());
+
+			ci::app::console() << "いれるものはじめ" << std::endl;
+			for (int i = 0; i < getgems.size(); i++) {
+				ci::app::console() << getgems[i]->getType() << std::endl;
+				mGetgems.push_back(getgems[i]);
+			}
+			ci::app::console() << "いれるものおわり" << std::endl;
+
+			getgems.clear();
+
+			//////////////////////デバック
+			ci::app::console() << "ぜんぶはじめ" << std::endl;
+			for (int i = 0; i < mGetgems.size(); i++) {
+				ci::app::console() << mGetgems[i]->getType() << std::endl;
+			}
+			ci::app::console() << "ぜんぶおわり" << std::endl;
+			//////////////////////デバック
+
+		}
+
+	
+
 	
 		ci::vec3 cCannon::getGemStorePos()
 		{
