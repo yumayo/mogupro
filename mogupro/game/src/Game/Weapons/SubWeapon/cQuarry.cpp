@@ -19,14 +19,13 @@ namespace Game
 	{
 		namespace SubWeapon
 		{
-			cQuarry::cQuarry(const ci::vec3 pos, const int _objectid, const int playerid, const DrillType type)
+			cQuarry::cQuarry(const ci::vec3 pos, const int _objectid, const int playerid)
 				: mSlopeAABB(pos, ci::vec3(1)), mMachineAABB(pos, ci::vec3(1)), mDrillAABB(pos, ci::vec3(1)) {
-				drilltype = type;
 				ismyobject = (Game::cPlayerManager::getInstance()->getActivePlayerId() == playerid);
 				mObjectId = _objectid;
 				mPlayerId = playerid;
 				mDrillScale = ci::vec3(1, 1, 1);
-				setScale(drilltype);
+				setScale();
 				mPos = pos;////machine–{‘Ì
 				mBeginDrillPos= mPos - ci::vec3(0, mScale.y / 2.f, 0) - ci::vec3(0, mDrillScale.y / 2.f, 0);
 				mDrillPos = mBeginDrillPos;
@@ -138,23 +137,9 @@ namespace Game
 
 			
 			}
-			void cQuarry::setScale(const DrillType _type)
+			void cQuarry::setScale()
 			{
-				switch (_type)
-				{
-				case Level1:
-					mScale = vec3(3, 3, 3);
-					break;
-				case Level2:
-					mScale = vec3(5, 5, 5);
-					break;
-				case Level3:
-					mScale = vec3(7, 7, 7);
-					break;
-				default:
-					mScale = vec3(1, 1, 1);
-					break;
-				}
+				mScale = vec3(3, 3, 3);
 			}
 			void cQuarry::drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color)
 			{

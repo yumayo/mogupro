@@ -60,17 +60,11 @@ void cSubWeaponManager::createLightBomb(const ci::vec3 _pos, const ci::vec3 _spe
 	subweapons[objectid]->setup();
 	debugidcount++;
 }
-void cSubWeaponManager::createLightBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale, const int _playerid)
-{
-	subweapons.insert(std::make_pair(debugidcount, std::make_shared<Game::Weapons::SubWeapon::cLightBomb>(_pos, _scale, _speed, _playerid)));
-	subweapons[debugidcount]->setup();
-	debugidcount++;
-}
 
-void cSubWeaponManager::createQuarry(const ci::vec3 _pos, const int objectid, const int playerid, const Game::Weapons::SubWeapon::cQuarry::DrillType type)
+void cSubWeaponManager::createQuarry(const ci::vec3 _pos, const int _objectid, const int playerid)
 {
-	subweapons.insert(std::make_pair(objectid, std::make_shared<Game::Weapons::SubWeapon::cQuarry>(_pos, objectid, playerid, type)));
-	subweapons[objectid]->setup();
+	subweapons.insert(std::make_pair(_objectid, std::make_shared<Game::Weapons::SubWeapon::cQuarry>(_pos, _objectid, playerid)));
+	subweapons[_objectid]->setup();
 	debugidcount++;
 }
 
