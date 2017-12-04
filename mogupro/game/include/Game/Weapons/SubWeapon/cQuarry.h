@@ -13,10 +13,8 @@ namespace SubWeapon
 class cQuarry : public Game::Weapons::SubWeapon::cSubWeaponBase
 {
 public:
-	enum DrillType {
-		Level1, Level2, Level3,
-	};
-    cQuarry(const ci::vec3 _pos, const int _objectid, const int playerid,const DrillType type);
+	
+    cQuarry(const ci::vec3 _pos, const int _objectid, const int playerid);
     ~cQuarry( );
 	void setup() override;
 	void update(const float& delta_time) override;
@@ -24,7 +22,6 @@ public:
 	void draw() override;
 	bool deleteThis() override;
 	void HitGem(const int _gemid);
-	DrillType drilltype;
 private:
 	enum DrillState {
 		DRILLMOVE, DRILLRETURN, DRILLSTOP
@@ -33,7 +30,7 @@ private:
 private://本体系
 	void drawBasket();
 	void drawMachine();
-	void setScale(const DrillType _type);
+	void setScale();
 	Collision::cAABBCollider mMachineAABB;
 	///machineのposはmPos
 private://スロープ
