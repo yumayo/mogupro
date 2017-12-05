@@ -76,11 +76,11 @@ void cLightManager::update( )
 		mLineLightHandles[i]->reAttachLine( mLineLightHandles[i], mPlayerPositionBuffer[i], mPlayerPositionBuffer[i + 1] );
 	}
 }
-std::set<Utility::hardptr<Light::cPointLightParam>> const & cLightManager::getPointLights( ) const
+std::set<Light::PointLightHandle> const & cLightManager::getPointLights( ) const
 {
 	return mPointLights;
 }
-boost::optional<std::set<Light::PointLightHandle> const&> cLightManager::getPointLights( int chunkId ) const
+boost::optional<std::set<Light::PointLightSoftHandle> const&> cLightManager::getPointLights( int chunkId ) const
 {
 	auto itr = mPointLightsMap.find( chunkId );
 	if ( itr != mPointLightsMap.end( ) )
@@ -122,11 +122,11 @@ void cLightManager::detachChunk( Light::PointLightHandle handle )
 		mPointLightsMap[id].erase( handle );
 	}
 }
-std::set<Utility::hardptr<Light::cLineLightParam>> const & cLightManager::getLineLights( ) const
+std::set<Light::LineLightHandle> const & cLightManager::getLineLights( ) const
 {
 	return mLineLights;
 }
-boost::optional<std::set<Light::LineLightHandle>const&> cLightManager::getLineLights( int chunkId ) const
+boost::optional<std::set<Light::LineLightSoftHandle>const&> cLightManager::getLineLights( int chunkId ) const
 {
 	auto itr = mLineLightsMap.find( chunkId );
 	if ( itr != mLineLightsMap.end( ) )

@@ -31,10 +31,10 @@ namespace Game
 				void updateLight(const float& delta_time);
 				void createAroundLight();
 				ci::ColorA mDefaultcolor;
-				Utility::softptr<Game::Light::cPointLightParam>light;
-				std::vector<Utility::softptr<Game::Light::cPointLightParam>>mAroundLights;
+				Game::Light::PointLightHandle light;
+				std::vector<Game::Light::PointLightHandle>mAroundLights;
 				float lightsinrotate = 0.0f;
-				std::vector<Utility::softptr<Game::Light::cLineLightParam>>mAroundLineLight;
+				std::vector<Game::Light::LineLightHandle>mAroundLineLight;
 				std::vector<float>mAroundLightAngle;
 				std::vector<float>mAroundLightColorH;
 				float mAroundLightLength;

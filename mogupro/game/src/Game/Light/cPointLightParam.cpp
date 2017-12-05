@@ -4,6 +4,10 @@ namespace Game
 {
 namespace Light
 {
+cPointLightParam::~cPointLightParam( )
+{
+
+}
 void cPointLightParam::reAttachPosition( Utility::softptr<cPointLightParam> handle, cinder::vec3 position )
 {
 	cLightManager::getInstance( )->detachChunk( handle );

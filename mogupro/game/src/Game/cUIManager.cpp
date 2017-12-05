@@ -35,6 +35,9 @@ public:
 };
 void cUIManager::setup( )
 {
+	redCannonPower = 0;
+	blueCannonPower = 0;
+
 	mRoot = Node::node::create( );
 	mRoot->set_content_size( app::getWindowSize( ) - ivec2( 100, 100 ) );
 	mRoot->set_schedule_update( );
@@ -151,15 +154,21 @@ void cUIManager::draw( )
 {
 	mRoot->entry_render( mat4( ) );
 }
-void cUIManager::setRedCannonPower( float value )
+void cUIManager::addRedCannonPower( int value )
 {
 	auto g = mRedTeamCannonPower->get_child_by_name( "gauge" );
-	g->set_scale( vec2( value ) );
+	auto scale = g->get_scale( );
+	redCannonPower += value;
+	scale.y = 100.0F / redCannonPower;
+	g->set_scale( scale );
 }
-void cUIManager::setBlueCannonPower( float value )
+void cUIManager::addBlueCannonPower( int value )
 {
 	auto g = mBlueTeamCannonPower->get_child_by_name( "gauge" );
-	g->set_scale( vec2( value ) );
+	auto scale = g->get_scale( );
+	blueCannonPower += value;
+	scale.y = 100.0F / blueCannonPower;
+	g->set_scale( scale );
 }
 void cUIManager::appendItem( int type )
 {
@@ -174,6 +183,10 @@ void cUIManager::appendItem( int type )
 	{
 		subSlot->add_child( lambertCube::create( ) );
 	}
+}
+int cUIManager::winTeam( )
+{
+	return ( redCannonPower > blueCannonPower ) ? Game::Player::Red : Game::Player::Blue;
 }
 void cUIManager::useItem( )
 {

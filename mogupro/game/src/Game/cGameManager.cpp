@@ -8,6 +8,7 @@
 #include <Node/renderer.hpp>
 #include <Node/action.hpp>
 #include <Game/cUIManager.h>
+#include <Game/Player/cPlayer.h>
 namespace pt = boost::posix_time;
 namespace Game
 {
@@ -15,6 +16,9 @@ cGameManager::cGameManager( )
 {
 	root = Node::node::create( );
 	root->set_schedule_update( );
+	root->set_content_size( cinder::app::getWindowSize( ) );
+	root->set_scale( cinder::vec2(1, -1) );
+	root->set_position( root->get_content_size( ) * cinder::vec2( -0.5F, 0.5F ) );
 
 	mPreUpdates.insert( std::make_pair( State::STAND_BY, [ this ] ( float t )
 	{
@@ -49,11 +53,31 @@ cGameManager::cGameManager( )
 			auto n = root->add_child( Node::Renderer::rect::create( cinder::app::getWindowSize( ) ) );
 			n->set_color( cinder::ColorA( 0, 0, 0, 0 ) );
 			n->set_name( "fader" );
+			n->set_position( root->get_content_size( ) / 2.0F );
 			n->run_action( Node::Action::sequence::create( Node::Action::fade_in::create( 1.0F ), Node::Action::call_func::create( [ this ] {
 				shift( State::RESULT );
 				cUIManager::getInstance( )->disable( );
 				root->get_child_by_name( "fader" )->run_action( Node::Action::sequence::create( Node::Action::fade_out::create( 1.0F ), Node::Action::remove_self::create( ) ) );
+				auto label = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 64 ) );
+				label->set_position( root->get_content_size( ) / 2.0F );
+				auto point = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 64 ) );
+				point->set_position( root->get_content_size( ) / 2.0F + cinder::vec2( 0, 100 ) );
+				auto p = cUIManager::getInstance( )->result( );
+				switch ( cUIManager::getInstance( )->winTeam( ) )
+				{
+				case Game::Player::Red:
+					label->set_text( "red team win" );
+					point->set_text( "red: " + std::to_string( p.x ) + " <----> blue: " + std::to_string( p.y ) );
+					break;
+				case Game::Player::Blue:
+					label->set_text( "blue team win" );
+					point->set_text( "blue: " + std::to_string( p.y ) + " <----> red: " + std::to_string( p.x ) );
+					break;
+				default:
+					break;
+				}
 			} ) ) );
+			
 		}
 	} ) );
 	mPreUpdates.insert( std::make_pair( State::RESULT, [ this ] ( float t )

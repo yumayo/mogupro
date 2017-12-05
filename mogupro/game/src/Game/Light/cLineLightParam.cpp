@@ -4,6 +4,10 @@ namespace Game
 {
 namespace Light
 {
+cLineLightParam::~cLineLightParam( )
+{
+
+}
 void cLineLightParam::reAttachLine( Utility::softptr<cLineLightParam> handle, cinder::vec3 beginPosition, cinder::vec3 endPosition )
 {
 	cLightManager::getInstance( )->detachChunk( handle );
