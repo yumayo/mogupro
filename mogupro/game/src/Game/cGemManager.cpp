@@ -229,7 +229,7 @@ namespace Game
 
 				mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mGemStone[i]->getPos(), mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType()));
 				mFragmentGems[mFragmentGems.size() - 1]->setup();
-				addGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mGemStone[i]->getPos(), mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType()));
+				addGems.push_back(mFragmentGems[mFragmentGems.size() - 1]);
 				mGemStone[i]->deleteGem();
 				buildMesh();
 				mGemStone[i]->setIsActive(false);
