@@ -89,22 +89,22 @@ namespace Game
 			return mToPlayerAABB;
 		}
 
-		void cCannon::receivePlayerGem(std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>& getgems, int playerid)
+		void cCannon::receivePlayerGem(int getgemnum, int playerid)
 		{
 			if (mGetgems.size() >= GEM_MAXNUM)return;
 
-			Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getActivePlayerTeamId(), getgems.size());
+			Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getActivePlayerTeamId(), getgemnum);
 
 
 			ci::app::console() << "いれるものはじめ" << std::endl;
-			for (int i = 0; i < getgems.size(); i++) {
-				ci::app::console() << getgems[i]->getType() << std::endl;
+			for (int i = 0; i < getgemnum; i++) {
+				//ci::app::console() << getgems[i]->getType() << std::endl;
 
-				mGetgems.push_back(getgems[i]);
+				//mGetgems.push_back(getgems[i]);
 			}
 			ci::app::console() << "いれるものおわり" << std::endl;
 
-			getgems.clear();
+			//getgems.clear();
 
 			//////////////////////デバック
 			ci::app::console() << "ぜんぶはじめ" << std::endl;
@@ -165,9 +165,7 @@ namespace Game
 		void cCannon::sendCollectMaxGem()
 		{
 			if (mGetgems.size() >= GEM_MAXNUM) {
-				//////////////勝ちました通信
 
-				/////////////
 			}
 		}
 
