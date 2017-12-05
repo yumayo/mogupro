@@ -2,7 +2,7 @@
 #include <Game/Weapons/SubWeapon/cLightBomb.h>
 #include <Game/Weapons/UseSubWeapon/cUseLightBomb.h>
 #include <Game/Weapons/UseSubWeapon/cUseQuarry.h>
-
+#include<Game/cPlayerManager.h>
 namespace Game
 {
 cSubWeaponManager::cSubWeaponManager( )

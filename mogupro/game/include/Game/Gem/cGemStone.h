@@ -1,13 +1,11 @@
 #pragma once
-#include "cinder/app/App.h"
-#include "cinder/gl/gl.h"
-#include "Node\node.h"
-#include "Node/action.hpp"
-#include "../cPlayerManager.h"
-#include "Utility\cTimeMeasurement.h"
-#include "GemData.h"
-#include "Collision/cRigidBody.h"
-#include "Collision/cAABBCollider.h"
+#include <cinder/app/App.h>
+#include <cinder/gl/gl.h>
+#include <Game/Gem/GemData.h>
+#include <Node/node.h>
+#include <Node/action.hpp>
+#include <Collision/cRigidBody.h>
+#include <Collision/cAABBCollider.h>
 
 namespace Game
 {

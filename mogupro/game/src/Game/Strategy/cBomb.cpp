@@ -37,7 +37,7 @@ cBomb::cBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale, 
 
 	vec3 c = glm::cross(y_zero_buf2, y_zero);
 
-	float r = randInt(32);
+	//float r = randInt(32);
 	glm::quat q = glm::quat(M_PI / 4.f, c);
 
 	float angle = atan2f(c.y, c.z);

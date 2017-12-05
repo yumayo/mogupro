@@ -26,7 +26,7 @@ namespace Game
 			Game::Player::Team getTeam();
 			ci::AxisAlignedBox getAABB();
 			//////////•óÎ‚ğ‚à‚ç‚¢‚Ü‚·
-			void receivePlayerGem(std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>& getgems,int playerid);
+			void receivePlayerGem(int getgemnum,int playerid);
 
 			void receiveQuarryGem(std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>& getgems,int playerid,bool ismyobject);
 

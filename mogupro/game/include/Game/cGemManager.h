@@ -1,22 +1,14 @@
 #pragma once
-#include "Game/Gem/cGemStone.h"
-#include "Utility/cSingletonAble.h"
-#include "cinder\/Surface.h"
-#include "cinder/app/RendererGl.h"
-#include "cinder/gl/Context.h"
-#include "cinder/gl/Texture.h"
-#include "CameraManager\cCameraManager.h"
-#include "Utility\cTimeMeasurement.h"
-#include "cPlayerManager.h"
-#include "Game/Gem/cFragmentGem.h"
-#include <Utility/cSingletonAble.h>
 #include <memory>
-#include <cinder/Rand.h>
-#include <cinder/gl/Fbo.h>
-#include <cinder/gl/GlslProg.h>
-#include <cinder/gl/Texture.h>
 #include <vector>
 #include <map>
+#include <cinder/app/RendererGl.h>
+#include <cinder/gl/Texture.h>
+#include <cinder/gl/Fbo.h>
+#include <cinder/gl/GlslProg.h>
+#include <Utility/cSingletonAble.h>
+#include <Game/Gem/cGemStone.h>
+#include <Game/Gem/cFragmentGem.h>
 #define GemManager Game::cGemManager::getInstance()
 
 
@@ -48,9 +40,10 @@ namespace Game
 		std::vector<std::shared_ptr<Gem::cGemStone>>         getGemStones()          { return mGemStone; }
 		std::vector<std::shared_ptr<Gem::cFragmentGem>>      getFragmentGems()       { return mFragmentGems; }
 		std::shared_ptr<Gem::cGemStone>                      getGemStone(int id);
-		std::shared_ptr<Gem::cGemStone>                      breakeGemStone(int id);
+		std::vector<std::shared_ptr<Gem::cFragmentGem>>      breakGemStone(int id);
 		std::shared_ptr<Gem::cFragmentGem>                   getFragmentGem(int id);
-		void  AcquisitionFragmentGem(int id);
+		void  deleteFragmentGem(int id);
+		void  deleteFragmentGems(std::vector<std::shared_ptr<Gem::cFragmentGem>> gems);
 
 	private:
 

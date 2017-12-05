@@ -1,5 +1,5 @@
 #include <Game/Gem/cFragmentGem.h>
-#include "Log\Log.h"
+#include <Log/Log.h>
 namespace Game
 {
 	namespace Gem
