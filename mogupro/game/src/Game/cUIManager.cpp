@@ -159,7 +159,7 @@ void cUIManager::addRedCannonPower( int value )
 	auto g = mRedTeamCannonPower->get_child_by_name( "gauge" );
 	auto scale = g->get_scale( );
 	redCannonPower += value;
-	scale.y = 100.0F / redCannonPower;
+	scale.y = redCannonPower / 100.0F;
 	g->set_scale( scale );
 }
 void cUIManager::addBlueCannonPower( int value )
@@ -167,7 +167,7 @@ void cUIManager::addBlueCannonPower( int value )
 	auto g = mBlueTeamCannonPower->get_child_by_name( "gauge" );
 	auto scale = g->get_scale( );
 	blueCannonPower += value;
-	scale.y = 100.0F / blueCannonPower;
+	scale.y = blueCannonPower / 100.0F;
 	g->set_scale( scale );
 }
 void cUIManager::appendItem( int type )
