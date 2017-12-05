@@ -75,6 +75,7 @@ void cStrategyManager::update(const float & deltatime)
 	for (auto& it : bombs) {
 		it.second->update(deltatime);
 	}
+	
 	deleteObject();
 }
 
@@ -181,5 +182,6 @@ void cStrategyManager::drawShere(const ci::vec3 pos, const ci::vec3 size, const 
 	gl::drawSphere(vec3(0, 0, 0), 1.f, segment);
 	gl::popModelView();
 }
+
 }
 

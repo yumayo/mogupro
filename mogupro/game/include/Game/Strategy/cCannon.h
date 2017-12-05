@@ -17,20 +17,26 @@ namespace Game
 		public:
 			cCannon(const ci::vec3 pos, const ci::vec3 scale, const ci::vec3 Foundationpos, const ci::vec3 Foundationscale, const Game::Player::Team team);
 			~cCannon();
+
+			static const int GEM_MAXNUM = 100;
+
 			void draw();
 			void update(const float& delta_time);
 			void setup();
 			Game::Player::Team getTeam();
 			ci::AxisAlignedBox getAABB();
 			//////////•óÎ‚ğ‚à‚ç‚¢‚Ü‚·
-			void receivePlayerGem(std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>& getgems);
+			void receivePlayerGem(std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>& getgems,int playerid);
 
-			void receiveQuarryGem(std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>& getgems);
+			void receiveQuarryGem(std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>& getgems,int playerid,bool ismyobject);
 
 			/////////////•óÎ‚ğ’™‚ß‚éêŠ
 			ci::vec3 getGemStorePos();
 			std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>getStoregems();
+			bool getIsCollectMaxGem();
+			
 		private:
+			void sendCollectMaxGem();
 			std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>mGetgems;
 			Collision::cAABBCollider mAABB;
 			Collision::cAABBCollider mFoundatioAABB;
@@ -43,6 +49,7 @@ namespace Game
 			ci::vec3 mFoundationScale;
 			ci::vec3 mGemStorePos;
 			float direction;
+			bool mIsCollectMaxNum = false;
 		};
 	}
 }

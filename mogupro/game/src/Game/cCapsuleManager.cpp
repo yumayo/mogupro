@@ -71,6 +71,8 @@ void cCapsuleManager::createCapsule(const ci::vec3 pos, const Game::Weapons::Sub
 
 void cCapsuleManager::CollisionToPlayer()
 {
+	if (!Game::cPlayerManager::getInstance()->getActivePlayer()->useSubWeapon.canGetItem())return;
+
 	for (auto& itr : mCapsules) {
 		if (itr.second->getIsget())continue;
 		if (Game::cPlayerManager::getInstance()->getActivePlayer()->getAABB().intersects(itr.second->getAABB())) {
