@@ -166,6 +166,7 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 		auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];
 		if (cannon->getAABB().intersects(active_player->getAABB())) {
 			cannon->receivePlayerGem(active_player->getgems.size(),active_player_id);
+			active_player->getgems.clear();
 			ci::app::console() << active_player->getgems.size() << std::endl;
 		}
 		else {
