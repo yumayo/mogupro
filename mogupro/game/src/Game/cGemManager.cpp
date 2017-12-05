@@ -1,4 +1,8 @@
-#include "Game/cGemManager.h"
+#include <Game/cGemManager.h>
+#include <Game/cPlayerManager.h>
+#include <Utility/cTimeMeasurement.h>
+#include <CameraManager/cCameraManager.h>
+#include <cinder/Rand.h>
 
 namespace Game
 {
@@ -210,26 +214,31 @@ namespace Game
 	}
 
 
-	std::shared_ptr<Gem::cGemStone> cGemManager::breakeGemStone(int id)
+	std::vector<std::shared_ptr<Gem::cFragmentGem>> cGemManager::breakGemStone(int id)
 	{
+		std::vector<std::shared_ptr<Gem::cFragmentGem>> addGems;
 		for (size_t i = 0; i < mGemStone.size(); i++)
 		{
 			if (mGemStone[i]->getId() == id)
 			{
-
-				if (!mGemStone[i]->isActive()) return nullptr;
+				if (!mGemStone[i]->isActive())
+				{
+					ci::app::console() << "This is no GemStone that has that " << id << std::endl;
+					return addGems;
+				}
 
 				mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mGemStone[i]->getPos(), mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType()));
 				mFragmentGems[mFragmentGems.size() - 1]->setup();
+				addGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems[mFragmentGems.size() - 1]));
 				mGemStone[i]->deleteGem();
 				buildMesh();
 				mGemStone[i]->setIsActive(false);
-				return  mGemStone[i];
+				return  addGems;
 			}
 		}
 
 		ci::app::console() << "This is no GemStone that has that " << id << std::endl;
-		return nullptr;
+		return addGems;
 	}
 
 
@@ -246,7 +255,9 @@ namespace Game
 		ci::app::console() << "This is no FragmentGem that has that " << id << std::endl;
 		return nullptr;
 	}
-	void  cGemManager::AcquisitionFragmentGem(int id)
+
+
+	void  cGemManager::deleteFragmentGem(int id)
 	{
 		std::vector<std::shared_ptr<Gem::cFragmentGem>>::iterator iterator = mFragmentGems.begin();
 		for (size_t i = 0; i < mFragmentGems.size(); i++)
@@ -262,4 +273,24 @@ namespace Game
 		ci::app::console() << "This is no FragmentGem that has that " << id << std::endl;
 		return;
 	};
+
+	void  cGemManager::deleteFragmentGems(std::vector<std::shared_ptr<Gem::cFragmentGem>> gems)
+	{
+		for (size_t g = 0; g < gems.size(); g++)
+		{
+			std::vector<std::shared_ptr<Gem::cFragmentGem>>::iterator iterator = mFragmentGems.begin();
+			for (size_t i = 0; i < mFragmentGems.size(); i++)
+			{
+				if (mFragmentGems[i]->getId() == gems[g]->getId())
+				{
+					mFragmentGems.erase(iterator);
+					break;
+				}
+				iterator++;
+			}
+
+			ci::app::console() << "This is no FragmentGem that has that " << gems[g]->getId() << std::endl;
+			break;;
+		}
+	}
 }
