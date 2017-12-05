@@ -326,9 +326,6 @@ cParticleHolder::cParticleHolder( const vec3& position,
 
 cParticleHolder::~cParticleHolder()
 {
-    if ( mParam.mIsLighting )
-        Game::cLightManager::getInstance()->removePointLight( mHandle );
-
     for ( auto& it : mParticles )
         Easing->kill( it->mPosition );
     mParticles.clear();

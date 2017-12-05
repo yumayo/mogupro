@@ -9,6 +9,7 @@
 #include <Game/cStrategyManager.h>
 #include <Game/cFieldManager.h>
 #include <Game/cSubWeaponManager.h>
+#include <Game/cUIManager.h>
 using namespace cinder;
 using namespace Network;
 using namespace Network::Packet;
@@ -125,9 +126,18 @@ void cClientAdapter::recvAllCannons( )
 	auto e = cEventManager::getInstance( );
 	while ( auto packet = e->getEveAddCannonPower( ) )
 	{
-		// TODO: 大砲のパワーを更新する。
-		packet->teamId;
-		packet->power;
+		if ( packet->teamId == Game::Player::Red )
+		{
+			cUIManager::getInstance( )->addRedCannonPower( packet->power );
+		}
+		else if ( packet->teamId == Game::Player::Blue )
+		{
+			cUIManager::getInstance( )->addBlueCannonPower( packet->power );
+		}
+		else
+		{
+			continue;
+		}
 	}
 }
 void cClientAdapter::sendBreakBlock( cinder::vec3 const & position, float radius, Network::ubyte1 type )

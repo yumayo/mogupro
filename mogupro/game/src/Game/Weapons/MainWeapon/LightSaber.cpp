@@ -18,13 +18,7 @@ void Game::Weapon::LightSaber::Attack1()
 	root_x->run_action(Node::Action::sequence::create(
 		ease<ci::EaseOutCubic>::create(float_to::create(time, rotate.x, M_PI / 2, [this](float t) {
 		this->rotate.x = t;
-	})), Node::Action::call_func::create([this]() {
-		//‰Šú‰»
-		if (light != nullptr) {
-			Game::cLightManager::getInstance()->removePointLight(light);
-		}
-	})
-		));
+	}))));
 
 	root_y->set_schedule_update();
 	root_y->run_action(Node::Action::sequence::create(
@@ -42,13 +36,7 @@ void Game::Weapon::LightSaber::Attack2()
 	root_x->run_action(Node::Action::sequence::create(
 		ease<ci::EaseOutCubic>::create(float_to::create(time, rotate.x, -M_PI / 2, [this](float t) {
 		this->rotate.x = t;
-	})), Node::Action::call_func::create([this]() {
-		//‰Šú‰»
-		if (light != nullptr) {
-			Game::cLightManager::getInstance()->removePointLight(light);
-		}
-	})
-		));
+	}))));
 
 	rotate.y = 0;
 
@@ -350,9 +338,6 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 			Node::Action::call_func::create([this]() {
 			//‰Šú‰»
 			this->charge_is_attack_now = false;
-			if (charge_light != nullptr) {
-				Game::cLightManager::getInstance()->removePointLight(charge_light);
-			}
 		})));
 
 		for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size();i++) {
@@ -387,9 +372,6 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 			//‰Šú‰»
 			this->charge_is_attack_now = false;
 			root_shock->set_position_3d(cPlayerManager::getInstance()->getActivePlayer()->getPos());
-			if (light != nullptr) {
-				Game::cLightManager::getInstance()->removePointLight(light);
-			}
 		})));
 
 		for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size();i++) {

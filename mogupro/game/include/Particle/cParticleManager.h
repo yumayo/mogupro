@@ -169,7 +169,7 @@ public:
 
     ParticleParam mParam;
     std::string mTextureName;
-    Utility::softptr<Game::Light::cPointLightParam> mHandle;
+	Game::Light::PointLightHandle mHandle;
     std::vector<std::shared_ptr<cParticle>> mParticles;
     std::vector<std::shared_ptr<cParticle>> mTrajectoryParticles;
     glm::quat mRotation;

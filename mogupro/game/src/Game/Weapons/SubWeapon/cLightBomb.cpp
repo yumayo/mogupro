@@ -33,11 +33,6 @@ namespace Weapons
 		{
 			aabb.removeWorld();
 			rb.removeWorld();
-			cLightManager::getInstance()->removePointLight(light);
-
-			for (int i = 0; i < mAroundLineLight.size(); i++) {
-				cLightManager::getInstance()->removeLineLight(mAroundLineLight[i]);
-			}
 		}
 
 		void cLightBomb::dmageToPlayer(const int playerid)

@@ -31,7 +31,7 @@ protected:
 	ci::vec3 mRotate;
 	ci::AxisAlignedBox mAABB;
 	Game::Weapons::SubWeapon::SubWeaponType mType;
-	Utility::softptr<Game::Light::cPointLightParam>mLight;
+	Game::Light::PointLightHandle mLight;
 	bool mIsget = false;
 private:
 

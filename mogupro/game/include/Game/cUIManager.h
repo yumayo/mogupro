@@ -13,13 +13,11 @@ public:
 	void update( float delta );
 	void draw( );
 public:
-	// 0.0 ~ 1.0
-	void setRedCannonPower( float value );
-	// 0.0 ~ 1.0
-	void setBlueCannonPower( float value );
-	// 
+	void addRedCannonPower( int value );
+	void addBlueCannonPower( int value );
 	void appendItem( int type );
-	// 
+	int winTeam( );
+	cinder::ivec2 result( ) { return cinder::ivec2( redCannonPower, blueCannonPower ); }
 	void useItem( );
 
 	void enable( );
@@ -35,5 +33,8 @@ private:
 	softptr<Node::node> mPlayerScreenEffect;
 
 	cinder::vec2 mAnimationSlot = cinder::vec2( 0.0F, 300.0F );
+
+	int redCannonPower;
+	int blueCannonPower;
 };
 }

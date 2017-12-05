@@ -19,26 +19,31 @@ public:
 	void update( );
 
 public: // ポイントライト
-	std::set<Utility::hardptr<Light::cPointLightParam>>const& getPointLights( ) const;
-	boost::optional<std::set<Light::PointLightHandle>const&> getPointLights( int chunkId ) const;
+	friend class Light::cPointLightParam;
+	std::set<Light::PointLightHandle>const& getPointLights( ) const;
+	boost::optional<std::set<Light::PointLightSoftHandle>const&> getPointLights( int chunkId ) const;
 	Light::PointLightHandle addPointLight( cinder::vec3 position, cinder::vec3 color, float radius );
+private:
 	void removePointLight( Light::PointLightHandle handle );
 	void attachChunk( Light::PointLightHandle handle );
 	void detachChunk( Light::PointLightHandle handle );
 private:
-	std::set<Utility::hardptr<Light::cPointLightParam>> mPointLights;
-	std::map<int, std::set<Light::PointLightHandle>> mPointLightsMap;
+	std::set<Light::PointLightHandle> mPointLights;
+	std::map<int, std::set<Light::PointLightSoftHandle>> mPointLightsMap;
 
 public: // ラインライト
-	std::set<Utility::hardptr<Light::cLineLightParam>>const& getLineLights( ) const;
-	boost::optional<std::set<Light::LineLightHandle>const&> getLineLights( int chunkId ) const;
+	friend class Light::cLineLightParam;
+	std::set<Light::LineLightHandle>const& getLineLights( ) const;
+	boost::optional<std::set<Light::LineLightSoftHandle>const&> getLineLights( int chunkId ) const;
 	Light::LineLightHandle addLineLight( cinder::vec3 beginPosition, cinder::vec3 endPosition, cinder::vec3 color, float radius );
+private:
 	void removeLineLight( Light::LineLightHandle handle );
 	void attachChunk( Light::LineLightHandle handle );
 	void detachChunk( Light::LineLightHandle handle );
+
 private:
-	std::set<Utility::hardptr<Light::cLineLightParam>> mLineLights;
-	std::map<int, std::set<Utility::softptr<Light::cLineLightParam>>> mLineLightsMap;
+	std::set<Light::LineLightHandle> mLineLights;
+	std::map<int, std::set<Light::LineLightSoftHandle>> mLineLightsMap;
 
 private: // プレイヤー更新用。
 	std::vector<Light::PointLightHandle> mPointLightHandles;
