@@ -113,13 +113,13 @@ void Game::Weapon::LightSaber::ShockCollisionDrills()
 void Game::Weapon::LightSaber::CollisionPlayers()
 {
 	//hitsのベクターに入れるためのi
-	int i = 0;
+	int i = -1;
 	for (auto& it : cPlayerManager::getInstance()->getPlayers()) {
 		i++;
-		////自分の操作しているプレイヤーなら返す
-		//if (it->getActiveUser()) {
-		//	continue;
-		//}
+		//自分の操作しているプレイヤーなら返す
+		if (it->getActiveUser()) {
+			continue;
+		}
 		//自分のチームのプレイヤーなら当たらないので返す
 		if (it->getWhichTeam() == team) {
 			continue;
@@ -214,7 +214,7 @@ void Game::Weapon::LightSaber::CollisionGems()
 			ci::app::console() << true << std::endl;
 			//当たった時の演出として一瞬カメラを揺らす
 			CAMERA->shakeCamera(0.1f, 0.1f);
-			cGemManager::getInstance()->breakeGemStone(it->getId());
+			cGemManager::getInstance()->breakGemStone(it->getId());
 		}
 
 	}
