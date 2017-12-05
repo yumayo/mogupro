@@ -9,6 +9,7 @@
 #include"Game\cClientAdapter.h"
 #include"Game\cStrategyManager.h"
 #include"cinder\Rand.h"
+#include"Game/cPlayerManager.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -114,9 +115,9 @@ namespace Game
 			void cQuarry::HitGem(const int _gemid)
 			{
 
-				if (!ismyobject)return;
+				//if (!ismyobject)return;
 			
-				GemManager->breakeGemStone(_gemid);
+				GemManager->breakGemStone(_gemid);
 				GemManager->getGemStone(_gemid)->setIsActive(false);
 
 				/////////////////////////—pC³AABB‚ğ‚Å‚©‚­‚µ‚Ä‚¨‚«‚Ü‚·
