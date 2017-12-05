@@ -18,6 +18,7 @@ public:
 	///サブウェポンを追加
 	void addSubWeapon(const Game::Weapons::SubWeapon::SubWeaponType type);
 	void setCanUseWeapon(const bool iscanuse);
+	int getItemNum();
 private:
 	//持っているサブの種類
 	std::vector<Game::Weapons::SubWeapon::SubWeaponType> mSubWeaponTypes;

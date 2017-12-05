@@ -27,11 +27,16 @@ void cUseSubWeapon::useWeapon(const int playerid)
 }
 void cUseSubWeapon::addSubWeapon(const Game::Weapons::SubWeapon::SubWeaponType type)
 {
+	if (mSubWeaponTypes.size() >= 2)return;
 	mSubWeaponTypes.push_back(type);
 }
 void cUseSubWeapon::setCanUseWeapon(const bool iscanuse)
 {
 	mIsCanUse = iscanuse;
+}
+int cUseSubWeapon::getItemNum()
+{
+	return mSubWeaponTypes.size();
 }
 }
 }

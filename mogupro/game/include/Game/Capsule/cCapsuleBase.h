@@ -2,6 +2,7 @@
 #include<Game\Weapons\SubWeapon\SubWeaponType.h>
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
+#include <Game/cLightManager.h>
 namespace Game
 {
 namespace Capsule
@@ -30,6 +31,7 @@ protected:
 	ci::vec3 mRotate;
 	ci::AxisAlignedBox mAABB;
 	Game::Weapons::SubWeapon::SubWeaponType mType;
+	Utility::softptr<Game::Light::cPointLightParam>mLight;
 	bool mIsget = false;
 private:
 

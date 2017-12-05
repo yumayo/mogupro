@@ -18,6 +18,7 @@ void cLightBombCapsule::setup(const ci::vec3 pos, const Game::Weapons::SubWeapon
 	mScale = ci::vec3(0.5f, 0.5f, 0.5f);
 	mType = type;
 	mAABB = ci::AxisAlignedBox(mPos - mScale / 2.f, mPos + mScale / 2.f);
+	mLight = cLightManager::getInstance()->addPointLight(mPos, ci::vec3(0, 1, 0), 1.f);
 }
 
 void cLightBombCapsule::update(const float & delta_time)
