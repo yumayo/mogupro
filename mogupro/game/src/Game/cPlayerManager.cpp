@@ -34,6 +34,13 @@ void Game::cPlayerManager::playerDrillMove(const float & delta_time)
 
 void Game::cPlayerManager::playerAttack(const float & delta_time)
 {
+	players[4]->getMainWeapon()->pushCall(ENV->pushKey(ci::app::KeyEvent::KEY_y));
+	players[4]->getMainWeapon()->pressCall(ENV->pressKey(ci::app::KeyEvent::KEY_y));
+	players[4]->getMainWeapon()->pullCall(ENV->pullKey(ci::app::KeyEvent::KEY_y));
+	if (ENV->pushKey(ci::app::KeyEvent::KEY_n)) {
+		players[4]->move(ci::vec3(0, 0, -1));
+	}
+	
 	if (active_player->isDead())return;
 	active_player->getMainWeapon()->pushCall(ENV->pushKey(ci::app::KeyEvent::KEY_t));
 	active_player->getMainWeapon()->pressCall(ENV->pressKey(ci::app::KeyEvent::KEY_t));
@@ -158,8 +165,7 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_f)) {
 		auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];
 		if (cannon->getAABB().intersects(active_player->getAABB())) {
-			//cannon->receivePlayerGem(active_player->getgems);
-			active_player->sendCannonGems(cannon->getGemStorePos());
+			cannon->receivePlayerGem(active_player->getgems.size(),active_player_id);
 			ci::app::console() << active_player->getgems.size() << std::endl;
 		}
 		else {

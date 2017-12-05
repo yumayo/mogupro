@@ -15,7 +15,7 @@ namespace Game {
 		class cWeaponFactory : public ::Utility::cSingletonAble<cWeaponFactory>
 		{
 		public:
-			std::unique_ptr<Game::Weapon::WeaponBase> InstanceMainWeapon(MAIN_WEAPON main_weapon);
+			std::unique_ptr<Game::Weapon::WeaponBase> InstanceMainWeapon(MAIN_WEAPON main_weapon,int player_id);
 			std::unique_ptr<Game::Weapon::WeaponBase> InstanceSubWeapon(SUB_WEAPON sub_weapon);
 		};
 	}

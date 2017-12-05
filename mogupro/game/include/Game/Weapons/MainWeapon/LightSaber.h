@@ -22,9 +22,11 @@ namespace Game {
 			//ÉÅÉbÉVÉÖ
 			ci::gl::VboMeshRef mesh;
 			ci::vec3 player_pos;
+			ci::vec3 player_buf_pos;
 			ci::vec3 player_vec;
 			ci::vec3 weapon_pos;
 			ci::vec3 weapon_vec;
+			int player_id;
 			float player_rotate_x;
 			float player_rotate_y;
 			Motion motion;
@@ -66,7 +68,7 @@ namespace Game {
 			void DrawRotate2();
 			void DrawRotate3();
 		public:
-			LightSaber();
+			LightSaber(int player_id);
 			ci::vec2 rotate;
 			ci::vec3 weapon_draw_pos;
 			ci::vec3 shock_pos;

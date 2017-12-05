@@ -180,7 +180,7 @@ void Game::Player::cPlayer::collisionGems()
 			//プレイヤー用のパケットを作らないと
 			getGems(GemManager->getFragmentGems()[i]->getId());
 			//cClientAdapter::getInstance()->sendGetGemQuarry(player_id, GemManager->getGems()[i]->getId());
-			GemManager->breakeGemStone(i);
+			GemManager->breakGemStone(i);
 		}
 	}
 }
@@ -305,7 +305,7 @@ Game::Player::cPlayer::cPlayer(
 	status.drill_speed = DEFAULT_SPEED;
 	status.respawn_time = 7;
 	//武器の初期化
-	main_weapon = Weapon::cWeaponFactory::getInstance()->InstanceMainWeapon(static_cast<Weapon::MAIN_WEAPON>(main_weapon_id));
+	main_weapon = Weapon::cWeaponFactory::getInstance()->InstanceMainWeapon(static_cast<Weapon::MAIN_WEAPON>(main_weapon_id), id);
 	assert(main_weapon != NULL && "メイン武器の種類のenumが正しく入っていません。");
 
 	//設置位置
@@ -317,11 +317,6 @@ Game::Player::cPlayer::cPlayer(
 	is_dead = false;
 }
 
-
-void Game::Player::cPlayer::sendCannonGems(const ci::vec3 & cannon_pos)
-{
-
-}
 
 void Game::Player::cPlayer::receiveDamage(const float & attack, const float& player_id)
 {
@@ -354,7 +349,6 @@ void Game::Player::cPlayer::receiveDamage(const float & attack, const float& pla
 
 void Game::Player::cPlayer::weaponUpdae(const float & delta_time)
 {
-	if(active_user)
 	main_weapon->update(delta_time);
 }
 
