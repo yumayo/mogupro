@@ -31,6 +31,7 @@ private:
 		//Ç∆ÇËÇ†Ç¶Ç∏ÉQÅ[ÉÄäJénÇ∑ÇÈ
 		BEGIN_GAME
 	};
+
 	PhaseState mPhaseState;
 	int mRoomID;
 	bool mOpenRoom;
@@ -41,6 +42,7 @@ private:
 	std::string mTimeStr;
 	boost::posix_time::ptime mGameStartTime;
 	bool mStartGame;
+	int teamCount;
 };
 }
 }

@@ -50,8 +50,8 @@ namespace Utility
 
 		for (int i = 0; i < (int)indices.size() / 3; ++i)
 		{
-			vectors.push_back(ci::vec3(ci::randFloat(-5.0f, 5.0f), ci::randFloat(-5.0f, 5.0f), ci::randFloat(1.0f, 5.f)));
-			rotate.push_back(ci::vec2(ci::randFloat(-1.0f, 1.0f), ci::randFloat(-1.0f, 1.0f)));
+			vectors.push_back(ci::vec3(ci::randFloat(-1.5f, 1.5f), ci::randFloat(-1.5f, 1.5f), ci::randFloat(1.5f, - 1.5f)));
+			rotate.push_back(ci::vec2(ci::randFloat(-0.5f, 0.5f), ci::randFloat(-0.5f, 0.5f)));
 		}
 	}
 
@@ -86,7 +86,7 @@ namespace Utility
 		mesh->appendPositions(vertices.data(), (int)vertices.size());
 		mesh->appendTexCoords0(texCoords.data(), (int)texCoords.size());
 		mesh->appendIndices(indices.data(), (int)indices.size());
-		ci::gl::translate(ci::vec2(-windowSize.x, -windowSize.y));
+		ci::gl::translate(ci::vec2(-windowSize.x / 2, -windowSize.y / 2));
 		ci::gl::draw(*mesh);
 		ci::gl::popModelView();
 	}

@@ -3,12 +3,14 @@
 #include<Network/Packet/Request/cReqConnect.h>
 #include<Network/Packet/Request/cReqGetJemSeed.h>
 #include<Network/Packet/Request/cReqGetJemPoint.h>
-#include<Network/Packet/Request/cReqCheckGetJemPlayer.h>
-#include<Network/Packet/Request/cReqCheckGetJemQuarry.h>
-#include<Network/Packet/Request/cReqCheckPlayerRobJem.h>
-#include<Network/Packet/Request/cReqCheckSetQuarry.h>
-#include<Network/Packet/Request/cReqCheckPlayerDeath.h>
-#include<Network/Packet/Request/cReqCheckLightBomb.h>
+#include<Network/Packet/Request/cReqGetJemPlayer.h>
+#include<Network/Packet/Request/cReqGetJemQuarry.h>
+#include<Network/Packet/Request/cReqPlayerRobJem.h>
+#include<Network/Packet/Request/cReqSetQuarry.h>
+#include<Network/Packet/Request/cReqPlayerDeath.h>
+#include<Network/Packet/Request/cReqRespawn.h>
+#include<Network/Packet/Request/cReqLightBomb.h>
+#include<Network/Packet/Request/cReqDamage.h>
 #include<Network/Packet/Request/cReqMakeRoom.h>
 #include<Network/Packet/Request/cReqInRoom.h>
 #include<Network/Packet/Request/cReqWantTeamIn.h>
@@ -16,3 +18,5 @@
 #include<Network/Packet/Request/cReqCheckMember.h>
 #include<Network/Packet/Request/cReqEndGamemainSetup.h>
 #include<Network/Packet/Request/cReqEndStartTimer.h>
+#include<Network/Packet/Request/cReqAddCannonPower.h>
+#include<Network/Packet/Request/cReqResult.h>

@@ -31,11 +31,11 @@ void cQuarryCapsule::update(const float & delta_time)
 }
 void cQuarryCapsule::draw()
 {
-	STRM->drawCube(mPos, mScale, mRotate, ci::ColorA(1, 0, 0, 1));
+	STRM->drawCube(mPos, mScale, mRotate, ci::ColorA(0, 0, 1, 1));
 }
 bool cQuarryCapsule::deleteThis()
 {
-	return false;
+	return  count > 60;
 }
 }
 }

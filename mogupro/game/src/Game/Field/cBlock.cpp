@@ -1,6 +1,7 @@
 #include <Game/Field/cBlock.h>
 #include <cinder/gl/gl.h>
 #include <Particle/cParticleManager.h>
+#include <Utility/cRandom.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -41,7 +42,11 @@ void cBlock::toBreak()
 {
     mType = BlockType::AIR;
     clear();
-    Particle::cParticleManager::getInstance()->
+
+    Utility::RandomFloat rr( -1.0f, 1.0f );
+
+    if ( rr() > 0 )
+        Particle::cParticleManager::getInstance()->
         create( Particle::ParticleParam()
                 .position( mCollider.getPosition() )
                 .scale( 0.03f )

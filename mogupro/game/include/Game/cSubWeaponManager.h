@@ -28,8 +28,7 @@ public:
 	//テスト用です
 	void drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color);
 	void createLightBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale,const int objectid, const int _playerid);
-	void createLightBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale, const int _playerid);
-	void createQuarry(const ci::vec3 _pos, const int _objectid, const int playerid, const Game::Weapons::SubWeapon::cQuarry::DrillType type);
+	void createQuarry(const ci::vec3 _pos, const int _objectid, const int playerid);
 	void createUseSubWeapon(const Game::Weapons::SubWeapon::SubWeaponType type, const int playerid);
 	void deleteWeapons();
 	int debugidcount = 0;

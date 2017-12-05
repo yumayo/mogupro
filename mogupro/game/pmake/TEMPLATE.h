@@ -13,6 +13,7 @@ public:
     _TEMPLATE_CLASS_( );
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
+    cNetworkHandle networkHandle;
 };
 }
 }

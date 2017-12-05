@@ -49,12 +49,16 @@ enum class PacketId : ubyte1
     // 他のプレイヤーに倒されたと通知します。
     // ※この瞬間にプレイヤーはステータスを変えてください。
     EVE_PLAYER_DEATH,
+	//
+	EVE_RESPAWN,
+	//
+	EVE_ADD_CANNON_POWER,
 	// 他のプレイヤーがボムを投げたと通知します。
 	EVE_LIGHT_BOMB,
     //Memberがどこに所属しているかの送信
     EVE_TEAM_MEMBER,
-    // プレイヤーのリスポーン位置を通知します。
-    EVE_PLAYERS_RESPAWN,
+	// ダメージがあったことを知らせます。
+	EVE_DAMAGE,
 
     //=========================================================//
     //                        Request                          //
@@ -71,21 +75,25 @@ enum class PacketId : ubyte1
     REQ_GET_JEM_POINT,
     // プレイヤーがジェムを取得したことを知らせます。
     // ※このタイミングでは取得できません。サーバーからのレスポンスを待ってください。
-    REQ_CHECK_GET_JEM_PLAYER,
+    REQ_GET_JEM_PLAYER,
     // 掘削機がジェムを取得したことを知らせます。
     // ※このタイミングでは取得できません。サーバーからのレスポンスを待ってください。
-    REQ_CHECK_GET_JEM_QUARRY,
+    REQ_GET_JEM_QUARRY,
     // プレイヤーが他のプレイヤーのジェムを奪ったことを通知します。
     // ※このタイミングでは奪取できません。サーバーからのレスポンスを待ってください。
-    REQ_CHECK_PLAYER_ROB_JEM,
+    REQ_PLAYER_ROB_JEM,
     // 掘削機を設置したと知らせます。
     // ※このタイミングでは設置できません。サーバーからのレスポンスを待ってください。
-    REQ_CHECK_SET_QUARRY,
+    REQ_SET_QUARRY,
     // 他のプレイヤーを倒した情報をサーバーに送る。
     // ※このタイミングでは倒せません。サーバーからのレスポンスを待ってください。
-    REQ_CHECK_PLAYER_DEATH,
+    REQ_PLAYER_DEATH,
+	// 
+	REQ_RESPAWN,
 	// プレイヤーがボムを投げます。
-	REQ_CHECK_LIGHT_BOMB,
+	REQ_LIGHT_BOMB,
+	// 他のプレイヤーにダメージを与えたことを知らせます。
+	REQ_DAMAGE,
 	//Matching時にクライアントが部屋を作る申請
 	REQ_MAKE_ROOM,
 	//Matching時にクライアントが部屋に入る申請
@@ -101,6 +109,10 @@ enum class PacketId : ubyte1
 	REQ_END_GAMEMAIN_SETUP,
 	//Game開始までのTimer終了通知
 	REQ_END_START_TIMER,
+	// 
+	REQ_ADD_CANNON_POWER,
+	// 
+	REQ_RESULT,
 
     //=========================================================//
     //                        Response                         //
@@ -115,18 +127,6 @@ enum class PacketId : ubyte1
     RES_GET_JEM_SEED,
     // プレイヤーが持っているジェムの数を渡します。
     RES_GET_JEM_POINT,
-    // プレイヤーがジェムの取得に成功したか失敗したか、について通知します。
-    RES_CHECK_GET_JEM_PLAYER,
-    // 掘削機がジェムの取得に成功したか失敗したか、について通知します。
-    RES_CHECK_GET_JEM_QUARRY,
-    // ジェムの奪取に成功したか失敗したか、について通知します。
-    RES_CHECK_PLAYER_ROB_JEM,
-    // 掘削機の設置に成功したか失敗したか、について通知します。
-    RES_CHECK_SET_QUARRY,
-    // 他のプレイヤーのキルに成功したか失敗したか、について通知します。
-    RES_CHECK_PLAYER_DEATH,
-	// プレイヤーがボムを投げます。
-//	RES_CHECK_LIGHT_BOMB,
 	//Matching時にクライアントが部屋を作る申請をうけ、作れたかどうか
 	RES_MAKE_ROOM,
 	//Matching時にクライアントが部屋に入る申請をうけ、入れたかどうか
@@ -141,6 +141,8 @@ enum class PacketId : ubyte1
 	RES_END_GAMEMAIN_SETUP,
 	//GameMainのSetupが終了した時点からの
 	RES_SET_GAMESTART_TIMER,
+	//
+	RES_RESULT,
 };
 }
 }

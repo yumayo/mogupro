@@ -17,7 +17,8 @@ namespace Game
 		mGemBuffer     = ci::gl::Fbo::create(ci::app::getWindowWidth(), ci::app::getWindowHeight(), true);
 		mShader        = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/GemManager.frag"));
 		mVboShader     = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemVbo.vert"), ci::app::loadAsset("Gem/GemVbo.frag"));
-		mesh           = ci::TriMesh::create(ci::TriMesh::Format().colors(4).positions().normals().texCoords0());
+		mesh           = ci::TriMesh::create(ci::TriMesh::Format().colors(4).positions().normals().texCoords());
+
 		create();
 	}
 
@@ -38,6 +39,27 @@ namespace Game
 	{
 			using namespace ci;
 
+			{
+				ci::gl::pushMatrices();
+				ci::gl::ScopedFramebuffer fbScp(mGemBuffer);
+				ci::gl::ScopedViewport    scpVp2(ci::ivec2(0), mGemBuffer->getSize());
+				ci::gl::setMatrices(CAMERA->getCamera());
+
+				ci::gl::ScopedGlslProg    shaderScp(mVboShader);
+				mVboShader->uniform("deltaTime", mTime);
+
+				ci::gl::clear(ci::ColorA(0, 0, 0, 0));
+				for (size_t i = 0; i < mFragmentGems.size(); i++)
+				{
+					mFragmentGems[i]->update();
+					mFragmentGems[i]->draw();
+				}
+
+				ci::gl::draw(mGemsVbo);
+				ci::gl::color(ci::Color(1, 1, 1));
+				ci::gl::popMatrices();
+			}
+
 			auto rect = ci::Rectf(-ci::app::getWindowSize() / 2, ci::app::getWindowSize() / 2);
 			ci::gl::ScopedGlslProg    glsl(mShader);
 			ci::gl::ScopedTextureBind tex(mGemBuffer->getColorTexture());
@@ -53,22 +75,7 @@ namespace Game
 	void cGemManager::update(float deltaTime)
 	{
 		mTime += deltaTime * mLightingSpeed;
-		ci::gl::ScopedFramebuffer fbScp(mGemBuffer);
-		ci::gl::ScopedViewport    scpVp2(ci::ivec2(0), mGemBuffer->getSize());
-		ci::gl::setMatrices(CAMERA->getCamera());
 
-		ci::gl::ScopedGlslProg    shaderScp(mVboShader);
-		mVboShader->uniform("deltaTime", mTime);
-
-		ci::gl::clear(ci::ColorA(0, 0, 0, 0));
-		for (size_t i = 0; i < mFragmentGems.size(); i++)
-		{
-			mFragmentGems[i]->update();
-			mFragmentGems[i]->draw();
-		}
-
-		ci::gl::draw(mGemsVbo);
-		ci::gl::color(ci::Color(1, 1, 1));
 	};
 
 	void cGemManager::lateUpdate(const float& delta_time)
@@ -143,6 +150,8 @@ namespace Game
 			mesh->appendIndices(&indices[0], indices.size());
 			mesh->appendNormals(&mGemStone[i]->getNomals()[0], mGemStone[i]->getNomals().size());
 			mesh->appendColors(&mGemStone[i]->getColorAs()[0], mGemStone[i]->getColorAs().size());
+			for(int i = 0; i < 24; i++)
+			mesh->appendTexCoord(ci::vec2(0,0));
 
 			//Vert
 			mesh->appendPosition(pos + ci::vec3(scale.x, scale.y, scale.z));
@@ -179,6 +188,12 @@ namespace Game
 		mGemsVbo = ci::gl::VboMesh::create(*mesh);
 	}
 
+
+	void cGemManager::clearMesh()
+	{
+		if (mesh == nullptr) return;
+		mesh->clear();
+	}
 
 	std::shared_ptr<Gem::cGemStone> cGemManager::getGemStone(int id)
 	{

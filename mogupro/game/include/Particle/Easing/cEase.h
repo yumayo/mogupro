@@ -12,11 +12,11 @@ class EaseOrigin
 {
 public:
     EaseOrigin() {}
-    EaseOrigin( float begin, float end, int end_frame, EaseType type );
+    EaseOrigin( float begin, float end, float end_frame, EaseType type );
 
-    void setup( float begin, float end, int end_frame, EaseType type );
+    void setup( float begin, float end, float end_frame, EaseType type );
 
-    void update();
+    void update( const float& delta_time );
 
     float currentTargetValue();
 
@@ -45,13 +45,13 @@ public:
     RunEase();
 
     // 値の更新
-    void update();
+    void update( const float& delta_time );
 
     // イージングがすべて終わっているかどうか
     bool isEaseEnd() { return ease_accum.empty(); }
 
     // floatのイージングスタックを追加する関数
-    void add( float& target, float end, int end_frame, EaseType ease_type );
+    void add( float& target, float end, float end_frame, EaseType ease_type );
 
     // waitを追加する関数
     void addWait( float& target, int wait );
@@ -65,7 +65,7 @@ public:
 private:
 
     // イージングの更新
-    void action();
+    void action( const float& delta_time );
 
     // スタックをpop_frontする関数
     void pop();
@@ -100,28 +100,28 @@ class cEase : public Utility::cSingletonAble<cEase>
 public:
  
     // イージングの更新
-    void update();
+    void update( const float& delta_time );
 
     // イージングを追加する関数
     // target       イージングする float の値
     // end          イージングが終了したときになる値
     // end_frame    何フレームで終わるか
     // ease_type    どのイージング関数を使うか
-    void add( float& target, const float& end, int end_frame, EaseType ease_type );
+    void add( float& target, const float& end, float end_frame, EaseType ease_type );
 
     // イージングを追加する関数
     // target       イージングする vec3 の値
     // end          イージングが終了したときになる値
     // end_frame    何フレームで終わるか
     // ease_type    どのイージング関数を使うか
-    void add( ci::vec3 & target, const ci::vec3& end, int end_frame, EaseType ease_type );
+    void add( ci::vec3 & target, const ci::vec3& end, float end_frame, EaseType ease_type );
 
     // イージングを追加する関数
     // target       イージングする vec2 の値
     // end          イージングが終了したときになる値
     // end_frame    何フレームで終わるか
     // ease_type    どのイージング関数を使うか
-    void add( ci::vec2 & target, const ci::vec2& end, int end_frame, EaseType ease_type );
+    void add( ci::vec2 & target, const ci::vec2& end, float end_frame, EaseType ease_type );
 
     // イージングを止める処理を追加する関数
     // target       イージングを止めるfloatの値
@@ -165,7 +165,12 @@ public:
 
     // 引数の値のイージングが終わっているかどうかを返す関数
     // target       終わったか調べるfloatの値
-    bool isEaseEnd( float& target ) { return ease[&target].isEaseEnd(); }
+    bool isEaseEnd( float& target );
+
+    // 引数の値のイージングが終わっているかどうかを返す関数
+    // target       終わったか調べるfloatの値
+    bool isEaseEnd( ci::vec3& target );
+
 
     // 全てのイージングを終了させる関数
     void allClear();

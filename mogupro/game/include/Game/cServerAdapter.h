@@ -8,22 +8,37 @@ namespace Game
 {
 class cServerAdapter : public Utility::cSingletonAble<cServerAdapter>
 {
+	class Player
+	{
+	public:
+		void respawn( );
+		bool kill( );
+		Network::ubyte1 id;
+		Network::ubyte1 isLive;
+		cinder::vec3 position;
+		cinder::quat rotation;
+	};
 public:
     cServerAdapter( );
     ~cServerAdapter( );
 public:
     void update( );
 private:
-    void sendPlayers( );
+	void sendPlayers( );
     void sendSetQuarry( );
     void sendGetGemPlayer( );
     void sendGetGemQuarry( );
 	void sendBreakBlocks( );
 	void sendLightBombs( );
+	void sendResult( );
+	void sendAddCannonPower( );
 private:
-    std::map<Network::ubyte1, Network::Packet::PlayerFormat> mPlayerFormats;
+    std::map<Network::ubyte1, Player> mPlayers;
     std::set<Network::ubyte2> mQuarrys;
     Network::ubyte2 mQuarryId;
-    std::set<Network::ubyte2> mGems;
+	std::set<Network::ubyte2> mGems;
+	Network::ubyte2 mLightBombId;
+	Network::ubyte1 mRedTeamPower;
+	Network::ubyte1 mBlueTeamPower;
 };
 }

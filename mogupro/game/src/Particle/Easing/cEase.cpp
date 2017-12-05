@@ -1,11 +1,11 @@
 #include "Particle/Easing/cEase.h"
 
-EaseOrigin::EaseOrigin( float begin, float end, int end_frame, EaseType type )
+EaseOrigin::EaseOrigin( float begin, float end, float end_frame, EaseType type )
 {
     setup( begin, end, end_frame, type );
 }
 
-void EaseOrigin::setup( float begin, float end, int end_frame, EaseType type )
+void EaseOrigin::setup( float begin, float end, float end_frame, EaseType type )
 {
     begin_ = begin;
     end_ = end;
@@ -14,9 +14,12 @@ void EaseOrigin::setup( float begin, float end, int end_frame, EaseType type )
     count_ = 0.0f;
 }
 
-void EaseOrigin::update()
+void EaseOrigin::update( const float& delta_time )
 {
-    count_++;
+    count_ += delta_time * 60;
+
+    if ( count_ > end_frame_ )
+        count_ = end_frame_;
 }
 
 float EaseOrigin::currentTargetValue()
@@ -28,7 +31,7 @@ float EaseOrigin::currentTargetValue()
 
 bool EaseOrigin::isDone()
 {
-    return count_ > end_frame_;
+    return count_ >= end_frame_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,14 +44,14 @@ RunEase::RunEase()
     is_loop = false;
 }
 
-void RunEase::update()
+void RunEase::update( const float& delta_time )
 {
     if ( is_stop )return;
     if ( ease_accum.empty() )return;
-    action();
+    action( delta_time );
 }
 
-void RunEase::add( float & target, float end, int end_frame, EaseType ease_type )
+void RunEase::add( float & target, float end, float end_frame, EaseType ease_type )
 {
     target_ = &target;
     ease_accum.push_back( EaseOrigin( target, end, end_frame, ease_type ) );
@@ -65,7 +68,7 @@ void RunEase::clear()
     ease_accum.clear();
 }
 
-void RunEase::action()
+void RunEase::action( const float& delta_time )
 {
     auto ease_begin = ease_accum.begin();
     if ( ease_begin->isDone() )
@@ -81,7 +84,7 @@ void RunEase::action()
     else
     {
         *target_ = ease_begin->currentTargetValue();
-        ease_begin->update();
+        ease_begin->update( delta_time );
     }
 }
 
@@ -102,7 +105,7 @@ void RunEase::loop()
 // Ease イージングを管理するクラス
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void cEase::update()
+void cEase::update( const float& delta_time )
 {
     for ( auto it = ease.begin(); it != ease.end();)
     {
@@ -111,24 +114,24 @@ void cEase::update()
             it = ease.erase( it );
             continue;
         }
-        it->second.update();
+        it->second.update( delta_time );
         it++;
     }
 }
 
-void cEase::add( float & target, const float& end, int end_frame, EaseType ease_type )
+void cEase::add( float & target, const float& end, float end_frame, EaseType ease_type )
 {
     ease[&target].add( target, end, end_frame, ease_type );
 }
 
-void cEase::add( ci::vec3 & target, const ci::vec3& end, int end_frame, EaseType ease_type )
+void cEase::add( ci::vec3 & target, const ci::vec3& end, float end_frame, EaseType ease_type )
 {
     ease[&target.x].add( target.x, end.x, end_frame, ease_type );
     ease[&target.y].add( target.y, end.y, end_frame, ease_type );
     ease[&target.z].add( target.z, end.z, end_frame, ease_type );
 }
 
-void cEase::add( ci::vec2 & target, const ci::vec2 & end, int end_frame, EaseType ease_type )
+void cEase::add( ci::vec2 & target, const ci::vec2 & end, float end_frame, EaseType ease_type )
 {
     ease[&target.x].add( target.x, end.x, end_frame, ease_type );
     ease[&target.y].add( target.y, end.y, end_frame, ease_type );
@@ -205,6 +208,23 @@ void cEase::kill( ci::vec2 & target )
 {
     ease[&target.x].clear();
     ease[&target.y].clear();
+}
+
+bool cEase::isEaseEnd( float & target )
+{
+    return ease[&target].isEaseEnd();
+}
+
+bool cEase::isEaseEnd( ci::vec3 & target )
+{
+    if ( ease.find( &target.x ) == ease.end() ||
+         ease.find( &target.y ) == ease.end() ||
+         ease.find( &target.z ) == ease.end() )
+        return true;
+
+    return ease[&target.x].isEaseEnd()
+        && ease[&target.y].isEaseEnd()
+        && ease[&target.z].isEaseEnd();
 }
 
 void cEase::allClear()

@@ -1,5 +1,6 @@
 #include <Node/Renderer/circle.h>
 #include <Node/Renderer/label.h>
+#include <Node/Renderer/letter.h>
 #include <Node/Renderer/rect.h>
 #include <Node/Renderer/rect_edge.h>
 #include <Node/Renderer/sprite.h>

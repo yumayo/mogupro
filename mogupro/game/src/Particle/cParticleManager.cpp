@@ -13,11 +13,6 @@ using namespace ci::app;
 
 namespace Particle
 {
-float EaseLinear( float t, float b, float e )
-{
-    return ( e - b ) * t + b;
-}
-
 std::string getTextureNameFromTextureType( const ParticleTextureType& type )
 {
     switch ( type )
@@ -37,6 +32,22 @@ float getLength( const vec3& p1, const vec3& p2 )
     vec3 vec = p2 - p1;
     return glm::length( vec );
 }
+
+const std::array<GLfloat, 12> rect_vertex
+{
+    -1.0f / 2,  -1.0f / 2, 0,
+    1.0f / 2, -1.0f / 2, 0,
+    1.0f / 2,  1.0f / 2, 0,
+    -1.0f / 2,  1.0f / 2, 0,
+};
+
+const std::array<ci::vec2, 4> tex_coords
+{
+    ci::vec2( 0.0 ,0.0 ),
+    ci::vec2( 0.0 ,1.0 ),
+    ci::vec2( 1.0 ,1.0 ),
+    ci::vec2( 1.0 ,0.0 ),
+};
 
 //template<typename T>
 //void sortByCamera( std::vector<std::shared_ptr<T>>& list, const vec3& offset_pos )
@@ -240,7 +251,7 @@ void cParticle::cubeDraw( const ci::ColorA& color )
 
 bool cParticle::isActive()
 {
-    return mTime > 0;
+    return mTime > 0 || !Easing->isEaseEnd( mPosition );
 }
 
 ci::vec3 cParticle::getVec()
@@ -266,13 +277,18 @@ float cParticle::getAlpha()
 
 cParticleHolder::cParticleHolder( const ParticleParam& param ) :
     mParam( param )
+    , mIndicesIndex( 0 )
+    , mVbo( nullptr )
 {
     setTexture( param.mTextureType );
     setLight( param.mIsLighting );
 
-    if ( param.mMoveType == ParticleType::EXPROTION )
-        for ( int i = 0; i < param.mCount; i++ )
-            createParticle();
+    mMesh = TriMesh::create( TriMesh::Format().positions().colors( 4 ).texCoords() );
+
+    for ( int i = 0; i < param.mCount; i++ )
+        createParticle();
+
+    mVbo = gl::VboMesh::create( *mMesh );
 }
 
 cParticleHolder::cParticleHolder( const vec3& position,
@@ -351,6 +367,13 @@ void cParticleHolder::update( const float& delta_time )
 
     // ƒzƒ‹ƒ_[‚ÌŽõ–½
     mParam.mEffectTime -= delta_time;
+
+    if ( mParam.mIsCube == false )
+    {
+        clearMesh();
+        createMesh( mRotation, mParticles );
+        createMesh( mRotation, mTrajectoryParticles );
+    }
 }
 
 void cParticleHolder::draw( const glm::quat& rotation )
@@ -385,7 +408,6 @@ void cParticleHolder::createParticle()
     const vec3& position = createPosition();
     const auto& rand_vec = createVec( mParam.mPosition + position );
     const float& vanish_time = createVanishTime();
-
 
     mParticles.emplace_back( std::make_shared<cParticle>( position,
                                                           rand_vec,
@@ -477,22 +499,79 @@ void cParticleHolder::createTrajectory( const ci::vec3 & position,
     }
 }
 
+void cParticleHolder::createMesh( const glm::quat& rotation,
+                                  std::vector<std::shared_ptr<cParticle>>& particles )
+{
+    for ( auto& it : particles )
+    {
+        mMesh->appendTexCoords0( &tex_coords[0], 4 );
+        for ( int i = 0, index = 0; i < 4; i++ )
+        {
+            vec3 vertex( 0 );
+            vertex.x += rect_vertex[index++];
+            vertex.y += rect_vertex[index++];
+            vertex.z += rect_vertex[index++];
+
+            vertex = glm::rotate( rotation, vertex );
+            vertex += it->mPosition;
+
+            mMesh->appendPosition( vertex );
+
+            mMesh->appendColorRgba( ColorA( mParam.mColor.r,
+                                            mParam.mColor.g,
+                                            mParam.mColor.b, it->getAlpha() ) );
+        }
+
+        auto & indices = mMesh->getIndices();
+        indices.insert( indices.end(),
+        {
+            mIndicesIndex,
+            mIndicesIndex + 1,
+            mIndicesIndex + 2,
+
+            mIndicesIndex + 2,
+            mIndicesIndex + 3,
+            mIndicesIndex
+        } );
+        mIndicesIndex += 4;
+    }
+
+    if ( mVbo != nullptr )
+        mVbo = gl::VboMesh::create( *mMesh );
+}
+
 void cParticleHolder::particleDraw( const glm::quat& rotation )
 {
     gl::translate( mParam.mPosition );
     gl::scale( vec3( mParam.mScale ) );
+    if ( mParam.mIsCube == false )
+    {
+        auto ctx = gl::context();
+        const gl::GlslProg* curGlslProg = ctx->getGlslProg();
 
-    for ( const auto& it : mParticles )
-        if ( mParam.mIsCube == false )
-            it->draw( rotation, mParam.mColor );
-        else
-            it->cubeDraw( mParam.mColor );
+        //ctx->pushVao();
+        ctx->getDefaultVao()->replacementBindBegin();
+        mVbo->buildVao( curGlslProg );
+        ctx->getDefaultVao()->replacementBindEnd();
+        ctx->setDefaultShaderVars();
+        mVbo->drawImpl();
+        //ctx->popVao();
+        //gl::draw( mVbo );
+    }
+    else
+    {
+        for ( const auto& it : mParticles )
+            if ( mParam.mIsCube == false )
+                it->draw( rotation, mParam.mColor );
+            else
+                it->cubeDraw( mParam.mColor );
 
-    for ( const auto& it : mTrajectoryParticles )
-        if ( mParam.mIsCube == false )
-            it->draw( rotation, mParam.mColor );
-        else
-            it->cubeDraw( mParam.mColor );
+        for ( const auto& it : mTrajectoryParticles )
+            if ( mParam.mIsCube == false )
+                it->draw( rotation, mParam.mColor );
+            else
+                it->cubeDraw( mParam.mColor );
+    }
 }
 
 void cParticleHolder::setTexture( const ParticleTextureType & texture_type )
@@ -512,6 +591,12 @@ void cParticleHolder::setLight( bool is_lighting )
                                                                      2.0f );
 }
 
+void cParticleHolder::clearMesh()
+{
+    mMesh->clear();
+    mIndicesIndex = 0;
+}
+
 cParticleManager::cParticleManager()
 {
 }
@@ -526,10 +611,11 @@ void cParticleManager::setup()
 
 void cParticleManager::update( const float& delta_time )
 {
-    Easing->update();
+    Easing->update( delta_time );
     builbordUpdate();
     for ( auto& it = mParticleHolders.begin(); it != mParticleHolders.end(); )
     {
+        ( *it )->mRotation = mBuilbordRotate;
         ( *it )->update( delta_time );
         if ( ( *it )->isActive() == false )
             it = mParticleHolders.erase( it );
@@ -542,8 +628,17 @@ void cParticleManager::draw()
 {
     gl::disableDepthWrite();
 
+    auto ctx = gl::context();
+    bool is_culling_change = ctx->getBoolState( GL_CULL_FACE );
+
+    if ( is_culling_change == false )
+        gl::enableFaceCulling( true );
+
     for ( auto& it : mParticleHolders )
         it->draw( mBuilbordRotate );
+
+    if ( is_culling_change == false )
+        gl::enableFaceCulling( false );
 
     gl::enableDepthWrite();
 }

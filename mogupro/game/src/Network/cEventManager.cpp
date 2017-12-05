@@ -300,6 +300,72 @@ bool cEventManager::isNewEvePlayerDeath( Packet::PacketHeader const& header )
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
+boost::optional<Packet::Event::cEveRespawn> cEventManager::getEveRespawn( )
+{
+    if ( mEveRespawn.empty( ) )
+    {
+        auto it = mEveRespawnSequenceIds.begin( );
+		while ( it != mEveRespawnSequenceIds.end( ) ) 
+		{
+			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
+			{
+				mEveRespawnSequenceIds.erase( it++ );
+			}
+			else ++it;
+		}
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEveRespawn.top( );
+        mEveRespawn.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEveRespawn( Packet::Event::cEveRespawn&& data )
+{
+    mEveRespawn.push( std::move( data ) );
+}
+bool cEventManager::isNewEveRespawn( Packet::PacketHeader const& header )
+{
+	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
+    auto status = mEveRespawnSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    status.first->second = cinder::app::getElapsedSeconds( );
+	return status.second;
+}
+boost::optional<Packet::Event::cEveAddCannonPower> cEventManager::getEveAddCannonPower( )
+{
+    if ( mEveAddCannonPower.empty( ) )
+    {
+        auto it = mEveAddCannonPowerSequenceIds.begin( );
+		while ( it != mEveAddCannonPowerSequenceIds.end( ) ) 
+		{
+			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
+			{
+				mEveAddCannonPowerSequenceIds.erase( it++ );
+			}
+			else ++it;
+		}
+        return boost::none;
+    }
+    else
+    {
+        auto top = mEveAddCannonPower.top( );
+        mEveAddCannonPower.pop( );
+        return top;
+    }
+}
+void cEventManager::ungetEveAddCannonPower( Packet::Event::cEveAddCannonPower&& data )
+{
+    mEveAddCannonPower.push( std::move( data ) );
+}
+bool cEventManager::isNewEveAddCannonPower( Packet::PacketHeader const& header )
+{
+	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
+    auto status = mEveAddCannonPowerSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    status.first->second = cinder::app::getElapsedSeconds( );
+	return status.second;
+}
 boost::optional<Packet::Event::cEveLightBomb> cEventManager::getEveLightBomb( )
 {
     if ( mEveLightBomb.empty( ) )
@@ -366,16 +432,16 @@ bool cEventManager::isNewEveTeamMember( Packet::PacketHeader const& header )
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }
-boost::optional<Packet::Event::cEvePlayersRespawn> cEventManager::getEvePlayersRespawn( )
+boost::optional<Packet::Event::cEveDamage> cEventManager::getEveDamage( )
 {
-    if ( mEvePlayersRespawn.empty( ) )
+    if ( mEveDamage.empty( ) )
     {
-        auto it = mEvePlayersRespawnSequenceIds.begin( );
-		while ( it != mEvePlayersRespawnSequenceIds.end( ) ) 
+        auto it = mEveDamageSequenceIds.begin( );
+		while ( it != mEveDamageSequenceIds.end( ) ) 
 		{
 			if ( it->second < cinder::app::getElapsedSeconds( ) - RELIABLE_HOLD_SECOND )
 			{
-				mEvePlayersRespawnSequenceIds.erase( it++ );
+				mEveDamageSequenceIds.erase( it++ );
 			}
 			else ++it;
 		}
@@ -383,19 +449,19 @@ boost::optional<Packet::Event::cEvePlayersRespawn> cEventManager::getEvePlayersR
     }
     else
     {
-        auto top = mEvePlayersRespawn.top( );
-        mEvePlayersRespawn.pop( );
+        auto top = mEveDamage.top( );
+        mEveDamage.pop( );
         return top;
     }
 }
-void cEventManager::ungetEvePlayersRespawn( Packet::Event::cEvePlayersRespawn&& data )
+void cEventManager::ungetEveDamage( Packet::Event::cEveDamage&& data )
 {
-    mEvePlayersRespawn.push( std::move( data ) );
+    mEveDamage.push( std::move( data ) );
 }
-bool cEventManager::isNewEvePlayersRespawn( Packet::PacketHeader const& header )
+bool cEventManager::isNewEveDamage( Packet::PacketHeader const& header )
 {
 	if ( ( header.mState & Packet::PacketHeader::RELIABLE ) != Packet::PacketHeader::RELIABLE ) return true;
-    auto status = mEvePlayersRespawnSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
+    auto status = mEveDamageSequenceIds.insert( std::make_pair( header.mSequenceId, cinder::app::getElapsedSeconds( ) ) );
     status.first->second = cinder::app::getElapsedSeconds( );
 	return status.second;
 }

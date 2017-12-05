@@ -76,11 +76,6 @@ void cStrategyManager::update(const float & deltatime)
 		it.second->update(deltatime);
 	}
 	deleteObject();
-
-	if (ENV->pushKey(KeyEvent::KEY_p)) {
-		cClientAdapter::getInstance()->sendSetQuarry(vec3(randInt(0, 10), 15, randInt(0, 10)),Strategy::cDrill::DrillType::Level1);
-
-	}
 }
 
 void cStrategyManager::updateCollisionAfterUpdate(const float & deltaTime)
@@ -134,6 +129,9 @@ bool cStrategyManager::isAABB(const ci::AxisAlignedBox & a, const ci::AxisAligne
 
 void cStrategyManager::HitDrillToGem(const int _objectid, const int _gemid)
 {
+
+	ci::app::console() << "‚¨‚Ü‚¦‚¶‚á‚È‚¢" << std::endl;
+
 	auto drill = drills[_objectid];
 
 	drill->HitGem(_gemid);

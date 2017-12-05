@@ -15,9 +15,8 @@ public:
     ubyte2 packetExport( char* const data ) override;
 public:
     cinder::vec3 mPosition;
-    ubyte1 mType;
-    ubyte1 mTeamId;
-    ubyte2 mDrillId;
+    ubyte1 mPlayerId;
+    ubyte2 mObjectId;
 };
 }
 }

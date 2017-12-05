@@ -3,6 +3,8 @@
 #include<Game/cStrategyManager.h>
 #include<Game/cFieldManager.h>
 #include<Particle/cParticleManager.h>
+#include"Resource\cSoundManager.h"
+#include <Game/cClientAdapter.h>
 namespace Game
 {
 namespace Weapons
@@ -17,7 +19,8 @@ namespace Weapons
 			mSpeed = speed;
 			mPlayerId = playerid;
 			mTeamNum = cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam();
-			
+			ci::app::console() << "playerID"<<mPlayerId << std::endl;
+			mPlayerId = playerid;
 			if (mTeamNum == 0) {
 				mDefaultcolor = ci::ColorA(1, 0, 0, 1);
 			}
@@ -39,13 +42,14 @@ namespace Weapons
 
 		void cLightBomb::dmageToPlayer(const int playerid)
 		{
-			cPlayerManager::getInstance()->getPlayers()[playerid]->receiveDamage(100.f, cPlayerManager::getInstance()->getActivePlayer()->getPlayerId());
+			cClientAdapter::getInstance( )->sendDamage( playerid, 100.0F );
 		}
 
 		void cLightBomb::hitObject()
 		{
 			if (!mIsHitObject) {
 				if (rb.isLanding()) {
+			
 					mIsHitObject = true;
 					createAroundLight();
 				}
@@ -107,14 +111,18 @@ namespace Weapons
 			float exprosiontime = 3.0f;
 
 			if (mLandcount >= 3.0f) {
-				ci::app::console() << "ボム"<<mPlayerId <<"アクティブ"<< cPlayerManager::getInstance()->getActivePlayerId() << std::endl;
 				////////アクティブプレイヤーのみ行います
 				if (mPlayerId == cPlayerManager::getInstance()->getActivePlayerId()) {
-					ci::app::console() << "あああああああああああああああ" << std::endl;
 					collisonToPlayer();
+
 					Game::cFieldManager::getInstance()->blockBreak(mPos, mExprosionLength / 2.f);
 				}
 				mIsExprosion = true;
+
+				Resource::cSoundManager::getInstance()->findSe("SubWeapon/bombexprotion.wav").setGain(0.6f);
+				Resource::cSoundManager::getInstance()->findSe("SubWeapon/bombexprotion.wav").play();
+				
+
 
 				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
 					.scale(0.5f).
@@ -124,6 +132,22 @@ namespace Weapons
 					color(ci::ColorA::white()).
 					moveType(Particle::ParticleType::EXPROTION).count(100).isTrajectory(true).gravity(0.048f));
 
+			}
+		}
+		void cLightBomb::createContractionEffect()
+		{
+			if (mIsContraction)return;
+			if (mLandcount >= 2.0f) {
+				mIsContraction = true;
+				Resource::cSoundManager::getInstance()->findSe("SubWeapon/frontexprotion.wav").setGain(0.4f);
+				Resource::cSoundManager::getInstance()->findSe("SubWeapon/frontexprotion.wav").play();
+				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
+					.scale(1.3f).vanishBeginTime(0.f).vanishTime(24.f/60.f).vanishTimeRange(0.0f).
+					easeTime(24.f).
+					speed(0.0f).
+					textureType(Particle::ParticleTextureType::SPARK).
+					color(ci::ColorA(1,1,0)).
+					moveType(Particle::ParticleType::CONVERGE).count(10).isTrajectory(true).effectTime(0.6f).easeType(EaseType::BackIn));
 			}
 		}
 		void cLightBomb::setup()
@@ -147,7 +171,9 @@ namespace Weapons
 			}
 			updateLight(delta_time);
 			updateScale(delta_time);
+			createContractionEffect();
 			exprosion();
+		
 		}
 		void cLightBomb::updateCollisionAfterUpdate(const float & delta_time)
 		{

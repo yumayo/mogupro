@@ -8,6 +8,7 @@
 #include <Utility/cInput.h>
 #include<Game/Weapons/SubWeapon/cQuarry.h>
 #include<Game/cSubWeaponManager.h>
+#include<Game/cClientAdapter.h>
 using namespace ci;
 using namespace ci::app;
 namespace Game
@@ -63,8 +64,11 @@ bool cUseQuarry::deleteThis() {
 	return mIsdelete;
 }
 void cUseQuarry::createSubWeapon() {
-	Game::cSubWeaponManager::getInstance()->createQuarry(mSetPos + ci::vec3(0, mScale.y / 2.f, 0), cSubWeaponManager::getInstance()->debugidcount,
-		cPlayerManager::getInstance()->getActivePlayerId(), Game::Weapons::SubWeapon::cQuarry::DrillType::Level1);
+
+	Game::cClientAdapter::getInstance()->sendSetQuarry(mSetPos + ci::vec3(0, mScale.y / 2.f, 0));
+
+	//Game::cSubWeaponManager::getInstance()->createQuarry(mSetPos + ci::vec3(0, mScale.y / 2.f, 0), cSubWeaponManager::getInstance()->debugidcount,
+	//	cPlayerManager::getInstance()->getActivePlayerId());
 }
 }
 }

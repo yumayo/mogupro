@@ -10,12 +10,12 @@ namespace Event
 class cEvePlayerDeath : public cPacketBase<cEvePlayerDeath, PacketId::EVE_PLAYER_DEATH>
 {
 public:
-    cEvePlayerDeath( );
-    cEvePlayerDeath( std::string const& playerName );
+    cEvePlayerDeath( ) = default;
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
-    // “|‚µ‚½‘Šè‚Ì–¼‘OB
-    std::string mPlayerName;
+	cNetworkHandle networkHandle;
+	std::string playerId;
+	std::string enemyId;
 };
 }
 }

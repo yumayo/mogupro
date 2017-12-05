@@ -49,6 +49,9 @@ namespace Game
 				void collisonToPlayer();
 				bool mIsExprosion = false;
 				float mExprosionLength;
+			private://”š”­ûk
+				void createContractionEffect();
+				bool mIsContraction = false;
 			public:
 				void setup() override;
 				void update(const float& delta_time) override;
