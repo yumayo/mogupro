@@ -19,6 +19,7 @@ public:
 	void addSubWeapon(const Game::Weapons::SubWeapon::SubWeaponType type);
 	void setCanUseWeapon(const bool iscanuse);
 	int getItemNum();
+	bool canGetItem();
 private:
 	//‚Á‚Ä‚¢‚éƒTƒu‚Ìí—Ş
 	std::vector<Game::Weapons::SubWeapon::SubWeaponType> mSubWeaponTypes;

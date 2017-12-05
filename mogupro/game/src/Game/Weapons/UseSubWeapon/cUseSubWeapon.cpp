@@ -38,6 +38,10 @@ int cUseSubWeapon::getItemNum()
 {
 	return mSubWeaponTypes.size();
 }
+bool cUseSubWeapon::canGetItem()
+{
+	return mSubWeaponTypes.size() < 2;
+}
 }
 }
 }

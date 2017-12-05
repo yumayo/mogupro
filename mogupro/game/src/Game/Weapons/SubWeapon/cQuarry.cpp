@@ -49,7 +49,7 @@ namespace Game
 					it->setPos(Game::cStrategyManager::getInstance()->getCannons()[int(cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam())]->getGemStorePos()+randpos);
 				}
 
-				Game::cStrategyManager::getInstance()->getCannons()[int(cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam())]->receiveQuarryGem(getgems);
+				Game::cStrategyManager::getInstance()->getCannons()[int(cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam())]->receiveQuarryGem(getgems,mPlayerId,ismyobject);
 			}
 			void cQuarry::setup()
 			{
