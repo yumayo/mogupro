@@ -33,6 +33,19 @@ public:
         return active_player_team_id;
     }
 	void setPlayersPosition(std::vector<ci::vec3> positions);
+	
+	//id‚É‰‚¶‚½ƒvƒŒƒCƒ„[‚ğ•Ô‚µ‚Ü‚·
+	std::shared_ptr<Player::cPlayer> getPlayer(int player_id) {
+		for (int i = 0; i < players.size(); i++) {
+			if (players[i]->getPlayerId() == player_id) {
+				return players[i];
+			}
+		}
+
+		//id‚ª‡‚í‚È‚©‚Á‚½‚çnull
+		return nullptr;
+	}
+
 	std::vector<std::shared_ptr<Player::cPlayer>> getPlayers() {
 		return players;
 	}

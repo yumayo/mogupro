@@ -235,8 +235,6 @@ namespace Game {
 				return drilling;
 			}
 
-			//ジェムを大砲に渡すときのイージング
-			void sendCannonGems(const ci::vec3& cannon_pos);
 
 			//attack = 攻撃力
 			//player_id = 攻撃を仕掛けたプレイヤーのid
