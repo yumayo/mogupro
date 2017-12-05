@@ -180,7 +180,7 @@ void Game::Player::cPlayer::collisionGems()
 			//プレイヤー用のパケットを作らないと
 			getGems(GemManager->getFragmentGems()[i]->getId());
 			//cClientAdapter::getInstance()->sendGetGemQuarry(player_id, GemManager->getGems()[i]->getId());
-			GemManager->breakeGemStone(i);
+			GemManager->breakGemStone(i);
 		}
 	}
 }
