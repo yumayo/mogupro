@@ -9,22 +9,40 @@
 #include <Node/action.hpp>
 #include <Game/cUIManager.h>
 #include <Game/Player/cPlayer.h>
+#include <Game/Field/RespawnPoint.h>
 namespace pt = boost::posix_time;
 namespace Game
 {
 cGameManager::cGameManager( )
 {
+	using namespace Node::Action;
 	root = Node::node::create( );
 	root->set_schedule_update( );
 	root->set_content_size( cinder::app::getWindowSize( ) );
 	root->set_scale( cinder::vec2(1, -1) );
 	root->set_position( root->get_content_size( ) * cinder::vec2( -0.5F, 0.5F ) );
-
+	auto cameraTarget = root->add_child( Node::node::create( ) );
+	cameraTarget->set_schedule_update( );
+	cameraTarget->set_position_3d( Game::Field::WORLD_SIZE * cinder::vec3( 0.4F, 1.0F, 0.4F ) + cinder::vec3( 0, 1.0F, 0 ) );
+	cameraTarget->run_action( sequence::create( move_by::create( 5.0F, cinder::vec3( 5.0F, 3.0F, 7.0F ) ), 
+												call_func::create( [ this ] { root->get_child_by_name( "cameraPosition" )->set_position_3d( Field::CANNON_POINT[0] ); } ),
+												delay::create( 2.0F ),
+												call_func::create( [ this ] { root->get_child_by_name( "cameraPosition" )->set_position_3d( Field::CANNON_POINT[1] ); } ) ) );
+	cameraTarget->set_name( "cameraPosition" );
+	auto cameraPosition = root->add_child( Node::node::create( ) );
+	cameraPosition->set_schedule_update( );
+	cameraPosition->set_position( cinder::vec2( -glm::pi<float>( ) / 2.0F, -0.2 ) );
+	cameraPosition->run_action( sequence::create( move_by::create( 5.0F, cinder::vec2( -1.5F, 0.2F ) ),
+												  call_func::create( [ this ] { root->get_child_by_name( "cameraAngle" )->set_position( cinder::vec2( -glm::pi<float>( ), 0 ) ); } ),
+												  delay::create( 2.0F ),
+												  call_func::create( [ this ] { root->get_child_by_name( "cameraAngle" )->set_position( cinder::vec2( 0, 0 ) ); } ) ) );
+	cameraPosition->set_name( "cameraAngle" );
 	mPreUpdates.insert( std::make_pair( State::STAND_BY, [ this ] ( float t )
 	{
 		if ( shiftSeconds[State::READY] < boost::posix_time::microsec_clock::local_time( ) )
 		{
 			shift( State::READY );
+			ENV->setMouseControl( true );
 		}
 	} ) );
 	mPreUpdates.insert( std::make_pair( State::READY, [ this ] ( float t )
@@ -32,6 +50,8 @@ cGameManager::cGameManager( )
 		if ( shiftSeconds[State::BATTLE] < boost::posix_time::microsec_clock::local_time( ) )
 		{
 			shift( State::BATTLE );
+			ENV->enableKeyWithMouseButton( );
+			cUIManager::getInstance( )->enable( );
 		}
 	} ) );
 	mPreUpdates.insert( std::make_pair( State::BATTLE, [ this ] ( float t )
@@ -39,11 +59,12 @@ cGameManager::cGameManager( )
 		if ( shiftSeconds[State::BATTLE_END] < boost::posix_time::microsec_clock::local_time( ) )
 		{
 			shift( State::BATTLE_END );
+			ENV->disableKeyWithMouseButton( );
 		}
 	} ) );
 	mPreUpdates.insert( std::make_pair( State::BATTLE_END, [ this ] ( float t )
 	{
-		if ( ENV->pushKey( ) )
+		if ( shiftSeconds[State::RESULT] < boost::posix_time::microsec_clock::local_time( ) )
 		{
 			shiftResult( );
 		}
@@ -56,6 +77,7 @@ cGameManager::cGameManager( )
 			n->set_position( root->get_content_size( ) / 2.0F );
 			n->run_action( Node::Action::sequence::create( Node::Action::fade_in::create( 1.0F ), Node::Action::call_func::create( [ this ] {
 				shift( State::RESULT );
+				ENV->enableKeyWithMouseButton( );
 				cUIManager::getInstance( )->disable( );
 				root->get_child_by_name( "fader" )->run_action( Node::Action::sequence::create( Node::Action::fade_out::create( 1.0F ), Node::Action::remove_self::create( ) ) );
 				auto label = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 64 ) );
@@ -86,11 +108,12 @@ cGameManager::cGameManager( )
 	} ) );
 	mUpdates.insert( std::make_pair( State::STAND_BY, [ this ] ( float t )
 	{
-
+		CAMERA->refPosition = root->get_child_by_name( "cameraPosition" )->get_position_3d( );
+		CAMERA->setCameraAngle( root->get_child_by_name( "cameraAngle" )->get_position( ) );
 	} ) );
 	mUpdates.insert( std::make_pair( State::READY, [ this ] ( float t )
 	{
-
+		cinder::app::console( ) << "READY" << std::endl;
 	} ) );
 	mUpdates.insert( std::make_pair( State::BATTLE, [ this ] ( float t )
 	{
@@ -98,14 +121,12 @@ cGameManager::cGameManager( )
 	} ) );
 	mUpdates.insert( std::make_pair( State::BATTLE_END, [ this ] ( float t )
 	{
-
+		
 	} ) );
 	mUpdates.insert( std::make_pair( State::RESULT, [ this ] ( float t )
 	{
-		ci::vec3 worldSize = ci::vec3( Game::Field::CHUNK_RANGE_X, Game::Field::CHUNK_RANGE_Y, Game::Field::CHUNK_RANGE_Z ) * Game::Field::BLOCK_SIZE * (float)Game::Field::CHUNK_SIZE;
-		CAMERA->refPosition = worldSize * cinder::vec3( 0.5F, 2.5F, 0.5F );
-		CAMERA->setCameraAngle( cinder::vec2( -M_PI / 2, -M_PI ) );
-
+		CAMERA->refPosition = Game::Field::WORLD_SIZE * cinder::vec3( 0.5F, 2.5F, 0.5F );
+		CAMERA->setCameraAngle( cinder::vec2( -glm::pi<float>( ) / 2.0F, -glm::pi<float>( ) ) );
 		if ( ENV->pushKey( ) )
 		{
 			cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( );
@@ -117,6 +138,7 @@ void cGameManager::setup( boost::posix_time::ptime ready, boost::posix_time::pti
 	shiftSeconds.insert( std::make_pair( State::READY, ready ) );
 	shiftSeconds.insert( std::make_pair( State::BATTLE, battle ) );
 	shiftSeconds.insert( std::make_pair( State::BATTLE_END, battleEnd ) );
+	shiftSeconds.insert( std::make_pair( State::RESULT, battleEnd + boost::posix_time::seconds( 3 ) ) );
 }
 std::string cGameManager::getLeftBattleTime( )
 {
@@ -138,6 +160,7 @@ void cGameManager::preUpdate( float delta )
 }
 void cGameManager::update( float delta )
 {
+	cinder::app::console( ) << "gameman: " << (int)state << std::endl;
 	mUpdates[state]( delta );
 	root->entry_update( delta );
 }
