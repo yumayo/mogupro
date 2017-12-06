@@ -38,7 +38,7 @@ private:
     std::array<std::array<std::array<std::set<cColliderBase*>, WORLD_Z>, WORLD_Y>, WORLD_X> mWorld;
     std::set<cRigidBody*> mRigidBodys;
 private:
-    bool mIsUpdate = false;
+    bool mIsUpdate = true;
 private:
     bool mDebugDraw = false;
     std::vector<cinder::Ray> mDebugRay;

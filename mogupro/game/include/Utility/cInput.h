@@ -81,16 +81,19 @@ private:
 			std::set<int> pull;
 		}front, back;
 		// 1 enable 2 disable;
-		int button;
+		int button = 0;
+		bool enabled = true;
 	public:
 		void enable( )
 		{
 			button = 1;
+			enabled = true;
 			back = front;
 		}
 		void disable( )
 		{
 			button = 2;
+			enabled = false;
 			back = front;
 		}
 		void preUpdate( )
@@ -149,6 +152,7 @@ private:
 		}
 		void down( int value )
 		{
+			if ( !enabled ) return;
 			if ( !press( value ) )
 			{
 				front.push.insert( value );
@@ -157,6 +161,7 @@ private:
 		}
 		void up( int value )
 		{
+			if ( !enabled ) return;
 			front.press.erase( value );
 			front.pull.insert( value );
 		}
@@ -164,6 +169,8 @@ private:
 		{
 			front.push.clear( );
 			front.pull.clear( );
+			back.push.clear( );
+			back.pull.clear( );
 		}
 	};
 
