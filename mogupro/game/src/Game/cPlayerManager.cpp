@@ -34,17 +34,15 @@ void Game::cPlayerManager::playerDrillMove(const float & delta_time)
 
 void Game::cPlayerManager::playerAttack(const float & delta_time)
 {
-	players[4]->getMainWeapon()->pushCall(ENV->pushKey(ci::app::KeyEvent::KEY_y));
-	players[4]->getMainWeapon()->pressCall(ENV->pressKey(ci::app::KeyEvent::KEY_y));
-	players[4]->getMainWeapon()->pullCall(ENV->pullKey(ci::app::KeyEvent::KEY_y));
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_n)) {
-		players[4]->move(ci::vec3(0, 0, -1));
-	}
-	
 	if (active_player->isDead())return;
-	active_player->getMainWeapon()->pushCall(ENV->pushKey(ci::app::KeyEvent::KEY_t));
-	active_player->getMainWeapon()->pressCall(ENV->pressKey(ci::app::KeyEvent::KEY_t));
-	active_player->getMainWeapon()->pullCall(ENV->pullKey(ci::app::KeyEvent::KEY_t));
+	if ( ENV->pushKey( ci::app::KeyEvent::KEY_t ) )
+	{
+		cClientAdapter::getInstance( )->sendPlayerAttack( active_player_id, 1 );
+	}
+	if ( ENV->pullKey( ci::app::KeyEvent::KEY_t ) )
+	{
+		cClientAdapter::getInstance( )->sendPlayerAttack( active_player_id, 2 );
+	}
 }
 
 void Game::cPlayerManager::playerNormalMove(const float& delta_time)

@@ -51,7 +51,7 @@ void cClientAdapter::recvAllPlayers( )
         auto players = Game::cPlayerManager::getInstance( )->getPlayers( );
         for ( auto& o : packet->mPlayerFormats )
         {
-            players[o.playerId]->setPos( o.position );
+            players[o.playerId]->move( o.position - players[o.playerId]->getPos( ) );
         }
     }
 	while ( auto packet = e->getEveDamage( ) )
@@ -69,6 +69,26 @@ void cClientAdapter::recvAllPlayers( )
 	{
 		// TODO:プレイヤーをリスポーンさせる。
 		packet->playerId;
+	}
+
+	for ( auto& player : cPlayerManager::getInstance( )->getPlayers( ) )
+	{
+		player->getMainWeapon( )->pushCall( false );
+		player->getMainWeapon( )->pullCall( false );
+	}
+	while ( auto packet = e->getEvePlayerAttack( ) )
+	{
+		switch ( packet->call )
+		{
+		case 1:
+			cPlayerManager::getInstance( )->getPlayer( packet->playerId )->getMainWeapon( )->pushCall( true );
+			break;
+		case 2:
+			cPlayerManager::getInstance( )->getPlayer( packet->playerId )->getMainWeapon( )->pullCall( true );
+			break;
+		default:
+			break;
+		}
 	}
 }
 void cClientAdapter::recvAllQuarrys( )
@@ -213,6 +233,13 @@ void cClientAdapter::sendAddCannonPower( Network::ubyte1 teamId, Network::ubyte1
 void cClientAdapter::sendResult( )
 {
 	auto p = new cReqResult( );
+	cUDPClientManager::getInstance( )->send( p );
+}
+void cClientAdapter::sendPlayerAttack( Network::ubyte1 playerId, Network::ubyte1 call )
+{
+	auto p = new cReqPlayerAttack( );
+	p->playerId = playerId;
+	p->call = call;
 	cUDPClientManager::getInstance( )->send( p );
 }
 void cClientAdapter::sendBreakBlocks( )
