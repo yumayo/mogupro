@@ -35,6 +35,7 @@ public:
 private:
 	std::map<int, std::shared_ptr<Game::Weapons::SubWeapon::cSubWeaponBase>>subweapons;
 	std::list<std::shared_ptr<Game::Weapons::UseSubWeapon::cUseSubBase>>usesubweapons;
+	float getGain(const int playerid);
 	
 };
 }

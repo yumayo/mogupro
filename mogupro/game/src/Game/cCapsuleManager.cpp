@@ -6,6 +6,7 @@
 #include<Game/Field/FieldData.h>
 #include<Game/Capsule/cQuarryCapsule.h>
 #include<cinder\Rand.h>
+#include<Resource\cSoundManager.h>
 //#include<Game/Weapons/SubWeapon/SubWeaponType.h>
 namespace Game
 {
@@ -87,6 +88,10 @@ void cCapsuleManager::HitPlayer(const int playerid, const int capsuleid)
 	mCapsules[capsuleid]->setIsget(true);
 
 	if (Game::cPlayerManager::getInstance()->getActivePlayerId() == playerid) {
+
+		Resource::cSoundManager::getInstance()->findSe("SubWeapon/capsuleget.wav").setGain(0.6f);
+		Resource::cSoundManager::getInstance()->findSe("SubWeapon/capsuleget.wav").play();
+		
 		Game::cPlayerManager::getInstance()->getPlayers()[playerid]->useSubWeapon.addSubWeapon(mCapsules[capsuleid]->getType());
 	}
 }
