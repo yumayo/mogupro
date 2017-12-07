@@ -197,6 +197,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
+        case Network::Packet::PacketId::EVE_PLAYER_ATTACK:
+        {
+            if ( cEventManager::getInstance( )->isNewEvePlayerAttack( packetHeader ) )
+			{
+                Packet::Event::cEvePlayerAttack data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cEventManager::getInstance( )->ungetEvePlayerAttack( std::move( data ) );
+            }
+            break;
+        }
         case Network::Packet::PacketId::DLI_STRING:
         {
             if ( cDeliverManager::getInstance( )->isNewDliString( packetHeader ) )
@@ -444,6 +454,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
                 Packet::Request::cReqResult data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
                 cRequestManager::getInstance( )->ungetReqResult( std::move( data ) );
+            }
+            break;
+        }
+        case Network::Packet::PacketId::REQ_PLAYER_ATTACK:
+        {
+            if ( cRequestManager::getInstance( )->isNewReqPlayerAttack( packetHeader ) )
+			{
+                Packet::Request::cReqPlayerAttack data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cRequestManager::getInstance( )->ungetReqPlayerAttack( std::move( data ) );
             }
             break;
         }

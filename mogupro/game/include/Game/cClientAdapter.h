@@ -60,6 +60,8 @@ public:
 	void sendAddCannonPower( Network::ubyte1 teamId, Network::ubyte1 power );
 	//
 	void sendResult( );
+	//
+	void sendPlayerAttack( Network::ubyte1 playerId, Network::ubyte1 call );
 private:
     // 上記でたまったブロックを実際に送ります。
     void sendBreakBlocks( );
