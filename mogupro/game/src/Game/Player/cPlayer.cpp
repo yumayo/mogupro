@@ -129,9 +129,7 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 	GemManager->getFragmentGem(_gemid)->setIsActive(false);
 	
 	//–³d—Íó‘Ô
-
-	Resource::cSoundManager::getInstance()->findSe("Player/gem.wav").setGain(0.2f);
-	Resource::cSoundManager::getInstance()->findSe("Player/gem.wav").play();
+	GemManager->getFragmentGem(_gemid)->setIsRigid(false);
 	gem_production_end.insert(std::make_pair(_gemid, false));
 	int index = getgems.size() - 1;
 
@@ -144,13 +142,16 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 
 	getgems[index]->node->run_action(Node::Action::sequence::create(
 		Node::Action::ease<ci::EaseOutCirc>::create(
-			Node::Action::move_to::create(0.5f, getgems[index]->getPos() + ci::vec3(0, 1, 0))
-			)));
+			Node::Action::move_to::create(0.5f, getgems[index]->getPos() + ci::vec3(0,1,0))),
+		Node::Action::ease<ci::EaseInCirc>::create(
+			Node::Action::move_to_target::create(0.5f, root))));
 
 	getgems[index]->node->run_action(Node::Action::sequence::create(
-		Node::Action::scale_to::create(2, ci::vec3(0.1f)),
+		Node::Action::scale_to::create(1, ci::vec3(0.1f)),
 		Node::Action::call_func::create([this, _gemid]() {
 		gem_production_end[_gemid] = true;
+		Resource::cSoundManager::getInstance()->findSe("Player/gem.wav").setGain(0.2f);
+		Resource::cSoundManager::getInstance()->findSe("Player/gem.wav").play();
 	})));
 
 }
@@ -437,7 +438,7 @@ void Game::Player::cPlayer::update(const float & delta_time)
 	root->entry_update(delta_time);
 	aabb = mCollider.createAABB(mCollider.getPosition());
 	respawn(delta_time);
-
+	root->set_position_3d(mPos);
 	collisionGems();
 }
 
