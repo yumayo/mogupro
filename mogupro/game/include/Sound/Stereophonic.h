@@ -32,26 +32,16 @@ namespace Sound
 		}
 
 		template<class T>
-		explicit Stereophonic(T type) : 
-			buffer(std::make_shared<Buffer>(type)),
-			source(std::make_shared<Source>()), end(false)
-		{
-			source->bindBuffer(*buffer);
-			bindData(type);
-			play();
-		}
-
-		template<class T>
-		explicit Stereophonic(T type, std::shared_ptr<ci::vec3> listenerPos,
-			std::shared_ptr<ci::vec3> listenerDir, std::shared_ptr<ci::vec3> sourcePos) :
+		explicit Stereophonic(T type, ci::vec3* listenerPos,
+			ci::vec3* listenerDir, ci::vec3* sourcePos) :
 			buffer(std::make_shared<Buffer>(type)),
 			source(std::make_shared<Source>()), listenerPosition(listenerPos), listenerDirection(listenerDir), sourcePosition(sourcePos),
 			end(false)
 		{
 			source->bindBuffer(*buffer);
-			/*position();
+			position();
 			direction();
-			soundPosition();*/
+			soundPosition();
 			play();
 		}
 
@@ -119,6 +109,9 @@ namespace Sound
 
 		void update()
 		{
+			if (end == true)
+				return;
+
 			if (!listenerPosition || !listenerDirection || !sourcePosition)
 			{
 				end = true;
@@ -126,12 +119,12 @@ namespace Sound
 				return;
 			}
 
-		/*	position();
+			position();
 			direction();
-			soundPosition();*/
+			soundPosition();
 		}
 
-		void position(Utility::softptr<ci::vec3> listenerPos)
+		void position(ci::vec3* listenerPos)
 		{
 			listenerPosition = listenerPos;
 		}
@@ -141,7 +134,7 @@ namespace Sound
 			source->position(0.0f,0.0f,0.0f);
 		}
 
-		void direction(Utility::softptr<ci::vec3> listenerDir)
+		void direction(ci::vec3* listenerDir)
 		{
 			listenerDirection = listenerDir; 
 			direction();
@@ -152,7 +145,7 @@ namespace Sound
 			source->direction(listenerDirection->x, listenerDirection->y, listenerDirection->z);
 		}
 
-		void soundPosition(Utility::softptr<ci::vec3> sourcePos)
+		void soundPosition(ci::vec3* sourcePos)
 		{
 			sourcePosition = sourcePos;
 			//!@LookMe : Ç∆ÇËÇ†Ç¶Ç∏Positionç∑Çµà¯Ç´Ç∑ÇÈÇæÇØ
@@ -169,9 +162,9 @@ namespace Sound
 
 		bool endPlay() const  { return end; }
 
-		Utility::softptr<ci::vec3> listenerPosition;
-		Utility::softptr<ci::vec3> listenerDirection;
-		Utility::softptr<ci::vec3> sourcePosition;
+		ci::vec3* listenerPosition;
+		ci::vec3* listenerDirection;
+		ci::vec3* sourcePosition;
 		std::shared_ptr<Buffer> buffer;
 		std::shared_ptr<Source> source;
 		bool end;
@@ -428,8 +421,8 @@ namespace Sound
 		void close();
 
 		template<class T>
-		void add(T type, std::shared_ptr<ci::vec3> listenerPos,
-			std::shared_ptr<ci::vec3> listenerDir, std::shared_ptr<ci::vec3> sourcePos)
+		void add(T type, ci::vec3* listenerPos,
+			ci::vec3* listenerDir, ci::vec3* sourcePos)
 		{
 			stereophonicList.push_back(Stereophonic(type, listenerPos,listenerDir,sourcePos));
 		}
