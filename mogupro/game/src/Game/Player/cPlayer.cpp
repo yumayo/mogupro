@@ -284,11 +284,11 @@ Game::Player::cPlayer::cPlayer(
 	const int& sub_weapon_id,
 	const Game::Player::Team& team)
 	: cObjectBase(pos),
-	mCollider(mPos, ci::vec3(DEFAULT_SIZE)),
+	mCollider(mPos, DEFAULT_SIZE ),
 	mRigidbody(mCollider),team(team),player_id(id),damaged_id(id),
 	active_user(is_active_user)
 {
-	size = ci::vec3(DEFAULT_SIZE);
+	size = DEFAULT_SIZE;
 	color = ci::vec4(1);
 	color = ci::ColorA8u(1, 0, 1, 1);
 	save_rotate_y = 0;

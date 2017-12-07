@@ -91,6 +91,14 @@ void cServerAdapter::sendPlayers( )
 		mPlayers[p->playerId].respawn( );
 		cUDPServerManager::getInstance( )->broadcast( eve );
 	}
+
+	while ( auto p = req->getReqPlayerAttack( ) )
+	{
+		auto eve = new cEvePlayerAttack( );
+		eve->playerId = p->playerId;
+		eve->call = p->call;
+		cUDPServerManager::getInstance( )->broadcast( eve );
+	}
 }
 void cServerAdapter::sendSetQuarry( )
 {

@@ -7,6 +7,7 @@
 #include <Resource/cSoundManager.h>
 #include <Game/cGemManager.h>
 #include <Particle/cParticleManager.h>
+#include <Game/cClientAdapter.h>
 static float EasingLinear(float t, float b, float e) {
 	return (e - b) * t + b;
 }
@@ -96,10 +97,10 @@ void Game::Weapon::LightSaber::ShockCollisionPlayers()
 		if (is_hit) {
 			CAMERA->shakeCamera(0.1f, 0.1f);
 			if (charge_motion == ChargeMotion::charge_attack_1) {
-				it->receiveDamage(attack*0.7f, it->getPlayerId());
+				cClientAdapter::getInstance( )->sendDamage( it->getPlayerId( ), attack * 0.7F );
 			}
 			else if(charge_motion == ChargeMotion::charge_attack_2) {
-				it->receiveDamage(attack*2.0f, it->getPlayerId());
+				cClientAdapter::getInstance( )->sendDamage( it->getPlayerId( ), attack * 2.0F );
 			}
 			hits[i - 1] = true;
 		}
@@ -148,7 +149,7 @@ void Game::Weapon::LightSaber::CollisionPlayers()
 		if (is_hit) {
 			//当たった時の演出として一瞬カメラを揺らす
 			CAMERA->shakeCamera(0.1f, 0.1f);
-			it->receiveDamage(attack, cPlayerManager::getInstance()->getPlayer(player_id)->getPlayerId());
+			cClientAdapter::getInstance( )->sendDamage( it->getPlayerId(), attack );
 			//対象のhitをtrueにして
 			//対象限定でヒットストップをつけたり当たり判定をなくしたり
 			//するんご

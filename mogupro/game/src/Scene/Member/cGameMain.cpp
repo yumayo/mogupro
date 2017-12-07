@@ -92,7 +92,7 @@ void cGameMain::setup( )
 
 	auto now = boost::posix_time::microsec_clock::local_time( );
 	auto ready = now + boost::posix_time::seconds( 9 );
-	auto battle = ready + boost::posix_time::seconds( 3 );
+	auto battle = ready + boost::posix_time::seconds( 2 );
 	auto result = battle + boost::posix_time::minutes( 5 );
 	Game::cGameManager::getInstance( )->setup( ready, battle, result );
 

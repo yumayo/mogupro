@@ -156,6 +156,13 @@ public:
 private:
     std::stack<Packet::Request::cReqResult> mReqResult;
     std::map<ubyte4, double> mReqResultSequenceIds;
+public:
+    boost::optional<Packet::Request::cReqPlayerAttack> getReqPlayerAttack( );
+    void ungetReqPlayerAttack( Packet::Request::cReqPlayerAttack&& data );
+    bool isNewReqPlayerAttack( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Request::cReqPlayerAttack> mReqPlayerAttack;
+    std::map<ubyte4, double> mReqPlayerAttackSequenceIds;
     // P=====END=====P
 };
 }

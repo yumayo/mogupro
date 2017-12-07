@@ -107,6 +107,13 @@ public:
 private:
     std::stack<Packet::Event::cEveDamage> mEveDamage;
     std::map<ubyte4, double> mEveDamageSequenceIds;
+public:
+    boost::optional<Packet::Event::cEvePlayerAttack> getEvePlayerAttack( );
+    void ungetEvePlayerAttack( Packet::Event::cEvePlayerAttack&& data );
+    bool isNewEvePlayerAttack( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Event::cEvePlayerAttack> mEvePlayerAttack;
+    std::map<ubyte4, double> mEvePlayerAttackSequenceIds;
     // P=====END=====P
 };
 }

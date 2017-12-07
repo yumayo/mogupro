@@ -35,7 +35,7 @@ namespace Game {
 
 		//基準スピード
 		static const float DEFAULT_SPEED = 5.0f;
-		static const float DEFAULT_SIZE = 0.8f;
+		static const cinder::vec3 DEFAULT_SIZE = cinder::vec3( 0.4F, 0.7F, 0.4F );
 
 		static const float MAX_HP = 100.0f;
 

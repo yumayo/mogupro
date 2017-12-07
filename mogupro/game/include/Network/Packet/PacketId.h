@@ -59,6 +59,8 @@ enum class PacketId : ubyte1
     EVE_TEAM_MEMBER,
 	// ダメージがあったことを知らせます。
 	EVE_DAMAGE,
+	//
+	EVE_PLAYER_ATTACK,
 
     //=========================================================//
     //                        Request                          //
@@ -113,6 +115,8 @@ enum class PacketId : ubyte1
 	REQ_ADD_CANNON_POWER,
 	// 
 	REQ_RESULT,
+	//
+	REQ_PLAYER_ATTACK,
 
     //=========================================================//
     //                        Response                         //
