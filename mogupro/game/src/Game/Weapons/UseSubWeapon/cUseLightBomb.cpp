@@ -56,8 +56,7 @@ void cUseLightBomb::createSubWeapon()
 
 	cClientAdapter::getInstance( )->sendLightBomb( pos, normalizedSpeed * power );
 
-	Resource::cSoundManager::getInstance()->findSe("SubWeapon/lightbombthrow.wav").setGain(0.4f);
-	Resource::cSoundManager::getInstance()->findSe("SubWeapon/lightbombthrow.wav").play();
+	
 }
 }
 }

@@ -342,6 +342,7 @@ namespace Scene
 				//!@ TODO : Add Performance (Team%D‚É“ü‚ê‚Ü‚µ‚½ or Team%D‚É“ü‚ê‚Ü‚¹‚ñ‚Å‚µ‚½)
 				if (resWantTeamIn->mFlag == 1)
 					mTeamNum = resWantTeamIn->mTeamNum;
+				Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum = mTeamNum;
 				mCanSend = true;
 				if (resWantTeamIn->mTeamNum == 0)
 					drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * drillUI1Ps.size()),

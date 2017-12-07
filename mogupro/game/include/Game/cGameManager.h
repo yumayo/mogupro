@@ -45,7 +45,7 @@ public:
 private:
 	void shift( State state );
 	// 現在のステート
-	State state = State::BATTLE;
+	State state = State::STAND_BY;
 	// 一フレーム前のステート
 	State prevState = state;
 	// ステートが移った瞬間

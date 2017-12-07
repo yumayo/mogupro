@@ -28,6 +28,7 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time.hpp>
 #include <Game/cGameManager.h>
+#include <Game/Field/RespawnPoint.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -53,27 +54,24 @@ void cGameMain::setup( )
 
 	const int active_player_id = Network::cMatchingMemberManager::getInstance( )->mPlayerID;
 
+	// チーム決め
 	std::vector<int> teams;
-
-    std::vector<ci::vec3> positions;
-	float get_map_top_pos = Game::cFieldManager::getInstance()->getBlockTopPosition(ci::vec3(0,0,0)).y;
-	for (int i = 0; i < player_numbers; i++) {
-		positions.push_back(ci::vec3(0, get_map_top_pos, i * 2));
-
-		//デバッグ用にチーム分け//////
-		if (i > 3) {
-			teams.emplace_back(1);
-			continue;
-		}
-		//////////////////////////////
-
-        teams.emplace_back( 0 );
-	}
+	teams.emplace_back( Game::Player::Red );
+	teams.emplace_back( Game::Player::Red );
+	teams.emplace_back( Game::Player::Red );
+	teams.emplace_back( Game::Player::Red );
+	teams.emplace_back( Game::Player::Blue );
+	teams.emplace_back( Game::Player::Blue );
+	teams.emplace_back( Game::Player::Blue );
+	teams.emplace_back( Game::Player::Blue );
     for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
     {
         teams[o.playerID] = o.teamNum;
     }
-
+	teams[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum;
+	
+	// リスポーン位置の設定。
+	std::vector<ci::vec3> positions = Game::Field::RESPAWN_POINT;
     Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id, teams);
 
 	int seed = 20171031;
@@ -89,7 +87,7 @@ void cGameMain::setup( )
 	Game::cUIManager::getInstance( )->setup( );
 
 	auto now = boost::posix_time::microsec_clock::local_time( );
-	auto ready = now + boost::posix_time::seconds( 3 );
+	auto ready = now + boost::posix_time::seconds( 9 );
 	auto battle = ready + boost::posix_time::seconds( 3 );
 	auto result = battle + boost::posix_time::minutes( 5 );
 	Game::cGameManager::getInstance( )->setup( ready, battle, result );
@@ -99,6 +97,9 @@ void cGameMain::setup( )
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
 	gameStartTimer = -1.0f;
+
+	ENV->disableKeyWithMouseButton( );
+	Game::cUIManager::getInstance( )->disable( );
 }
 
 void cGameMain::shutDown( )

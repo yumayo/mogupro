@@ -8,6 +8,7 @@
 #include <Game/Field/FieldData.h>
 #include <Game/cPlayerManager.h>
 #include <Game/Player/cPlayer.h>
+#include <Game/Field/RespawnPoint.h>
 using namespace Network;
 using namespace Network::Packet;
 using namespace Network::Packet::Deliver;
@@ -18,20 +19,14 @@ namespace Game
 {
 cServerAdapter::cServerAdapter( )
 {
-	ci::vec3 worldSize = ci::vec3( Game::Field::CHUNK_RANGE_X, Game::Field::CHUNK_RANGE_Y, Game::Field::CHUNK_RANGE_Z ) * Game::Field::BLOCK_SIZE * (float)Game::Field::CHUNK_SIZE;
+	mObjectId = 0;
 
-	mQuarryId = 0;
-
-	mLightBombId = 0;
-
-	mPlayers.insert( std::make_pair( 0, Player{ 0, true, cinder::vec3( worldSize.x / 2 - 1.5F, worldSize.y + 1.0F, 7.0F ), cinder::quat( ) } ) );
-	mPlayers.insert( std::make_pair( 1, Player{ 1, true, cinder::vec3( worldSize.x / 2 - 0.5F, worldSize.y + 1.0F, 7.0F ), cinder::quat( ) } ) );
-	mPlayers.insert( std::make_pair( 2, Player{ 2, true, cinder::vec3( worldSize.x / 2 + 0.5F, worldSize.y + 1.0F, 7.0F ), cinder::quat( ) } ) );
-	mPlayers.insert( std::make_pair( 3, Player{ 3, true, cinder::vec3( worldSize.x / 2 + 1.5F, worldSize.y + 1.0F, 7.0F ), cinder::quat( ) } ) );
-	mPlayers.insert( std::make_pair( 4, Player{ 4, true, cinder::vec3( worldSize.x / 2 - 1.5F, worldSize.y + 1.0F, worldSize.z - 7.0F ), cinder::quat( ) } ) );
-	mPlayers.insert( std::make_pair( 5, Player{ 5, true, cinder::vec3( worldSize.x / 2 - 0.5F, worldSize.y + 1.0F, worldSize.z - 7.0F ), cinder::quat( ) } ) );
-	mPlayers.insert( std::make_pair( 6, Player{ 6, true, cinder::vec3( worldSize.x / 2 + 0.5F, worldSize.y + 1.0F, worldSize.z - 7.0F ), cinder::quat( ) } ) );
-	mPlayers.insert( std::make_pair( 7, Player{ 7, true, cinder::vec3( worldSize.x / 2 + 1.5F, worldSize.y + 1.0F, worldSize.z - 7.0F ), cinder::quat( ) } ) );
+	ubyte1 index = 0;
+	for ( auto& respo : Game::Field::RESPAWN_POINT )
+	{
+		mPlayers[index] = { index, true, respo, cinder::quat( ) };
+		index += 1;
+	}
 }
 cServerAdapter::~cServerAdapter( )
 {
@@ -102,12 +97,10 @@ void cServerAdapter::sendSetQuarry( )
 	auto req = Network::cRequestManager::getInstance( );
 	while ( auto packet = req->getReqSetQuarry( ) )
 	{
-		mQuarryId += 1;
-		mQuarrys.insert( mQuarryId );
 		if ( true )
 		{
 			auto eventPack = new cEveSetQuarry( );
-			eventPack->mObjectId = mQuarryId;
+			eventPack->mObjectId = mObjectId++;
 			eventPack->mPosition = packet->mPosition;
 			eventPack->mPlayerId = packet->mPlayerId;
 			Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
@@ -151,8 +144,8 @@ void cServerAdapter::sendBreakBlocks( )
 	while ( auto packet = dli->getDliBreakBlocks( ) )
 	{
 		std::copy( packet->mBreakFormats.begin( ),
-					  packet->mBreakFormats.end( ),
-					  std::back_inserter( breakBlocksPacket->mBreakFormats ) );
+				   packet->mBreakFormats.end( ),
+				   std::back_inserter( breakBlocksPacket->mBreakFormats ) );
 	}
 	if ( !breakBlocksPacket->mBreakFormats.empty( ) )
 	{
@@ -167,7 +160,7 @@ void cServerAdapter::sendLightBombs( )
 		auto eventPack = new cEveLightBomb( );
 		eventPack->playerId = packet->playerId;
 		eventPack->position = packet->position;
-		eventPack->objectId = mLightBombId++;
+		eventPack->objectId = mObjectId++;
 		eventPack->speed = packet->speed;
 		Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
 	}
