@@ -49,5 +49,6 @@ public:
 	cNetworkHandle mMasterHandle;
 	std::vector<PlayerData> mPlayerDatas;
     int mPlayerID = 0;
+	int mPlayerTeamNum = 0;
 };
 }

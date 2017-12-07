@@ -68,7 +68,8 @@ void cGameMain::setup( )
     {
         teams[o.playerID] = o.teamNum;
     }
-
+	teams[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum;
+	
 	// リスポーン位置の設定。
 	std::vector<ci::vec3> positions = Game::Field::RESPAWN_POINT;
     Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id, teams);
