@@ -3,7 +3,8 @@ namespace Network
 {
 cMatchingMemberManager::cMatchingMemberManager( )
 {
-
+	teamCount[0] = 0;
+	teamCount[1] = 0;
 }
 
 cMatchingMemberManager::~cMatchingMemberManager( )
@@ -44,6 +45,11 @@ bool cMatchingMemberManager::changeTeamNum(int teamNum, Network::cNetworkHandle 
 			continue;
 
 		mPlayerDatas[i].teamNum = teamNum;
+		int id = teamCount[teamNum];
+		teamCount[teamNum]++;
+		if (teamNum == 1)
+			id += 4;
+		mPlayerDatas[i].playerID = id;
 		return true;
 	}
 	return false;
