@@ -66,7 +66,7 @@ namespace Game
 			ci::vec3      mPutPosition;
 			ci::vec3      mScale;
 			ci::vec3      mRotation;
-			ci::Color     mColor;
+			ci::ColorA     mColor;
 			bool          mIsActive;
 			GemType       mType;
 			std::vector<uint32_t>        indices;
