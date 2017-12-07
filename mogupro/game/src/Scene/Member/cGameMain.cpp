@@ -73,6 +73,10 @@ void cGameMain::setup( )
 	// リスポーン位置の設定。
 	std::vector<ci::vec3> positions = Game::Field::RESPAWN_POINT;
     Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id, teams);
+	for ( int i = 4; i < positions.size( ); ++i )
+	{
+		Game::cPlayerManager::getInstance( )->getPlayer( i )->move( vec3( 0, 0, -0.01F ) );
+	}
 
 	int seed = 20171031;
 	GemManager->setUp(vec3(0,0,0),
