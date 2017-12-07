@@ -127,10 +127,10 @@ namespace Weapons
 				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
 					.scale(0.5f).
 					vanishTime(1.0f).
-					speed(0.75f).
+					speed(0.85f).
 					textureType(Particle::ParticleTextureType::SPARK).
 					color(ci::ColorA::white()).
-					moveType(Particle::ParticleType::EXPROTION).count(10).isTrajectory(true).gravity(0.048f));
+					moveType(Particle::ParticleType::EXPROTION).count(30).isTrajectory(true).gravity(0.048f));
 
 			}
 		}
@@ -164,7 +164,6 @@ namespace Weapons
 			rb.setFriction(1.0f);
 			
 			light = cLightManager::getInstance()->addPointLight(mPos, ci::vec3(0, 1, 0), 1.f);
-			ci::app::console() << mObjectId << mPos << "ライトボムセットアップ" << mPlayerId << std::endl;
 			mExprosionLength = 8.f*mScale.x;
 			mAroundLightLength = (mExprosionLength / 2.f) - 0.5f;
 		
@@ -179,7 +178,6 @@ namespace Weapons
 			updateScale(delta_time);
 			createContractionEffect();
 			exprosion();
-			ci::app::console() << mObjectId<< mPos <<"ライトボム"<<mPlayerId<< std::endl;
 			
 		}
 		void cLightBomb::updateCollisionAfterUpdate(const float & delta_time)

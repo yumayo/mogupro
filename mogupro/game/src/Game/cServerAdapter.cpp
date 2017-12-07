@@ -19,9 +19,7 @@ namespace Game
 {
 cServerAdapter::cServerAdapter( )
 {
-	mQuarryId = 0;
-
-	mLightBombId = 0;
+	mObjectId = 0;
 
 	ubyte1 index = 0;
 	for ( auto& respo : Game::Field::RESPAWN_POINT )
@@ -99,12 +97,10 @@ void cServerAdapter::sendSetQuarry( )
 	auto req = Network::cRequestManager::getInstance( );
 	while ( auto packet = req->getReqSetQuarry( ) )
 	{
-		mQuarryId += 1;
-		mQuarrys.insert( mQuarryId );
 		if ( true )
 		{
 			auto eventPack = new cEveSetQuarry( );
-			eventPack->mObjectId = mQuarryId;
+			eventPack->mObjectId = mObjectId++;
 			eventPack->mPosition = packet->mPosition;
 			eventPack->mPlayerId = packet->mPlayerId;
 			Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
@@ -164,7 +160,7 @@ void cServerAdapter::sendLightBombs( )
 		auto eventPack = new cEveLightBomb( );
 		eventPack->playerId = packet->playerId;
 		eventPack->position = packet->position;
-		eventPack->objectId = mLightBombId++;
+		eventPack->objectId = mObjectId++;
 		eventPack->speed = packet->speed;
 		Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
 	}
