@@ -50,5 +50,7 @@ public:
 	std::vector<PlayerData> mPlayerDatas;
     int mPlayerID = 0;
 	int mPlayerTeamNum = 0;
+private:
+	int teamCount[2];
 };
 }
