@@ -176,6 +176,12 @@ namespace Game {
 			ci::vec3 getPlayerVec() {
 				return normalized_player_vec;
 			}
+
+			//プレイヤーが向いている方向のベクトルの参照
+			ci::vec3& getReferencePlayerVec() {
+				return normalized_player_vec;
+			}
+
 			Team getWhichTeam() {
 				return team;
 			}
