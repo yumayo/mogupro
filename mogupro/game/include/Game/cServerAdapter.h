@@ -34,10 +34,8 @@ private:
 	void sendAddCannonPower( );
 private:
     std::map<Network::ubyte1, Player> mPlayers;
-    std::set<Network::ubyte2> mQuarrys;
-    Network::ubyte2 mQuarryId;
 	std::set<Network::ubyte2> mGems;
-	Network::ubyte2 mLightBombId;
+	Network::ubyte2 mObjectId;
 	Network::ubyte1 mRedTeamPower;
 	Network::ubyte1 mBlueTeamPower;
 };
