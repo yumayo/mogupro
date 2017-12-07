@@ -116,46 +116,78 @@ namespace Game
 			{
 
 				//if (!ismyobject)return;
-			
-				GemManager->breakGemStone(_gemid);
+
+				std::vector<std::shared_ptr<Game::Gem::cFragmentGem>> buf = GemManager->breakGemStone(_gemid);
 				GemManager->getGemStone(_gemid)->setIsActive(false);
 
-				/////////////////////////ópèCê≥AABBÇÇ≈Ç©Ç≠ÇµÇƒÇ®Ç´Ç‹Ç∑
-				AxisAlignedBox drill_aabb(mDrillAABB.getPosition() - mDrillAABB.getSize()*2.f,
-					mDrillAABB.getPosition() + mDrillAABB.getSize()*2.f);
+				for (int i = 0; i < buf.size(); ++i) {
+					getgems.push_back(buf[i]);
 
-			
-				for (int i = 0; i < GemManager->getFragmentGems().size(); i++) {
-		
-					if (!GemManager->getFragmentGem(i)->isActive())continue;
-				
-					AxisAlignedBox fragmentgemaabb(GemManager->getFragmentGem(i)->getPos() - GemManager->getFragmentGem(i)->getScale()/ 2.f,
-						GemManager->getFragmentGem(i)->getPos() + GemManager->getFragmentGem(i)->getScale() / 2.f);
-					if (drill_aabb.intersects(fragmentgemaabb)) {
-						
-						getgems.push_back(GemManager->getFragmentGem(i));
-					
-						int index = getgems.size() - 1;
-			
-						getgems[index]->setIsRigid(false);
-						getgems[index]->setSinRotate(atan2f(getgems[index]->getPos().z - mPos.z, (getgems[index]->getPos().x - mPos.x)));
-						getgems[index]->setPutPos(vec3(mPos.x, mDrillPos.y, mPos.z));
+					int index = getgems.size() - 1;
 
-						getgems[index]->node = Node::node::create();
-						getgems[index]->node->set_schedule_update();
+					getgems[index]->setIsRigid(false);
+					getgems[index]->setSinRotate(atan2f(getgems[index]->getPos().z - mPos.z, (getgems[index]->getPos().x - mPos.x)));
+					getgems[index]->setPutPos(vec3(mPos.x, mDrillPos.y, mPos.z));
 
-						getgems[index]->node->run_action(sequence::create(float_to::create((mPos.y - getgems[index]->getPos().y)*0.1f,
-							getgems[index]->getPos().y, mPos.y + mScale.y/2.f+1.f, [this, index](float t)
-						{
-							auto p = getgems[index]->node->get_position_3d();
-							p.y = t;
-							getgems[index]->node->set_position_3d(p);
-						}), call_func::create([] {; })));
-					
-						getgems[index]->setIsActive(false);
-					}
+					getgems[index]->node = Node::node::create();
+					getgems[index]->node->set_schedule_update();
 
+					getgems[index]->node->run_action(sequence::create(float_to::create((mPos.y - getgems[index]->getPos().y)*0.1f,
+						getgems[index]->getPos().y, mPos.y + mScale.y / 2.f + 1.f, [this, index](float t)
+					{
+						auto p = getgems[index]->node->get_position_3d();
+						p.y = t;
+						getgems[index]->node->set_position_3d(p);
+					}), call_func::create([] {; })));
+
+					getgems[index]->setIsActive(false);
 				}
+
+
+
+
+
+
+
+
+				//GemManager->breakGemStone(_gemid);
+				//GemManager->getGemStone(_gemid)->setIsActive(false);
+				///////////////////////////ópèCê≥AABBÇÇ≈Ç©Ç≠ÇµÇƒÇ®Ç´Ç‹Ç∑
+				//AxisAlignedBox drill_aabb(mDrillAABB.getPosition() - mDrillAABB.getSize()*2.f,
+				//	mDrillAABB.getPosition() + mDrillAABB.getSize()*2.f);
+
+			
+				//for (int i = 0; i < GemManager->getFragmentGems().size(); i++) {
+		
+				//	if (!GemManager->getFragmentGem(i)->isActive())continue;
+				//
+				//	AxisAlignedBox fragmentgemaabb(GemManager->getFragmentGem(i)->getPos() - GemManager->getFragmentGem(i)->getScale()/ 2.f,
+				//		GemManager->getFragmentGem(i)->getPos() + GemManager->getFragmentGem(i)->getScale() / 2.f);
+				//	if (drill_aabb.intersects(fragmentgemaabb)) {
+				//		
+				//		getgems.push_back(GemManager->getFragmentGem(i));
+				//	
+				//		int index = getgems.size() - 1;
+			
+				//		getgems[index]->setIsRigid(false);
+				//		getgems[index]->setSinRotate(atan2f(getgems[index]->getPos().z - mPos.z, (getgems[index]->getPos().x - mPos.x)));
+				//		getgems[index]->setPutPos(vec3(mPos.x, mDrillPos.y, mPos.z));
+
+				//		getgems[index]->node = Node::node::create();
+				//		getgems[index]->node->set_schedule_update();
+
+				//		getgems[index]->node->run_action(sequence::create(float_to::create((mPos.y - getgems[index]->getPos().y)*0.1f,
+				//			getgems[index]->getPos().y, mPos.y + mScale.y/2.f+1.f, [this, index](float t)
+				//		{
+				//			auto p = getgems[index]->node->get_position_3d();
+				//			p.y = t;
+				//			getgems[index]->node->set_position_3d(p);
+				//		}), call_func::create([] {; })));
+				//	
+				//		getgems[index]->setIsActive(false);
+				//	}
+
+				//}
 
 			
 

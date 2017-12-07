@@ -12,7 +12,7 @@ namespace Game
 			class cLightBomb : public Game::Weapons::SubWeapon::cSubWeaponBase
 			{
 			public:
-				cLightBomb(const ci::vec3 pos, const ci::vec3 scale, const ci::vec3 speed, const int playerid);
+				cLightBomb(const ci::vec3 pos, const ci::vec3 scale, const ci::vec3 speed, const int playerid,const int objectid);
 				~cLightBomb();
 			private:
 				ci::vec3 mSpeed;
@@ -49,6 +49,7 @@ namespace Game
 				void collisonToPlayer();
 				bool mIsExprosion = false;
 				float mExprosionLength;
+				float getDamage(const float distance, const float maxdamage);
 			private://îöî≠é˚èk
 				void createContractionEffect();
 				bool mIsContraction = false;

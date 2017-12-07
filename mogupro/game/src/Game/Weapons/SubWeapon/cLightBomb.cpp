@@ -10,16 +10,16 @@ namespace Game
 namespace Weapons
 {
 	namespace SubWeapon {
-		cLightBomb::cLightBomb(const ci::vec3 pos, const ci::vec3 scale, const ci::vec3 speed, const int playerid)
+		cLightBomb::cLightBomb(const ci::vec3 pos, const ci::vec3 scale, const ci::vec3 speed, const int playerid,const int objectid)
 			: aabb(pos, scale)
 			, rb(aabb) {
 			mPos = pos;
 			mScale = scale;
 			mDrawscale = mScale/2.f;
+			mObjectId = objectid;
 			mSpeed = speed;
 			mPlayerId = playerid;
 			mTeamNum = cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam();
-			ci::app::console() << "playerID"<<mPlayerId << std::endl;
 			mPlayerId = playerid;
 			if (mTeamNum == 0) {
 				mDefaultcolor = ci::ColorA(1, 0, 0, 1);
@@ -114,7 +114,12 @@ namespace Weapons
 				}
 				mIsExprosion = true;
 
-				Resource::cSoundManager::getInstance()->findSe("SubWeapon/bombexprotion.wav").setGain(0.6f);
+				float gain = 0.6f - glm::distance2(cPlayerManager::getInstance()->getActivePlayer()->getPos(),
+					cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getPos()) / 10.f;
+				if (gain <= 0.0f) {
+					gain = 0.0f;
+				}
+				Resource::cSoundManager::getInstance()->findSe("SubWeapon/bombexprotion.wav").setGain(gain);
 				Resource::cSoundManager::getInstance()->findSe("SubWeapon/bombexprotion.wav").play();
 				
 
@@ -122,12 +127,18 @@ namespace Weapons
 				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
 					.scale(0.5f).
 					vanishTime(1.0f).
-					speed(1.0f).
+					speed(0.75f).
 					textureType(Particle::ParticleTextureType::SPARK).
 					color(ci::ColorA::white()).
-					moveType(Particle::ParticleType::EXPROTION).count(100).isTrajectory(true).gravity(0.048f));
+					moveType(Particle::ParticleType::EXPROTION).count(10).isTrajectory(true).gravity(0.048f));
 
 			}
+		}
+		float cLightBomb::getDamage(const float distance, const float maxdamage)
+		{
+			float damagerate = ((mExprosionLength*2.f - distance) / mExprosionLength);
+			if (damagerate > 1.0f)damagerate = 1.0f;
+			return damagerate * maxdamage;
 		}
 		void cLightBomb::createContractionEffect()
 		{
@@ -153,7 +164,7 @@ namespace Weapons
 			rb.setFriction(1.0f);
 			
 			light = cLightManager::getInstance()->addPointLight(mPos, ci::vec3(0, 1, 0), 1.f);
-
+			ci::app::console() << mObjectId << mPos << "ライトボムセットアップ" << mPlayerId << std::endl;
 			mExprosionLength = 8.f*mScale.x;
 			mAroundLightLength = (mExprosionLength / 2.f) - 0.5f;
 		
@@ -168,7 +179,8 @@ namespace Weapons
 			updateScale(delta_time);
 			createContractionEffect();
 			exprosion();
-		
+			ci::app::console() << mObjectId<< mPos <<"ライトボム"<<mPlayerId<< std::endl;
+			
 		}
 		void cLightBomb::updateCollisionAfterUpdate(const float & delta_time)
 		{
@@ -187,8 +199,12 @@ namespace Weapons
 		{
 			for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size(); i++) {
 				if (cPlayerManager::getInstance()->getPlayers()[i]->getWhichTeam() == mTeamNum)continue;
-				if (glm::distance2(cPlayerManager::getInstance()->getPlayers()[i]->getPos(), mPos) < mExprosionLength) {
-					dmageToPlayer(i);
+
+				float distance = glm::distance2(cPlayerManager::getInstance()->getPlayers()[i]->getPos(), mPos);
+
+				if (distance < mExprosionLength*2.f) {
+					cClientAdapter::getInstance()->sendDamage(cPlayerManager::getInstance()->getPlayers()[i]->getPlayerId(),
+						getDamage(distance, 100.f));
 				}
 
 
