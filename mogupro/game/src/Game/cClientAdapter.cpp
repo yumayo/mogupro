@@ -51,7 +51,7 @@ void cClientAdapter::recvAllPlayers( )
         auto players = Game::cPlayerManager::getInstance( )->getPlayers( );
         for ( auto& o : packet->mPlayerFormats )
         {
-            players[o.playerId]->move( o.position - players[o.playerId]->getPos( ) );
+            players[o.playerId]->setPos( o.position );
         }
     }
 	while ( auto packet = e->getEveDamage( ) )
