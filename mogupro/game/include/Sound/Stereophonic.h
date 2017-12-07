@@ -32,8 +32,8 @@ namespace Sound
 		}
 
 		template<class T>
-		explicit Stereophonic(T type, std::shared_ptr<ci::vec3> listenerPos,
-			std::shared_ptr<ci::vec3> listenerDir, std::shared_ptr<ci::vec3> sourcePos) :
+		explicit Stereophonic(T type, ci::vec3& listenerPos,
+			ci::vec3& listenerDir, ci::vec3& sourcePos) :
 			buffer(std::make_shared<Buffer>(type)),
 			source(std::make_shared<Source>()), listenerPosition(listenerPos), listenerDirection(listenerDir), sourcePosition(sourcePos),
 			end(false)
@@ -420,8 +420,8 @@ namespace Sound
 		void close();
 
 		template<class T>
-		void add(T type, std::shared_ptr<ci::vec3> listenerPos,
-			std::shared_ptr<ci::vec3> listenerDir, std::shared_ptr<ci::vec3> sourcePos)
+		void add(T type, ci::vec3& listenerPos,
+			ci::vec3& listenerDir, ci::vec3& sourcePos)
 		{
 			stereophonicList.push_back(Stereophonic(type, listenerPos,listenerDir,sourcePos));
 		}
