@@ -129,7 +129,8 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 
 	keyMove(delta_time);
 
-	padMove(delta_time);
+	//ƒpƒbƒh‚ÌŽž‚ÉUŒ‚‚ªã‘‚«‚³‚ê‚È‚¢‚æ‚¤‚É’ˆÓ
+	//padMove(delta_time);
 
 	//Œ@í’†‚Í“®‚«•û‚ª•Ï‚í‚é
 	if (active_player->isDrilling()) {
