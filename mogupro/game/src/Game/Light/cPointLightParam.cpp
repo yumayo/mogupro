@@ -6,26 +6,26 @@ namespace Light
 {
 cPointLightParam::~cPointLightParam( )
 {
-
+	cLightManager::getInstance( )->removePointLight( id, this );
 }
-void cPointLightParam::reAttachPosition( Utility::softptr<cPointLightParam> handle, cinder::vec3 position )
+void cPointLightParam::reAttachPosition( cinder::vec3 position )
 {
-	cLightManager::getInstance( )->detachChunk( handle );
+	cLightManager::getInstance( )->detachChunk( this );
 	this->position = position;
-	cLightManager::getInstance( )->attachChunk( handle );
+	cLightManager::getInstance( )->attachChunk( this );
 }
-void cPointLightParam::reAttachRadius( Utility::softptr<cPointLightParam> handle, float radius )
+void cPointLightParam::reAttachRadius( float radius )
 {
-	cLightManager::getInstance( )->detachChunk( handle );
+	cLightManager::getInstance( )->detachChunk( this );
 	this->radius = radius;
-	cLightManager::getInstance( )->attachChunk( handle );
+	cLightManager::getInstance( )->attachChunk( this );
 }
-void cPointLightParam::reAttachPositionWithRadius( Utility::softptr<cPointLightParam> handle, cinder::vec3 position, float radius )
+void cPointLightParam::reAttachPositionWithRadius( cinder::vec3 position, float radius )
 {
-	cLightManager::getInstance( )->detachChunk( handle );
+	cLightManager::getInstance( )->detachChunk( this );
 	this->position = position;
 	this->radius = radius;
-	cLightManager::getInstance( )->attachChunk( handle );
+	cLightManager::getInstance( )->attachChunk( this );
 }
 }
 }

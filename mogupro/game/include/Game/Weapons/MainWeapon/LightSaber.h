@@ -43,7 +43,7 @@ namespace Game {
 			bool charge_flag2 = false;
 			bool charge_is_attack = false;
 			ci::vec3 shock_pos_buf;
-			Utility::cSoftPointer<Game::Light::cPointLightParam> charge_light;
+			Game::Light::PointLightHandle charge_light;
 
 			Player::Team team;
 
@@ -52,7 +52,7 @@ namespace Game {
 
 			Utility::hardptr<Node::node> root_x;
 			Utility::hardptr<Node::node> root_y;
-			Utility::cSoftPointer<Game::Light::cPointLightParam> light;
+			Game::Light::PointLightHandle light;
 			Utility::hardptr<Node::node> root_shock;
 			void Attack1();
 			void Attack2();

@@ -44,6 +44,8 @@ public:
 	void draw( );
 private:
 	void shift( State state );
+	//ループの開始と終わりはまだ未実装です０、０をいれてね
+	void playBgm(const std::string name, const float gain, const float loopbegin, const float loopend);
 	// 現在のステート
 	State state = State::STAND_BY;
 	// 一フレーム前のステート

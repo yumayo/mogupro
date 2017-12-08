@@ -10,6 +10,8 @@
 #include <Game/cUIManager.h>
 #include <Game/Player/cPlayer.h>
 #include <Game/Field/RespawnPoint.h>
+#include <Resource/cSoundManager.h>
+
 namespace pt = boost::posix_time;
 namespace Game
 {
@@ -65,11 +67,17 @@ cGameManager::cGameManager( )
 		{
 			shift( State::BATTLE );
 			ENV->enableKeyWithMouseButton( );
+			ENV->enablePadAxis();
+			ENV->enablePadAxis();
 			cUIManager::getInstance( )->enable( );
 			auto go = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 128 ) );
 			go->set_text( u8"GO!!" );
 			go->set_position( root->get_content_size( ) / 2.0F );
 			go->run_action( sequence::create( delay::create( 2.0F ), fade_out::create( 1.0F ), remove_self::create( ) ) );
+
+		
+			playBgm("testbgm2.wav", 0.3f, 0.0f, 0.0f);
+		
 		}
 	} ) );
 	mPreUpdates.insert( std::make_pair( State::BATTLE, [ this ] ( float t )
@@ -189,5 +197,11 @@ void cGameManager::shift( State state )
 	flash = true;
 	prevState = this->state;
 	this->state = state;
+}
+void cGameManager::playBgm(const std::string name, const float gain, const float loopbegin, const float loopend)
+{
+	Resource::cSoundManager::getInstance()->findBgm(name).setLooping(true);
+	Resource::cSoundManager::getInstance()->findBgm(name).setGain(gain);
+	Resource::cSoundManager::getInstance()->findBgm(name).play();
 }
 }

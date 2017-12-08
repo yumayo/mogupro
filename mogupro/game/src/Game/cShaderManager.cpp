@@ -44,9 +44,9 @@ void cShaderManager::uniformUpdate( )
 			int lightNum = std::min( lights.size( ), 100U );
 			for ( auto& light : lights )
 			{
-				positions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getPosition( ), 1 ) ) );
-				colors.emplace_back( light->color );
-				radiuses.emplace_back( light->getRadius( ) );
+				positions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getPosition( ), 1 ) ) );
+				colors.emplace_back( light.second->color );
+				radiuses.emplace_back( light.second->getRadius( ) );
 			}
 			mGlsl->uniform( "uPointLineNum", lightNum );
 			mGlsl->uniform( "uModelViewPointLightPositions", positions.data( ), lightNum );
@@ -65,10 +65,10 @@ void cShaderManager::uniformUpdate( )
 			int lightNum = std::min( lights.size( ), 100U );
 			for ( auto& light : lights )
 			{
-				beginPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getBeginPosition( ), 1 ) ) );
-				endPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getEndPosition( ), 1 ) ) );
-				colors.emplace_back( light->color );
-				radiuses.emplace_back( light->getRadius( ) );
+				beginPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getBeginPosition( ), 1 ) ) );
+				endPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getEndPosition( ), 1 ) ) );
+				colors.emplace_back( light.second->color );
+				radiuses.emplace_back( light.second->getRadius( ) );
 			}
 			mGlsl->uniform( "uLineLightNum", lightNum );
 			mGlsl->uniform( "uModelViewLineLightPositionsA", beginPositions.data( ), lightNum );
