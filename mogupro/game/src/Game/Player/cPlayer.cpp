@@ -159,8 +159,8 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 void Game::Player::cPlayer::collisionGems()
 {
 	//自分のAABBを生成
-	ci::vec3 aabb_begin_pos = mPos - size * ci::vec3(1.3f);
-	ci::vec3 aabb_end_pos = mPos + size * ci::vec3(1.3f);
+	ci::vec3 aabb_begin_pos = mPos - size * ci::vec3(4);
+	ci::vec3 aabb_end_pos = mPos + size * ci::vec3(4);
 
 	ci::AxisAlignedBox player_aabb(aabb_begin_pos, aabb_end_pos);
 	//ci::AxisAlignedBox player_aabb(aabb_begin_pos, aabb_end_pos);
@@ -193,6 +193,8 @@ void Game::Player::cPlayer::dead()
 		CAMERA->shakeCamera(0.1f,0.5f);
 	}
 	mRigidbody.setSpeed(ci::vec3(0));
+	mCollider.removeWorld();
+	mRigidbody.removeWorld();
 	Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
 		.scale(0.5f).
 		vanishTime(1.0f).
@@ -219,8 +221,14 @@ void Game::Player::cPlayer::respawn(const float & delta_time)
 
 void Game::Player::cPlayer::resetPlayerStatus()
 {
+
 	status.hp = 100;
+	//位置をリスポーン位置に
+	mCollider.setPosition(start_position);
 	is_dead = false;
+	mCollider.addWorld();
+	
+
 }
 
 void Game::Player::cPlayer::drillingCamera(const float& delta_time)
@@ -253,7 +261,8 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 		drill_sound = 0;
 	}
 	//自分の位置と、自分のベクトルの向きに対して掘る
-	Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition() + ( normalized_player_vec * ci::vec3(status.drill_speed / 4)), status.drill_range, *block_type);
+	Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition(), status.drill_range, *block_type);
+	Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition() + normalized_player_vec, status.drill_range, *block_type);
 	//Game::cFieldManager::getInstance()->blockBreak(mCollider.getPosition(), status.drill_range, *block_type);
 
 }
@@ -283,7 +292,7 @@ Game::Player::cPlayer::cPlayer(
 	const int& main_weapon_id,
 	const int& sub_weapon_id,
 	const Game::Player::Team& team)
-	: cObjectBase(pos),
+	: cObjectBase(pos), start_position(pos),
 	mCollider(mPos, DEFAULT_SIZE ),
 	mRigidbody(mCollider),team(team),player_id(id),damaged_id(id),
 	active_user(is_active_user)
@@ -303,7 +312,7 @@ Game::Player::cPlayer::cPlayer(
 	status.drill_range = 1;
 	status.jump_force = 10.0F;
 	status.speed = DEFAULT_SPEED;
-	status.drill_speed = DEFAULT_SPEED;
+	status.drill_speed = DEFAULT_SPEED*2;
 	status.respawn_time = 7;
 	//武器の初期化
 	main_weapon = Weapon::cWeaponFactory::getInstance()->InstanceMainWeapon(static_cast<Weapon::MAIN_WEAPON>(main_weapon_id), id);
@@ -370,16 +379,6 @@ void Game::Player::cPlayer::move(const ci::vec3 & velocity)
 		 velocity.z <= -0.01f ) {
 		normalized_player_vec = glm::normalize( velocity );
 	}
-	if (active_user) {
-		//地面の中で掘削中なら重力をなくす
-		if (mCollider.getPosition().y <= 16.0f && drilling) {
-			mRigidbody.gravityOff();
-		}
-		else {
-			mRigidbody.gravityOn();
-		}
-	}
-
 	auto vec = velocity;
 	vec.y = drilling ? velocity.y : mRigidbody.getSpeed( ).y;
 	mRigidbody.setSpeed( vec );

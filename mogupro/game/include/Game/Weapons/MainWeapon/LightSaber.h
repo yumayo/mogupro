@@ -48,7 +48,7 @@ namespace Game {
 			Player::Team team;
 
 			ci::vec2 rotate_before_frame;
-			std::vector<bool> hits;
+			std::unordered_map<int,bool> hits;
 
 			Utility::hardptr<Node::node> root_x;
 			Utility::hardptr<Node::node> root_y;
