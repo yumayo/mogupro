@@ -227,7 +227,7 @@ void Game::Player::cPlayer::resetPlayerStatus()
 	mCollider.setPosition(start_position);
 	is_dead = false;
 	mCollider.addWorld();
-	
+	mRigidbody.addWorld();
 
 }
 
