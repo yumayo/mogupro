@@ -28,7 +28,7 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time.hpp>
 #include <Game/cGameManager.h>
-#include <Game/Field/RespawnPoint.h>
+#include <Game/Field/FieldData.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -38,6 +38,7 @@ namespace Member
 {
 void cGameMain::setup( )
 {
+	Game::cUIManager::getInstance( )->awake( );
 	Game::cDebugManager::getInstance( )->setup( );
 
 	glsl = cinder::gl::GlslProg::create( cinder::app::loadAsset( "Shader/world.vert" ), 
@@ -102,7 +103,7 @@ void cGameMain::setup( )
     gl::enableDepthWrite( );
 	gameStartTimer = -1.0f;
 
-	ENV->disableKeyWithMouseButton( );
+	ENV->disableKeyButton( );
 	ENV->disablePadButton();
 	ENV->disablePadAxis();
 	Game::cUIManager::getInstance( )->disable( );
