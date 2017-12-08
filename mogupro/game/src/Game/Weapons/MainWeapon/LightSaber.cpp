@@ -67,11 +67,8 @@ void Game::Weapon::LightSaber::Attack2()
 
 void Game::Weapon::LightSaber::ShockCollisionPlayers()
 {
-	//hitsのベクターに入れるためのi
-	int i = -1;
-	for (auto& it : cPlayerManager::getInstance()->getPlayers()) {
-		i++;
-		//自分の操作しているプレイヤーなら返す
+	for (auto& it : cPlayerManager::getInstance()->getPlayers()) {		//自分の操作しているプレイヤーなら返す
+		
 		if (it->getActiveUser()) {
 			continue;
 		}
@@ -80,7 +77,7 @@ void Game::Weapon::LightSaber::ShockCollisionPlayers()
 			continue;
 		}
 		//既に当たっていたら返す
-		if (hits[i - 1]) {
+		if (hits[it->getPlayerId()]) {
 			continue;
 		}
 		ci::vec3 shock_pos_buf_;
@@ -102,7 +99,7 @@ void Game::Weapon::LightSaber::ShockCollisionPlayers()
 			else if(charge_motion == ChargeMotion::charge_attack_2) {
 				cClientAdapter::getInstance( )->sendDamage( it->getPlayerId( ), attack * 2.0F );
 			}
-			hits[i - 1] = true;
+			hits[it->getPlayerId()] = true;
 		}
 	}
 }
@@ -113,10 +110,8 @@ void Game::Weapon::LightSaber::ShockCollisionDrills()
 
 void Game::Weapon::LightSaber::CollisionPlayers()
 {
-	//hitsのベクターに入れるためのi
-	int i = -1;
 	for (auto& it : cPlayerManager::getInstance()->getPlayers()) {
-		i++;
+		
 		//自分の操作しているプレイヤーなら返す
 		if (it->getActiveUser()) {
 			continue;
@@ -126,7 +121,7 @@ void Game::Weapon::LightSaber::CollisionPlayers()
 			continue;
 		}
 		//既に当たっていたら返す
-		if (hits[i - 1]) {
+		if (hits[it->getPlayerId()]) {
 			continue;
 		}
 		//AABBに入ってなければ判定しない
@@ -153,7 +148,7 @@ void Game::Weapon::LightSaber::CollisionPlayers()
 			//対象のhitをtrueにして
 			//対象限定でヒットストップをつけたり当たり判定をなくしたり
 			//するんご
-			hits[i - 1] = true;
+			hits[it->getPlayerId()] = true;
 		}
 	}
 }
@@ -170,49 +165,26 @@ void Game::Weapon::LightSaber::CollisionGems()
 		if (!it->isActive()) {
 			continue;
 		}
-		//rayが当たったらis_hitがtrueになる
+		
+
+		//AABBに入ってなければ判定しない
+		if (!it->getAabb().createAABB(it->getCenterPos()).intersects(aabb))continue;
+
+		//当たったらis_hitがtrueになる
 		bool is_hit = false;
-
-		float min = 0.0F, max = 0.0F;
-
-		ci::vec2 rotate_buf;
-		//速度が速くても当たるように１フレームに５０分割
+		ci::vec3 pos_buf_;
 		int split = 50;
 		for (int k = 0; k < split; k++) {
-
-			rotate_buf.x = EasingLinear((float)k / split, rotate_before_frame.x, rotate.x);
-			rotate_buf.y = EasingLinear((float)k / split, rotate_before_frame.y, rotate.y);
-
-			weapon_pos = player_pos + glm::normalize(ci::vec3(sin(rotate_buf.x + player_rotate_x), sin(rotate_buf.y), cos(rotate_buf.x + player_rotate_x))) / ci::vec3(10);
-
-			weapon_vec = player_pos + glm::normalize(ci::vec3(sin(rotate_buf.x + player_rotate_x), sin(rotate_buf.y), cos(rotate_buf.x + player_rotate_x))) * ci::vec3(10) * ci::vec3(range);
-
-			//プレイヤーの位置からrayかaabbを生成
-			ray[0].setOrigin(weapon_pos);
-			ray[0].setDirection(weapon_vec);
-
-			//１回目の攻撃
-			Rotation1(rotate_buf, M_PI / 5);
-
-			for (int m = 0; m < 3; m++) {
-
-				if (it->getAabb().createAABB(it->getCenterPos()).intersect(ray[m], &min, &max) != 0)
-				{
-					if (min >= 0.0F && min <= 1.0F)
-					{
-						if (min < std::numeric_limits<float>::max())
-						{
-							is_hit = true;
-						}
-					}
-				}
-				if (is_hit)break;
-			}
-			if (is_hit)break;
+			pos_buf_.x = EasingLinear((float)k / split, player_buf_pos.x, weapon_draw_pos.x);
+			pos_buf_.y = EasingLinear((float)k / split, player_buf_pos.y, weapon_draw_pos.y);
+			pos_buf_.z = EasingLinear((float)k / split, player_buf_pos.z, weapon_draw_pos.z);
+			shock_aabb = ci::AxisAlignedBox(pos_buf_ - ci::vec3(range / 4), pos_buf_ + ci::vec3(range / 4));
+			is_hit = shock_aabb.intersects(it->getAabb().createAABB(it->getCenterPos()));
+			if (is_hit) break;
 		}
+
 		//対象のプレイヤーがhitしたら
 		if (is_hit) {
-			ci::app::console() << true << std::endl;
 			//当たった時の演出として一瞬カメラを揺らす
 			CAMERA->shakeCamera(0.1f, 0.1f);
 			cGemManager::getInstance()->breakGemStone(it->getId());
@@ -349,8 +321,8 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 			this->charge_is_attack_now = false;
 		})));
 
-		for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size();i++) {
-			hits[i] = false;
+		for (auto it : cPlayerManager::getInstance()->getPlayers()) {
+			hits[it->getPlayerId()] = false;
 		}
 		shock_pos_buf = shock_pos;
 	}
@@ -386,8 +358,8 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 			}*/
 		})));
 
-		for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size();i++) {
-			hits[i] = false;
+		for (auto it : cPlayerManager::getInstance()->getPlayers()) {
+			hits[it->getPlayerId()] = false;
 		}
 		shock_pos_buf = shock_pos;
 	}
@@ -412,8 +384,8 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 			Attack1();
 			motion = Motion::attack_1;
 			is_attack = true;
-			for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size();i++) {
-				hits[i] = false;
+			for (auto it : cPlayerManager::getInstance()->getPlayers()) {
+				hits[it->getPlayerId()] = false;
 			}
 			timer = 0;
 		}
@@ -423,8 +395,8 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 			Attack2();
 			motion = Motion::attack_2;
 			timer = 0;
-			for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size();i++) {
-				hits[i] = false;
+			for (auto it : cPlayerManager::getInstance()->getPlayers()) {
+				hits[it->getPlayerId()] = false;
 			}
 			is_attack = true;
 		}
@@ -495,8 +467,8 @@ void Game::Weapon::LightSaber::setup()
 	TEX->set("weapon", "OBJ/montamogura/weapon.png");
 	//当たった状態をプレイヤーごとに保持するために
 	//プレイヤーの個数文プッシュバック
-	for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size();i++) {
-		hits.push_back(false);
+	for (auto it : cPlayerManager::getInstance()->getPlayers()) {
+		hits[it->getPlayerId()] = false;
 	}
 	team = cPlayerManager::getInstance()->getPlayer(player_id)->getWhichTeam();
 	root_x = Node::node::create();
