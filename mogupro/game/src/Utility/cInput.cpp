@@ -25,13 +25,21 @@ void cInputAll::setMouseControl( const bool & flag )
 {
 	mouse_active = flag;
 }
-void cInputAll::disableKeyWithMouseButton( )
+void cInputAll::disableMouseButton( )
 {
-	keyWithMouseState.disable( );
+	mouseState.disable( );
 }
-void cInputAll::enableKeyWithMouseButton( )
+void cInputAll::enableMouseButton( )
 {
-	keyWithMouseState.enable( );
+	mouseState.enable( );
+}
+void cInputAll::disableKeyButton( )
+{
+	keyState.disable( );
+}
+void cInputAll::enableKeyButton( )
+{
+	keyState.enable( );
 }
 void cInputAll::disablePadButton( )
 {
@@ -59,27 +67,27 @@ ci::vec2 cInputAll::getMousePos( )
 }
 bool cInputAll::pressKey( const int& pressed_key )
 {
-	return keyWithMouseState.press( pressed_key );
+	return keyState.press( pressed_key ) || mouseState.press( pressed_key );
 }
 bool cInputAll::pushKey( const int & pressed_key )
 {
-	return keyWithMouseState.push( pressed_key );
+	return keyState.push( pressed_key ) || mouseState.push( pressed_key );
 }
 bool cInputAll::pullKey( const int & pressed_key )
 {
-	return keyWithMouseState.pull( pressed_key );
+	return keyState.pull( pressed_key ) || mouseState.pull( pressed_key );
 }
 bool cInputAll::pressKey( )
 {
-	return keyWithMouseState.press( );
+	return keyState.press( ) || mouseState.press( );
 }
 bool cInputAll::pushKey( )
 {
-	return keyWithMouseState.push( );
+	return keyState.push( ) || mouseState.push( );
 }
 bool cInputAll::pullKey( )
 {
-	return keyWithMouseState.pull( );
+	return keyState.pull( ) || mouseState.pull( );
 }
 bool cInputAll::isPadPush( const int & num )
 {
@@ -110,7 +118,8 @@ float cInputAll::getPadAxis( const int & pad_num )
 }
 void cInputAll::flashInput( )
 {
-	keyWithMouseState.flush( );
+	keyState.flush( );
+	mouseState.flush( );
 	padState.flush( );
 }
 #pragma endregion
@@ -159,7 +168,8 @@ void cInputAll::setup( )
 }
 void cInputAll::preUpdate( float delta )
 {
-	keyWithMouseState.preUpdate( );
+	keyState.preUpdate( );
+	mouseState.preUpdate( );
 	padState.preUpdate( );
 	Gamepad_processEvents( );
 }
@@ -169,11 +179,11 @@ void cInputAll::cleanup( )
 }
 void cInputAll::keyDown( const ci::app::KeyEvent& event )
 {
-	keyWithMouseState.down( event.getCode( ) );
+	keyState.down( event.getCode( ) );
 }
 void cInputAll::keyUp( const ci::app::KeyEvent& event )
 {
-	keyWithMouseState.up( event.getCode( ) );
+	keyState.up( event.getCode( ) );
 }
 void cInputAll::padAxis( const int & num, const float & value )
 {
@@ -238,30 +248,30 @@ void cInputAll::mouseDown( const ci::app::MouseEvent& event )
 {
 	if ( event.isLeft( ) )
 	{
-		keyWithMouseState.down( ci::app::MouseEvent::LEFT_DOWN );
+		mouseState.down( ci::app::MouseEvent::LEFT_DOWN );
 	}
 	if ( event.isRight( ) )
 	{
-		keyWithMouseState.down( ci::app::MouseEvent::RIGHT_DOWN );
+		mouseState.down( ci::app::MouseEvent::RIGHT_DOWN );
 	}
 	if ( event.isMiddle( ) )
 	{
-		keyWithMouseState.down( ci::app::MouseEvent::MIDDLE_DOWN );
+		mouseState.down( ci::app::MouseEvent::MIDDLE_DOWN );
 	}
 }
 void cInputAll::mouseUp( const ci::app::MouseEvent& event )
 {
 	if ( event.isLeft( ) )
 	{
-		keyWithMouseState.up( ci::app::MouseEvent::LEFT_DOWN );
+		mouseState.up( ci::app::MouseEvent::LEFT_DOWN );
 	}
 	if ( event.isRight( ) )
 	{
-		keyWithMouseState.up( ci::app::MouseEvent::RIGHT_DOWN );
+		mouseState.up( ci::app::MouseEvent::RIGHT_DOWN );
 	}
 	if ( event.isMiddle( ) )
 	{
-		keyWithMouseState.up( ci::app::MouseEvent::MIDDLE_DOWN );
+		mouseState.up( ci::app::MouseEvent::MIDDLE_DOWN );
 	}
 }
 #pragma endregion
