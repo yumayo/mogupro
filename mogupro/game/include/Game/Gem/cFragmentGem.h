@@ -6,6 +6,7 @@
 #include <Node/action.hpp>
 #include <Collision/cRigidBody.h>
 #include <Collision/cAABBCollider.h>
+#include <Game/Light/cPointLightParam.h>
 
 namespace Game
 {
@@ -18,7 +19,7 @@ namespace Game
 		{
 		public:
 
-			cFragmentGem(int id, vec3 position, vec3 scale, ColorA color, GemType type);
+			cFragmentGem(int id, vec3 position, vec3 scale, ColorA color, GemType type, vec3 direction);
 			~cFragmentGem();
 			void      setup();
 			void      draw();
@@ -63,8 +64,10 @@ namespace Game
 			vec3        mPutPos;
 			bool        mIsRigid;
 			bool        mVisible;
+			vec3        mDirection;
 			Collision::cRigidBody mRb;
 			Collision::cAABBCollider mAabb;
+			Game::Light::PointLightHandle handle;
 		};
 	}
 }

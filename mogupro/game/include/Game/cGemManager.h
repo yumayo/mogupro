@@ -66,6 +66,8 @@ namespace Game
 		unsigned long        mSeed;
 		float                mTime;
 		float                mLightingSpeed;
+		const float          mCreateFGemNum = 3;
+		
 		//ci::gl::GlslProgRef mHShader;
 		//ci::gl::GlslProgRef mVShader;
 	};
