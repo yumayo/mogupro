@@ -1,16 +1,17 @@
 #include <Game/Gem/cFragmentGem.h>
 #include <Log/Log.h>
+#include <Game\cLightManager.h>
 namespace Game
 {
 	namespace Gem
 	{
-		cFragmentGem::cFragmentGem(int id, vec3 position, vec3 scale, ColorA color, GemType type) :
-			mId(id), mPosition(position), mScale(scale), mColorA(color), mType(type), mAabb(position, scale), mRb(mAabb)
+		cFragmentGem::cFragmentGem(int id, vec3 position, vec3 scale, ColorA color, GemType type, vec3 direction) :
+			mId(id), mPosition(position), mScale(scale), mColorA(color), mType(type), mDirection(direction), mAabb(position, scale), mRb(mAabb)
 		{
 			mIsActive    = true;
 			mSinRotate   = 0.0f;
 			mPutPos      = vec3(0.0f);
-			mSpeed       = vec3(0, 5, 0);
+			mSpeed       = vec3(0, 10, 0);
 			Log::cLogManager::getInstance()->add("remove");
 		};
 
@@ -26,8 +27,9 @@ namespace Game
 		{
 			mAabb.addWorld();
 			mRb.addWorld();
-			mRb.setSpeed(vec3(0,10,0));
+			mRb.setSpeed(mDirection * mSpeed.y);
 			mRb.setFriction(1.0f);
+			handle = Game::cLightManager::getInstance()->addPointLight(mPosition, ci::vec3(mColorA.r,mColorA.g,mColorA.b),1);
 			mIsRigid = true;
 			mVisible = true;
 		}
@@ -47,6 +49,7 @@ namespace Game
 			if (!mIsRigid) return;
 			mPosition = mAabb.getPosition();
 			mSpeed = mRb.getSpeed();
+			handle->reAttachPosition(mPosition);
 		}
 
 
