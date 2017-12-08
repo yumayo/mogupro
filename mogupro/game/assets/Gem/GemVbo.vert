@@ -9,6 +9,6 @@ out vec4         vColor;
 void main( void ) {
 	gl_Position	= ciModelViewProjection * ciPosition;
 	vec4 color = ciColor;
-    color.a = sin((color.a + deltaTime) * 3.14159265 * 2 ) * 0.5 + 0.5;
+    color.a = sin((color.a + deltaTime) * 3.14159265 * 2 ) * 0.25 + 0.75;
     vColor = color;
 }
