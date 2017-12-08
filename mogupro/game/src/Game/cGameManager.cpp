@@ -9,7 +9,7 @@
 #include <Node/action.hpp>
 #include <Game/cUIManager.h>
 #include <Game/Player/cPlayer.h>
-#include <Game/Field/RespawnPoint.h>
+#include <Game/Field/FieldData.h>
 #include <Resource/cSoundManager.h>
 
 namespace pt = boost::posix_time;
@@ -51,7 +51,11 @@ cGameManager::cGameManager( )
 	ruleSpeech->set_text( u8"‚½‚­‚³‚ñƒWƒFƒ€‚ð‘å–C‚É“ü‚ê‚ë" );
 	mPreUpdates.insert( std::make_pair( State::STAND_BY, [ this ] ( float t )
 	{
-		if ( shiftSeconds[State::READY] < boost::posix_time::microsec_clock::local_time( ) )
+		if ( ENV->pushKey( cinder::app::MouseEvent::LEFT_DOWN ) )
+		{
+			skipReady = true;
+		}
+		if ( skipReady || shiftSeconds[State::READY] < boost::posix_time::microsec_clock::local_time( ) )
 		{
 			shift( State::READY );
 			ENV->setMouseControl( true );
@@ -63,12 +67,12 @@ cGameManager::cGameManager( )
 	} ) );
 	mPreUpdates.insert( std::make_pair( State::READY, [ this ] ( float t )
 	{
-		if ( shiftSeconds[State::BATTLE] < boost::posix_time::microsec_clock::local_time( ) )
+		if ( skipReady || shiftSeconds[State::BATTLE] < boost::posix_time::microsec_clock::local_time( ) )
 		{
 			shift( State::BATTLE );
-			ENV->enableKeyWithMouseButton( );
-			ENV->enablePadAxis();
-			ENV->enablePadAxis();
+			ENV->enableKeyButton( );
+			ENV->enablePadAxis( );
+			ENV->enablePadAxis( );
 			cUIManager::getInstance( )->enable( );
 			auto go = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 128 ) );
 			go->set_text( u8"GO!!" );
@@ -85,7 +89,7 @@ cGameManager::cGameManager( )
 		if ( shiftSeconds[State::BATTLE_END] < boost::posix_time::microsec_clock::local_time( ) )
 		{
 			shift( State::BATTLE_END );
-			ENV->disableKeyWithMouseButton( );
+			ENV->disableKeyButton( );
 		}
 	} ) );
 	mPreUpdates.insert( std::make_pair( State::BATTLE_END, [ this ] ( float t )
@@ -103,7 +107,7 @@ cGameManager::cGameManager( )
 			n->set_position( root->get_content_size( ) / 2.0F );
 			n->run_action( Node::Action::sequence::create( Node::Action::fade_in::create( 1.0F ), Node::Action::call_func::create( [ this ] {
 				shift( State::RESULT );
-				ENV->enableKeyWithMouseButton( );
+				ENV->enableKeyButton( );
 				cUIManager::getInstance( )->disable( );
 				root->get_child_by_name( "fader" )->run_action( Node::Action::sequence::create( Node::Action::fade_out::create( 1.0F ), Node::Action::remove_self::create( ) ) );
 				auto label = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 64 ) );

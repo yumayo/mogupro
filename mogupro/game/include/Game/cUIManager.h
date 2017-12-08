@@ -9,6 +9,7 @@ public:
     cUIManager( ) = default;
     ~cUIManager( ) = default;
 public:
+	void awake( );
 	void setup( );
 	void update( float delta );
 	void draw( );
@@ -32,7 +33,8 @@ private:
 	softptr<Node::node> mBlueTeamCannonPower;
 	softptr<Node::node> mPlayerScreenEffect;
 
-	cinder::vec2 mAnimationSlot = cinder::vec2( 0.0F, 300.0F );
+	cinder::vec2 mDisableSlot;
+	cinder::vec2 mEnableSlot;
 
 	int redCannonPower;
 	int blueCannonPower;

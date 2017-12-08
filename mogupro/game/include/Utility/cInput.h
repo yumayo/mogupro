@@ -36,8 +36,10 @@ public:
 public:
 	cInputAll( );
 	void setMouseControl( const bool& flag );
-	void disableKeyWithMouseButton( );
-	void enableKeyWithMouseButton( );
+	void disableKeyButton( );
+	void enableKeyButton( );
+	void disableMouseButton( );
+	void enableMouseButton( );
 	void disablePadButton( );
 	void enablePadButton( );
 	void disablePadAxis( );
@@ -174,13 +176,13 @@ private:
 		}
 	};
 
-	State keyWithMouseState;
-
 	//キーボード
+	State keyState;
 	std::unordered_map<std::string, int> serch;
 	std::unordered_map<int, int> keys;
 
 	//マウス
+	State mouseState;
 	ci::vec2 inc_pos;
 	bool cursor_captured;
 	ci::ivec2 last_cursor_pos;

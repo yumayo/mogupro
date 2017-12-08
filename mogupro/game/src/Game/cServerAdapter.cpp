@@ -8,7 +8,6 @@
 #include <Game/Field/FieldData.h>
 #include <Game/cPlayerManager.h>
 #include <Game/Player/cPlayer.h>
-#include <Game/Field/RespawnPoint.h>
 using namespace Network;
 using namespace Network::Packet;
 using namespace Network::Packet::Deliver;

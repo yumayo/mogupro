@@ -3,7 +3,7 @@
 #include <Collision/Collision.h>
 #include <Utility/cString.h>
 #include <Utility/cInput.h>
-#include <Game/Field/RespawnPoint.h>
+#include <Game/Field/FieldData.h>
 using namespace cinder;
 namespace Collision
 {

@@ -33,7 +33,7 @@ public:
 		gl::drawColorCube( vec3( 0 ), vec3( 1 ) );
 	}
 };
-void cUIManager::setup( )
+void cUIManager::awake( )
 {
 	redCannonPower = 0;
 	blueCannonPower = 0;
@@ -43,6 +43,9 @@ void cUIManager::setup( )
 	mRoot->set_schedule_update( );
 	mRoot->set_scale( vec2( 1, -1 ) );
 	mRoot->set_position( mRoot->get_content_size( ) * vec2( -0.5F, 0.5F ) );
+
+	mDisableSlot = mRoot->get_content_size( ) * vec2( 1, 0 ) + vec2( 0, -300 );
+	mEnableSlot = mRoot->get_content_size( ) * vec2( 1, 0 ) + vec2( 0, 0 );
 
 	//プレイヤーがダメージを受けた時の画面の周りの光
 	mPlayerScreenEffect = mRoot->add_child( Node::node::create( ) );
@@ -60,24 +63,10 @@ void cUIManager::setup( )
 
 	mLive = mRoot->add_child( Node::node::create( ) );
 	mLive->set_position( mRoot->get_content_size( ) * vec2( 0.5F, 0.0F ) );
-	int offset = cPlayerManager::getInstance( )->getPlayers( ).size( ) / 2 * -1;
-	for ( auto player : cPlayerManager::getInstance( )->getPlayers( ) )
-	{
-		auto ikiteru = mLive->add_child( Node::Renderer::sprite::create( "ikiteru.png" ) );
-		ikiteru->set_name( "ikiteru" + std::to_string( player->getPlayerId( ) ) );
-		ikiteru->set_anchor_point( vec2( 0.5F, 0 ) );
-		ikiteru->set_position( ikiteru->get_content_size( ) * vec2( offset, 0.0F ) );
-		auto yarareta = mLive->add_child( Node::Renderer::sprite::create( "yarareta.png" ) );
-		yarareta->set_name( "yarareta" + std::to_string( player->getPlayerId( ) ) );
-		yarareta->set_anchor_point( vec2( 0.5F, 0 ) );
-		yarareta->set_position( yarareta->get_content_size( ) * vec2( offset, 0.0F ) );
-		yarareta->set_visible( false );
-		if ( ++offset == 0 ) offset++;
-	}
 
 	mSlot = mRoot->add_child( Node::node::create( ) );
 	mSlot->set_schedule_update( );
-	mSlot->set_position( mRoot->get_content_size( ) * vec2( 1, 0 ) - mAnimationSlot );
+	mSlot->set_position( mDisableSlot );
 	auto mCapsuleGauge = Node::Renderer::sprite::create( "itemGauge.png" );
 	mCapsuleGauge->set_anchor_point( vec2( 1, 0 ) );
 	mCapsuleGauge->set_pivot( vec2( 0, 0 ) );
@@ -122,7 +111,23 @@ void cUIManager::setup( )
 		g->set_color( ColorA( 0.2, 0.2, 0.8 ) );
 		g->set_anchor_point( vec2( 0.5F, 1.0F ) );
 	}
-
+}
+void cUIManager::setup( )
+{
+	int offset = cPlayerManager::getInstance( )->getPlayers( ).size( ) / 2 * -1;
+	for ( auto player : cPlayerManager::getInstance( )->getPlayers( ) )
+	{
+		auto ikiteru = mLive->add_child( Node::Renderer::sprite::create( "ikiteru.png" ) );
+		ikiteru->set_name( "ikiteru" + std::to_string( player->getPlayerId( ) ) );
+		ikiteru->set_anchor_point( vec2( 0.5F, 0 ) );
+		ikiteru->set_position( ikiteru->get_content_size( ) * vec2( offset, 0.0F ) );
+		auto yarareta = mLive->add_child( Node::Renderer::sprite::create( "yarareta.png" ) );
+		yarareta->set_name( "yarareta" + std::to_string( player->getPlayerId( ) ) );
+		yarareta->set_anchor_point( vec2( 0.5F, 0 ) );
+		yarareta->set_position( yarareta->get_content_size( ) * vec2( offset, 0.0F ) );
+		yarareta->set_visible( false );
+		if ( ++offset == 0 ) offset++;
+	}
 	if ( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) == Player::Blue )
 	{
 		auto tmp = mBlueTeamCannonPower->get_position( );
@@ -177,7 +182,8 @@ void cUIManager::appendItem( int type )
 	if ( mainSlot->get_children( ).empty( ) )
 	{
 		mainSlot->add_child( lambertCube::create( ) );
-		mSlot->run_action( Node::Action::ease<cinder::EaseOutCubic>::create( Node::Action::move_by::create( 1.0F, mAnimationSlot ) ) );
+		mSlot->remove_all_actions( );
+		mSlot->run_action( Node::Action::ease<cinder::EaseOutCubic>::create( Node::Action::move_to::create( 1.0F, mEnableSlot ) ) );
 	}
 	else if ( subSlot->get_children( ).empty( ) )
 	{
@@ -201,7 +207,9 @@ void cUIManager::useItem( )
 		}
 		else
 		{
-			mSlot->run_action( Node::Action::sequence::create( Node::Action::delay::create( 1.0F ), Node::Action::ease<cinder::EaseOutCubic>::create( Node::Action::move_by::create( 1.0F, -mAnimationSlot ) ) ) );
+			mSlot->remove_all_actions( );
+			mSlot->run_action( Node::Action::sequence::create( Node::Action::delay::create( 1.0F ),
+															   Node::Action::ease<cinder::EaseOutCubic>::create( Node::Action::move_to::create( 1.0F, mDisableSlot ) ) ) );
 		}
 	}
 }

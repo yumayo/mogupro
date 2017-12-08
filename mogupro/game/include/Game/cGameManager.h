@@ -55,6 +55,8 @@ private:
 
 	bool isShiftResult = false;
 
+	bool skipReady = false; 
+
 	// ステートごとの絶対移行時間。
 	// ゲームメインに移動した時点で明確に決めておきます。
 	std::map<State, boost::posix_time::ptime> shiftSeconds;
