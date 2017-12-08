@@ -103,6 +103,8 @@ void cGameMain::setup( )
 	gameStartTimer = -1.0f;
 
 	ENV->disableKeyWithMouseButton( );
+	ENV->disablePadButton();
+	ENV->disablePadAxis();
 	Game::cUIManager::getInstance( )->disable( );
 }
 

@@ -65,6 +65,8 @@ cGameManager::cGameManager( )
 		{
 			shift( State::BATTLE );
 			ENV->enableKeyWithMouseButton( );
+			ENV->enablePadAxis();
+			ENV->enablePadAxis();
 			cUIManager::getInstance( )->enable( );
 			auto go = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 128 ) );
 			go->set_text( u8"GO!!" );

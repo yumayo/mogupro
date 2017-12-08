@@ -144,12 +144,6 @@ namespace Game
 				}
 
 
-
-
-
-
-
-
 				//GemManager->breakGemStone(_gemid);
 				//GemManager->getGemStone(_gemid)->setIsActive(false);
 				///////////////////////////—pC³AABB‚ğ‚Å‚©‚­‚µ‚Ä‚¨‚«‚Ü‚·
