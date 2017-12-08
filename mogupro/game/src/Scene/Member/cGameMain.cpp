@@ -123,12 +123,15 @@ void cGameMain::shutDown( )
 	Game::cPlayerManager::removeInstance( );
 	Game::cShaderManager::removeInstance( );
 	Particle::cParticleManager::removeInstance( );
+	Game::cGemManager::removeInstance( );
+	Game::cGameManager::removeInstance( );
+	// 全てのマネージャーのライトを削除するためライトを使っているマネージャーより下。
+	Game::cLightManager::removeInstance( );
+	// ライトを削除する時にチャンクIDを取得しているためライトより下。
 	Game::cFieldManager::getInstance( )->shutdown( );
 	Game::cFieldManager::removeInstance( );
-	Game::cGemManager::removeInstance( );
-	Game::cLightManager::removeInstance( );
+	// コライダーの削除に耐えるためフィールドより下。
 	Collision::cCollisionManager::removeInstance( );
-	Game::cGameManager::removeInstance( );
 }
 
 void cGameMain::update( float deltaTime )

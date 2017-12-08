@@ -15,12 +15,14 @@ void cEveGetJemPlayer::packetImport( cNetworkHandle networkHandle, ubyte2 transf
     cImporter imp( data );
     // 使い方: vec2 pos1, pos2; ubyte2 a1, a2;
     // imp >> pos1 >> a1 >> pos2 >> a2;
+	imp >> mPlayerId >> mGemId;
 }
 ubyte2 cEveGetJemPlayer::packetExport( char* const data )
 {
     cExporter exp( data );
     // 使い方: vec2 pos1, pos2; ubyte2 a1, a2;
     // exp << pos1 << a1 << pos2 << a2;
+	exp << mPlayerId >> mGemId;
     return exp;
 }
 }
