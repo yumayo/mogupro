@@ -67,12 +67,16 @@ cGameManager::cGameManager( )
 	} ) );
 	mPreUpdates.insert( std::make_pair( State::READY, [ this ] ( float t )
 	{
+		if ( ENV->pushKey( cinder::app::MouseEvent::LEFT_DOWN ) )
+		{
+			skipReady = true;
+		}
 		if ( skipReady || shiftSeconds[State::BATTLE] < boost::posix_time::microsec_clock::local_time( ) )
 		{
 			shift( State::BATTLE );
 			ENV->enableKeyButton( );
 			ENV->enablePadAxis( );
-			ENV->enablePadAxis( );
+			ENV->enablePadButton( );
 			cUIManager::getInstance( )->enable( );
 			auto go = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 128 ) );
 			go->set_text( u8"GO!!" );
@@ -89,7 +93,10 @@ cGameManager::cGameManager( )
 		if ( shiftSeconds[State::BATTLE_END] < boost::posix_time::microsec_clock::local_time( ) )
 		{
 			shift( State::BATTLE_END );
+			ENV->disableMouseButton( );
 			ENV->disableKeyButton( );
+			ENV->disablePadButton( );
+			ENV->disablePadAxis( );
 		}
 	} ) );
 	mPreUpdates.insert( std::make_pair( State::BATTLE_END, [ this ] ( float t )
@@ -108,6 +115,9 @@ cGameManager::cGameManager( )
 			n->run_action( Node::Action::sequence::create( Node::Action::fade_in::create( 1.0F ), Node::Action::call_func::create( [ this ] {
 				shift( State::RESULT );
 				ENV->enableKeyButton( );
+				ENV->enableMouseButton( );
+				ENV->enablePadButton( );
+				ENV->enablePadAxis( );
 				cUIManager::getInstance( )->disable( );
 				root->get_child_by_name( "fader" )->run_action( Node::Action::sequence::create( Node::Action::fade_out::create( 1.0F ), Node::Action::remove_self::create( ) ) );
 				auto label = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 64 ) );
