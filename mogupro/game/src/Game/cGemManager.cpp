@@ -3,7 +3,7 @@
 #include <Utility/cTimeMeasurement.h>
 #include <CameraManager/cCameraManager.h>
 #include <cinder/Rand.h>
-
+#include <Resource\cSoundManager.h>
 namespace Game
 {
 
@@ -22,6 +22,8 @@ namespace Game
 		mShader        = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/GemManager.frag"));
 		mVboShader     = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemVbo.vert"), ci::app::loadAsset("Gem/GemVbo.frag"));
 		mesh           = ci::TriMesh::create(ci::TriMesh::Format().colors(4).positions().normals().texCoords());
+
+	
 
 		create();
 	}
@@ -226,10 +228,21 @@ namespace Game
 					ci::app::console() << "This is no GemStone that has that " << id << std::endl;
 					return addGems;
 				}
+				
+				auto& Se = Resource::cSoundManager::getInstance()->findSe("Gem/stonebreak.wav");
 
-				mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mGemStone[i]->getPos(), mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType()));
-				mFragmentGems[mFragmentGems.size() - 1]->setup();
-				addGems.push_back(mFragmentGems[mFragmentGems.size() - 1]);
+				Se.play();
+
+				for (int j = 0; j < mCreateFGemNum; j++)
+				{
+					ci::vec3 dir;
+					dir.x = ci::randInt(3, 3);
+					dir.z = ci::randInt(-3, 3);
+					dir.y = 10;
+					mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mGemStone[i]->getPos(), mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType(),glm::normalize(dir)));
+					mFragmentGems[mFragmentGems.size() - 1]->setup();
+					addGems.push_back(mFragmentGems[mFragmentGems.size() - 1]);
+				}
 				mGemStone[i]->deleteGem();
 				buildMesh();
 				mGemStone[i]->setIsActive(false);
