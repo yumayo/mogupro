@@ -20,30 +20,32 @@ public:
 
 public: // ポイントライト
 	friend class Light::cPointLightParam;
-	std::set<Light::PointLightHandle>const& getPointLights( ) const;
-	boost::optional<std::set<Light::PointLightSoftHandle>const&> getPointLights( int chunkId ) const;
+	std::map<int, Light::cPointLightParam const*>const& getPointLights( ) const;
+	boost::optional<std::set<Light::cPointLightParam const*>const&> getPointLights( int chunkId ) const;
 	Light::PointLightHandle addPointLight( cinder::vec3 position, cinder::vec3 color, float radius );
 private:
-	void removePointLight( Light::PointLightHandle handle );
-	void attachChunk( Light::PointLightHandle handle );
-	void detachChunk( Light::PointLightHandle handle );
+	void removePointLight( int id, Light::cPointLightParam const* param );
+	void attachChunk( Light::cPointLightParam const* param );
+	void detachChunk( Light::cPointLightParam const* param );
 private:
-	std::set<Light::PointLightHandle> mPointLights;
-	std::map<int, std::set<Light::PointLightSoftHandle>> mPointLightsMap;
+	int mPointLightId = 0;
+	std::map<int, Light::cPointLightParam const*> mPointLights;
+	std::map<int, std::set<Light::cPointLightParam const*>> mPointLightsMap;
 
 public: // ラインライト
 	friend class Light::cLineLightParam;
-	std::set<Light::LineLightHandle>const& getLineLights( ) const;
-	boost::optional<std::set<Light::LineLightSoftHandle>const&> getLineLights( int chunkId ) const;
+	std::map<int, Light::cLineLightParam const*>const& getLineLights( ) const;
+	boost::optional<std::set<Light::cLineLightParam const*>const&> getLineLights( int chunkId ) const;
 	Light::LineLightHandle addLineLight( cinder::vec3 beginPosition, cinder::vec3 endPosition, cinder::vec3 color, float radius );
 private:
-	void removeLineLight( Light::LineLightHandle handle );
-	void attachChunk( Light::LineLightHandle handle );
-	void detachChunk( Light::LineLightHandle handle );
+	void removeLineLight( int id, Light::cLineLightParam const* param );
+	void attachChunk( Light::cLineLightParam const* param );
+	void detachChunk( Light::cLineLightParam const* param );
 
 private:
-	std::set<Light::LineLightHandle> mLineLights;
-	std::map<int, std::set<Light::LineLightSoftHandle>> mLineLightsMap;
+	int mLineLightId = 0;
+	std::map<int, Light::cLineLightParam const*> mLineLights;
+	std::map<int, std::set<Light::cLineLightParam const*>> mLineLightsMap;
 
 private: // プレイヤー更新用。
 	std::vector<Light::PointLightHandle> mPointLightHandles;

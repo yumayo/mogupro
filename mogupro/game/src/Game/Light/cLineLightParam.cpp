@@ -6,28 +6,28 @@ namespace Light
 {
 cLineLightParam::~cLineLightParam( )
 {
-
+	cLightManager::getInstance( )->removeLineLight( id, this );
 }
-void cLineLightParam::reAttachLine( Utility::softptr<cLineLightParam> handle, cinder::vec3 beginPosition, cinder::vec3 endPosition )
+void cLineLightParam::reAttachLine( cinder::vec3 beginPosition, cinder::vec3 endPosition )
 {
-	cLightManager::getInstance( )->detachChunk( handle );
+	cLightManager::getInstance( )->detachChunk( this );
 	this->beginPosition = beginPosition;
 	this->endPosition = endPosition;
-	cLightManager::getInstance( )->attachChunk( handle );
+	cLightManager::getInstance( )->attachChunk( this );
 }
-void cLineLightParam::reAttachRadius( Utility::softptr<cLineLightParam> handle, float radius )
+void cLineLightParam::reAttachRadius( float radius )
 {
-	cLightManager::getInstance( )->detachChunk( handle );
+	cLightManager::getInstance( )->detachChunk( this );
 	this->radius = radius;
-	cLightManager::getInstance( )->attachChunk( handle );
+	cLightManager::getInstance( )->attachChunk( this );
 }
-void cLineLightParam::reAttachLineWithRadius( Utility::softptr<cLineLightParam> handle, cinder::vec3 beginPosition, cinder::vec3 endPosition, float radius )
+void cLineLightParam::reAttachLineWithRadius( cinder::vec3 beginPosition, cinder::vec3 endPosition, float radius )
 {
-	cLightManager::getInstance( )->detachChunk( handle );
+	cLightManager::getInstance( )->detachChunk( this );
 	this->beginPosition = beginPosition;
 	this->endPosition = endPosition;
 	this->radius = radius;
-	cLightManager::getInstance( )->attachChunk( handle );
+	cLightManager::getInstance( )->attachChunk( this );
 }
 }
 }
