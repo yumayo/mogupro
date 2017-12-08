@@ -52,7 +52,7 @@ namespace Weapons
 		}
 		void cLightBomb::updateLight(const float & delta_time)
 		{
-			light->reAttachPositionWithRadius(light, mPos, (mScale.x + 1.f) + (mScale.x+0.5f)*cos(lightsinrotate));
+			light->reAttachPositionWithRadius(mPos, (mScale.x + 1.f) + (mScale.x+0.5f)*cos(lightsinrotate));
 
 			light->color = ci::vec3(mTeamNum == 0, 0.5f + 0.5f*cos(lightsinrotate+M_PI), mTeamNum == 1);
 
@@ -60,7 +60,7 @@ namespace Weapons
 				lightsinrotate += mLandcount;
 
 				for (int i = 0; i < int(mAroundLineLight.size()); i++) {
-					mAroundLineLight[i]->reAttachLine(mAroundLineLight[i], mPos + ci::vec3(mAroundLightLength*cos(mAroundLightAngle[i]),
+					mAroundLineLight[i]->reAttachLine(mPos + ci::vec3(mAroundLightLength*cos(mAroundLightAngle[i]),
 						-0.1f, mAroundLightLength*sin(mAroundLightAngle[i])),
 						mPos + ci::vec3(mAroundLightLength*cos(mAroundLightAngle[i]+2.f*M_PI / 3.f),
 							-0.1f, mAroundLightLength*sin(mAroundLightAngle[i] + 2.f*M_PI / 3.f)));

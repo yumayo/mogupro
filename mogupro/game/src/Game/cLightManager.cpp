@@ -61,7 +61,7 @@ void cLightManager::update( )
 		if (players[i]->getWhichTeam() == Player::Red) {
 			mPointLightHandles[i]->color = ci::vec3(1, 0,1 - players[i]->getStatus().hp / Player::MAX_HP);
 		}
-		mPointLightHandles[i]->reAttachPosition( mPointLightHandles[i], players[i]->getPos( ) );
+		mPointLightHandles[i]->reAttachPosition( players[i]->getPos( ) );
 	}
 
 	static int c = 0; c++;
@@ -73,14 +73,15 @@ void cLightManager::update( )
 
 	for ( int i = 0; i < mPlayerPositionBuffer.size( ) - 1; ++i )
 	{
-		mLineLightHandles[i]->reAttachLine( mLineLightHandles[i], mPlayerPositionBuffer[i], mPlayerPositionBuffer[i + 1] );
+		mLineLightHandles[i]->reAttachLine( mPlayerPositionBuffer[i], mPlayerPositionBuffer[i + 1] );
 	}
 }
-std::set<Light::PointLightHandle> const & cLightManager::getPointLights( ) const
+#pragma region ポイントライト
+std::map<int, Light::cPointLightParam const*> const & cLightManager::getPointLights( ) const
 {
 	return mPointLights;
 }
-boost::optional<std::set<Light::PointLightSoftHandle> const&> cLightManager::getPointLights( int chunkId ) const
+boost::optional<std::set<Light::cPointLightParam const*> const&> cLightManager::getPointLights( int chunkId ) const
 {
 	auto itr = mPointLightsMap.find( chunkId );
 	if ( itr != mPointLightsMap.end( ) )
@@ -94,39 +95,38 @@ boost::optional<std::set<Light::PointLightSoftHandle> const&> cLightManager::get
 }
 Light::PointLightHandle cLightManager::addPointLight( cinder::vec3 position, cinder::vec3 color, float radius )
 {
-	auto temp = mPointLights.insert( std::make_shared<Light::cPointLightParam>( position, color, radius ) );
-	if ( !temp.second )
-	{
-		throw std::runtime_error( "やばい." );
-	}
-	auto handle = ( *temp.first );
-	attachChunk( Light::PointLightHandle( handle ) );
+	int id = mPointLightId += 1;
+	auto handle = std::make_shared<Light::cPointLightParam>( id, position, color, radius );
+	mPointLights.insert( std::make_pair( id, handle.get( ) ) );
+	attachChunk( handle.get( ) );
 	return handle;
 }
-void cLightManager::removePointLight( Light::PointLightHandle handle )
+void cLightManager::removePointLight( int id, Light::cPointLightParam const* param )
 {
-	detachChunk( handle );
-	mPointLights.erase( handle );
+	detachChunk( param );
+	mPointLights.erase( id );
 }
-void cLightManager::attachChunk( Light::PointLightHandle handle )
+void cLightManager::attachChunk( Light::cPointLightParam const* param )
 {
-	for ( int id : cFieldManager::getInstance( )->getChunkId( handle->getPosition( ), handle->getRadius( ) ) )
+	for ( int id : cFieldManager::getInstance( )->getChunkId( param->getPosition( ), param->getRadius( ) ) )
 	{
-		mPointLightsMap[id].insert( handle );
+		mPointLightsMap[id].insert( param );
 	}
 }
-void cLightManager::detachChunk( Light::PointLightHandle handle )
+void cLightManager::detachChunk( Light::cPointLightParam const* param )
 {
-	for ( int id : cFieldManager::getInstance( )->getChunkId( handle->getPosition( ), handle->getRadius( ) ) )
+	for ( int id : cFieldManager::getInstance( )->getChunkId( param->getPosition( ), param->getRadius( ) ) )
 	{
-		mPointLightsMap[id].erase( handle );
+		mPointLightsMap[id].erase( param );
 	}
 }
-std::set<Light::LineLightHandle> const & cLightManager::getLineLights( ) const
+#pragma endregion
+#pragma region ラインライト
+std::map<int, Light::cLineLightParam const*> const & cLightManager::getLineLights( ) const
 {
 	return mLineLights;
 }
-boost::optional<std::set<Light::LineLightSoftHandle>const&> cLightManager::getLineLights( int chunkId ) const
+boost::optional<std::set<Light::cLineLightParam const*>const&> cLightManager::getLineLights( int chunkId ) const
 {
 	auto itr = mLineLightsMap.find( chunkId );
 	if ( itr != mLineLightsMap.end( ) )
@@ -140,33 +140,31 @@ boost::optional<std::set<Light::LineLightSoftHandle>const&> cLightManager::getLi
 }
 Light::LineLightHandle cLightManager::addLineLight( cinder::vec3 beginPosition, cinder::vec3 endPosition, cinder::vec3 color, float radius )
 {
-	auto temp = mLineLights.insert( std::make_shared<Light::cLineLightParam>( beginPosition, endPosition, color, radius ) );
-	if ( !temp.second )
-	{
-		throw std::runtime_error( "やばい." );
-	}
-	auto handle = ( *temp.first );
-	attachChunk( Light::LineLightHandle( handle ) );
+	int id = mLineLightId += 1;
+	auto handle = std::make_shared<Light::cLineLightParam>( id, beginPosition, endPosition, color, radius );
+	mLineLights.insert( std::make_pair( id, handle.get( ) ) );
+	attachChunk( handle.get( ) );
 	return handle;
 }
-void cLightManager::removeLineLight( Light::LineLightHandle handle )
+void cLightManager::removeLineLight( int id, Light::cLineLightParam const* param )
 {
-	detachChunk( handle );
-	mLineLights.erase( handle );
+	detachChunk( mLineLights[id] );
+	mLineLights.erase( id );
 }
-void cLightManager::attachChunk( Light::LineLightHandle handle )
+void cLightManager::attachChunk( Light::cLineLightParam const* param )
 {
 	// 始点を判定に使った簡易なもの。
-	for ( int id : cFieldManager::getInstance( )->getChunkId( handle->getBeginPosition( ), handle->getRadius( ) ) )
+	for ( int id : cFieldManager::getInstance( )->getChunkId( param->getBeginPosition( ), param->getRadius( ) ) )
 	{
-		mLineLightsMap[id].insert( handle );
+		mLineLightsMap[id].insert( param );
 	}
 }
-void cLightManager::detachChunk( Light::LineLightHandle handle )
+void cLightManager::detachChunk( Light::cLineLightParam const* param )
 {
-	for ( int id : cFieldManager::getInstance( )->getChunkId( handle->getBeginPosition( ), handle->getRadius( ) ) )
+	for ( int id : cFieldManager::getInstance( )->getChunkId( param->getBeginPosition( ), param->getRadius( ) ) )
 	{
-		mLineLightsMap[id].erase( handle );
+		mLineLightsMap[id].erase( param );
 	}
 }
+#pragma endregion
 }

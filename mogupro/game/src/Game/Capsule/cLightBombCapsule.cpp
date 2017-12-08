@@ -40,7 +40,7 @@ void cLightBombCapsule::update(const float & delta_time)
 		mLight->color = ci::vec3(hsv.r, hsv.g, hsv.b);
 		mLightSinAngle += delta_time;
 		mLightRadius = mLightMaxRadius * ((1.f - mLightRate / 2.f) + mLightRate / 2.f*sin(mLightSinAngle));
-		mLight->reAttachRadius(mLight, mLightRadius);
+		mLight->reAttachRadius(mLightRadius);
 	}
 	
 }

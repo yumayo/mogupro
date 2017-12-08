@@ -6,26 +6,26 @@ namespace Game
 {
 namespace Light
 {
-class cPointLightParam : std::enable_shared_from_this<cPointLightParam>
+class cPointLightParam
 {
 public:
-	cPointLightParam( cinder::vec3 position, cinder::vec3 color, float radius )
-		: position( position )
+	cPointLightParam( int id, cinder::vec3 position, cinder::vec3 color, float radius )
+		: id( id )
+		, position( position )
 		, color( color )
 		, radius( radius )
-		, alreadyRemove( false )
 	{
 	}
 	~cPointLightParam( );
 public:
-	void reAttachPosition( Utility::softptr<cPointLightParam> handle, cinder::vec3 position );
-	void reAttachRadius( Utility::softptr<cPointLightParam> handle, float radius );
-	void reAttachPositionWithRadius( Utility::softptr<cPointLightParam> handle, cinder::vec3 position, float radius );
-	inline cinder::vec3 getPosition( )
+	void reAttachPosition( cinder::vec3 position );
+	void reAttachRadius( float radius );
+	void reAttachPositionWithRadius( cinder::vec3 position, float radius );
+	inline cinder::vec3 getPosition( ) const
 	{
 		return position;
 	}
-	inline float getRadius( )
+	inline float getRadius( ) const
 	{
 		return radius;
 	}
@@ -35,9 +35,8 @@ private:
 public:
 	cinder::vec3 color;
 private:
-	bool alreadyRemove;
+	int id;
 };
 using PointLightHandle = Utility::hardptr<cPointLightParam>;
-using PointLightSoftHandle = Utility::softptr<cPointLightParam>;
 }
 }

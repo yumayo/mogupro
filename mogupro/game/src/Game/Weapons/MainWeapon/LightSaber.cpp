@@ -226,14 +226,14 @@ void Game::Weapon::LightSaber::Attack(const float & delta_time)
 	if (charge_is_attack) {
 		if (light != nullptr) {
 			light->color = ci::vec3(shock_wave_time, shock_wave_time, 0);
-			light->reAttachPositionWithRadius(light, weapon_draw_pos, shock_wave_time);
+			light->reAttachPositionWithRadius(weapon_draw_pos, shock_wave_time);
 		}
 		weapon_draw_pos = player_pos + glm::normalize(ci::vec3(sin(rotate.x + player_rotate_x), sin(rotate.y), cos(rotate.x + player_rotate_x)));
 	}
 	else {
 		if (light != nullptr) {
 			light->color = ci::vec3(0.5f, 0.5f, 0);
-			light->reAttachPositionWithRadius(light, weapon_draw_pos, 2);
+			light->reAttachPositionWithRadius(weapon_draw_pos, 2);
 		}
 	}
 	
@@ -246,7 +246,7 @@ void Game::Weapon::LightSaber::Attack(const float & delta_time)
 	if (charge_is_attack_now) {
 		if (charge_light != nullptr) {
 			charge_light->color = ci::vec3(1, 1, 0);
-			charge_light->reAttachPositionWithRadius(charge_light, shock_pos, 2);
+			charge_light->reAttachPositionWithRadius(shock_pos, 2);
 		}
 		ShockCollisionPlayers();
 	}
