@@ -47,6 +47,8 @@ namespace Game {
 			ci::gl::VboMeshRef mesh;
 			//ステータス
 			PlayerStatus status;
+			//リスポーン位置
+			ci::vec3 start_position;
 			//掘ることが可能なブロックタイプ
 			std::shared_ptr<Game::Field::cBreakBlockType> block_type;
 			//設置位置
@@ -147,6 +149,13 @@ namespace Game {
 			}
 			void setPos(const ci::vec3 pos) {
 				if(active_user) return;
+				auto vec = pos - mCollider.getPosition();
+				if (vec.x >= 0.01f ||
+					vec.x <= -0.01f ||
+					vec.z >= 0.01f ||
+					vec.z <= -0.01f) {
+					normalized_player_vec = glm::normalize(vec);
+				}
 				mCollider.setPosition(pos);
 			}
 			//プレイヤーが動けない状態かどうか
@@ -157,6 +166,11 @@ namespace Game {
 			bool isDead() {
 				return is_dead;
 			}
+
+			bool getJumpFlag() {
+				return jump_flag;
+			}
+
 			//攻撃してきた敵のid
 			int getDamagedId() {
 				return damaged_id;
@@ -239,6 +253,10 @@ namespace Game {
 			//掘削中かどうかを返す
 			bool isDrilling() {
 				return drilling;
+			}
+
+			void setPlayerVec(ci::vec3 vec) {
+				normalized_player_vec = glm::normalize(vec);
 			}
 
 

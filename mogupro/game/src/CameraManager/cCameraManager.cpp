@@ -41,6 +41,7 @@ void cCameraManager::MovingCamera( )
 }
 void cCameraManager::ScatterCamera( )
 {
+	my_scatter = ci::vec2(0,0);
     if ( seconds < 0 )return;
     std::random_device rd;
     std::mt19937 mt( rd( ) );
