@@ -61,6 +61,8 @@ enum class PacketId : ubyte1
 	EVE_DAMAGE,
 	//
 	EVE_PLAYER_ATTACK,
+	//
+	EVE_FRAGMENT_GEM,
 
     //=========================================================//
     //                        Request                          //
@@ -117,6 +119,8 @@ enum class PacketId : ubyte1
 	REQ_RESULT,
 	//
 	REQ_PLAYER_ATTACK,
+	//
+	REQ_FRAGMENT_GEM,
 
     //=========================================================//
     //                        Response                         //

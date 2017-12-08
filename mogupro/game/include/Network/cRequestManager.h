@@ -163,6 +163,13 @@ public:
 private:
     std::stack<Packet::Request::cReqPlayerAttack> mReqPlayerAttack;
     std::map<ubyte4, double> mReqPlayerAttackSequenceIds;
+public:
+    boost::optional<Packet::Request::cReqFragmentGem> getReqFragmentGem( );
+    void ungetReqFragmentGem( Packet::Request::cReqFragmentGem&& data );
+    bool isNewReqFragmentGem( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Request::cReqFragmentGem> mReqFragmentGem;
+    std::map<ubyte4, double> mReqFragmentGemSequenceIds;
     // P=====END=====P
 };
 }

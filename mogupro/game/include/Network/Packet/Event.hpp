@@ -14,3 +14,4 @@
 #include<Network/Packet/Event/cEveTeamMember.h>
 #include<Network/Packet/Event/cEveDamage.h>
 #include<Network/Packet/Event/cEvePlayerAttack.h>
+#include<Network/Packet/Event/cEveFragmentGem.h>
