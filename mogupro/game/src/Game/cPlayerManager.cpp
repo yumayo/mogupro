@@ -45,7 +45,7 @@ void Game::cPlayerManager::playerAttack(const float & delta_time)
 	}
 }
 
-void Game::cPlayerManager::playerNormalMoveKey(const float& delta_time)
+ci::vec3 Game::cPlayerManager::playerNormalMoveKey(const float& delta_time)
 {
 	//プレイヤーの速度
 	float player_speed = active_player->getSpeed() * delta_time;
@@ -90,14 +90,15 @@ void Game::cPlayerManager::playerNormalMoveKey(const float& delta_time)
 		std::sqrtf(keybord_velocity.z);
 	}
 
-	active_player->move(keybord_velocity);
 
 	//ジャンプはMoveの後に呼ぶ
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_SPACE)) {
 		active_player->jump(true);
 	}
+
+	return keybord_velocity;
 }
-void Game::cPlayerManager::playerNormalMovePad(const float & delta_time)
+ci::vec3 Game::cPlayerManager::playerNormalMovePad(const float & delta_time)
 {
 	ci::vec3 pad_velocity = ci::vec3(0);
 
@@ -106,8 +107,7 @@ void Game::cPlayerManager::playerNormalMovePad(const float & delta_time)
 
 	pad_velocity += ci::vec3(z_axis*sin(CAMERA->getCameraAngle().x), 0.0f, z_axis*cos(CAMERA->getCameraAngle().x));
 	pad_velocity += ci::vec3(x_axis*cos(CAMERA->getCameraAngle().x), 0.0f, -x_axis*sin(CAMERA->getCameraAngle().x));
-
-	active_player->move(pad_velocity*ci::vec3(3));
+	return pad_velocity;
 }
 void Game::cPlayerManager::playerMove(const float & delta_time)
 {
@@ -136,9 +136,10 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 		playerDrillMove(delta_time);
 	}
 	else {
-		playerNormalMoveKey(delta_time);
-
-		playerNormalMovePad(delta_time);
+		ci::vec3 buf_axis = ci::vec3(0);
+		buf_axis += playerNormalMoveKey(delta_time);
+		buf_axis += playerNormalMovePad(delta_time);
+		active_player->move(buf_axis);
 	}
 
 }
