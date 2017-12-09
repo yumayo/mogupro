@@ -18,10 +18,11 @@ namespace Sound
 
 	void StereophonicManager::update()
 	{
-		for each(auto& m in stereophonics)
+		for(auto& m : stereophonics)
 		{
 			ci::vec3 pos =  Game::cPlayerManager::getInstance()->getActivePlayer()->getReferencePos();
 			m.position(pos.x, pos.y, pos.z);
+			
 			ci::vec3 direction = Game::cPlayerManager::getInstance()->getActivePlayer()->getReferencePlayerVec();
 			m.direction(direction.x, direction.y, direction.z);
 			m.soundPosition(m.sourcePos->x,m.sourcePos->y,m.sourcePos->z);
