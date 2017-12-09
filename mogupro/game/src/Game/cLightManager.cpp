@@ -10,6 +10,34 @@ void cLightManager::setup( )
 }
 void cLightManager::update( )
 {
+	{
+		auto it = mPointLightsMap.cbegin( );
+		while ( it != mPointLightsMap.cend( ) )
+		{
+			if ( it->second.empty( ) )
+			{
+				mPointLightsMap.erase( it++ );
+			}
+			else
+			{
+				++it;
+			}
+		}
+	}
+	{
+		auto it = mLineLightsMap.cbegin( );
+		while ( it != mLineLightsMap.cend( ) )
+		{
+			if ( it->second.empty( ) )
+			{
+				mLineLightsMap.erase( it++ );
+			}
+			else
+			{
+				++it;
+			}
+		}
+	}
 }
 #pragma region ポイントライト
 std::map<int, Light::cPointLightParam const*> const & cLightManager::getPointLights( ) const
@@ -88,15 +116,22 @@ void cLightManager::removeLineLight( int id, Light::cLineLightParam const* param
 }
 void cLightManager::attachChunk( Light::cLineLightParam const* param )
 {
-	// 始点を判定に使った簡易なもの。
-	for ( int id : cFieldManager::getInstance( )->getChunkId( param->getBeginPosition( ), param->getRadius( ) ) )
+	auto direction = param->getEndPosition( ) - param->getBeginPosition( );
+	direction = glm::normalize( direction );
+	auto distance = glm::distance( param->getBeginPosition( ), param->getEndPosition( ) );
+	auto center = param->getBeginPosition( ) + direction * distance * 0.5F;
+	for ( int id : cFieldManager::getInstance( )->getChunkId( center, param->getRadius( ) * 2.0F + distance * 0.5F ) )
 	{
 		mLineLightsMap[id].insert( param );
 	}
 }
 void cLightManager::detachChunk( Light::cLineLightParam const* param )
 {
-	for ( int id : cFieldManager::getInstance( )->getChunkId( param->getBeginPosition( ), param->getRadius( ) ) )
+	auto direction = param->getEndPosition( ) - param->getBeginPosition( );
+	direction = glm::normalize( direction );
+	auto distance = glm::distance( param->getBeginPosition( ), param->getEndPosition( ) );
+	auto center = param->getBeginPosition( ) + direction * distance * 0.5F;
+	for ( int id : cFieldManager::getInstance( )->getChunkId( center, param->getRadius( ) * 2.0F + distance * 0.5F ) )
 	{
 		mLineLightsMap[id].erase( param );
 	}
