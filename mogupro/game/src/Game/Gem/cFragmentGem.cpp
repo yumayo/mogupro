@@ -46,10 +46,10 @@ namespace Game
 
 		void cFragmentGem::lateUpdate(const float& delta_time)
 		{
+			handle->reAttachPosition(mPosition);
 			if (!mIsRigid) return;
 			mPosition = mAabb.getPosition();
 			mSpeed = mRb.getSpeed();
-			handle->reAttachPosition(mPosition);
 		}
 
 

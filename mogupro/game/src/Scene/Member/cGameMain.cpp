@@ -150,15 +150,11 @@ void cGameMain::shutDown( )
 
 void cGameMain::update( float deltaTime )
 {
-	ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
-
     Network::cUDPClientManager::getInstance( )->update( deltaTime );
     Network::cUDPServerManager::getInstance( )->update( deltaTime );
 	Sound::StereophonicManager::getInstance()->update(deltaTime);
     if ( Network::cUDPClientManager::getInstance( )->isConnected( ) )
     {
-		ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
-
 		if (sendEndSetup == false)
 		{
 			Network::cUDPClientManager::getInstance()->send(new Network::Packet::Request::cReqEndGamemainSetup());
@@ -175,8 +171,6 @@ void cGameMain::update( float deltaTime )
 			}
 		}
 
-		ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
-		
 		// 他のアップデートよりも先に行います。
 		Game::cGameManager::getInstance( )->preUpdate( deltaTime );
 
