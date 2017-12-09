@@ -149,13 +149,13 @@ namespace Game {
 			}
 			void setPos(const ci::vec3 pos) {
 				if(active_user) return;
-				/*auto vec = pos - mCollider.getPosition();
+				auto vec = pos - mCollider.getPosition();
 				if (vec.x >= 0.01f ||
 					vec.x <= -0.01f ||
 					vec.z >= 0.01f ||
 					vec.z <= -0.01f) {
 					normalized_player_vec = glm::normalize(vec);
-				}*/
+				}
 				mCollider.setPosition(pos);
 			}
 			//ƒvƒŒƒCƒ„[‚ª“®‚¯‚È‚¢ó‘Ô‚©‚Ç‚¤‚©
