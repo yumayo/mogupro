@@ -31,7 +31,16 @@ namespace Game
 
 	void cGemManager::draw()
 	{
-
+		
+		//auto con = ci::gl::context();
+		//const ci::gl::GlslProg* curGlslProg = con->getGlslProg();
+		//con->pushVao();
+		//con->getDefaultVao()->replacementBindBegin();
+		//mGemsVbo->buildVao(curGlslProg);
+		//con->getDefaultVao()->replacementBindEnd();
+		//con->setDefaultShaderVars();
+	 //   mGemsVbo->drawImpl();
+		//con->popVao();
 		ci::gl::draw(mGemsVbo);
 		for (size_t i = 0; i < mFragmentGems.size(); i++)
 		{
@@ -61,6 +70,15 @@ namespace Game
 					mFragmentGems[i]->draw();
 				}
 
+				//auto con = ci::gl::context();
+				//const ci::gl::GlslProg* curGlslProg = con->getGlslProg();
+				//con->pushVao();
+				//con->getDefaultVao()->replacementBindBegin();
+				//mGemsVbo->buildVao(curGlslProg);
+				//con->getDefaultVao()->replacementBindEnd();
+				//con->setDefaultShaderVars();
+				//mGemsVbo->drawImpl();
+				//con->popVao();
 				ci::gl::draw(mGemsVbo);
 				ci::gl::color(ci::Color(1, 1, 1));
 				ci::gl::popMatrices();
@@ -147,6 +165,7 @@ namespace Game
 	void cGemManager::buildMesh()
 	{
 		mesh->clear();
+		ci::vec2 tex[4] = { ci::vec2(0,0) ,ci::vec2(0,0) ,ci::vec2(0,0) ,ci::vec2(0,0) };
 		for (size_t i = 0; i < mGemStone.size(); i++)
 		{
 			auto indices       = mGemStone[i]->getIndices();
@@ -156,8 +175,7 @@ namespace Game
 			mesh->appendIndices(&indices[0], indices.size());
 			mesh->appendNormals(&mGemStone[i]->getNomals()[0], mGemStone[i]->getNomals().size());
 			mesh->appendColors(&mGemStone[i]->getColorAs()[0], mGemStone[i]->getColorAs().size());
-			for(int i = 0; i < 24; i++)
-			mesh->appendTexCoord(ci::vec2(0,0));
+			mesh->appendTexCoords0(tex, 4);
 
 			//Vert
 			mesh->appendPosition(pos + ci::vec3(scale.x, scale.y, scale.z));
@@ -236,7 +254,7 @@ namespace Game
 				for (int j = 0; j < mCreateFGemNum; j++)
 				{
 					ci::vec3 dir;
-					dir.x = ci::randInt(3, 3);
+					dir.x = ci::randInt(-3, 3);
 					dir.z = ci::randInt(-3, 3);
 					dir.y = 10;
 					mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mGemStone[i]->getPos(), mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType(),glm::normalize(dir)));
