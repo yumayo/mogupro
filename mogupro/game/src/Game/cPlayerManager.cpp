@@ -35,11 +35,11 @@ void Game::cPlayerManager::playerDrillMove(const float & delta_time)
 void Game::cPlayerManager::playerAttack(const float & delta_time)
 {
 	if (active_player->isDead())return;
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_t))
+	if (ENV->pushKey(ci::app::MouseEvent::RIGHT_DOWN))
 	{
 		cClientAdapter::getInstance()->sendPlayerAttack(active_player_id, 1);
 	}
-	if (ENV->pullKey(ci::app::KeyEvent::KEY_t))
+	if (ENV->pullKey(ci::app::MouseEvent::RIGHT_DOWN))
 	{
 		cClientAdapter::getInstance()->sendPlayerAttack(active_player_id, 2);
 	}
@@ -149,7 +149,7 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 
 	//Œ@‚é L1
 	if (ENV->isPadPress(ENV->BUTTON_5) &&
-		Game::cFieldManager::getInstance()->isBreakBlock(active_player->getPos() + (glm::normalize(CAMERA->getCamera().getViewDirection()) * ci::vec3(active_player->getStatus().drill_speed / 3)), 1)) {
+		Game::Field::WORLD_SIZE.y + 1 > active_player->getPos().y) {
 		active_player->Drilling(true);
 	}
 
@@ -186,7 +186,7 @@ void Game::cPlayerManager::keyMove(const float & delta_time)
 {
 	//Œ@í’†‚Ítrue 
 	if (ENV->pressKey(ci::app::MouseEvent::LEFT_DOWN) &&
-		Game::cFieldManager::getInstance()->isBreakBlock(active_player->getPos() + (glm::normalize(CAMERA->getCamera().getViewDirection()) * ci::vec3(active_player->getStatus().drill_speed / 3)), 0.5f)) {
+		Game::Field::WORLD_SIZE.y + 1 > active_player->getPos().y) {
 		active_player->Drilling(true);
 	}
 	else {
@@ -288,20 +288,12 @@ void Game::cPlayerManager::update(const float& delta_time)
 		it->update(delta_time);
 	}
 	killCamera(delta_time);
-	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), ci::quat());
+	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), ci::vec2(active_player->getRotateX(), active_player->getRotateY()));
 }
 
 void Game::cPlayerManager::draw()
 {
 	for (auto& it : players) {
-		if (it->getActiveUser()) {
-
-			if (CAMERA->getCameraMode() == CameraManager::CAMERA_MODE::TPS) {
-				it->draw();
-			}
-		}
-		else {
-			it->draw();
-		}
+		it->draw();
 	}
 }

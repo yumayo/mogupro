@@ -23,7 +23,7 @@ cServerAdapter::cServerAdapter( )
 	ubyte1 index = 0;
 	for ( auto& respo : Game::Field::RESPAWN_POINT )
 	{
-		mPlayers[index] = { index, true, respo, cinder::quat( ) };
+		mPlayers[index] = { index, true, respo, cinder::vec2(0) };
 		index += 1;
 	}
 }

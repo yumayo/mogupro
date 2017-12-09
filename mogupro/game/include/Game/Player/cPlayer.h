@@ -238,6 +238,11 @@ namespace Game {
 			float getRotateX() {
 				return save_rotate_x;
 			}
+
+			void setRotate(const float& x,const float& y) {
+				save_rotate_x = x;
+				save_rotate_y = y;
+			}
 			
 			//コリジョンの後に呼び出す
 			//プレイヤーの移動
