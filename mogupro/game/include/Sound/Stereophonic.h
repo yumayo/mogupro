@@ -159,7 +159,10 @@ namespace Sound
 		}
 		void update(float deltaTime);
 
+		void clearList();
+
 		void clear();
+
 
 		std::list<Stereophonic> stereophonics;
 	private:
