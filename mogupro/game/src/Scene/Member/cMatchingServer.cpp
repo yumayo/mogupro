@@ -90,31 +90,25 @@ namespace Scene
 				mCanUpdateServerAdapter = true;
 				mIsGameUpdate = true;
 				mGameStartTime = boost::posix_time::second_clock::universal_time();
-				mGameStartTime += boost::posix_time::seconds(10);
+				mGameStartTime += boost::posix_time::seconds(3);
 				mTimeStr = boost::posix_time::to_iso_string(mGameStartTime);
 
 				//ゲーム開始時間のTimerSet
-				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
-				{
-					for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
-					{
-						cUDPServerManager::getInstance()->send(m.networkHandle,
-							new cResSetGamestartTimer(mTimeStr));
-					}
-				}
+				cUDPServerManager::getInstance( )->broadcast( new cResSetGamestartTimer( mTimeStr ) );
 
-				n->run_action(Node::Action::repeat_forever::create(Node::Action::sequence::create(Node::Action::delay::create(0.5f),
-					Node::Action::call_func::create([this]
-				{
-					for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
-					{
-						for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
-						{
-							cUDPServerManager::getInstance()->send(m.networkHandle,
-								new cResSetGamestartTimer(mTimeStr));
-						}
-					}
-				}))));
+				// 一旦サーバーとのタイマー同期を凍結します。2017/12/09 yumayo
+				//n->run_action(Node::Action::repeat_forever::create(Node::Action::sequence::create(Node::Action::delay::create(0.5f),
+				//	Node::Action::call_func::create([this]
+				//{
+				//	for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				//	{
+				//		for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				//		{
+				//			cUDPServerManager::getInstance()->send(m.networkHandle,
+				//				new cResSetGamestartTimer(mTimeStr));
+				//		}
+				//	}
+				//}))));
 
 			}
 			if (mIsGameUpdate)

@@ -247,7 +247,7 @@ public:
 	softptr<ty> run_action( hardptr<ty> action )
 	{
 		_action_manager.add_action( action, shared_from_this( ) );
-		action->setup( );
+		std::static_pointer_cast<Action::action>( action )->setup( );
 		return action;
 	}
     softptr<Action::action> get_action_by_name( std::string const& name )const;
