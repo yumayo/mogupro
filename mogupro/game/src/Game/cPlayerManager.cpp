@@ -209,13 +209,11 @@ void Game::cPlayerManager::keyMove(const float & delta_time)
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_l)) {
 		active_player->receiveDamage(10.0f, 5);
 	}
-	//‘å–C‚ÉƒWƒFƒ€‚ð“ü‚ê‚é
-	if (ENV->pressKey(ci::app::KeyEvent::KEY_f)) {
-		auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];
-		if (cannon->getAABB().intersects(active_player->getAABB())) {
-			cannon->receivePlayerGem(active_player->getgems.size(), active_player_id);
-			active_player->getgems.clear();
-		}
+	//‘å–C‚ÉƒWƒFƒ€‚ð“ü‚ê‚é@Z
+	auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];
+	if (cannon->getAABB().intersects(active_player->getAABB())) {
+		cannon->receivePlayerGem(active_player->getgems.size(), active_player_id);
+		active_player->getgems.clear();
 	}
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_UP)) {
 		CAMERA->addCameraAngle(ci::vec2(0, 0.05f));
