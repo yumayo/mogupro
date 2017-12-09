@@ -161,8 +161,6 @@ namespace Sound
 
 		void clear();
 
-		void clear();
-
 		std::list<Stereophonic> stereophonics;
 	private:
 		ALCdevice*  device;
