@@ -35,10 +35,10 @@ namespace Sound
 			m.time -= deltaTime;
 		}
 
-		clear();
+		clearList();
 	}
 
-	void StereophonicManager::clear()
+	void StereophonicManager::clearList()
 	{
 		for (auto it = stereophonics.begin(); it != stereophonics.end(); ++it)
 		{
