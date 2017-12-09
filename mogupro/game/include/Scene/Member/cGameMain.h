@@ -21,7 +21,6 @@ public:
     void draw2D( );
     void resize( );
 private:
-	cinder::gl::GlslProgRef glsl;
     Game::SkyDome::cSkyDome skydome;
 	bool sendEndSetup;
 	bool endTimer;
