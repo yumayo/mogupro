@@ -122,6 +122,7 @@ namespace Sound
 		}
 
 		ci::vec3* sourcePos;
+		ci::vec3 currentSourcePos;
 
 		bool endPlay() const  { return end; }
 		std::shared_ptr<Buffer> buffer;

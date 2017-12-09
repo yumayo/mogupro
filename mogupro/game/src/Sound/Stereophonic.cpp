@@ -1,5 +1,6 @@
 #include <Sound/Stereophonic.h>
 #include <Game/cPlayerManager.h>
+#include <CameraManager/cCameraManager.h>
 namespace Sound
 {
 	void StereophonicManager::open()
@@ -21,11 +22,17 @@ namespace Sound
 		for (auto& m : stereophonics)
 		{
 			ci::vec3 pos = Game::cPlayerManager::getInstance()->getActivePlayer()->getReferencePos();
-			m.position(pos.x,pos.y,pos.z);
-			ci::vec3 direction = Game::cPlayerManager::getInstance()->getActivePlayer()->getReferencePlayerVec();
+			m.position(0,0,0);
+			ci::vec3 direction = CAMERA->getCameraLook();
+			direction = glm::normalize(direction);
 			m.direction(direction.x, direction.y, direction.z);
-			if(m.sourcePos != NULL)
-			m.soundPosition(m.sourcePos->x, m.sourcePos->y, m.sourcePos->z);
+			if (m.sourcePos != NULL)
+			{
+				m.currentSourcePos = *m.sourcePos;
+			}
+			ci::vec3 soundPos = m.currentSourcePos - pos;
+			soundPos = glm::normalize(soundPos);
+			m.soundPosition(soundPos.x, soundPos.y, soundPos.z);
 		}
 	}
 

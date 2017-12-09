@@ -30,6 +30,9 @@
 #include <Game/cGameManager.h>
 #include <Game/Field/FieldData.h>
 #include <Sound/Stereophonic.h>
+
+static ci::vec3 testSoundPos;
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -46,8 +49,7 @@ void cGameMain::setup( )
 										 cinder::app::loadAsset( "Shader/world.frag" ) );
 
     skydome.setup( );
-    CAMERA->setup( );
-
+    CAMERA->setup( ); 
     Shader::cShadowManager::getInstance( )->setup( );
     Game::cFieldManager::getInstance( )->setup( );
     Game::cStrategyManager::getInstance( )->setup( );
