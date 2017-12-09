@@ -36,7 +36,7 @@ bool cMatchingMemberManager::changeTeamNum(int teamNum, Network::cNetworkHandle 
 		if (p.teamNum == 0 || p.teamNum == 1)
 			teamNums[p.teamNum]++;
 	}
-	if (teamNums[teamNum] > 3)
+	if (teamNums[teamNum] > 4)
 		return false;
 
 	for (int i = 0; i < mPlayerDatas.size(); ++i)
