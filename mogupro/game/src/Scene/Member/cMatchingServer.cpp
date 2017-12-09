@@ -90,7 +90,7 @@ namespace Scene
 				mCanUpdateServerAdapter = true;
 				mIsGameUpdate = true;
 				mGameStartTime = boost::posix_time::second_clock::universal_time();
-				mGameStartTime += boost::posix_time::seconds(10);
+				mGameStartTime += boost::posix_time::seconds(3);
 				mTimeStr = boost::posix_time::to_iso_string(mGameStartTime);
 
 				//ÉQÅ[ÉÄäJénéûä‘ÇÃTimerSet
