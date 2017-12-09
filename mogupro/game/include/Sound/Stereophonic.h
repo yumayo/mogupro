@@ -39,6 +39,7 @@ namespace Sound
 			end(false)
 		{
 			source->bindBuffer(*buffer);
+			time = source->currentTime();
 			position();
 			direction();
 			soundPosition();
@@ -128,6 +129,7 @@ namespace Sound
 		std::shared_ptr<Buffer> buffer;
 		std::shared_ptr<Source> source;
 		bool end;
+		float time;
 	};
 
 	//! @fn    StereophonicManager
@@ -155,9 +157,7 @@ namespace Sound
 		{
 			stereophonics.push_back(Stereophonic(type,sourcePos));
 		}
-		void update();
-
-		void deleteMap(ci::vec3& sourcePos);
+		void update(float deltaTime);
 
 		void clear();
 

@@ -42,6 +42,8 @@ namespace Member
 {
 void cGameMain::setup( )
 {
+	ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
+
 	Game::cUIManager::getInstance( )->awake( );
 	Game::cDebugManager::getInstance( )->setup( );
 	Sound::StereophonicManager::getInstance()->open();
@@ -58,6 +60,8 @@ void cGameMain::setup( )
 
 	const int active_player_id = Network::cMatchingMemberManager::getInstance( )->mPlayerID;
 
+	ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
+
 	// チーム決め
 	std::vector<int> teams;
 	teams.emplace_back( Game::Player::Red );
@@ -71,9 +75,13 @@ void cGameMain::setup( )
     for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
     {
         teams[o.playerID] = o.teamNum;
+		ci::app::console( ) << __FILE__ << __LINE__ << "o.playerID: " << o.playerID << std::endl;
+		ci::app::console( ) << __FILE__ << __LINE__ << "o.teamNum: " << o.teamNum << std::endl;
     }
 	teams[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum;
 	
+	ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
+
 	// リスポーン位置の設定。
 	std::vector<ci::vec3> positions = Game::Field::RESPAWN_POINT;
     Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id, teams);
@@ -104,6 +112,8 @@ void cGameMain::setup( )
 	ENV->disablePadButton();
 	ENV->disablePadAxis();
 	Game::cUIManager::getInstance( )->disable( );
+
+	ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
 }
 
 void cGameMain::shutDown( )
@@ -140,11 +150,15 @@ void cGameMain::shutDown( )
 
 void cGameMain::update( float deltaTime )
 {
+	ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
+
     Network::cUDPClientManager::getInstance( )->update( deltaTime );
     Network::cUDPServerManager::getInstance( )->update( deltaTime );
 	Sound::StereophonicManager::getInstance()->update();
     if ( Network::cUDPClientManager::getInstance( )->isConnected( ) )
     {
+		ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
+
 		if (sendEndSetup == false)
 		{
 			Network::cUDPClientManager::getInstance()->send(new Network::Packet::Request::cReqEndGamemainSetup());
@@ -160,6 +174,8 @@ void cGameMain::update( float deltaTime )
 				continue;
 			}
 		}
+
+		ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
 		
 		// 他のアップデートよりも先に行います。
 		Game::cGameManager::getInstance( )->preUpdate( deltaTime );

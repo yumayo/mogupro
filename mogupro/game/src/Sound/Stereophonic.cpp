@@ -17,7 +17,7 @@ namespace Sound
 		alcCloseDevice(device);
 	}
 
-	void StereophonicManager::update()
+	void StereophonicManager::update(float deltaTime)
 	{
 		for (auto& m : stereophonics)
 		{
@@ -27,20 +27,23 @@ namespace Sound
 			direction = glm::normalize(direction);
 			m.direction(direction.x, direction.y, direction.z);
 			if (m.sourcePos != NULL)
-			{
 				m.currentSourcePos = *m.sourcePos;
-			}
 			ci::vec3 soundPos = m.currentSourcePos - pos;
 			soundPos = glm::normalize(soundPos);
 			m.soundPosition(soundPos.x, soundPos.y, soundPos.z);
+
+			m.time -= deltaTime;
 		}
+
+		clear();
 	}
 
-	void StereophonicManager::deleteMap(ci::vec3& sourcePos)
+	void StereophonicManager::clear()
 	{
 		for (auto it = stereophonics.begin(); it != stereophonics.end(); ++it)
 		{
-			if (it->sourcePos != &sourcePos)continue;
+			if (it->time > 0)continue;
+
 			stereophonics.erase(it);
 		}
 	}
