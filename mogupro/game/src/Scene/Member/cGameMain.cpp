@@ -154,7 +154,7 @@ void cGameMain::update( float deltaTime )
 
     Network::cUDPClientManager::getInstance( )->update( deltaTime );
     Network::cUDPServerManager::getInstance( )->update( deltaTime );
-	Sound::StereophonicManager::getInstance()->update();
+	Sound::StereophonicManager::getInstance()->update(deltaTime);
     if ( Network::cUDPClientManager::getInstance( )->isConnected( ) )
     {
 		ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
