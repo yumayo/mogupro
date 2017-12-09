@@ -13,8 +13,14 @@ public:
 public:
 	enum class State
 	{
-		// ロードが終わって全員を待機している時
-		STAND_BY,
+		//
+		INIT,
+		// 自分がロード中や他のプレイヤーのロードを待っている状態
+		LOAD,
+		// 自分のチームの確認をしている状態
+		MY_TEAM,
+		//　敵のチームの確認をしている状態
+		ENEMY_TEAM,
 		// プレイヤーにカメラが移動し、本当にバトルが開始されるまでの間
 		READY,
 		// ゲーム中
@@ -26,36 +32,27 @@ public:
 	};
 public:
 	// ゲーム開始パケットが届いたらステートごとの絶対移行時間を代入してください。
-	void setup( boost::posix_time::ptime ready, boost::posix_time::ptime battle, boost::posix_time::ptime battleEnd );
-	inline bool isStandBy( ) { return state == State::STAND_BY; }
-	inline bool isStandByShift( ) { return flash && ( state == State::BATTLE ); }
-	inline bool isReady( ) { return state == State::READY; }
-	inline bool isReadyShift( ) { return flash && ( state == State::READY ); }
-	inline bool isBattle( ) { return state == State::BATTLE; }
-	inline bool isBattleShift( ) { return flash && ( state == State::BATTLE ); }
-	inline bool isBattleEnd( ) { return state == State::BATTLE_END; }
-	inline bool isBattleEndShift( ) { return flash && ( state == State::BATTLE_END ); }
-	inline bool isResult( ) { return state == State::RESULT; }
-	inline bool isResultShift( ) { return flash && ( state == State::RESULT ); }
+	void setTime( boost::posix_time::ptime loadTime );
 	std::string getLeftBattleTime( );
-	void shiftResult( );
 	void preUpdate( float delta );
 	void update( float delta );
 	void draw( );
 private:
-	void shift( State state );
+	void skipReady( );
+	void addPreUpdate( State state, std::function<void( float )> method );
+	void addUpdate( State state, std::function<void( float )> method );
+	void next( );
 	//ループの開始と終わりはまだ未実装です０、０をいれてね
-	void playBgm(const std::string name, const float gain, const float loopbegin, const float loopend);
+	void playBgm( const std::string& name, const float gain, const float loopbegin, const float loopend );
+	void stopBgm( const std::string& name );
 	// 現在のステート
-	State state = State::STAND_BY;
+	State state = State::INIT;
 	// 一フレーム前のステート
 	State prevState = state;
 	// ステートが移った瞬間
 	bool flash = false;
 
-	bool isShiftResult = false;
-
-	bool skipReady = false; 
+	bool timeEmpty( );
 
 	// ステートごとの絶対移行時間。
 	// ゲームメインに移動した時点で明確に決めておきます。

@@ -24,11 +24,7 @@ private:
 	cinder::gl::GlslProgRef glsl;
     Game::SkyDome::cSkyDome skydome;
 	bool sendEndSetup;
-
 	bool endTimer;
-	float gameStartTimer;
-	boost::posix_time::ptime startTime;
-	boost::posix_time::ptime endTime;
 };
 }
 }

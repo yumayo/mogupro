@@ -75,10 +75,11 @@ void cGameMain::setup( )
 	// リスポーン位置の設定。
 	std::vector<ci::vec3> positions = Game::Field::RESPAWN_POINT;
     Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id, teams);
-	for ( int i = 4; i < positions.size( ); ++i )
-	{
-		Game::cPlayerManager::getInstance( )->getPlayer( i )->move( vec3( 0, 0, -0.01F ) );
-	}
+	// プレイヤーの向きを変えようとしたが失敗。
+	//for ( int i = 0; i < positions.size( ) / 2; ++i )
+	//{
+	//	Game::cPlayerManager::getInstance( )->getPlayer( i )->move( vec3( 0, 0, 0.01F ) );
+	//}
 
 	int seed = 20171031;
 	GemManager->setUp(vec3(0,0,0),
@@ -92,17 +93,10 @@ void cGameMain::setup( )
 	Game::cSubWeaponManager::getInstance()->setup();
 	Game::cUIManager::getInstance( )->setup( );
 
-	auto now = boost::posix_time::microsec_clock::local_time( );
-	auto ready = now + boost::posix_time::seconds( 9 );
-	auto battle = ready + boost::posix_time::seconds( 2 );
-	auto result = battle + boost::posix_time::minutes( 5 );
-	Game::cGameManager::getInstance( )->setup( ready, battle, result );
-
 	sendEndSetup = false;
 	endTimer = false;
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
-	gameStartTimer = -1.0f;
 
 	ENV->disableKeyButton( );
 	ENV->disablePadButton();
@@ -126,16 +120,20 @@ void cGameMain::shutDown( )
 	Particle::cParticleManager::removeInstance( );
 	Game::cGemManager::removeInstance( );
 	Game::cGameManager::removeInstance( );
+	cinder::app::console( ) << __LINE__ << std::endl;
 	// 全てのマネージャーのライトを削除するためライトを使っているマネージャーより下。
 	Game::cLightManager::removeInstance( );
+	cinder::app::console( ) << __LINE__ << std::endl;
 	// ライトを削除する時にチャンクIDを取得しているためライトより下。
 	Game::cFieldManager::getInstance( )->shutdown( );
 	Game::cFieldManager::removeInstance( );
+	cinder::app::console( ) << __LINE__ << std::endl;
 	// コライダーの削除に耐えるためフィールドより下。
 	Collision::cCollisionManager::removeInstance( );
 	//立体音響の削除
 	Sound::StereophonicManager::getInstance()->clear();
 	Sound::StereophonicManager::getInstance()->close();
+	cinder::app::console( ) << __LINE__ << std::endl;
 }
 
 void cGameMain::update( float deltaTime )
@@ -155,16 +153,9 @@ void cGameMain::update( float deltaTime )
 			while (auto resSetGamestartTimer = Network::cResponseManager::getInstance()->getResSetGamestartTimer())
 			{
 				boost::posix_time::ptime nowTime = boost::posix_time::second_clock::universal_time();
-				 startTime = boost::posix_time::from_iso_string(resSetGamestartTimer->mTimerStr);
-				gameStartTimer = (startTime.time_of_day().total_milliseconds() - nowTime.time_of_day().total_milliseconds()) / 1000.0f;
+				auto startTime = boost::posix_time::from_iso_string(resSetGamestartTimer->mTimerStr);
+				Game::cGameManager::getInstance( )->setTime( startTime );
 				continue;
-			}
-
-			gameStartTimer -= deltaTime;
-			if (gameStartTimer < 0.0f)
-			{
-				endTimer = true;
-				Network::cUDPClientManager::getInstance()->send(new Network::Packet::Request::cReqEndStartTimer());
 			}
 		}
 		

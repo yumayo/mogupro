@@ -8,6 +8,7 @@
 #include <Scene/Member/cMatchingServer.h>
 #include <Scene/cSceneManager.h>
 #include <Network.hpp>
+#include <Game/cGameManager.h>
 using namespace cinder;
 namespace Scene
 {
@@ -75,6 +76,7 @@ void cTitle::update( float deltaTime )
 			Network::cUDPClientManager::getInstance( )->open( );
 			Network::cUDPServerManager::getInstance( )->open( );
 			Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
+			Game::cGameManager::getInstance( )->setTime( boost::posix_time::microsec_clock::local_time() + boost::posix_time::seconds( 5 ) );
 			cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
 		}
 	}
