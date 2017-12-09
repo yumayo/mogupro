@@ -75,12 +75,17 @@ void cGameMain::setup( )
     for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
     {
         teams[o.playerID] = o.teamNum;
-		ci::app::console( ) << __FILE__ << __LINE__ << "o.playerID: " << o.playerID << std::endl;
-		ci::app::console( ) << __FILE__ << __LINE__ << "o.teamNum: " << o.teamNum << std::endl;
     }
 	teams[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum;
 	
 	ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
+
+	for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
+	{
+		ci::app::console( ) << __FILE__ << __LINE__ << "o.playerID: " << (int)o.playerID << std::endl;
+		ci::app::console( ) << __FILE__ << __LINE__ << "o.teamNum: " << (int)o.teamNum << std::endl;
+		ci::app::console( ) << __FILE__ << __LINE__ << "active_player_id: " << (int)active_player_id << std::endl;
+	}
 
 	// リスポーン位置の設定。
 	std::vector<ci::vec3> positions = Game::Field::RESPAWN_POINT;
