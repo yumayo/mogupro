@@ -251,13 +251,17 @@ namespace Game
 
 				Se.play();
 
+				ci::vec3 dir;
+				ci::vec3 offset;
 				for (int j = 0; j < mCreateFGemNum; j++)
 				{
-					ci::vec3 dir;
-					dir.x = ci::randInt(-3, 3);
-					dir.z = ci::randInt(-3, 3);
+					dir.x = ci::randInt(-6, 6);
+					dir.z = ci::randInt(-6, 6);
 					dir.y = 10;
-					mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mGemStone[i]->getPos(), mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType(),glm::normalize(dir)));
+					offset.x = ci::randFloat(-0.8, 0.8);
+					offset.y = ci::randFloat(-0.8, 0.8);
+					offset.z = ci::randFloat(-0.8, 0.8);
+					mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mGemStone[i]->getPos() + offset, mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType(),glm::normalize(dir)));
 					mFragmentGems[mFragmentGems.size() - 1]->setup();
 					addGems.push_back(mFragmentGems[mFragmentGems.size() - 1]);
 				}
