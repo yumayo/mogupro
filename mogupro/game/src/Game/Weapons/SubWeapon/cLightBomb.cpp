@@ -5,6 +5,9 @@
 #include<Particle/cParticleManager.h>
 #include"Resource\cSoundManager.h"
 #include <Game/cClientAdapter.h>
+#include"Sound/Wav.h"
+#include"Sound\Stereophonic.h"
+
 namespace Game
 {
 namespace Weapons
@@ -33,6 +36,7 @@ namespace Weapons
 		{
 			aabb.removeWorld();
 			rb.removeWorld();
+			//Sound::StereophonicManager::getInstance()->deleteMap(mPos);
 		}
 
 		void cLightBomb::dmageToPlayer(const int playerid)
@@ -119,10 +123,10 @@ namespace Weapons
 				if (gain <= 0.0f) {
 					gain = 0.0f;
 				}
-				Resource::cSoundManager::getInstance()->findSe("SubWeapon/bombexprotion.wav").setGain(gain);
-				Resource::cSoundManager::getInstance()->findSe("SubWeapon/bombexprotion.wav").play();
+			/*	Resource::cSoundManager::getInstance()->findSe("SubWeapon/bombexprotion.wav").setGain(gain);
+				Resource::cSoundManager::getInstance()->findSe("SubWeapon/bombexprotion.wav").play();*/
 				
-
+				Sound::StereophonicManager::getInstance()->add(Sound::Wav(ci::app::getAssetPath("SE/SubWeapon/bombexprotion2.wav").string()), mPos);
 
 				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
 					.scale(0.5f).
