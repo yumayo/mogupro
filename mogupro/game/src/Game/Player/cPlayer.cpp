@@ -490,16 +490,19 @@ void Game::Player::cPlayer::draw()
 		return;
 	}
 	ci::gl::translate(mPos); 
-	if (active_user) {
+	playerRotationY();
+	playerRotationX();
+	/*if (active_user) {
 		playerRotationY();
 		playerRotationX();
+		
 	}
 	else {
 		ci::gl::rotate(save_rotate_y, ci::vec3(0, 1, 0));
 		if (drilling) {
 			ci::gl::rotate(save_rotate_x, ci::vec3(1, 0, 0));
 		}
-	}
+	}*/
 	ci::gl::translate(-ci::vec3(0, 0.5f, 0));
 	ci::gl::scale(ci::vec3(0.01f, 0.01f, 0.012f));
 	ci::gl::draw(mesh);
