@@ -348,7 +348,7 @@ namespace Scene
 					drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * drillUI1Ps.size()),
 						ci::vec2(-200, 200 - 200 * drillUI1Ps.size()), "You"));
 				else
-					drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * drillUI1Ps.size()),
+					drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * drillUI2Ps.size()),
 						ci::vec2(200, 200 - 200 * drillUI2Ps.size()), "You"));
 			}
 			//TODO : ŽQ‰Á‚µ‚½ê‡‚ÆTeam‚ª•ÏX‚³‚ê‚½ê‡‚Í•ª‚¯‚é‚×‚«
@@ -361,7 +361,7 @@ namespace Scene
 					drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * drillUI1Ps.size()),
 						ci::vec2(-200, 200 - 200 * drillUI1Ps.size()), eveTeamMember->mNameStr));
 				else
-					drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * drillUI1Ps.size()),
+					drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * drillUI2Ps.size()),
 						ci::vec2(200, 200 - 200 * drillUI2Ps.size()), eveTeamMember->mNameStr));
 
 			}
