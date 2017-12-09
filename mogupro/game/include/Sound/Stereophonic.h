@@ -35,7 +35,7 @@ namespace Sound
 		template<class T>
 		explicit Stereophonic(T type,ci::vec3& pos) :
 			buffer(std::make_shared<Buffer>(type)),
-			source(std::make_shared<Source>()), sourcePos(&pos)
+			source(std::make_shared<Source>()), sourcePos(&pos),
 			end(false)
 		{
 			source->bindBuffer(*buffer);
