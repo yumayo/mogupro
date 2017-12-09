@@ -21,3 +21,4 @@
 #include<Network/Packet/Request/cReqAddCannonPower.h>
 #include<Network/Packet/Request/cReqResult.h>
 #include<Network/Packet/Request/cReqPlayerAttack.h>
+#include<Network/Packet/Request/cReqFragmentGem.h>

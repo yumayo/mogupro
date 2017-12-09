@@ -114,6 +114,13 @@ public:
 private:
     std::stack<Packet::Event::cEvePlayerAttack> mEvePlayerAttack;
     std::map<ubyte4, double> mEvePlayerAttackSequenceIds;
+public:
+    boost::optional<Packet::Event::cEveFragmentGem> getEveFragmentGem( );
+    void ungetEveFragmentGem( Packet::Event::cEveFragmentGem&& data );
+    bool isNewEveFragmentGem( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Event::cEveFragmentGem> mEveFragmentGem;
+    std::map<ubyte4, double> mEveFragmentGemSequenceIds;
     // P=====END=====P
 };
 }

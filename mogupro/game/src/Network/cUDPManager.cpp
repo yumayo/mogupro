@@ -207,6 +207,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
+        case Network::Packet::PacketId::EVE_FRAGMENT_GEM:
+        {
+            if ( cEventManager::getInstance( )->isNewEveFragmentGem( packetHeader ) )
+			{
+                Packet::Event::cEveFragmentGem data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cEventManager::getInstance( )->ungetEveFragmentGem( std::move( data ) );
+            }
+            break;
+        }
         case Network::Packet::PacketId::DLI_STRING:
         {
             if ( cDeliverManager::getInstance( )->isNewDliString( packetHeader ) )
@@ -464,6 +474,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
                 Packet::Request::cReqPlayerAttack data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
                 cRequestManager::getInstance( )->ungetReqPlayerAttack( std::move( data ) );
+            }
+            break;
+        }
+        case Network::Packet::PacketId::REQ_FRAGMENT_GEM:
+        {
+            if ( cRequestManager::getInstance( )->isNewReqFragmentGem( packetHeader ) )
+			{
+                Packet::Request::cReqFragmentGem data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cRequestManager::getInstance( )->ungetReqFragmentGem( std::move( data ) );
             }
             break;
         }
