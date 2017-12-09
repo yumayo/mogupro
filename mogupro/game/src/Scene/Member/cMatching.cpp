@@ -218,8 +218,11 @@ namespace Scene
 			if (sceneChange == true)
 			{
 				shutDown();
+				ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
 				cSceneManager::getInstance()->change<Scene::Member::cGameMain>();
+				ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
 				cSceneManager::getInstance()->now().setup();
+				ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
 			}
 
 		}
