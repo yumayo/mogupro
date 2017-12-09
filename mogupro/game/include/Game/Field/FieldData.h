@@ -18,13 +18,21 @@ using ChunkMap = std::unordered_map<ci::ivec3, cChunkRef>;
 using cBlockRef = std::shared_ptr<Game::Field::cBlock>;
 
 constexpr float
+#if _DEBUG
+BLOCK_SIZE = 0.5f,
+#else
 BLOCK_SIZE = 0.25f,
+#endif
 OFFSET_POSITION = BLOCK_SIZE / 2;
 constexpr int
 CHUNK_SIZE = 16,
 CHUNK_AREA = CHUNK_SIZE * CHUNK_SIZE,
 CHUNK_VOLUME = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE,
+#if _DEBUG
+CHUNK_RANGE_X = 4, CHUNK_RANGE_Y = 1, CHUNK_RANGE_Z = 4;
+#else
 CHUNK_RANGE_X = 8, CHUNK_RANGE_Y = 4, CHUNK_RANGE_Z = 8;
+#endif
 cinder::vec3 const WORLD_SIZE = cinder::vec3( Game::Field::CHUNK_RANGE_X, Game::Field::CHUNK_RANGE_Y, Game::Field::CHUNK_RANGE_Z ) * Game::Field::BLOCK_SIZE * (float)Game::Field::CHUNK_SIZE;
 std::vector<cinder::vec3> const RESPAWN_POINT =
 {
