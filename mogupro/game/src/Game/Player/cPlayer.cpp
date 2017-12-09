@@ -10,6 +10,8 @@
 #include <assert.h>
 #include <Resource/cSoundManager.h>
 #include <Particle/cParticleManager.h>
+#include <random>
+#include <Game/cPlayerManager.h>
 void Game::Player::cPlayer::playerRotationY()
 {
 	//プレイヤーの前方向
@@ -128,6 +130,16 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 	getgems.push_back(GemManager->getFragmentGem(_gemid));
 	GemManager->getFragmentGem(_gemid)->setIsActive(false);
 	
+	//ランダムの生成
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	std::uniform_real_distribution<float> random_x(-1, 1);
+	std::uniform_real_distribution<float> random_y(-1, 1);
+	std::uniform_real_distribution<float> random_z(-1, 1);
+	float buf_x = random_x(mt);
+	float buf_y = random_y(mt);
+	float buf_z = random_z(mt);
+
 	//無重力状態
 	GemManager->getFragmentGem(_gemid)->setIsRigid(false);
 	gem_production_end.insert(std::make_pair(_gemid, false));
@@ -142,7 +154,7 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 
 	getgems[index]->node->run_action(Node::Action::sequence::create(
 		Node::Action::ease<ci::EaseOutCirc>::create(
-			Node::Action::move_to::create(0.5f, getgems[index]->getPos() + ci::vec3(0,1,0))),
+			Node::Action::move_to::create(0.5f, getgems[index]->getPos() + ci::vec3(buf_x, buf_y, buf_z))),
 		Node::Action::ease<ci::EaseInCirc>::create(
 			Node::Action::move_to_target::create(0.5f, root))));
 
@@ -186,12 +198,30 @@ void Game::Player::cPlayer::collisionGems()
 	}
 }
 
+void Game::Player::cPlayer::deadGems()
+{
+	for (auto player : cPlayerManager::getInstance()->getPlayers()) {
+		if (player->getPlayerId() == damaged_id) {
+			for (auto& it : getgems) {
+				gem_production_end[it->getId()] = false;
+				it->setIsActive(true);
+				player->getGems(it->getId());
+			}
+			//処理したら抜ける
+			break;
+		}
+	}
+	
+	getgems.clear();
+}
+
 void Game::Player::cPlayer::dead()
 {
 	//自分が死んだらカメラを0.5秒揺らす
 	if (active_user) {
 		CAMERA->shakeCamera(0.1f,0.5f);
 	}
+	deadGems();
 	mRigidbody.setSpeed(ci::vec3(0));
 	mCollider.removeWorld();
 	mRigidbody.removeWorld();
@@ -276,7 +306,6 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 
 void Game::Player::cPlayer::gemsUpdate(const float& delta_time)
 {
-
 	for (auto& it : getgems) {
 		it->node->entry_update(delta_time);
 		ci::vec3 buf_pos = it->node->get_position_3d();
