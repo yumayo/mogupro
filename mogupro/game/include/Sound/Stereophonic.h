@@ -98,7 +98,7 @@ namespace Sound
 
 		void direction()
 		{
-			source->direction(0.0f,0.0f,0.0f);
+			source->direction(0.0f,0.0f,1.0f);
 		}
 
 		void soundPosition(const float x, const float y, const float z) const
@@ -108,7 +108,7 @@ namespace Sound
 
 		void soundPosition()
 		{
-			source->soundPosition(0.0f,0.0f,0.0f);
+			source->soundPosition(10.0f,0.0f,0.0f);
 		}
 
 		bool isPlaying() const 
