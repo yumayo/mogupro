@@ -110,14 +110,14 @@ public:
 		return camera_mode;
 	}
 	void setCameraFar(float& set_far) {
-		/*camera_far = set_far;
+		camera_far = set_far;
 		if (camera_far <= 0.5f) {
 			camera_mode = CAMERA_MODE::FPS;
 			camera_far = 0.4f;
 		}
 		else if(camera_far > 0.5f) {
 			camera_mode = CAMERA_MODE::TPS;
-		}*/
+		}
 	}
 
     //ƒJƒƒ‰‚ğ—h‚ç‚·ŠÖ”

@@ -52,7 +52,7 @@ void cClientAdapter::recvAllPlayers( )
         for ( auto& o : packet->mPlayerFormats )
         {
             players[o.playerId]->setPos( o.position );
-			players[o.playerId]->setRotate(o.rotation.x, o.rotation.x);
+			//players[o.playerId]->setRotate(o.rotation.x, o.rotation.x);
         }
     }
 	while ( auto packet = e->getEveDamage( ) )

@@ -29,10 +29,10 @@ void cLightManager::setup( )
 	switch ( activePlayer->getWhichTeam( ) )
 	{
 	case Game::Player::Team::Blue:
-		color = { 0.05, 0.05, 0.1 };
+		color = { 0.0, 0.0, 0.05 };
 		break;
 	case Game::Player::Team::Red:
-		color = { 0.1, 0.05, 0.05 };
+		color = { 0.05, 0.0, 0.0 };
 		break;
 	default:
 		break;
@@ -56,12 +56,12 @@ void cLightManager::update( )
 	for ( int i = 0; i < players.size( ); ++i )
 	{
 		if (players[i]->getWhichTeam() == Player::Blue) {
-			mPointLightHandles[i]->color = ci::vec3(1 - players[i]->getStatus().hp / Player::MAX_HP, 0, 1);
+			mPointLightHandles[i]->color = ci::vec3(0, 0, 1 - (players[i]->getStatus().hp / Player::MAX_HP) / 2);
 		}
 		if (players[i]->getWhichTeam() == Player::Red) {
-			mPointLightHandles[i]->color = ci::vec3(1, 0,1 - players[i]->getStatus().hp / Player::MAX_HP);
+			mPointLightHandles[i]->color = ci::vec3(1 - (players[i]->getStatus().hp / Player::MAX_HP)/2, 0,0);
 		}
-		mPointLightHandles[i]->reAttachPosition( players[i]->getPos( ) );
+		mPointLightHandles[i]->reAttachPositionWithRadius( players[i]->getPos( ),1 + 2 -  (players[i]->getStatus().hp / Player::MAX_HP) * 2);
 	}
 
 	static int c = 0; c++;
