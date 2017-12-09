@@ -44,13 +44,17 @@ namespace Game
 				mMachineAABB.removeWorld();
 				mDrillAABB.removeWorld();
 				mSlopeAABB.removeWorld();
+				int num = getgems.size();
+			
+				cGemManager::getInstance()->deleteFragmentGems(getgems);
+				getgems.clear();
 
-				for (auto& it : getgems) {
+			/*	for (auto& it : getgems) {
 					ci::vec3 randpos = ci::randVec3()*(mScale.x/4.f);
 					it->setPos(Game::cStrategyManager::getInstance()->getCannons()[int(cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam())]->getGemStorePos()+randpos);
-				}
+				}*/
 
-				Game::cStrategyManager::getInstance()->getCannons()[int(cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam())]->receiveQuarryGem(getgems,mPlayerId,ismyobject);
+				Game::cStrategyManager::getInstance()->getCannons()[int(cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam())]->receiveQuarryGem(num,mPlayerId,ismyobject);
 			}
 			void cQuarry::setup()
 			{
