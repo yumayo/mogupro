@@ -127,6 +127,13 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	//プレイヤーが死んでいたらカメラ以外操作不能
 	if (active_player->isDead())return;
 
+	//大砲にジェムを入れる　〇
+	auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];
+	if (cannon->getAABB().intersects(active_player->getAABB())) {
+		cannon->receivePlayerGem(active_player->getgems.size(), active_player_id);
+		active_player->getgems.clear();
+	}
+
 	keyMove(delta_time);
 
 	//パッドの時に攻撃が上書きされないように注意
@@ -174,6 +181,8 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 	if (ENV->isPadPress(ENV->BUTTON_3)) {
 		active_player->setSpeed(10.0f);
 	}
+	
+
 }
 void Game::cPlayerManager::keyMove(const float & delta_time)
 {
