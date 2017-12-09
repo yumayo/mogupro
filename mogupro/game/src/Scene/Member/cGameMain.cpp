@@ -14,7 +14,6 @@
 #include <Game/cClientAdapter.h>
 #include <Game/cServerAdapter.h>
 #include <Resource/TextureManager.h>
-#include <Shader/cShadowManager.h>
 #include <Node/renderer.hpp>
 #include <Node/action.hpp>
 #include <Network/cMatchingMemberManager.h>
@@ -47,12 +46,9 @@ void cGameMain::setup( )
 	Game::cUIManager::getInstance( )->awake( );
 	Game::cDebugManager::getInstance( )->setup( );
 	Sound::StereophonicManager::getInstance()->open();
-	glsl = cinder::gl::GlslProg::create( cinder::app::loadAsset( "Shader/world.vert" ), 
-										 cinder::app::loadAsset( "Shader/world.frag" ) );
 
     skydome.setup( );
     CAMERA->setup( ); 
-    Shader::cShadowManager::getInstance( )->setup( );
     Game::cFieldManager::getInstance( )->setup( );
     Game::cStrategyManager::getInstance( )->setup( );
 
@@ -103,7 +99,7 @@ void cGameMain::setup( )
 						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Z),Game::Field::BLOCK_SIZE,0.5,100,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
 	Game::cLightManager::getInstance( )->setup( );
-	Game::cShaderManager::getInstance( )->setup( );
+	Game::cShaderManager::getInstance( )->setup( true );
 	Game::cCapsuleManager::getInstance()->setup();
 	Game::cSubWeaponManager::getInstance()->setup();
 	Game::cUIManager::getInstance( )->setup( );
