@@ -32,6 +32,8 @@ namespace Game {
 			Motion motion;
 			ChargeMotion charge_motion;
 			float timer;
+			//push‚ğpress‚Ì‚æ‚¤‚Éˆµ‚¤
+			bool is_push;
 
 			//ÕŒ‚‚Í
 			float shock_wave_time;

@@ -32,11 +32,11 @@ struct PlayerFormat
     PlayerFormat( )
         : playerId( 0U )
         , position( cinder::vec3( 0.0F ) )
-        , rotation( cinder::quat( ) )
+        , rotation( cinder::vec2( 0.0F ) )
     {
 
     }
-    PlayerFormat( ubyte1 playerId, cinder::vec3 const& position, cinder::quat const& rotation )
+    PlayerFormat( ubyte1 playerId, cinder::vec3 const& position, cinder::vec2 const& rotation )
         : playerId( playerId )
         , position( position )
         , rotation( rotation )
@@ -45,7 +45,7 @@ struct PlayerFormat
     }
     ubyte1 playerId;
     cinder::vec3 position;
-    cinder::quat rotation;
+    cinder::vec2 rotation;
 };
 }
 }

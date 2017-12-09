@@ -22,17 +22,7 @@ void Game::Weapon::LightSaber::Attack1()
 	}))));
 
 	root_y->set_schedule_update();
-	//ライトあり
-	//root_x->run_action(Node::Action::sequence::create(
-	//	ease<ci::EaseOutCubic>::create(float_to::create(time, rotate.x, M_PI / 2, [this](float t) {
-	//	this->rotate.x = t;
-	//})), Node::Action::call_func::create([this]() {
-	//	//初期化
-	//	if (light != nullptr) {
-	//		Game::cLightManager::getInstance()->removePointLight(light);
-	//	}
-	//})
-	//	));
+	
 	root_y->run_action(Node::Action::sequence::create(
 		ease<ci::EaseOutCubic>::create(float_to::create(time, rotate.y, -M_PI / 2, [this](float t) {
 		this->rotate.y = t;
@@ -45,17 +35,6 @@ void Game::Weapon::LightSaber::Attack2()
 	float time = motion2;
 	motion = Motion::attack_2;
 	root_x->set_schedule_update();
-	//ライトあり
-	//root_x->run_action(Node::Action::sequence::create(
-	//	ease<ci::EaseOutCubic>::create(float_to::create(time, rotate.x, -M_PI / 2, [this](float t) {
-	//	this->rotate.x = t;
-	//})), Node::Action::call_func::create([this]() {
-	//	//初期化
-	//	if (light != nullptr) {
-	//		Game::cLightManager::getInstance()->removePointLight(light);
-	//	}
-	//})
-	//	));
 	root_x->run_action(Node::Action::sequence::create(
 		ease<ci::EaseOutCubic>::create(float_to::create(time, rotate.x, -M_PI / 2, [this](float t) {
 		this->rotate.x = t;
@@ -203,9 +182,11 @@ void Game::Weapon::LightSaber::Attack(const float & delta_time)
 		weapon_draw_pos = player_pos + glm::normalize(ci::vec3(sin(rotate.x + player_rotate_x), sin(rotate.y), cos(rotate.x + player_rotate_x)));
 	}
 	else {
-		if (light != nullptr) {
-			light->color = ci::vec3(0.5f, 0.5f, 0);
-			light->reAttachPositionWithRadius(weapon_draw_pos, 2);
+		if (is_attack) {
+			if (light != nullptr) {
+				light->color = ci::vec3(0.5f, 0.5f, 0);
+				light->reAttachPositionWithRadius(weapon_draw_pos, 2);
+			}
 		}
 	}
 	
@@ -257,9 +238,18 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 	player_rotate_x = cPlayerManager::getInstance()->getPlayer(player_id)->getRotateY();
 	player_rotate_y = cPlayerManager::getInstance()->getPlayer(player_id)->getRotateX();
 	
-	
+	if (push) {
+		is_push = true;
+	}
+	if (pull) {
+		is_push = false;;
+	}
 
 	if (!is_attack) {
+		//初期化
+		if (light != nullptr) {
+			light->reAttachPositionWithRadius(weapon_draw_pos, 0);
+		}
 		player_pos = cPlayerManager::getInstance()->getPlayer(player_id)->getPos();
 		ray[0].setOrigin(player_pos);
 		ray[0].setDirection(player_pos);
@@ -272,7 +262,7 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 		return;
 	}
 
-	if (push) {
+	if (is_push) {
 		if (light == nullptr) {
 			light = Game::cLightManager::getInstance()->addPointLight(player_pos + glm::normalize(ci::vec3(sin(rotate.x + player_rotate_x), sin(rotate.y), cos(rotate.x + player_rotate_x))), ci::vec3(0.5f, 0.5f, 0.0f), 0.5f);
 		}
@@ -283,8 +273,9 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 
 	//１段階目衝撃は
 	if (pull &&
-		shock_wave_time >= shock_wave_first &&
+		charge_flag1 &&
 		shock_wave_time < shock_wave_second) {
+		is_push = false;
 		charge_motion = ChargeMotion::charge_attack_1;
 		charge_is_attack_now = true;
 		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").stop();
@@ -304,21 +295,15 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 		shock_pos = cPlayerManager::getInstance()->getPlayer(player_id)->getPos();
 		player_vec = cPlayerManager::getInstance()->getPlayer(player_id)->getPlayerVec();
 		
-		//ライトあり
-		//root_shock->run_action(Node::Action::sequence::create(
-		//	Node::Action::move_to::create(0.5f, shock_pos + ci::vec3(player_vec.x, 0, player_vec.z)* range * ci::vec3(8)),
-		//	Node::Action::call_func::create([this]() {
-		//	//初期化
-		//	this->charge_is_attack_now = false;
-		//	if (charge_light != nullptr) {
-		//		Game::cLightManager::getInstance()->removePointLight(charge_light);
-		//	}
-		//})));
+		
 		root_shock->run_action(Node::Action::sequence::create(
 			Node::Action::move_to::create(0.5f, shock_pos + ci::vec3(player_vec.x, 0, player_vec.z)* range * ci::vec3(8)),
 			Node::Action::call_func::create([this]() {
 			//初期化
 			this->charge_is_attack_now = false;
+			if (light != nullptr) {
+				charge_light->reAttachPositionWithRadius(weapon_draw_pos, 0);
+			}
 		})));
 
 		for (auto it : cPlayerManager::getInstance()->getPlayers()) {
@@ -330,6 +315,7 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 	//2段階目衝撃は
 	if (pull &&
 		shock_wave_time >= shock_wave_second) {
+		is_push = false;
 		charge_motion = ChargeMotion::charge_attack_2;
 		charge_is_attack_now = true;
 		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").stop();
@@ -352,10 +338,9 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 			Node::Action::call_func::create([this]() {
 			//初期化
 			this->charge_is_attack_now = false;
-			//ライトあり
-			/*if (light != nullptr) {
-				Game::cLightManager::getInstance()->removePointLight(charge_light);
-			}*/
+			if (light != nullptr) {
+				charge_light->reAttachPositionWithRadius(weapon_draw_pos, 0);
+			}
 		})));
 
 		for (auto it : cPlayerManager::getInstance()->getPlayers()) {
@@ -366,6 +351,7 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 
 	//ひっかく処理
 	if (pull) {
+		is_push = false;
 		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").stop();
 		charge_flag1 = false;
 		charge_flag2 = false;
@@ -446,6 +432,7 @@ Game::Weapon::LightSaber::LightSaber(int player_id)
 	player_rotate_x = 0;
 	player_rotate_y = 0;
 	is_attack = false;
+	is_push = false;
 	player_pos = ci::vec3(0);
 	rotate = ci::vec2(-M_PI / 2, M_PI / 2);
 	timer = 0;
@@ -557,7 +544,7 @@ void Game::Weapon::LightSaber::draw()
 	}
 	if (!is_attack) return;
 	if (charge_is_attack_now) {
-		//ci::gl::drawStrokedCube(shock_aabb);
+		ci::gl::drawStrokedCube(aabb);
 		ci::gl::pushModelView();
 		ci::gl::translate(shock_pos);
 		ci::gl::rotate(M_PI / 2, ci::vec3(0, 1, 0));

@@ -52,6 +52,7 @@ void cClientAdapter::recvAllPlayers( )
         for ( auto& o : packet->mPlayerFormats )
         {
             players[o.playerId]->setPos( o.position );
+			players[o.playerId]->setRotate(o.rotation.x, o.rotation.x);
         }
     }
 	while ( auto packet = e->getEveDamage( ) )
@@ -172,7 +173,7 @@ void cClientAdapter::sendSetQuarry( cinder::vec3 const & position )
     packet->mPlayerId = cPlayerManager::getInstance( )->getActivePlayerId( );
     cUDPClientManager::getInstance( )->send( packet );
 }
-void cClientAdapter::sendPlayer( cinder::vec3 const & position, cinder::quat const & rotation )
+void cClientAdapter::sendPlayer( cinder::vec3 const & position, cinder::vec2 const & rotation )
 {
     auto packet = new cDliPlayer( );
     packet->mFormat.playerId = cPlayerManager::getInstance( )->getActivePlayerId( );

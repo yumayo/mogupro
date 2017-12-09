@@ -16,7 +16,7 @@ class cServerAdapter : public Utility::cSingletonAble<cServerAdapter>
 		Network::ubyte1 id;
 		Network::ubyte1 isLive;
 		cinder::vec3 position;
-		cinder::quat rotation;
+		cinder::vec2 rotation;
 	};
 public:
     cServerAdapter( );

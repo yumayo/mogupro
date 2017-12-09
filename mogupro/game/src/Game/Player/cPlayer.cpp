@@ -181,7 +181,7 @@ void Game::Player::cPlayer::collisionGems()
 			//プレイヤー用のパケットを作らないと
 			getGems(GemManager->getFragmentGems()[i]->getId());
 			//cClientAdapter::getInstance()->sendGetGemQuarry(player_id, GemManager->getGems()[i]->getId());
-			GemManager->breakGemStone(i);
+			//GemManager->breakGemStone(i);
 		}
 	}
 }
@@ -253,11 +253,18 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 {
 	drill_sound += delta_time;
 	if (!active_user) return;
+	mRigidbody.gravityOn();
 	drillingCamera(delta_time);
+	//掘られてなければ処理しない
 	if (!drilling)return;
+	if (Game::Field::WORLD_SIZE.y > mCollider.getPosition().y) {
+		mRigidbody.gravityOff();
+	}
 	if (drill_sound > 0.1f) {
-		Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").setGain(0.2f);
-		Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").play();
+		if(Game::cFieldManager::getInstance()->isBreakBlock(mCollider.getPosition() + (glm::normalize(CAMERA->getCamera().getViewDirection()) * ci::vec3(status.drill_speed / 3)),1)) {
+			Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").setGain(0.2f);
+			Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").play();
+		}
 		drill_sound = 0;
 	}
 	//自分の位置と、自分のベクトルの向きに対して掘る
@@ -312,7 +319,7 @@ Game::Player::cPlayer::cPlayer(
 	status.drill_range = 1;
 	status.jump_force = 10.0F;
 	status.speed = DEFAULT_SPEED;
-	status.drill_speed = DEFAULT_SPEED*2;
+	status.drill_speed = DEFAULT_SPEED*1.2f;
 	status.respawn_time = 7;
 	//武器の初期化
 	main_weapon = Weapon::cWeaponFactory::getInstance()->InstanceMainWeapon(static_cast<Weapon::MAIN_WEAPON>(main_weapon_id), id);
@@ -449,9 +456,21 @@ void Game::Player::cPlayer::draw()
 
 	ci::gl::pushModelView();
 	main_weapon->draw();
+	if (active_user&&
+		(CAMERA->getCameraMode() != CameraManager::CAMERA_MODE::TPS)) {
+		return;
+	}
 	ci::gl::translate(mPos); 
-	playerRotationY();
-	playerRotationX();
+	if (active_user) {
+		playerRotationY();
+		playerRotationX();
+	}
+	else {
+		ci::gl::rotate(save_rotate_y, ci::vec3(0, 1, 0));
+		if (drilling) {
+			ci::gl::rotate(save_rotate_x, ci::vec3(1, 0, 0));
+		}
+	}
 	ci::gl::translate(-ci::vec3(0, 0.5f, 0));
 	ci::gl::scale(ci::vec3(0.01f, 0.01f, 0.012f));
 	ci::gl::draw(mesh);

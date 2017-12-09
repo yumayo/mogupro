@@ -149,13 +149,13 @@ namespace Game {
 			}
 			void setPos(const ci::vec3 pos) {
 				if(active_user) return;
-				auto vec = pos - mCollider.getPosition();
+				/*auto vec = pos - mCollider.getPosition();
 				if (vec.x >= 0.01f ||
 					vec.x <= -0.01f ||
 					vec.z >= 0.01f ||
 					vec.z <= -0.01f) {
 					normalized_player_vec = glm::normalize(vec);
-				}
+				}*/
 				mCollider.setPosition(pos);
 			}
 			//プレイヤーが動けない状態かどうか
@@ -237,6 +237,11 @@ namespace Game {
 			}
 			float getRotateX() {
 				return save_rotate_x;
+			}
+
+			void setRotate(const float& x,const float& y) {
+				save_rotate_x = x;
+				save_rotate_y = y;
 			}
 			
 			//コリジョンの後に呼び出す
