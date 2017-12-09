@@ -5,7 +5,7 @@
 #include <Game/Strategy/cDrill.h>
 #include <Game/cFieldManager.h>
 #include <Game/cClientAdapter.h>
-
+#include <Game/cGemManager.h>
 
 void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
@@ -127,10 +127,11 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	//プレイヤーが死んでいたらカメラ以外操作不能
 	if (active_player->isDead())return;
 
-	//大砲にジェムを入れる　〇
+	//大砲にジェムを入れる
 	auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];
 	if (cannon->getAABB().intersects(active_player->getAABB())) {
 		cannon->receivePlayerGem(active_player->getgems.size(), active_player_id);
+		cGemManager::getInstance()->deleteFragmentGems(active_player->getgems);
 		active_player->getgems.clear();
 	}
 
