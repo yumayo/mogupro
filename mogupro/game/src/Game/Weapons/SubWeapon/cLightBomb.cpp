@@ -130,7 +130,7 @@ namespace Weapons
 
 				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
 					.scale(0.5f).
-					vanishTime(1.0f).
+					vanishTime(0.7f).
 					speed(0.85f).
 					textureType(Particle::ParticleTextureType::SPARK).
 					color(ci::ColorA::white()).

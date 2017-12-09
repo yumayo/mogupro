@@ -146,6 +146,15 @@ namespace Game
 
 			sendCollectMaxGem();
 		}
+
+		void cCannon::receiveQuarryGem(int getgemnum, int playerid, bool ismyobject)
+		{
+			if (mGetgems.size() >= GEM_MAXNUM)return;
+
+			if (ismyobject) {
+				Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(),getgemnum);
+			}
+		}
 	
 		ci::vec3 cCannon::getGemStorePos()
 		{
