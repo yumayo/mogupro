@@ -149,8 +149,9 @@ namespace Weapons
 			if (mIsContraction)return;
 			if (mLandcount >= 2.0f) {
 				mIsContraction = true;
-				Resource::cSoundManager::getInstance()->findSe("SubWeapon/frontexprotion.wav").setGain(0.4f);
-				Resource::cSoundManager::getInstance()->findSe("SubWeapon/frontexprotion.wav").play();
+				//Resource::cSoundManager::getInstance()->findSe("SubWeapon/frontexprotion.wav").setGain(0.4f);
+				//Resource::cSoundManager::getInstance()->findSe("SubWeapon/frontexprotion.wav").play();
+				Sound::StereophonicManager::getInstance()->add(Sound::Wav(ci::app::getAssetPath("SE/SubWeapon/frontexprotion2.wav").string()), mPos);
 				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
 					.scale(1.3f).vanishBeginTime(0.f).vanishTime(24.f/60.f).vanishTimeRange(0.0f).
 					easeTime(24.f).
