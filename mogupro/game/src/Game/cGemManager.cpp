@@ -313,19 +313,20 @@ namespace Game
 	{
 		for (size_t g = 0; g < gems.size(); g++)
 		{
-			std::vector<std::shared_ptr<Gem::cFragmentGem>>::iterator iterator = mFragmentGems.begin();
-			for (size_t i = 0; i < mFragmentGems.size(); i++)
+			size_t i = 0;
+			for (i = 0; i < mFragmentGems.size(); i++)
 			{
 				if (mFragmentGems[i]->getId() == gems[g]->getId())
 				{
-					mFragmentGems.erase(iterator);
+					mFragmentGems.erase(mFragmentGems.begin() + i);
 					break;
 				}
-				iterator++;
 			}
-
-			ci::app::console() << "This is no FragmentGem that has that " << gems[g]->getId() << std::endl;
-			break;;
+			if (i == mFragmentGems.size())
+			{
+				ci::app::console() << "This is no FragmentGem that has that " << gems[g]->getId() << std::endl;
+				break;
+			}
 		}
 	}
 }
