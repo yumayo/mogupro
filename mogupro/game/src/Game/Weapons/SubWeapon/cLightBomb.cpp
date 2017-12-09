@@ -126,7 +126,7 @@ namespace Weapons
 			/*	Resource::cSoundManager::getInstance()->findSe("SubWeapon/bombexprotion.wav").setGain(gain);
 				Resource::cSoundManager::getInstance()->findSe("SubWeapon/bombexprotion.wav").play();*/
 				
-				Sound::StereophonicManager::getInstance()->add(Sound::Wav(ci::app::getAssetPath("SE/SubWeapon/bombexprotion.wav").string()), mPos);
+				Sound::StereophonicManager::getInstance()->add(Sound::Wav(ci::app::getAssetPath("SE/SubWeapon/bombexprotion2.wav").string()), mPos);
 
 				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
 					.scale(0.5f).
