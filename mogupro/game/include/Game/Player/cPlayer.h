@@ -116,9 +116,10 @@ namespace Game {
 			void drill(const float& delta_time);
 
 			//ジェム関連
-			void getGems(const int& _gemid);
 			void collisionGems();
 			
+			//死んだときのジェムの処理
+			void deadGems();
 			void dead();
 			void respawn(const float& delta_time);
 			void resetPlayerStatus();
@@ -263,7 +264,8 @@ namespace Game {
 			void setPlayerVec(ci::vec3 vec) {
 				normalized_player_vec = glm::normalize(vec);
 			}
-
+			//ジェム関連
+			void getGems(const int& _gemid);
 
 			//attack = 攻撃力
 			//player_id = 攻撃を仕掛けたプレイヤーのid
