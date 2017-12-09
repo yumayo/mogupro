@@ -9,6 +9,7 @@
 #include <Utility/cSingletonAble.h>
 #include <Game/Gem/cGemStone.h>
 #include <Game/Gem/cFragmentGem.h>
+#include <array>
 #define GemManager Game::cGemManager::getInstance()
 
 
@@ -42,8 +43,8 @@ namespace Game
 		std::shared_ptr<Gem::cGemStone>                      getGemStone(int id);
 		std::vector<std::shared_ptr<Gem::cFragmentGem>>      breakGemStone(int id);
 		std::shared_ptr<Gem::cFragmentGem>                   getFragmentGem(int id);
-		void  deleteFragmentGem(int id);
-		void  deleteFragmentGems(std::vector<std::shared_ptr<Gem::cFragmentGem>> gems);
+		void                                                 deleteFragmentGem(int id);
+		void                                                 deleteFragmentGems(std::vector<std::shared_ptr<Gem::cFragmentGem>> gems);
 
 	private:
 
