@@ -147,7 +147,7 @@ void cUDPServerManager::connection( )
 
             mIdCount += 1;
 
-            send( p->mNetworkHandle, new Packet::Response::cResConnect( ), true );
+            send( p->mNetworkHandle, new Packet::Response::cResConnect( ), false );
 
 			// pingコルーチンを走らせる。
             using namespace Node::Action;
