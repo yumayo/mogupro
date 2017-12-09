@@ -207,16 +207,16 @@ std::vector<int> cChunkHolder::getChunkId( const ci::ivec3 & chunk_cell,
     auto chunk_layer = getChunkLayer( chunk_cell );
     chunks_id.push_back( chunk_layer->getChunkLayerId() );
 
-    if(radius < BLOCK_SIZE )
+    if ( radius < BLOCK_SIZE )
         return chunks_id;
 
     auto r = ivec3( int( radius / BLOCK_SIZE ) );
     auto s = block_cell - r;
     auto e = block_cell + r;
 
-    for ( int z = s.z; z <= e.z; z += r.z  * 2)
-        for ( int y = s.y; y <= e.y; y += r.y * 2 )
-            for ( int x = s.x; x <= e.x; x += r.x * 2 )
+    for ( int z = s.z; z <= e.z; z += r.z )
+        for ( int y = s.y; y <= e.y; y += r.y )
+            for ( int x = s.x; x <= e.x; x += r.x )
             {
                 auto layer = chunk_layer->getChunkLayer( ivec3( x, y, z ) );
                 if ( layer == nullptr )
