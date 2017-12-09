@@ -67,7 +67,7 @@ void cUDPServerManager::updateSend( )
 		auto& buf = client.second.buffer;
 
 		// リライアブルなデータを詰めます。
-		auto reliableData = mReliableManager.update( );
+		auto reliableData = client.second.reliableManager.update( );
 		std::copy( reliableData.begin(), reliableData.end(), std::back_inserter( buf ) );
 
         // 余ってたらパケットを送ります。
@@ -122,7 +122,7 @@ void cUDPServerManager::sendDataBufferAdd( cNetworkHandle const & networkHandle,
 		std::vector<char> buf;
 		buf.resize( buf.size( ) + byte );
 		memcpy( buf.data( ) + buf.size( ) - byte, &buffer, byte );
-		mReliableManager.append( std::move( buf ) );
+		itr->second.reliableManager.append( std::move( buf ) );
 	}
 	else
 	{

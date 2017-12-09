@@ -91,7 +91,5 @@ private:
     ubyte1 mIdCount;
 
 	ubyte4 mSequenceId;
-
-	cReliableManager mReliableManager;
 };
 }
