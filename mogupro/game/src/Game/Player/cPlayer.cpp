@@ -12,6 +12,7 @@
 #include <Particle/cParticleManager.h>
 #include <random>
 #include <Game/cPlayerManager.h>
+#include <Game/cLightManager.h>
 void Game::Player::cPlayer::playerRotationY()
 {
 	//プレイヤーの前方向
@@ -361,6 +362,20 @@ Game::Player::cPlayer::cPlayer(
 	block_type = std::make_shared<Game::Field::cBreakBlockType>(Game::Field::BlockType::NORMAL);
 
 	is_dead = false;
+
+	cinder::vec3 lightColor;
+	switch ( team )
+	{
+	case Player::Blue:
+		lightColor = ci::vec3( 0, 0, 1 - ( status.hp / Player::MAX_HP ) / 2 );
+		break;
+	case Player::Red:
+		lightColor = ci::vec3( 1 - ( status.hp / Player::MAX_HP ) / 2, 0, 0 );
+		break;
+	default:
+		break;
+	}
+	light = cLightManager::getInstance( )->addPointLight( mPos, lightColor, 1.0F );
 }
 
 
@@ -475,6 +490,22 @@ void Game::Player::cPlayer::update(const float & delta_time)
 	respawn(delta_time);
 	root->set_position_3d(mPos);
 	collisionGems();
+
+	// ライトの更新。
+	cinder::vec3 lightColor;
+	switch ( team )
+	{
+	case Player::Blue:
+		lightColor = ci::vec3( 0, 0, 1 - ( status.hp / Player::MAX_HP ) / 2 );
+		break;
+	case Player::Red:
+		lightColor = ci::vec3( 1 - ( status.hp / Player::MAX_HP ) / 2, 0, 0 );
+		break;
+	default:
+		break;
+	}
+	light->color = lightColor;
+	light->reAttachPositionWithRadius( mPos, 1 + 2 - ( status.hp / Player::MAX_HP ) * 2 );
 }
 
 void Game::Player::cPlayer::draw()
