@@ -29,6 +29,7 @@
 #include <boost/date_time.hpp>
 #include <Game/cGameManager.h>
 #include <Game/Field/FieldData.h>
+#include <Sound/Stereophonic.h>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -40,7 +41,7 @@ void cGameMain::setup( )
 {
 	Game::cUIManager::getInstance( )->awake( );
 	Game::cDebugManager::getInstance( )->setup( );
-
+	Sound::StereophonicManager::getInstance()->open();
 	glsl = cinder::gl::GlslProg::create( cinder::app::loadAsset( "Shader/world.vert" ), 
 										 cinder::app::loadAsset( "Shader/world.frag" ) );
 
@@ -132,13 +133,16 @@ void cGameMain::shutDown( )
 	Game::cFieldManager::removeInstance( );
 	// コライダーの削除に耐えるためフィールドより下。
 	Collision::cCollisionManager::removeInstance( );
+	//立体音響の削除
+	Sound::StereophonicManager::getInstance()->clear();
+	Sound::StereophonicManager::getInstance()->close();
 }
 
 void cGameMain::update( float deltaTime )
 {
     Network::cUDPClientManager::getInstance( )->update( deltaTime );
     Network::cUDPServerManager::getInstance( )->update( deltaTime );
-
+	Sound::StereophonicManager::getInstance()->update();
     if ( Network::cUDPClientManager::getInstance( )->isConnected( ) )
     {
 		if (sendEndSetup == false)
