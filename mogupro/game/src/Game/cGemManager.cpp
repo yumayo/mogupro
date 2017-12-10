@@ -31,7 +31,6 @@ namespace Game
 
 	void cGemManager::draw()
 	{
-		
 		//auto con = ci::gl::context();
 		//const ci::gl::GlslProg* curGlslProg = con->getGlslProg();
 		//con->pushVao();
@@ -41,6 +40,10 @@ namespace Game
 		//con->setDefaultShaderVars();
 	 //   mGemsVbo->drawImpl();
 		//con->popVao();
+
+		auto ctx = ci::gl::context( );
+		ci::gl::ScopedVao vaoScp( ctx->getDrawTextureVao( ) );
+		ci::gl::ScopedBuffer vboScp( ctx->getDrawTextureVbo( ) );
 		ci::gl::draw(mGemsVbo);
 		for (size_t i = 0; i < mFragmentGems.size(); i++)
 		{
@@ -165,7 +168,6 @@ namespace Game
 	void cGemManager::buildMesh()
 	{
 		mesh->clear();
-		ci::vec2 tex[4] = { ci::vec2(0,0) ,ci::vec2(0,0) ,ci::vec2(0,0) ,ci::vec2(0,0) };
 		for (size_t i = 0; i < mGemStone.size(); i++)
 		{
 			auto indices       = mGemStone[i]->getIndices();
@@ -175,7 +177,10 @@ namespace Game
 			mesh->appendIndices(&indices[0], indices.size());
 			mesh->appendNormals(&mGemStone[i]->getNomals()[0], mGemStone[i]->getNomals().size());
 			mesh->appendColors(&mGemStone[i]->getColorAs()[0], mGemStone[i]->getColorAs().size());
-			mesh->appendTexCoords0(tex, 4);
+
+			std::vector<cinder::vec2> texCoords;
+			for ( int i = 0; i < 24; ++i ) { texCoords.emplace_back( cinder::vec2( 0, 0 ) ); }
+			mesh->appendTexCoords0( texCoords.data(), texCoords.size() );
 
 			//Vert
 			mesh->appendPosition(pos + ci::vec3(scale.x, scale.y, scale.z));

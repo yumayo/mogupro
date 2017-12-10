@@ -4,6 +4,8 @@ uniform mat4	ciModelViewProjection;
 uniform float   deltaTime;
 in vec4			ciPosition;
 in vec4        ciColor;
+in vec4        ciNormal;
+in vec4        ciTexCoord0;
 out vec4         vColor;		
 
 void main( void ) {
