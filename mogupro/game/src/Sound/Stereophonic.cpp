@@ -44,7 +44,7 @@ namespace Sound
 		{
 			if (it->time > 0)continue;
 
-			stereophonics.erase(it);
+			it = stereophonics.erase(it);
 		}
 	}
 
