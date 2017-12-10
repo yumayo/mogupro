@@ -40,11 +40,14 @@ namespace Sound
 
 	void StereophonicManager::clearList()
 	{
-		for (auto it = stereophonics.begin(); it != stereophonics.end(); ++it)
+		for (auto it = stereophonics.begin(); it != stereophonics.end();)
 		{
-			if (it->time > 0)continue;
-
-			it = stereophonics.erase(it);
+			if (it->time < 0)
+			{
+				it = stereophonics.erase(it);
+				continue;
+			}
+			++it;
 		}
 	}
 
