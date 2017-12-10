@@ -41,10 +41,7 @@ namespace Scene
 		void cMatching::setup()
 		{
 			Network::cUDPClientManager::getInstance()->open();
-			auto& json = *Resource::cJsonManager::getInstance( )->find( "server.json" );
-			auto& ip = json["ip"];
-			auto addr = ip.asString( );
-			cUDPClientManager::getInstance()->connect( addr );
+			cUDPClientManager::getInstance()->connect( Resource::JSON["server.json"]["ip"].asString( ) );
 			mClassState = ClassState::NOT;
 			mWaitClassState = ClassState::NOT;
 			mPhaseState = PhaseState::NOT_IN_ROOM;

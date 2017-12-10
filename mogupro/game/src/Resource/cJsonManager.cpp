@@ -31,9 +31,9 @@ cJsonManager::cJsonManager( )
         }
     }
 }
-boost::optional<Json::Value const&> cJsonManager::find( std::string const & underAssetsUnderSEUnderPath )const noexcept
+boost::optional<Json::Value const&> cJsonManager::find( std::string const & underAssetsUnderJSONUnderPath )const noexcept
 {
-	auto findItr = mJsons.find( underAssetsUnderSEUnderPath );
+	auto findItr = mJsons.find( underAssetsUnderJSONUnderPath );
 	if ( findItr != mJsons.end( ) )
 	{
 		return findItr->second;
@@ -43,4 +43,5 @@ boost::optional<Json::Value const&> cJsonManager::find( std::string const & unde
 		return boost::none;
 	}
 }
+JsonSuppoter JSON;
 }
