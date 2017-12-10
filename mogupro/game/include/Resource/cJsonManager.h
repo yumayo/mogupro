@@ -21,12 +21,11 @@ struct JsonSuppoter
 	class JsonNotFound : public std::runtime_error
 	{
 	public:
-		explicit JsonNotFound( std::string const& message )
-			: std::runtime_error( message )
+		JsonNotFound( ) : std::runtime_error( "jsonファイルが見つかりません。" )
 		{
 		}
 	};
-	Json::Value const& operator[]( std::string const& underAssetsUnderJSONUnderPath )
+	Json::Value const& operator[]( std::string const& underAssetsUnderJSONUnderPath ) const
 	{
 		if ( auto json = cJsonManager::getInstance( )->find( underAssetsUnderJSONUnderPath ) )
 		{
@@ -34,9 +33,9 @@ struct JsonSuppoter
 		}
 		else
 		{
-			throw JsonNotFound( "jsonファイルがみつかりません" );
+			throw JsonNotFound( );
 		}
 	}
 };
-extern JsonSuppoter JSON;
+extern JsonSuppoter const JSON;
 }
