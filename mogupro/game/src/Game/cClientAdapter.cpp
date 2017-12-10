@@ -51,14 +51,13 @@ void cClientAdapter::recvAllPlayers( )
         auto players = Game::cPlayerManager::getInstance( )->getPlayers( );
         for ( auto& o : packet->mPlayerFormats )
         {
-            players[o.playerId]->setPos( o.position );
-			//players[o.playerId]->setRotate(o.rotation.x, o.rotation.x);
+			Game::cPlayerManager::getInstance( )->getPlayer( o.playerId )->setPos( o.position );
+			//Game::cPlayerManager::getInstance( )->getPlayer( o.playerId )->setRotate(o.rotation.x, o.rotation.x);
         }
     }
 	while ( auto packet = e->getEveDamage( ) )
 	{
-		cPlayerManager::getInstance( )->getPlayers( )[packet->enemyId]->receiveDamage(
-			packet->damage, packet->playerId );
+		Game::cPlayerManager::getInstance( )->getPlayer( packet->enemyId )->receiveDamage( packet->damage, packet->playerId );
 	}
 	while ( auto packet = e->getEvePlayerDeath( ) )
 	{

@@ -43,5 +43,5 @@ boost::optional<Json::Value const&> cJsonManager::find( std::string const & unde
 		return boost::none;
 	}
 }
-JsonSuppoter JSON;
+JsonSuppoter const JSON;
 }

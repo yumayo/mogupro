@@ -35,10 +35,13 @@ void cUDP::write( cNetworkHandle const& networkHandle, size_t sendDataByteNumber
 }
 void cUDP::close( )
 {
-    mIsPause = true;
-    mUdpSocket.close( );
-    mIoService.stop( );
-    mThreadIoService.join( );
+	if ( mUdpSocket.is_open( ) )
+	{
+		mIsPause = true;
+		mUdpSocket.close( );
+		mIoService.stop( );
+		mThreadIoService.join( );
+	}
 }
 void cUDP::open( )
 {
@@ -109,7 +112,7 @@ void cUDP::receive( )
         }
         else
         {
-			  std::lock_guard<std::mutex> m( mDataMutex );
+			std::lock_guard<std::mutex> m( mDataMutex );
             mCacheEndpoints.emplace_back( mRemoteEndpoint.address( ).to_string( ), mRemoteEndpoint.port( ), transferredBytes, mRemoteBuffer );
             std::fill_n( mRemoteBuffer.begin( ), transferredBytes, 0 );
         }
