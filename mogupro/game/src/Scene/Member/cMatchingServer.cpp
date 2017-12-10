@@ -38,14 +38,9 @@ namespace Scene
 			{
 				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
 				{
-					for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
-					{
-						cUDPServerManager::getInstance()->send(m.networkHandle,
-							new cEveTeamMember(p.teamNum, p.nameStr, p.playerID));
-					}
+					cUDPServerManager::getInstance()->broadcastOthers( m.networkHandle, new cEveTeamMember(m.teamNum, m.nameStr, m.playerID));
 				}
 			}))));
-			mCanUpdateServerAdapter = false;
 			mStartGame = false;
 			teamCount = 0;
 		}
@@ -57,61 +52,47 @@ namespace Scene
 		void cMatchingServer::update(float deltaTime)
 		{
 			cUDPServerManager::getInstance()->update(deltaTime);
+
 			updateServer(deltaTime);
-			n->entry_update(deltaTime);
 			checkReqMakeRoom();
 			checkReqInRoom();
 			checkTeamIn();
 			checkBeginGame();
 			resetMember();
+
+			n->entry_update(deltaTime);
 		}
 
 		void cMatchingServer::updateServer(float deltaTime)
 		{
-			if (mCanUpdateServerAdapter == false)
+			if ( cMatchingMemberManager::getInstance( )->mPlayerDatas.empty( ) ) return;
+
+			if ( !mIsGameUpdate )
 			{
-				while (auto reqEndGamemainSetup = cRequestManager::getInstance()->getReqEndGamemainSetup())
+				while ( auto reqEndGamemainSetup = cRequestManager::getInstance( )->getReqEndGamemainSetup( ) )
 				{
-					for (int i = 0; i < cMatchingMemberManager::getInstance()->mPlayerDatas.size(); ++i)
+					for ( int i = 0; i < cMatchingMemberManager::getInstance( )->mPlayerDatas.size( ); ++i )
 					{
-						if (reqEndGamemainSetup->mNetworkHandle
-							!= cMatchingMemberManager::getInstance()->mPlayerDatas[i].networkHandle)
+						if ( reqEndGamemainSetup->mNetworkHandle != cMatchingMemberManager::getInstance( )->mPlayerDatas[i].networkHandle )
 							continue;
-						cMatchingMemberManager::getInstance()->mPlayerDatas[i].canUpdate = true;
+						cMatchingMemberManager::getInstance( )->mPlayerDatas[i].canUpdate = true;
 					}
 				}
 
-				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				for each( auto m in cMatchingMemberManager::getInstance( )->mPlayerDatas )
 				{
-					if (m.canUpdate == false)
+					if ( m.canUpdate == false )
 						return;
 				}
-				n->remove_all_actions();
-				mCanUpdateServerAdapter = true;
+				n->remove_all_actions( );
 				mIsGameUpdate = true;
-				mGameStartTime = boost::posix_time::second_clock::universal_time();
-				mGameStartTime += boost::posix_time::seconds(3);
-				mTimeStr = boost::posix_time::to_iso_string(mGameStartTime);
+				mGameStartTime = boost::posix_time::microsec_clock::local_time( );
+				mGameStartTime += boost::posix_time::seconds( 5 );
+				mTimeStr = boost::posix_time::to_iso_string( mGameStartTime );
 
-				//ゲーム開始時間のTimerSet
 				cUDPServerManager::getInstance( )->broadcast( new cResSetGamestartTimer( mTimeStr ) );
-
-				// 一旦サーバーとのタイマー同期を凍結します。2017/12/09 yumayo
-				//n->run_action(Node::Action::repeat_forever::create(Node::Action::sequence::create(Node::Action::delay::create(0.5f),
-				//	Node::Action::call_func::create([this]
-				//{
-				//	for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
-				//	{
-				//		for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
-				//		{
-				//			cUDPServerManager::getInstance()->send(m.networkHandle,
-				//				new cResSetGamestartTimer(mTimeStr));
-				//		}
-				//	}
-				//}))));
-
 			}
-			if (mIsGameUpdate)
+			else
 			{
 				checkStartGameMember();
 				Game::cServerAdapter::getInstance()->update();
@@ -120,7 +101,7 @@ namespace Scene
 
 		void cMatchingServer::checkStartGameMember()
 		{
-			if (mStartGame != false)return;
+			if (mStartGame != false) return;
 
 			while (auto reqEndStartTimer = cRequestManager::getInstance()->getReqEndStartTimer())
 			{
@@ -248,7 +229,6 @@ namespace Scene
 			mIsGameUpdate = false;
 			cMatchingMemberManager::getInstance()->mPlayerDatas.clear();
 			cMatchingMemberManager::getInstance()->mMasterHandle = cNetworkHandle();
-			mCanUpdateServerAdapter = false;
 			cUDPServerManager::getInstance()->close();
 			cUDPServerManager::getInstance()->open();
 		}
