@@ -184,6 +184,8 @@ bool cChunkHolder::isBreakBlock( const ci::ivec3 & chunk_cell,
                     continue;
                 if ( block->isActive() == false )
                     continue;
+                if ( block->getType() == BlockType::UNBREAKING )
+                    continue;
                 if ( isPointToSphere( block->getPosition(), sphere_pos, radius ) == false )
                     continue;
 

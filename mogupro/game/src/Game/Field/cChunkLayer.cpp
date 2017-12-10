@@ -315,16 +315,36 @@ void cChunkLayer::createBlocks()
                 cBlockRef block;
                 block = std::make_shared<cBlock>( position, BLOCK_SIZE, id++ );
 
+
+
+
+                bool is_unbkreaking = false;
+                if ( y == 0 && mHeight == 0 )
+                    is_unbkreaking = true;
+
+                if ( ( x == 0 && getChunkCell().x == 0 ) )
+                    is_unbkreaking = true;
+                if ( ( z == 0 && getChunkCell().z == 0 ) )
+                    is_unbkreaking = true;
+
+                if ( ( x >= CHUNK_SIZE - 1 && getChunkCell().x >= CHUNK_RANGE_X - 1 ) )
+                    is_unbkreaking = true;
+                if ( ( z >= CHUNK_SIZE - 1 && getChunkCell().z >= CHUNK_RANGE_Z - 1 ) )
+                    is_unbkreaking = true;
+
+                if ( is_unbkreaking )
+                    block->setType( BlockType::UNBREAKING );
+
                 // 一番上のレイヤーはブロックを生成しない
                 if ( mHeight >= CHUNK_RANGE_Y )
                     block->setType( BlockType::AIR );
-
 
                 // Collider生成
                 block->setup();
                 int id = getIndex( x, y, z );
                 block->mId = id;
                 mBlocks[id] = block;
+
             }
 }
 

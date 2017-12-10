@@ -28,7 +28,7 @@ public: // Method
     BlockType setType( const BlockType & type );
     int getIndex();
     bool isActive();
-
+    
 public: // Member
 
     int mId;
