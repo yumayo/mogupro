@@ -10,6 +10,7 @@
 #include <Node/action.hpp>
 #include "CameraManager\cCameraManager.h"
 #include <Resource/TextureManager.h>
+#include <Resource/cJsonManager.h>
 
 using namespace Network;
 using namespace Network::Packet::Event;
@@ -40,7 +41,10 @@ namespace Scene
 		void cMatching::setup()
 		{
 			Network::cUDPClientManager::getInstance()->open();
-			cUDPClientManager::getInstance()->connect("10.25.30.157");
+			auto& json = *Resource::cJsonManager::getInstance( )->find( "server.json" );
+			auto& ip = json["ip"];
+			auto addr = ip.asString( );
+			cUDPClientManager::getInstance()->connect( addr );
 			mClassState = ClassState::NOT;
 			mWaitClassState = ClassState::NOT;
 			mPhaseState = PhaseState::NOT_IN_ROOM;
