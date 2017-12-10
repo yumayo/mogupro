@@ -255,7 +255,7 @@ void cGameManager::setTime( boost::posix_time::ptime loadTime )
 }
 std::string cGameManager::getLeftBattleTime( )
 {
-	auto duration = shiftSeconds[State::BATTLE_END] - pt::microsec_clock::local_time( );
+	auto duration = shiftSeconds[State::BATTLE] - pt::microsec_clock::local_time( );
 	if ( duration.is_negative( ) )
 	{
 		return "00:00";
@@ -269,8 +269,8 @@ void cGameManager::preUpdate( float delta )
 }
 void cGameManager::update( float delta )
 {
-	mUpdates[state]( delta );
 	root->entry_update( delta );
+	mUpdates[state]( delta );
 }
 void cGameManager::draw( )
 {

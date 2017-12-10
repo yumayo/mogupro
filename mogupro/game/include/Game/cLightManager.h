@@ -41,15 +41,9 @@ private:
 	void removeLineLight( int id, Light::cLineLightParam const* param );
 	void attachChunk( Light::cLineLightParam const* param );
 	void detachChunk( Light::cLineLightParam const* param );
-
 private:
 	int mLineLightId = 0;
 	std::map<int, Light::cLineLightParam const*> mLineLights;
 	std::map<int, std::set<Light::cLineLightParam const*>> mLineLightsMap;
-
-private: // プレイヤー更新用。
-	std::vector<Light::PointLightHandle> mPointLightHandles;
-	std::vector<cinder::vec3> mPlayerPositionBuffer;
-	std::vector<Light::LineLightHandle> mLineLightHandles;
 };
 }

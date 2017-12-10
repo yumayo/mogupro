@@ -14,7 +14,6 @@
 #include <Game/cClientAdapter.h>
 #include <Game/cServerAdapter.h>
 #include <Resource/TextureManager.h>
-#include <Shader/cShadowManager.h>
 #include <Node/renderer.hpp>
 #include <Node/action.hpp>
 #include <Network/cMatchingMemberManager.h>
@@ -47,12 +46,9 @@ void cGameMain::setup( )
 	Game::cUIManager::getInstance( )->awake( );
 	Game::cDebugManager::getInstance( )->setup( );
 	Sound::StereophonicManager::getInstance()->open();
-	glsl = cinder::gl::GlslProg::create( cinder::app::loadAsset( "Shader/world.vert" ), 
-										 cinder::app::loadAsset( "Shader/world.frag" ) );
 
     skydome.setup( );
     CAMERA->setup( ); 
-    Shader::cShadowManager::getInstance( )->setup( );
     Game::cFieldManager::getInstance( )->setup( );
     Game::cStrategyManager::getInstance( )->setup( );
 
@@ -75,12 +71,17 @@ void cGameMain::setup( )
     for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
     {
         teams[o.playerID] = o.teamNum;
-		ci::app::console( ) << __FILE__ << __LINE__ << "o.playerID: " << o.playerID << std::endl;
-		ci::app::console( ) << __FILE__ << __LINE__ << "o.teamNum: " << o.teamNum << std::endl;
     }
 	teams[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum;
 	
 	ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
+
+	for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
+	{
+		ci::app::console( ) << __FILE__ << __LINE__ << "o.playerID: " << (int)o.playerID << std::endl;
+		ci::app::console( ) << __FILE__ << __LINE__ << "o.teamNum: " << (int)o.teamNum << std::endl;
+		ci::app::console( ) << __FILE__ << __LINE__ << "active_player_id: " << (int)active_player_id << std::endl;
+	}
 
 	// リスポーン位置の設定。
 	std::vector<ci::vec3> positions = Game::Field::RESPAWN_POINT;
@@ -98,7 +99,7 @@ void cGameMain::setup( )
 						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Z),Game::Field::BLOCK_SIZE,0.5,100,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
 	Game::cLightManager::getInstance( )->setup( );
-	Game::cShaderManager::getInstance( )->setup( );
+	Game::cShaderManager::getInstance( )->setup( true );
 	Game::cCapsuleManager::getInstance()->setup();
 	Game::cSubWeaponManager::getInstance()->setup();
 	Game::cUIManager::getInstance( )->setup( );

@@ -7,6 +7,7 @@
 #include <Node/node.h>
 #include <Game/Weapons/WeaponBase.h>
 #include<Game/Weapons/UseSubWeapon/cUseSubWeapon.h>
+#include <Game/Light/cPointLightParam.h>
 namespace Game {
 	namespace Gem {
 		class cFragmentGem;
@@ -105,6 +106,9 @@ namespace Game {
 			ci::vec3 begin_pos;
 			Utility::hardptr<Node::node> root;
 			std::unordered_map<int,bool> gem_production_end;
+
+			// プレイヤーに常に付きまとうライト
+			Light::PointLightHandle light;
 
 			//Y軸回転
 			void playerRotationY();

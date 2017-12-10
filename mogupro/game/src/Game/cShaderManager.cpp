@@ -7,8 +7,10 @@
 using namespace ci;
 namespace Game
 {
-void cShaderManager::setup( )
+void cShaderManager::setup( bool useShadow )
 {
+	mUseShadow = useShadow;
+
 	int scale = 4096;
 	gl::Texture2d::Format depthFormat;
 	depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
@@ -24,8 +26,16 @@ void cShaderManager::setup( )
 	fboFormat.attachment( GL_DEPTH_ATTACHMENT, mShadowTex );
 	mFbo = gl::Fbo::create( mShadowTex->getWidth( ), mShadowTex->getHeight( ), fboFormat );
 
-	mGlsl = gl::GlslProg::create( app::loadAsset( "Shader/world.vert" ),
-								  app::loadAsset( "Shader/world.frag" ) );
+	if ( mUseShadow )
+	{
+		mGlsl = gl::GlslProg::create( app::loadAsset( "Shader/world.vert" ),
+									  app::loadAsset( "Shader/world.frag" ) );
+	}
+	else
+	{
+		mGlsl = gl::GlslProg::create( app::loadAsset( "Shader/worldNonShadow.vert" ),
+									  app::loadAsset( "Shader/worldNonShadow.frag" ) );
+	}
 
 	int size = 128;
 	vec3 pos( 80, 80, 80 );
@@ -128,36 +138,44 @@ void cShaderManager::uniformUpdate( int chunkId )
 }
 void cShaderManager::update( std::function<void( )> const& drawFunc )
 {
-	gl::enable( GL_POLYGON_OFFSET_FILL );
-	glPolygonOffset( 2.0f, 2.0f );
-	gl::ScopedFramebuffer framebuffer( mFbo );
-	gl::ScopedViewport viewport( mFbo->getSize( ) );
-	gl::ScopedGlslProg glsl( cinder::gl::getStockShader( cinder::gl::ShaderDef( ).texture( ) ) );
-	gl::clear( );
-	gl::enableDepth( );
-	gl::enableAlphaBlending( );
-	gl::setMatrices( mCamera );
-	drawFunc( );
-	gl::disable( GL_POLYGON_OFFSET_FILL );
+	if ( mUseShadow )
+	{
+		gl::enable( GL_POLYGON_OFFSET_FILL );
+		glPolygonOffset( 2.0f, 2.0f );
+		gl::ScopedFramebuffer framebuffer( mFbo );
+		gl::ScopedViewport viewport( mFbo->getSize( ) );
+		gl::ScopedGlslProg glsl( cinder::gl::getStockShader( cinder::gl::ShaderDef( ).texture( ) ) );
+		gl::clear( );
+		gl::enableDepth( );
+		gl::enableAlphaBlending( );
+		gl::setMatrices( mCamera );
+		drawFunc( );
+		gl::disable( GL_POLYGON_OFFSET_FILL );
+	}
 }
 void cShaderManager::draw( std::function<void( )> const& render )
 {
-	dot( vec3(), vec3() );
-
 	gl::ScopedGlslProg scpGlsl( mGlsl );
 
-	mGlsl->uniform( "uAmb", ColorA( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
+	mGlsl->uniform( "uAmb", vec4( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
 
 	mGlsl->uniform( "uPointLightNum", 0 );
 	mGlsl->uniform( "uLineLightNum", 0 );
 
-	gl::ScopedTextureBind texScope( mShadowTex, (uint8_t)1 );
-	vec3 lightPos = vec3( CAMERA->getCamera( ).getViewMatrix( ) * vec4( mCamera.getEyePoint( ), 1.0f ) );
-	mat4 shadowView = mCamera.getProjectionMatrix( ) * mCamera.getViewMatrix( );
-	mGlsl->uniform( "uShadowMap", 1 );
-	mGlsl->uniform( "uLightPos", lightPos );
-	mGlsl->uniform( "uShadowView", shadowView );
+	if ( mUseShadow )
+	{
+		gl::ScopedTextureBind texScope( mShadowTex, (uint8_t)1 );
+		vec3 shadowCameraViewPos = vec3( CAMERA->getCamera( ).getViewMatrix( ) * vec4( mCamera.getEyePoint( ), 1.0f ) );
+		mat4 shadowView = mCamera.getProjectionMatrix( ) * mCamera.getViewMatrix( );
+		mGlsl->uniform( "uShadowMap", 1 );
+		mGlsl->uniform( "uShadowCameraViewPos", shadowCameraViewPos );
+		mGlsl->uniform( "uShadowView", shadowView );
 
-	render( );
+		render( );
+	}
+	else
+	{
+		render( );
+	}
 }
 }

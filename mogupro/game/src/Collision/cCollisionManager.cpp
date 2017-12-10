@@ -110,11 +110,11 @@ void cCollisionManager::update( float delta )
     for ( auto& rigidBody : mRigidBodys )
     {
 		auto pos = rigidBody->mCollider.getPosition( );
-		if ( pos.x < 0 || Game::Field::WORLD_SIZE.x < pos.x ||
-			 pos.y < 0 || Game::Field::WORLD_SIZE.y < pos.y ||
-			 pos.z < 0 || Game::Field::WORLD_SIZE.z < pos.z )
+		if ( pos.x < 0 || Game::Field::WORLD_COLLISION_SIZE.x < pos.x ||
+			 pos.y < 0 || Game::Field::WORLD_COLLISION_SIZE.y < pos.y ||
+			 pos.z < 0 || Game::Field::WORLD_COLLISION_SIZE.z < pos.z )
 		{
-			pos = clamp( pos, cinder::vec3( 0, 0, 0 ), Game::Field::WORLD_SIZE + cinder::vec3( 0, 100, 0 ) );
+			pos = clamp( pos, cinder::vec3( 0, 0, 0 ), Game::Field::WORLD_COLLISION_SIZE );
 			rigidBody->mCollider.setPosition( pos );
 		}
         rigidBody->lateUpdate( delta );
