@@ -43,13 +43,13 @@ public:
     template<class type2>
     cSoftPointer& operator=( cSoftPointer<type2> const& right ) noexcept
     {
-        this->_Resetw( std::dynamic_pointer_cast<type>( right.lock( ) ) );
+		cSoftPointer( right ).swap( *this );
         return ( *this );
     }
     template<class type2>
     cSoftPointer& operator=( cHardPointer<type2> const& right ) noexcept
     {
-        this->_Resetw( std::dynamic_pointer_cast<type>( right ) );
+		cSoftPointer( right ).swap( *this );
         return ( *this );
     }
     // ポインタの実態を返します。

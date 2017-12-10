@@ -33,24 +33,10 @@ CHUNK_RANGE_X = 4, CHUNK_RANGE_Y = 1, CHUNK_RANGE_Z = 4;
 #else
 CHUNK_RANGE_X = 8, CHUNK_RANGE_Y = 4, CHUNK_RANGE_Z = 16;
 #endif
-cinder::vec3 const WORLD_SIZE = cinder::vec3( Game::Field::CHUNK_RANGE_X, Game::Field::CHUNK_RANGE_Y, Game::Field::CHUNK_RANGE_Z ) * Game::Field::BLOCK_SIZE * (float)Game::Field::CHUNK_SIZE;
-cinder::vec3 const WORLD_COLLISION_SIZE = WORLD_SIZE + cinder::vec3( 0.0F, 100.0F, 0.0F ) - BLOCK_SIZE;
-std::vector<cinder::vec3> const RESPAWN_POINT =
-{
-	{ WORLD_SIZE.x / 2 - 1.5F, WORLD_SIZE.y + 1.0F, 7.0F },
-	{ WORLD_SIZE.x / 2 - 0.5F, WORLD_SIZE.y + 1.0F, 7.0F },
-	{ WORLD_SIZE.x / 2 + 0.5F, WORLD_SIZE.y + 1.0F, 7.0F },
-	{ WORLD_SIZE.x / 2 + 1.5F, WORLD_SIZE.y + 1.0F, 7.0F },
-	{ WORLD_SIZE.x / 2 - 1.5F, WORLD_SIZE.y + 1.0F, WORLD_SIZE.z - 7.0F },
-	{ WORLD_SIZE.x / 2 - 0.5F, WORLD_SIZE.y + 1.0F, WORLD_SIZE.z - 7.0F },
-	{ WORLD_SIZE.x / 2 + 0.5F, WORLD_SIZE.y + 1.0F, WORLD_SIZE.z - 7.0F },
-	{ WORLD_SIZE.x / 2 + 1.5F, WORLD_SIZE.y + 1.0F, WORLD_SIZE.z - 7.0F },
-};
-std::vector<cinder::vec3> const CANNON_POINT =
-{
-	{ WORLD_SIZE.x / 2, WORLD_SIZE.y + 1.0F, 7.0F },
-	{ WORLD_SIZE.x / 2, WORLD_SIZE.y + 1.0F, WORLD_SIZE.z - 7.0F },
-};
+extern cinder::vec3 const WORLD_SIZE;
+extern cinder::vec3 const WORLD_COLLISION_SIZE;
+extern std::vector<cinder::vec3> const RESPAWN_POINT;
+extern std::vector<cinder::vec3> const CANNON_POINT;
 }
 }
 
