@@ -125,9 +125,11 @@ void cGameMain::shutDown( )
 	Game::cClientAdapter::removeInstance( );
 	Game::cServerAdapter::removeInstance( );
 	Game::cUIManager::removeInstance( );
-	Game::cStrategyManager::removeInstance( );
 	Game::cCapsuleManager::removeInstance( );
+	// サブウェポンの一つクァーリーは死ぬ時にプレイヤーマネージャーとストラテジーマネージャーに
+	// 依存しているのでそれより前。
 	Game::cSubWeaponManager::removeInstance( );
+	Game::cStrategyManager::removeInstance( );
 	Game::cPlayerManager::removeInstance( );
 	Game::cShaderManager::removeInstance( );
 	Particle::cParticleManager::removeInstance( );
