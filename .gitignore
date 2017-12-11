@@ -22,6 +22,11 @@ mogupro/librarys/cinder/*
 mogupro/librarys/boost/*
 !mogupro/librarys/boost/.gitkeep
 
+# FBX SDKのライブラリを除く
+# 別途でダウンロードしたzipを解凍してフォルダに入れてください。
+mogupro/librarys/FBX/*
+!mogupro/librarys/FBX/.gitkeep
+
 mogupro/game/assets/Log/*
 
 mogupro/librarys/MathGeoLib/proj/vc2017/*
