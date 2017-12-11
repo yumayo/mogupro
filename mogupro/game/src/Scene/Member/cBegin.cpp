@@ -3,6 +3,7 @@
 #include <Resource/cSoundManager.h>
 #include <Resource/TextureManager.h>
 #include <Resource/cJsonManager.h>
+#include <Resource/cFbxManager.h>
 #include <Scene/cSceneManager.h>
 #include <Scene/Member/cTitle.h>
 namespace Scene
@@ -15,6 +16,7 @@ void cBegin::setup( )
 	Resource::cSoundManager::getInstance( );
 	Resource::cJsonManager::getInstance( );
 	cSceneManager::getInstance( )->shift<cTitle>( );
+    Resource::cFbxManager::getInstance( );
 }
 void cBegin::shutDown( )
 {
