@@ -13,14 +13,14 @@ cReqLightBomb::cReqLightBomb( )
 void cReqLightBomb::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
     cImporter imp( data );
-    // ‰Ωø„ÅÑÊñπ: vec2 pos1, pos2; ubyte2 a1, a2;
+    // égÇ¢ï˚: vec2 pos1, pos2; ubyte2 a1, a2;
     // imp >> pos1 >> a1 >> pos2 >> a2;
 	imp >> playerId >> position >> speed;
 }
 ubyte2 cReqLightBomb::packetExport( char* const data )
 {
     cExporter exp( data );
-    // ‰Ωø„ÅÑÊñπ: vec2 pos1, pos2; ubyte2 a1, a2;
+    // égÇ¢ï˚: vec2 pos1, pos2; ubyte2 a1, a2;
     // exp << pos1 << a1 << pos2 << a2;
 	exp << playerId << position << speed;
     return exp;

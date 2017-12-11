@@ -1,4 +1,4 @@
-﻿#include <Node/Action/timeline.h>
+#include <Node/Action/timeline.h>
 namespace Node
 {
 namespace Action

@@ -14,14 +14,14 @@ void cDliPlayer::packetImport( cNetworkHandle networkHandle, ubyte2 transferredB
 {
     mNetworkHandle = networkHandle;
     cImporter imp( data );
-    // ‰Ωø„ÅÑÊñπ: vec2 pos1, pos2; ubyte2 a1, a2;
+    // égÇ¢ï˚: vec2 pos1, pos2; ubyte2 a1, a2;
     // imp >> pos1 >> a1 >> pos2 >> a2;
     imp >> mFormat.playerId >> mFormat.position >> mFormat.rotation;
 }
 ubyte2 cDliPlayer::packetExport( char* const data )
 {
     cExporter exp( data );
-    // ‰Ωø„ÅÑÊñπ: vec2 pos1, pos2; ubyte2 a1, a2;
+    // égÇ¢ï˚: vec2 pos1, pos2; ubyte2 a1, a2;
     // exp << pos1 << a1 << pos2 << a2;
     exp << mFormat.playerId << mFormat.position << mFormat.rotation;
     return exp;

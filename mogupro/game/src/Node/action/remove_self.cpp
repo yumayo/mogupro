@@ -1,4 +1,4 @@
-﻿#include <Node/Action/remove_self.h>
+#include <Node/Action/remove_self.h>
 #include <Node/node.h>
 namespace Node
 {

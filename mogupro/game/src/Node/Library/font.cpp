@@ -1,4 +1,4 @@
-ï»¿#define FONTSTASH_IMPLEMENTATION
+#define FONTSTASH_IMPLEMENTATION
 #include <Node/Library/font.h>
 #include <cinder/TriMesh.h>
 #include <cinder/gl/gl.h>
@@ -10,8 +10,8 @@ int font::create( void * userPtr, int width, int height ) noexcept
 {
     Context* gl = (Context*)userPtr;
 
-    // TIPS:ãƒ†ã‚¯ã‚¹ãƒãƒ£å†…éƒ¨å½¢å¼ã‚’GL_R8ã«ã—ã¨ã„ã¦
-    //      ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã§ãªã‚“ã¨ã‹ã™ã‚‹æ–¹å¼(from nanoVG)
+    // TIPS:ƒeƒNƒXƒ`ƒƒ“à•”Œ`®‚ğGL_R8‚É‚µ‚Æ‚¢‚Ä
+    //      ƒVƒF[ƒ_[‚Å‚È‚ñ‚Æ‚©‚·‚é•û®(from nanoVG)
     gl->atlas = cinder::gl::Texture2d::create( width, height,
                                                cinder::gl::Texture2d::Format( ).dataType( GL_UNSIGNED_BYTE ).internalFormat( GL_RED ) );
 
@@ -33,21 +33,21 @@ void font::update( void * userPtr, int * rect, const unsigned char * data ) noex
     int w = rect[2] - rect[0];
     int h = rect[3] - rect[1];
 
-    // TIPS:dataå´ã‚‚åˆ‡ã‚ŠæŠœã„ã¦è»¢é€ã™ã‚‹ã®ã§
-    //      ãã®æŒ‡å®šã‚‚å¿˜ã‚Œãªã„
+    // TIPS:data‘¤‚àØ‚è”²‚¢‚Ä“]‘—‚·‚é‚Ì‚Å
+    //      ‚»‚Ìw’è‚à–Y‚ê‚È‚¢
     glPixelStorei( GL_UNPACK_ROW_LENGTH, gl->width );
     glPixelStorei( GL_UNPACK_SKIP_PIXELS, rect[0] );
     glPixelStorei( GL_UNPACK_SKIP_ROWS, rect[1] );
 
     gl->atlas->update( data, GL_RED, GL_UNSIGNED_BYTE, 0, w, h, ci::ivec2( rect[0], rect[1] ) );
 
-    // è¨­å®šã—ãŸå¾Œã¯ã‚‚ã¨ã«æˆ»ã•ãªã„ã¨ãã®å¾Œã®ãƒ†ã‚¯ã‚¹ãƒãƒ£é”ãŒå£Šã‚Œã¦ã—ã¾ã†ã€‚
+    // İ’è‚µ‚½Œã‚Í‚à‚Æ‚É–ß‚³‚È‚¢‚Æ‚»‚ÌŒã‚ÌƒeƒNƒXƒ`ƒƒ’B‚ª‰ó‚ê‚Ä‚µ‚Ü‚¤B
     glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
     glPixelStorei( GL_UNPACK_SKIP_PIXELS, 0 );
     glPixelStorei( GL_UNPACK_SKIP_ROWS, 0 );
 }
-// FIXME: ci::glã®ã‚³ãƒ¼ãƒ‰ã‚’å‚è€ƒã«ã—ãŸ
-//        ã¡ã‚‡ã„ã¨é‡ã„
+// FIXME: ci::gl‚ÌƒR[ƒh‚ğQl‚É‚µ‚½
+//        ‚¿‚å‚¢‚Æd‚¢
 void font::draw( void * userPtr, const float * verts, const float * tcoords, const unsigned int * colors, int nverts ) noexcept
 {
     using namespace ci;

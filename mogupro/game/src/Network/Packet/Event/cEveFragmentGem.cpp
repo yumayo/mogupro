@@ -14,13 +14,13 @@ void cEveFragmentGem::packetImport( cNetworkHandle networkHandle, ubyte2 transfe
 {
     this->networkHandle = networkHandle;
     cImporter packet( data );
-    // ä½¿ã„æ–¹: vec2 pos1, pos2; ubyte2 a1, a2;
+    // g‚¢•û: vec2 pos1, pos2; ubyte2 a1, a2;
     // packet >> pos1 >> a1 >> pos2 >> a2;
 }
 ubyte2 cEveFragmentGem::packetExport( char* const data )
 {
     cExporter packet( data );
-    // ä½¿ã„æ–¹: vec2 pos1, pos2; ubyte2 a1, a2;
+    // g‚¢•û: vec2 pos1, pos2; ubyte2 a1, a2;
     // packet << pos1 << a1 << pos2 << a2;
     return packet;
 }

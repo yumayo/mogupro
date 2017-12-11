@@ -1,4 +1,4 @@
-ï»¿#include <Node/Action/action_manager.h>
+#include <Node/Action/action_manager.h>
 #include <algorithm>
 #include <Node/node.h>
 namespace Node
@@ -12,7 +12,7 @@ void action_manager::add_action( hardptr<action> act, hardptr<node> target )
 }
 softptr<action> action_manager::get_action_by_name( std::string const & name ) const
 {
-    // assert_log( !name.empty( ), "[action]ç„¡åŠ¹ãªåå‰ã§ã™ã€‚", return nullptr );
+    // assert_log( !name.empty( ), "[action]–³Œø‚È–¼‘O‚Å‚·B", return nullptr );
 
     std::hash<std::string> h;
     size_t hash = h( name );
@@ -30,7 +30,7 @@ softptr<action> action_manager::get_action_by_name( std::string const & name ) c
 }
 softptr<action> action_manager::get_action_by_tag( int tag ) const
 {
-    // assert_log( tag == node::INVALID_TAG, "[action]ç„¡åŠ¹ãªã‚¿ã‚°ã§ã™ã€‚", return nullptr );
+    // assert_log( tag == node::INVALID_TAG, "[action]–³Œø‚Èƒ^ƒO‚Å‚·B", return nullptr );
 
     auto itr = std::find_if( std::cbegin( _actions ), std::cend( _actions ), [ this, tag ] ( hardptr<action> const& act )
     {
@@ -54,31 +54,31 @@ void action_manager::remove_action( softptr<action> remove_act )
     {
         return act == remove_act;
     } );
-    // action_managerã®eraseã¯foræ–‡ã®ä¸­ã§å‘¼ã°ã‚Œãªã„ã“ã¨ãŒä¿è¨¼ã•ã‚Œã¦ã„ã¾ã™ã€‚
+    // action_manager‚Ìerase‚Ífor•¶‚Ì’†‚ÅŒÄ‚Î‚ê‚È‚¢‚±‚Æ‚ª•ÛØ‚³‚ê‚Ä‚¢‚Ü‚·B
     _actions.erase( erase_itr, std::end( _actions ) );
 }
 void action_manager::remove_action_by_tag( int tag )
 {
-    // assert_log( tag == node::INVALID_TAG, "[action]ç„¡åŠ¹ãªã‚¿ã‚°ã§ã™ã€‚", return );
+    // assert_log( tag == node::INVALID_TAG, "[action]–³Œø‚Èƒ^ƒO‚Å‚·B", return );
     if ( auto act = this->get_action_by_tag( tag ) )
     {
         remove_action( act );
     }
     else
     {
-        // log( "[action]remove_action_by_tag( \"%d\" ): å­ä¾›ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚", tag );
+        // log( "[action]remove_action_by_tag( \"%d\" ): q‹Ÿ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B", tag );
     }
 }
 void action_manager::remove_action_by_name( std::string const & name )
 {
-    // assert_log( !name.empty( ), "[action]ç„¡åŠ¹ãªåå‰ã§ã™ã€‚", return );
+    // assert_log( !name.empty( ), "[action]–³Œø‚È–¼‘O‚Å‚·B", return );
     if ( auto act = this->get_action_by_name( name ) )
     {
         remove_action( act );
     }
     else
     {
-        // log( "[action]remove_action_by_name( \"%s\" ): å­ä¾›ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚", name.c_str( ) );
+        // log( "[action]remove_action_by_name( \"%s\" ): q‹Ÿ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B", name.c_str( ) );
     }
 }
 bool action_manager::is_running( ) const
@@ -89,7 +89,7 @@ void action_manager::update( float delta )
 {
     for ( auto& act : _actions )
     {
-        // managerã¾ã§æº¢ã‚Œã¦ãã‚‹å€¤ã¯ç„¡è¦–ã—ã¾ã™ã€‚delay::create(0.0F)ã¨ã‹ã‚ã£ãŸã‚‰ç„¡é™ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚‹ã®ã§ã€‚
+        // manager‚Ü‚Åˆì‚ê‚Ä‚­‚é’l‚Í–³‹‚µ‚Ü‚·Bdelay::create(0.0F)‚Æ‚©‚ ‚Á‚½‚ç–³ŒÀƒ‹[ƒv‚É“ü‚é‚Ì‚ÅB
         act->update( delta );
     }
     auto erase = std::remove_if( std::begin( _actions ), std::end( _actions ), [ ] ( hardptr<action>& act )

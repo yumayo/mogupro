@@ -1,4 +1,4 @@
-﻿#include <Node/Action/float_to.h>
+#include <Node/Action/float_to.h>
 using namespace cinder;
 namespace Node
 {

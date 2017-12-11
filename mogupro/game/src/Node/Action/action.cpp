@@ -1,4 +1,4 @@
-﻿#include <Node/Action/action.h>
+#include <Node/Action/action.h>
 #include <Node/node.h>
 namespace Node
 {

@@ -1,4 +1,4 @@
-﻿#include <Node/Action/repeat_times.h>
+#include <Node/Action/repeat_times.h>
 namespace Node
 {
 namespace Action

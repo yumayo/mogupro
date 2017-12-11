@@ -1,4 +1,4 @@
-﻿#include <Node/Action/spawn.h>
+#include <Node/Action/spawn.h>
 #include <algorithm>
 namespace Node
 {

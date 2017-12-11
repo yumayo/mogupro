@@ -1,4 +1,4 @@
-﻿#include <Utility/cScopedMutex.h>
+#include <Utility/cScopedMutex.h>
 namespace Utility
 {
 cScopedMutex::cScopedMutex( cRecursionUsableMutex & mutex )

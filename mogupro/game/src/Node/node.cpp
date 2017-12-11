@@ -1,4 +1,4 @@
-ï»¿#include <Node/node.h>
+#include <Node/node.h>
 #include <cinder/gl/gl.h>
 #include <limits>
 #include <Utility/MessageBox.h>
@@ -36,7 +36,7 @@ bool node::entry_mouse_began( cinder::app::MouseEvent event )
         {
             try
             {
-                // å­ä¾›ãŒãƒ¢ãƒ¼ãƒ€ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã ã£ãŸå ´åˆ
+                // q‹Ÿ‚ªƒ‚[ƒ_ƒ‹ƒIƒuƒWƒFƒNƒg‚¾‚Á‚½ê‡
                 if ( _children[_riterator]->entry_mouse_began( event ) )
                 {
                     return true;
@@ -131,7 +131,7 @@ bool node::entry_touch_began( cinder::app::TouchEvent::Touch event )
         {
             try
             {
-                // å­ä¾›ãŒãƒ¢ãƒ¼ãƒ€ãƒ«ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã ã£ãŸå ´åˆ
+                // q‹Ÿ‚ªƒ‚[ƒ_ƒ‹ƒIƒuƒWƒFƒNƒg‚¾‚Á‚½ê‡
                 if ( _children[_riterator]->entry_touch_began( event ) )
                 {
                     return true;
@@ -402,7 +402,7 @@ void node::sort_children( std::function<bool( hardptr<node>&a, hardptr<node>&b )
 }
 void node::set_parent( softptr<node> value )
 {
-    // assert_log( _parent, "è¦ªãŒæœªå®šç¾©ã§ã™ã€‚", return );
+    // assert_log( _parent, "e‚ª–¢’è‹`‚Å‚·B", return );
     softptr<node> prev_parent = _parent;
     value->add_child( shared_from_this( ) );
     prev_parent->remove_child( shared_from_this( ) );
@@ -423,7 +423,7 @@ std::string const& node::get_name( ) const
 }
 softptr<node> node::get_child_by_name( std::string const & name ) const
 {
-    // assert_log( !name.empty( ), "[node]ç„¡åŠ¹ãªåå‰ã§ã™ã€‚", return nullptr );
+    // assert_log( !name.empty( ), "[node]–³Œø‚È–¼‘O‚Å‚·B", return nullptr );
     std::hash<std::string> h;
     size_t hash = h( name );
     auto itr = std::find_if( std::cbegin( _children ), std::cend( _children ), [ this, hash, name ] ( hardptr<node> const& child )
@@ -438,7 +438,7 @@ softptr<node> node::get_child_by_name( std::string const & name ) const
 }
 softptr<node> node::get_child_by_tag( int tag ) const
 {
-    // assert_log( tag != node::INVALID_TAG, "[node]ç„¡åŠ¹ãªã‚¿ã‚°ã§ã™ã€‚", return nullptr );
+    // assert_log( tag != node::INVALID_TAG, "[node]–³Œø‚Èƒ^ƒO‚Å‚·B", return nullptr );
     auto itr = std::find_if( std::cbegin( _children ), std::cend( _children ), [ this, tag ] ( hardptr<node> const& n )
     {
         return n->_tag == tag;
@@ -459,7 +459,7 @@ void node::remove_child( softptr<node> child )
     } );
     if ( erase_itr == std::end( _children ) ) return;
     auto index = std::distance( std::begin( _children ), erase_itr );
-    if ( _iteration_state == ( iteration::RUNNING | iteration::INCREMENT ) ) // ã‚³ãƒ”ãƒšã—ã¾ãã£ã¦ã‚‹ã®ã¯ã€è‡ªåˆ†è‡ªèº«ã‚’å‰Šé™¤ã—ãŸå¾Œã«thisã«ã‚¢ã‚¯ã‚»ã‚¹ã—ã¦ã—ã¾ã†ã¨ã€ã‚¨ãƒ©ãƒ¼ã«ãªã‚‹å¯èƒ½æ€§ãŒé«˜ã„ã®ã§ã€‚
+    if ( _iteration_state == ( iteration::RUNNING | iteration::INCREMENT ) ) // ƒRƒsƒy‚µ‚Ü‚­‚Á‚Ä‚é‚Ì‚ÍA©•ª©g‚ğíœ‚µ‚½Œã‚Éthis‚ÉƒAƒNƒZƒX‚µ‚Ä‚µ‚Ü‚¤‚ÆAƒGƒ‰[‚É‚È‚é‰Â”\«‚ª‚‚¢‚Ì‚ÅB
     {
         if ( index == _iterator ) { _children.erase( std::begin( _children ) + index ); _iterator--; throw exception_node_remove_self( ); }
         else { _children.erase( std::begin( _children ) + index ); if ( index < _iterator ) _iterator--; }
@@ -476,26 +476,26 @@ void node::remove_child( softptr<node> child )
 }
 void node::remove_child_by_name( std::string const & name )
 {
-    // assert_log( !name.empty( ), "[node]ç„¡åŠ¹ãªåå‰ã§ã™ã€‚", return );
+    // assert_log( !name.empty( ), "[node]–³Œø‚È–¼‘O‚Å‚·B", return );
     if ( auto child = this->get_child_by_name( name ) )
     {
         remove_child( child );
     }
     else
     {
-        // log( "[node]remove_child_by_name( \"%s\" ): å­ä¾›ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚", name.c_str( ) );
+        // log( "[node]remove_child_by_name( \"%s\" ): q‹Ÿ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B", name.c_str( ) );
     }
 }
 void node::remove_child_by_tag( int tag )
 {
-    // assert_log( tag != node::INVALID_TAG, "ç„¡åŠ¹ãªã‚¿ã‚°ã§ã™ã€‚", return );
+    // assert_log( tag != node::INVALID_TAG, "–³Œø‚Èƒ^ƒO‚Å‚·B", return );
     if ( auto child = this->get_child_by_tag( tag ) )
     {
         remove_child( child );
     }
     else
     {
-        // log( "[node]remove_child_by_tag( \"%d\" ): å­ä¾›ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚", tag );
+        // log( "[node]remove_child_by_tag( \"%d\" ): q‹Ÿ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B", tag );
     }
 }
 void node::remove_all_children( )
@@ -504,7 +504,7 @@ void node::remove_all_children( )
 }
 void node::remove_from_parent( )
 {
-    // assert_log( _parent, "[node]è¦ªãŒæœªå®šç¾©ã§ã™ã€‚", return );
+    // assert_log( _parent, "[node]e‚ª–¢’è‹`‚Å‚·B", return );
     _parent->remove_child( shared_from_this( ) );
 }
 softptr<node> node::get_root( )

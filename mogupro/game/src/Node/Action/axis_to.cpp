@@ -1,4 +1,4 @@
-﻿#include <Node/Action/axis_to.h>
+#include <Node/Action/axis_to.h>
 #include <Node/node.h>
 using namespace cinder;
 namespace Node

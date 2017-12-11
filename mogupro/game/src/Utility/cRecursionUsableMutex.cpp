@@ -1,4 +1,4 @@
-﻿#include <Utility/cRecursionUsableMutex.h>
+#include <Utility/cRecursionUsableMutex.h>
 namespace Utility
 {
 void cRecursionUsableMutex::lock( ) { mMutex.lock( ); }
