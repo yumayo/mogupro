@@ -10,6 +10,8 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time.hpp>
 #include <cinder/Rand.h>
+#include <Log/Log.h>
+
 using namespace Network;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
@@ -33,14 +35,14 @@ namespace Scene
 			n = Node::node::create();
 
 			n->add_child(font);
-			n->run_action(repeat_forever::create(sequence::create(delay::create(1.5f),
+		/*	n->run_action(repeat_forever::create(sequence::create(delay::create(1.5f),
 				call_func::create([this]
 			{
 				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
 				{
 					cUDPServerManager::getInstance()->broadcastOthers( m.networkHandle, new cEveTeamMember(m.teamNum, m.nameStr, m.playerID));
 				}
-			}))));
+			}))));*/
 			mStartGame = false;
 			teamCount = 0;
 		}
@@ -79,7 +81,7 @@ namespace Scene
 					}
 				}
 
-				for each( auto m in cMatchingMemberManager::getInstance( )->mPlayerDatas )
+				for ( auto m : cMatchingMemberManager::getInstance( )->mPlayerDatas )
 				{
 					if ( m.canUpdate == false )
 						return;
@@ -114,7 +116,7 @@ namespace Scene
 				}
 			}
 
-			for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+			for (auto m : cMatchingMemberManager::getInstance()->mPlayerDatas)
 			{
 				if (m.startGame == false)
 					return;
@@ -150,7 +152,7 @@ namespace Scene
 		{
 			while (auto reqInRoom = cRequestManager::getInstance()->getReqInRoom())
 			{
-				if (mOpenRoom != true ||
+				if (mOpenRoom != true || mPhaseState != PhaseState::IN_ROOM ||
 					cMatchingMemberManager::getInstance()->addRoomMembers(reqInRoom->mNetworkHandle) != true)
 				{
 					cUDPServerManager::getInstance()->send(reqInRoom->mNetworkHandle, new cResInRoom(false));
@@ -165,7 +167,6 @@ namespace Scene
 		{
 			while (auto reqWantTeamIn = cRequestManager::getInstance()->getReqWantTeamIn())
 			{
-				//int teamNum = ci::randInt(2);
 				int teamNum = teamCount % 2;
 				++teamCount;
  				if (cMatchingMemberManager::getInstance()->changeTeamNum(teamNum,
@@ -179,14 +180,15 @@ namespace Scene
 				//V‹K’Ç‰Á‚µ‚½Player‚Ìî•ñŽæ“¾
 				std::string newPlayerStr;
 				int newPlayerID;
-				for each(auto& m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				for (auto& m : cMatchingMemberManager::getInstance()->mPlayerDatas)
 				{
 					if (m.networkHandle != reqWantTeamIn->mNetworkHandle)continue;
 					newPlayerStr = m.nameStr;
 					newPlayerID = m.playerID;
 				}
 
-				for each(auto& m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				int count = 0;
+				for (auto& m : cMatchingMemberManager::getInstance()->mPlayerDatas)
 				{
 					if (m.networkHandle != reqWantTeamIn->mNetworkHandle)
 					{
@@ -197,9 +199,12 @@ namespace Scene
 						//V‹KPlayer‚É‘¼‚ÌŠù‘¶Player‚Ì‘—M
 						cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle,
 							new cEveTeamMember(m.teamNum, m.nameStr, m.playerID));
+						++count;
 					}
 				}
 			
+				Log::cLogManager::getInstance()->add("MatchingServer");
+				Log::cLogManager::getInstance()->writeLog("MatchingServer", "MatchingMember : " + std::to_string(count));
 			}
 		}
 
@@ -213,7 +218,7 @@ namespace Scene
 
 				mPhaseState = PhaseState::BEGIN_GAME;
 
-				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				for (auto m : cMatchingMemberManager::getInstance()->mPlayerDatas)
 				{
 					cUDPServerManager::getInstance()->send(m.networkHandle, new cResCheckBeginGame(m.playerID));
 				}

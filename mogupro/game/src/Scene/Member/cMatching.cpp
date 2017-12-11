@@ -11,28 +11,13 @@
 #include "CameraManager\cCameraManager.h"
 #include <Resource/TextureManager.h>
 #include <Resource/cJsonManager.h>
+#include <Log/Log.h>
 
 using namespace Network;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
 using namespace Network::Packet::Response;
 using namespace Node::Action;
-void drawRect(const ci::vec2& pos, const ci::vec2& size, const ci::ColorA& color)
-{
-	ci::gl::color(color);
-	ci::gl::drawSolidRect(ci::Rectf(ci::vec2(pos.x - size.x / 2.0f, pos.y - size.y / 2.0f),
-		ci::vec2(pos.x + size.x / 2.0f, pos.y + size.y / 2.0f)));
-}
-
-bool BoxToMouse(const ci::vec2& posA, const ci::vec2& sizeA, const ci::vec2& mousePos)
-{
-	if (posA.x - sizeA.x / 2 > mousePos.x)return false;
-	if (posA.x + sizeA.x / 2 < mousePos.x)return false;
-	if (posA.y - sizeA.y / 2 > mousePos.y)return false;
-	if (posA.y + sizeA.y / 2 < mousePos.y)return false;
-
-	return true;
-}
 
 namespace Scene
 {
@@ -49,7 +34,6 @@ namespace Scene
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mSelectTag = 0;
 			mPrevSelectTag = 0;
-			mAddMember = false;
 			mTeamNum = -1;
 			mBeginAnimation = false;
 			registerFunc();
@@ -356,19 +340,21 @@ namespace Scene
 						ci::vec2(200, 200 - 200 * drillUI2Ps.size()), "You"));
 			}
 			//TODO : ŽQ‰Á‚µ‚½ê‡‚ÆTeam‚ª•ÏX‚³‚ê‚½ê‡‚Í•ª‚¯‚é‚×‚«
+			int count = 0;
 			while (auto eveTeamMember = cEventManager::getInstance()->getEveTeamMember())
 			{
 				cMatchingMemberManager::getInstance()->addPlayerDatas(
 					eveTeamMember->mNameStr, eveTeamMember->mTeamNum, eveTeamMember->mPlayerID, cNetworkHandle("", 0));
-				mAddMember = true;
 				if (eveTeamMember->mTeamNum == 0)
 					drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * drillUI1Ps.size()),
 						ci::vec2(-200, 200 - 200 * drillUI1Ps.size()), eveTeamMember->mNameStr));
 				else
 					drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * drillUI2Ps.size()),
 						ci::vec2(200, 200 - 200 * drillUI2Ps.size()), eveTeamMember->mNameStr));
-
+				++ count;
 			}
+			Log::cLogManager::getInstance()->add("Matching");
+			Log::cLogManager::getInstance()->writeLog("Matching", "Matching : " + std::to_string(count));
 		}
 
 		void cMatching::addInRoomUI()
