@@ -165,6 +165,7 @@ void cUIManager::addRedCannonPower( int value )
 	auto scale = g->get_scale( );
 	redCannonPower += value;
 	scale.y = redCannonPower / 100.0F;
+	scale.y = clamp( scale.y, 0.0F, 1.0F );
 	g->set_scale( scale );
 }
 void cUIManager::addBlueCannonPower( int value )
@@ -173,6 +174,7 @@ void cUIManager::addBlueCannonPower( int value )
 	auto scale = g->get_scale( );
 	blueCannonPower += value;
 	scale.y = blueCannonPower / 100.0F;
+	scale.y = clamp( scale.y, 0.0F, 1.0F );
 	g->set_scale( scale );
 }
 void cUIManager::appendItem( int type )
