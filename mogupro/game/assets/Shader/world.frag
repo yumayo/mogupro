@@ -14,7 +14,7 @@ in vec3 vModelViewNormal;
 out vec4 oColor;
 
 // 影に使うやつ
-uniform vec3 uLightPos;
+uniform vec3 uShadowCameraViewPos;
 uniform sampler2DShadow uShadowMap;
 in vec4 vShadowCoord;
 in vec4 vShadowPosition;
@@ -55,10 +55,10 @@ void main()
     }
 
     // 影
-	vec3 LightVec		= normalize( uLightPos );
+	vec3 LightVec		= normalize( uShadowCameraViewPos );
     float NdotL			= max( dot( vShadowNormal, LightVec ), 0.0 );
 	vec3 Diffuse		= vec3( NdotL );
-	vec3 Ambient		= vec3( 0.3 );
+	vec3 Ambient		= vec3( 0.8 );
 	float Shadow		= 1.0;
 	vec4 ShadowCoord	= vShadowCoord / vShadowCoord.w;
 	if ( ShadowCoord.z > -1 && ShadowCoord.z < 1 ) 
@@ -73,7 +73,7 @@ void main()
         float lightDistance = distance( vModelViewPosition.xyz, uModelViewPointLightPositions[i] );
         if(lightDistance < uModelViewPointLightRadiuses[i])
         {
-            oColor.rgb += uModelViewPointLightColors[i] * (uModelViewPointLightRadiuses[i] - lightDistance) * ( 1.0F / uModelViewPointLightRadiuses[i] );
+            oColor.rgb += uModelViewPointLightColors[i] * (uModelViewPointLightRadiuses[i] - lightDistance) * ( 1.0 / uModelViewPointLightRadiuses[i] );
         }
     }
 
@@ -83,7 +83,7 @@ void main()
         float d = distancePointLine(vModelViewPosition.xyz, uModelViewLineLightPositionsA[i], uModelViewLineLightPositionsB[i] );
         if(d < uModelViewLineLightRadiuses[i])
         {
-            oColor.rgb += uModelViewLineLightColors[i] * (uModelViewLineLightRadiuses[i] - d) * ( 1.0F / uModelViewLineLightRadiuses[i] );
+            oColor.rgb += uModelViewLineLightColors[i] * (uModelViewLineLightRadiuses[i] - d) * ( 1.0 / uModelViewLineLightRadiuses[i] );
         }
     }
 }

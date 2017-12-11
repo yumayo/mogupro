@@ -11,15 +11,16 @@ class cShaderManager : public Utility::cSingletonAble<cShaderManager>
 public:
 	cShaderManager( ) { }
 	~cShaderManager( ) { }
-	void setup( );
+	void setup( bool useShadow );
 	void uniformUpdate( );
 	void uniformUpdate( int chunkId );
 	void update( std::function<void( )> const& drawFunc );
-	void draw( std::function<void()>  const& render );
+	void draw( std::function<void( )> const& render );
 private:
 	cinder::gl::Texture2dRef mShadowTex;
 	cinder::CameraOrtho mCamera;
 	cinder::gl::FboRef mFbo;
 	cinder::gl::GlslProgRef mGlsl;
+	bool mUseShadow = false;
 };
 }

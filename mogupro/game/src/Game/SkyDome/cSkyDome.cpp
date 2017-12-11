@@ -11,8 +11,12 @@ void Game::SkyDome::cSkyDome::setup()
 
 void Game::SkyDome::cSkyDome::draw()
 {
-	ci::gl::ScopedColor col( ci::ColorA( 0.294, 0.156, 0.09 ) );
-	ci::gl::ScopedModelMatrix mat;
-	ci::gl::translate( worldCenter );
-	ci::gl::draw( caveMesh );
+	//ci::gl::ScopedColor col( ci::ColorA( 0.294, 0.156, 0.09 ) );
+	//ci::gl::ScopedModelMatrix mat;
+	//ci::gl::translate( worldCenter );
+	//ci::gl::draw( caveMesh );
+	auto size = Game::Field::WORLD_COLLISION_SIZE;
+	auto center = size * 0.5F;
+	ci::gl::ScopedColor col( ci::ColorA( 0.294F, 0.156F, 0.090F ) );
+	cinder::gl::drawCube( center, size );
 }

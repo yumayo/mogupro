@@ -4,4 +4,5 @@ namespace Network
 {
 std::string getNameHost( );
 std::string getLocalIpAddressHost( );
+std::string getPhysicalAddressHost( );
 }

@@ -10,6 +10,8 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time.hpp>
 #include <cinder/Rand.h>
+#include <Log/Log.h>
+
 using namespace Network;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
@@ -33,19 +35,14 @@ namespace Scene
 			n = Node::node::create();
 
 			n->add_child(font);
-			n->run_action(repeat_forever::create(sequence::create(delay::create(1.5f),
+		/*	n->run_action(repeat_forever::create(sequence::create(delay::create(1.5f),
 				call_func::create([this]
 			{
 				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
 				{
-					for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
-					{
-						cUDPServerManager::getInstance()->send(m.networkHandle,
-							new cEveTeamMember(p.teamNum, p.nameStr, p.playerID));
-					}
+					cUDPServerManager::getInstance()->broadcastOthers( m.networkHandle, new cEveTeamMember(m.teamNum, m.nameStr, m.playerID));
 				}
-			}))));
-			mCanUpdateServerAdapter = false;
+			}))));*/
 			mStartGame = false;
 			teamCount = 0;
 		}
@@ -57,61 +54,47 @@ namespace Scene
 		void cMatchingServer::update(float deltaTime)
 		{
 			cUDPServerManager::getInstance()->update(deltaTime);
+
 			updateServer(deltaTime);
-			n->entry_update(deltaTime);
 			checkReqMakeRoom();
 			checkReqInRoom();
 			checkTeamIn();
 			checkBeginGame();
 			resetMember();
+
+			n->entry_update(deltaTime);
 		}
 
 		void cMatchingServer::updateServer(float deltaTime)
 		{
-			if (mCanUpdateServerAdapter == false)
+			if ( cMatchingMemberManager::getInstance( )->mPlayerDatas.empty( ) ) return;
+
+			if ( !mIsGameUpdate )
 			{
-				while (auto reqEndGamemainSetup = cRequestManager::getInstance()->getReqEndGamemainSetup())
+				while ( auto reqEndGamemainSetup = cRequestManager::getInstance( )->getReqEndGamemainSetup( ) )
 				{
-					for (int i = 0; i < cMatchingMemberManager::getInstance()->mPlayerDatas.size(); ++i)
+					for ( int i = 0; i < cMatchingMemberManager::getInstance( )->mPlayerDatas.size( ); ++i )
 					{
-						if (reqEndGamemainSetup->mNetworkHandle
-							!= cMatchingMemberManager::getInstance()->mPlayerDatas[i].networkHandle)
+						if ( reqEndGamemainSetup->mNetworkHandle != cMatchingMemberManager::getInstance( )->mPlayerDatas[i].networkHandle )
 							continue;
-						cMatchingMemberManager::getInstance()->mPlayerDatas[i].canUpdate = true;
+						cMatchingMemberManager::getInstance( )->mPlayerDatas[i].canUpdate = true;
 					}
 				}
 
-				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				for ( auto m : cMatchingMemberManager::getInstance( )->mPlayerDatas )
 				{
-					if (m.canUpdate == false)
+					if ( m.canUpdate == false )
 						return;
 				}
-				n->remove_all_actions();
-				mCanUpdateServerAdapter = true;
+				n->remove_all_actions( );
 				mIsGameUpdate = true;
-				mGameStartTime = boost::posix_time::second_clock::universal_time();
-				mGameStartTime += boost::posix_time::seconds(3);
-				mTimeStr = boost::posix_time::to_iso_string(mGameStartTime);
+				mGameStartTime = boost::posix_time::microsec_clock::local_time( );
+				mGameStartTime += boost::posix_time::seconds( 5 );
+				mTimeStr = boost::posix_time::to_iso_string( mGameStartTime );
 
-				//ゲーム開始時間のTimerSet
 				cUDPServerManager::getInstance( )->broadcast( new cResSetGamestartTimer( mTimeStr ) );
-
-				// 一旦サーバーとのタイマー同期を凍結します。2017/12/09 yumayo
-				//n->run_action(Node::Action::repeat_forever::create(Node::Action::sequence::create(Node::Action::delay::create(0.5f),
-				//	Node::Action::call_func::create([this]
-				//{
-				//	for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
-				//	{
-				//		for each(auto p in cMatchingMemberManager::getInstance()->mPlayerDatas)
-				//		{
-				//			cUDPServerManager::getInstance()->send(m.networkHandle,
-				//				new cResSetGamestartTimer(mTimeStr));
-				//		}
-				//	}
-				//}))));
-
 			}
-			if (mIsGameUpdate)
+			else
 			{
 				checkStartGameMember();
 				Game::cServerAdapter::getInstance()->update();
@@ -120,7 +103,7 @@ namespace Scene
 
 		void cMatchingServer::checkStartGameMember()
 		{
-			if (mStartGame != false)return;
+			if (mStartGame != false) return;
 
 			while (auto reqEndStartTimer = cRequestManager::getInstance()->getReqEndStartTimer())
 			{
@@ -133,7 +116,7 @@ namespace Scene
 				}
 			}
 
-			for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+			for (auto m : cMatchingMemberManager::getInstance()->mPlayerDatas)
 			{
 				if (m.startGame == false)
 					return;
@@ -169,7 +152,7 @@ namespace Scene
 		{
 			while (auto reqInRoom = cRequestManager::getInstance()->getReqInRoom())
 			{
-				if (mOpenRoom != true ||
+				if (mOpenRoom != true || mPhaseState != PhaseState::IN_ROOM ||
 					cMatchingMemberManager::getInstance()->addRoomMembers(reqInRoom->mNetworkHandle) != true)
 				{
 					cUDPServerManager::getInstance()->send(reqInRoom->mNetworkHandle, new cResInRoom(false));
@@ -184,7 +167,6 @@ namespace Scene
 		{
 			while (auto reqWantTeamIn = cRequestManager::getInstance()->getReqWantTeamIn())
 			{
-				//int teamNum = ci::randInt(2);
 				int teamNum = teamCount % 2;
 				++teamCount;
  				if (cMatchingMemberManager::getInstance()->changeTeamNum(teamNum,
@@ -198,14 +180,15 @@ namespace Scene
 				//新規追加したPlayerの情報取得
 				std::string newPlayerStr;
 				int newPlayerID;
-				for each(auto& m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				for (auto& m : cMatchingMemberManager::getInstance()->mPlayerDatas)
 				{
 					if (m.networkHandle != reqWantTeamIn->mNetworkHandle)continue;
 					newPlayerStr = m.nameStr;
 					newPlayerID = m.playerID;
 				}
 
-				for each(auto& m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				int count = 0;
+				for (auto& m : cMatchingMemberManager::getInstance()->mPlayerDatas)
 				{
 					if (m.networkHandle != reqWantTeamIn->mNetworkHandle)
 					{
@@ -216,9 +199,12 @@ namespace Scene
 						//新規Playerに他の既存Playerの送信
 						cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle,
 							new cEveTeamMember(m.teamNum, m.nameStr, m.playerID));
+						++count;
 					}
 				}
 			
+				Log::cLogManager::getInstance()->add("MatchingServer");
+				Log::cLogManager::getInstance()->writeLog("MatchingServer", "MatchingMember : " + std::to_string(count));
 			}
 		}
 
@@ -232,7 +218,7 @@ namespace Scene
 
 				mPhaseState = PhaseState::BEGIN_GAME;
 
-				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
+				for (auto m : cMatchingMemberManager::getInstance()->mPlayerDatas)
 				{
 					cUDPServerManager::getInstance()->send(m.networkHandle, new cResCheckBeginGame(m.playerID));
 				}
@@ -248,7 +234,6 @@ namespace Scene
 			mIsGameUpdate = false;
 			cMatchingMemberManager::getInstance()->mPlayerDatas.clear();
 			cMatchingMemberManager::getInstance()->mMasterHandle = cNetworkHandle();
-			mCanUpdateServerAdapter = false;
 			cUDPServerManager::getInstance()->close();
 			cUDPServerManager::getInstance()->open();
 		}

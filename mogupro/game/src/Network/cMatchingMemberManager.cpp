@@ -35,8 +35,9 @@ bool cMatchingMemberManager::changeTeamNum(int teamNum, Network::cNetworkHandle 
 	{
 		if (p.teamNum == 0 || p.teamNum == 1)
 			teamNums[p.teamNum]++;
-	}
-	if (teamNums[teamNum] > 4)
+	}	
+
+	if (teamCount[teamNum] > 3)	
 		return false;
 
 	for (int i = 0; i < mPlayerDatas.size(); ++i)
@@ -57,7 +58,7 @@ bool cMatchingMemberManager::changeTeamNum(int teamNum, Network::cNetworkHandle 
 
 bool cMatchingMemberManager::checkInMembers(Network::cNetworkHandle member)
 {
-	for each(auto m in mPlayerDatas)
+	for (auto& m : mPlayerDatas)
 	{
 		if (m.networkHandle == member)
 			return true;
@@ -98,7 +99,7 @@ void cMatchingMemberManager::addPlayerDatas(std::string playerStr, ubyte1 teamNu
 		}
 	}
 
-	if (mPlayerDatas.size() > 8)
+	if (mPlayerDatas.size() > 6)
 		return;
 
 	mPlayerDatas.push_back(PlayerData(teamNum, playerStr, playerID,networkHandle));
