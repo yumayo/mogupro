@@ -29,6 +29,7 @@
 #include <Game/cGameManager.h>
 #include <Game/Field/FieldData.h>
 #include <Sound/Stereophonic.h>
+#include <Resource/cFbxManager.h>
 
 static ci::vec3 testSoundPos;
 
@@ -103,6 +104,7 @@ void cGameMain::setup( )
 	Game::cCapsuleManager::getInstance()->setup();
 	Game::cSubWeaponManager::getInstance()->setup();
 	Game::cUIManager::getInstance( )->setup( );
+    Resource::cFbxManager::getInstance( )->setup( );
 
 	sendEndSetup = false;
 	endTimer = false;
@@ -195,6 +197,7 @@ void cGameMain::update( float deltaTime )
         Particle::cParticleManager::getInstance()->update( deltaTime );
 		GemManager->lateUpdate(deltaTime);
 		Game::cGameManager::getInstance( )->update( deltaTime );
+        Resource::cFbxManager::getInstance( )->update( );
     }
 }
 
@@ -225,6 +228,7 @@ void cGameMain::draw( )
 		gl::enableDepthRead( );
 		gl::enableDepthWrite( );
 		Game::cPlayerManager::getInstance( )->draw( );
+        Resource::cFbxManager::getInstance( )->draw( );
 
 		Particle::cParticleManager::getInstance( )->draw( );
 	} );
