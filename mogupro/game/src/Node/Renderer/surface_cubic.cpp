@@ -1,4 +1,4 @@
-﻿#include <Node/Renderer/surface_cubic.h>
+#include <Node/Renderer/surface_cubic.h>
 #include <cinder/gl/gl.h>
 using namespace cinder;
 namespace Node

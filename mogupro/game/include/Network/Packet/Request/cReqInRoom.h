@@ -10,10 +10,16 @@ namespace Request
 {
 class cReqInRoom : public cPacketBase<cReqInRoom, PacketId::REQ_IN_ROOM>
 {
-public:
-    cReqInRoom( );	cReqInRoom(int roomID);
-    void packetImport(cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data) override;
-    ubyte2 packetExport( char* const data ) override;
+public:
+
+    cReqInRoom( );
+
+	cReqInRoom(int roomID);
+
+    void packetImport(cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data) override;
+
+    ubyte2 packetExport( char* const data ) override;
+
 	int mRoomID;
 	cNetworkHandle mNetworkHandle;
 };

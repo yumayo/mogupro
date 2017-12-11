@@ -1,4 +1,4 @@
-﻿#include <Node/Action/move_to_target.h>
+#include <Node/Action/move_to_target.h>
 #include <Node/node.h>
 using namespace cinder;
 namespace Node

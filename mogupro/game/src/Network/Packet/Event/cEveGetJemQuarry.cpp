@@ -13,14 +13,14 @@ cEveGetJemQuarry::cEveGetJemQuarry( )
 void cEveGetJemQuarry::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
     cImporter imp( data );
-    // ‰Ωø„ÅÑÊñπ: vec2 pos1, pos2; ubyte2 a1, a2;
+    // égÇ¢ï˚: vec2 pos1, pos2; ubyte2 a1, a2;
     // imp >> pos1 >> a1 >> pos2 >> a2;
     imp >> mObjectId >> mGemId;
 }
 ubyte2 cEveGetJemQuarry::packetExport( char* const data )
 {
     cExporter exp( data );
-    // ‰Ωø„ÅÑÊñπ: vec2 pos1, pos2; ubyte2 a1, a2;
+    // égÇ¢ï˚: vec2 pos1, pos2; ubyte2 a1, a2;
     // exp << pos1 << a1 << pos2 << a2;
     exp << mObjectId << mGemId;
     return exp;

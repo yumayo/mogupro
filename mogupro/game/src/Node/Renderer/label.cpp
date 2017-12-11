@@ -1,4 +1,4 @@
-ï»¿#include <Node/Renderer/label.h>
+#include <Node/Renderer/label.h>
 #include <cinder/gl/scoped.h>
 #include <Node/Library/font.h>
 using namespace cinder;
@@ -50,7 +50,7 @@ CREATE_CPP( label, std::string const& relative_path, float size )
 }
 bool label::init( std::string const& relative_path, float size )
 {
-    // assert_log( !app::getAssetPath( relative_path ).empty( ), "ãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚", return false );
+    // assert_log( !app::getAssetPath( relative_path ).empty( ), "ƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB", return false );
 
     _m = std::make_shared<label::member>( );
 

@@ -1,4 +1,4 @@
-﻿#include <Node/Action/opacity_by.h>
+#include <Node/Action/opacity_by.h>
 #include <Node/node.h>
 using namespace cinder;
 namespace Node

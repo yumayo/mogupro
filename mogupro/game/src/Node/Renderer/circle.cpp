@@ -1,4 +1,4 @@
-﻿#include <Node/Renderer/circle.h>
+#include <Node/Renderer/circle.h>
 #include <cinder/gl/gl.h>
 using namespace cinder;
 namespace Node

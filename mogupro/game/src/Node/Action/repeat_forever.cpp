@@ -1,4 +1,4 @@
-ï»¿#include <Node/Action/repeat_forever.h>
+#include <Node/Action/repeat_forever.h>
 namespace Node
 {
 namespace Action
@@ -18,7 +18,7 @@ void repeat_forever::setup( )
 }
 bool repeat_forever::is_done( )
 {
-    // ç„¡é™ãƒ«ãƒ¼ãƒ—ã‚’ä½œæˆã™ã‚‹ã‚¯ãƒ©ã‚¹ãªã®ã§ã€‚
+    // –³ŒÀƒ‹[ƒv‚ğì¬‚·‚éƒNƒ‰ƒX‚È‚Ì‚ÅB
     return false;
 }
 float repeat_forever::update( float delta )

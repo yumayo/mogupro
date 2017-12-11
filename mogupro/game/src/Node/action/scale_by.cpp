@@ -1,4 +1,4 @@
-﻿#include <Node/Action/scale_by.h>
+#include <Node/Action/scale_by.h>
 #include <Node/node.h>
 using namespace cinder;
 namespace Node
@@ -12,7 +12,7 @@ CREATE_CPP( scale_by, float duration, cinder::vec2 scale )
 bool scale_by::init( float duration, cinder::vec2 scale )
 {
     scale_to::init( duration, scale );
-    _init_scale = vec3( scale, 0.0F ); // 2dの場合はスケールの上下はないので0.0Fです。
+    _init_scale = vec3( scale, 0.0F ); // 2d�̏ꍇ�̓X�P�[���̏㉺�͂Ȃ��̂�0.0F�ł��B
     return true;
 }
 CREATE_CPP( scale_by, float duration, cinder::vec3 scale )

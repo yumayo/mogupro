@@ -1,4 +1,4 @@
-﻿#include <Node/Action/finite_time_action.h>
+#include <Node/Action/finite_time_action.h>
 #include <Node/node.h>
 #include <Node/Action/call_func.h>
 namespace Node

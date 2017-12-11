@@ -10,14 +10,14 @@ void cReqGetJemPlayer::packetImport( cNetworkHandle networkHandle, ubyte2 transf
 {
     mNetworkHandle = networkHandle;
     cImporter imp( data );
-    // ‰Ωø„ÅÑÊñπ: vec2 pos1, pos2; ubyte2 a1, a2;
+    // égÇ¢ï˚: vec2 pos1, pos2; ubyte2 a1, a2;
     // imp >> pos1 >> a1 >> pos2 >> a2;
     imp >> mPlayerId >> mGemId;
 }
 ubyte2 cReqGetJemPlayer::packetExport( char* const data )
 {
     cExporter exp( data );
-    // ‰Ωø„ÅÑÊñπ: vec2 pos1, pos2; ubyte2 a1, a2;
+    // égÇ¢ï˚: vec2 pos1, pos2; ubyte2 a1, a2;
     // exp << pos1 << a1 << pos2 << a2;
     exp << mPlayerId << mGemId;
     return exp;

@@ -1,6 +1,6 @@
-ï»¿#pragma once
+#pragma once
 //
-// ãƒ•ã‚©ãƒ³ãƒˆã‚’æ‰±ã†
+// ƒtƒHƒ“ƒg‚ğˆµ‚¤
 // SOURCE: fontstash
 //
 #include <boost/noncopyable.hpp>
@@ -19,12 +19,12 @@ class font : private boost::noncopyable
     };
     Context gl_;
     FONScontext* context_;
-    // ä»¥ä¸‹ã€fontstashã‹ã‚‰ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
+    // ˆÈ‰ºAfontstash‚©‚ç‚ÌƒR[ƒ‹ƒoƒbƒNŠÖ”
     static int create( void* userPtr, int width, int height ) noexcept;
     static int resize( void* userPtr, int width, int height ) noexcept;
     static void update( void* userPtr, int* rect, const unsigned char* data ) noexcept;
-    // FIXME: ci::glã®ã‚³ãƒ¼ãƒ‰ã‚’å‚è€ƒã«ã—ãŸ
-    //        ã¡ã‚‡ã„ã¨é‡ã„
+    // FIXME: ci::gl‚ÌƒR[ƒh‚ğQl‚É‚µ‚½
+    //        ‚¿‚å‚¢‚Æd‚¢
     static void draw( void* userPtr, const float* verts, const float* tcoords, const unsigned int* colors, int nverts ) noexcept;
 public:
     font( const int width, const int height, const int flags ) noexcept;

@@ -1,4 +1,4 @@
-﻿#include <Node/Renderer/rect_edge.h>
+#include <Node/Renderer/rect_edge.h>
 #include <cinder/gl/gl.h>
 using namespace cinder;
 namespace Node

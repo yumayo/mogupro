@@ -8,20 +8,24 @@ namespace Packet
 namespace Response
 {
 cResCheckBeginGame::cResCheckBeginGame( )
-{
+{
 
-}cResCheckBeginGame::cResCheckBeginGame(ubyte1 playerID) : mPlayerID(playerID)
+
+}
+cResCheckBeginGame::cResCheckBeginGame(ubyte1 playerID) : mPlayerID(playerID)
 {
 
 
 }
 
 void cResCheckBeginGame::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
-{	cImporter(data) >> mPlayerID;
+{
+	cImporter(data) >> mPlayerID;
 }
 
 ubyte2 cResCheckBeginGame::packetExport( char* const data )
-{	return cExporter(data) << mPlayerID;
+{
+	return cExporter(data) << mPlayerID;
 }
 }
 }

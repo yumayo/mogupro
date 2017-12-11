@@ -10,6 +10,7 @@
 class cSceneBase
 {
 public:
+	virtual ~cSceneBase() { }
 	//‰Šú‰»
 	virtual void setup() = 0;
 	//Scene‚ÌI—¹‚Ìƒƒ‚ƒŠíœ‚Æ‚©

@@ -1,4 +1,4 @@
-﻿#include <Node/Action/fade_in.h>
+#include <Node/Action/fade_in.h>
 #include <Node/node.h>
 using namespace cinder;
 namespace Node

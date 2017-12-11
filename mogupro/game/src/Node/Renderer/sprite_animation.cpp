@@ -1,4 +1,4 @@
-ï»¿#include <Node/Renderer/sprite_animation.h>
+#include <Node/Renderer/sprite_animation.h>
 #include <cinder/gl/gl.h>
 using namespace cinder;
 namespace Node
@@ -18,7 +18,7 @@ bool sprite_animation::init( std::string const& relative_path )
     set_pivot( { 0.5F, 0.5F } );
     set_schedule_update( );
 
-    // assert_log( !app::getAssetPath( relative_path ).empty( ), "ãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚", return false );
+    // assert_log( !app::getAssetPath( relative_path ).empty( ), "ƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB", return false );
 
     _texture = gl::Texture::create( loadImage( app::loadAsset( relative_path ) ), createSpriteFormat( ) );
 

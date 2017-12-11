@@ -1,4 +1,4 @@
-﻿#include <Node/Renderer/sprite_cubic_animation.h>
+#include <Node/Renderer/sprite_cubic_animation.h>
 #include <cinder/gl/gl.h>
 using namespace cinder;
 namespace Node

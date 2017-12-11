@@ -1,4 +1,4 @@
-﻿#include <Node/Renderer/rect.h>
+#include <Node/Renderer/rect.h>
 #include <cinder/gl/gl.h>
 using namespace cinder;
 namespace Node

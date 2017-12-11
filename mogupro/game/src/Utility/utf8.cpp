@@ -1,4 +1,4 @@
-﻿#include <Utility/utf8.h>
+#include <Utility/utf8.h>
 namespace Utility
 {
 bool utf8::isLegalUTF8( const utf8_head *source, int length )
