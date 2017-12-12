@@ -4,6 +4,7 @@
 #include <Utility/cString.h>
 #include <Utility/cInput.h>
 #include <Game/Field/FieldData.h>
+#include <Collision/cAABBCollider.h>
 using namespace cinder;
 namespace Collision
 {
@@ -109,13 +110,17 @@ void cCollisionManager::update( float delta )
     }
     for ( auto& rigidBody : mRigidBodys )
     {
-		auto pos = rigidBody->mCollider.getPosition( );
-		if ( pos.x < 0 || Game::Field::WORLD_COLLISION_SIZE.x < pos.x ||
-			 pos.y < 0 || Game::Field::WORLD_COLLISION_SIZE.y < pos.y ||
-			 pos.z < 0 || Game::Field::WORLD_COLLISION_SIZE.z < pos.z )
+		if ( auto* coll = dynamic_cast<cAABBCollider*>( &rigidBody->mCollider ) )
 		{
-			pos = clamp( pos, cinder::vec3( 0, 0, 0 ), Game::Field::WORLD_COLLISION_SIZE );
-			rigidBody->mCollider.setPosition( pos );
+			auto pos = coll->getPosition( );
+			auto size_2 = coll->getSize( ) / 2.0F;
+			if ( pos.x < size_2.x || Game::Field::WORLD_COLLISION_SIZE.x - size_2.x < pos.x ||
+				 pos.y < size_2.y || Game::Field::WORLD_COLLISION_SIZE.y - size_2.y < pos.y ||
+				 pos.z < size_2.z || Game::Field::WORLD_COLLISION_SIZE.z - size_2.z < pos.z )
+			{
+				pos = clamp( pos, size_2, Game::Field::WORLD_COLLISION_SIZE - size_2 );
+				rigidBody->mCollider.setPosition( pos );
+			}
 		}
         rigidBody->lateUpdate( delta );
     }
@@ -178,11 +183,20 @@ cinder::vec3 cCollisionManager::calcNearestPoint( cinder::Ray const & ray, unsig
         }
     }
 
-    if ( targetCollider != nullptr )
-    {
-        return calcRay.calcPosition( calcMin );
-    }
-    return ray.calcPosition( 1.0F );
+	cinder::AxisAlignedBox worldAABB( vec3( 0 ), Game::Field::WORLD_COLLISION_SIZE );
+	auto& worldRay = targetCollider ? calcRay : ray;
+	auto resultMin = targetCollider ? calcMin : 1.0F;
+
+	float worldMin, worldMax;
+	int intersect = worldAABB.intersect( worldRay, &worldMin, &worldMax );
+	if ( intersect == 2 )
+	{
+		if ( worldMax > 0.0F && worldMax < 1.0F )
+		{
+			resultMin = std::min( resultMin, worldMax );
+		}
+	}
+	return worldRay.calcPosition( resultMin );
 }
 bool cCollisionManager::isRange( int x, int y, int z )
 {
