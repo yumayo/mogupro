@@ -78,8 +78,8 @@ void Game::Player::cPlayer::playerRotationX()
 	ci::vec3 rotateaxis = ci::vec3(0.0f, 1.0f, 0.0f);
 
 	//移動先のベクトル
-	ci::vec3 yzVector = normalized_player_vec * ci::vec3( 0, 1, 1 );
-
+	ci::vec3 yzVector = ci::vec3( 0, normalized_player_vec.y, normalized_player_vec.x + normalized_player_vec.z);
+	yzVector.z += normalized_player_vec.x;
 	//回転軸
 	ci::vec3 quataxis = glm::cross(rotateaxis, yzVector );
 
@@ -130,7 +130,10 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 	//自分の所持しているジェムにプッシュバック
 	getgems.push_back(GemManager->getFragmentGem(_gemid));
 	GemManager->getFragmentGem(_gemid)->setIsActive(false);
-	
+	if (getgems.size() > 0) {
+		//持っているジェムが複数あれば1個前のジェムのライトを消す
+		GemManager->getFragmentGem(gem_id_buf)->handle->color = ci::vec3(0);
+	}
 	//ランダムの生成
 	std::random_device rd;
 	std::mt19937 mt(rd());
@@ -166,7 +169,8 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 		Resource::cSoundManager::getInstance()->findSe("Player/gem.wav").setGain(0.2f);
 		Resource::cSoundManager::getInstance()->findSe("Player/gem.wav").play();
 	})));
-
+	
+	gem_id_buf = _gemid;
 }
 
 void Game::Player::cPlayer::collisionGems()
@@ -259,7 +263,7 @@ void Game::Player::cPlayer::resetPlayerStatus()
 	is_dead = false;
 	mCollider.addWorld();
 	mRigidbody.addWorld();
-
+	no_damage_count = 0;
 }
 
 void Game::Player::cPlayer::drillingCamera(const float& delta_time)
@@ -350,7 +354,7 @@ Game::Player::cPlayer::cPlayer(
 	status.jump_force = 10.0F;
 	status.speed = DEFAULT_SPEED;
 	status.drill_speed = DEFAULT_SPEED*1.2f;
-	status.respawn_time = 7;
+	status.respawn_time = DEFAULT_RESPAWN_TIME;
 	//武器の初期化
 	main_weapon = Weapon::cWeaponFactory::getInstance()->InstanceMainWeapon(static_cast<Weapon::MAIN_WEAPON>(main_weapon_id), id);
 	assert(main_weapon != NULL && "メイン武器の種類のenumが正しく入っていません。");
@@ -381,6 +385,8 @@ Game::Player::cPlayer::cPlayer(
 
 void Game::Player::cPlayer::receiveDamage(const float & attack, const float& player_id)
 {
+	if (no_damage_count < DEFAULT_NO_DAMAGE_TIME) return;
+
 	//死亡中はダメージを受けない
 	if (is_dead)return;
 
@@ -484,6 +490,8 @@ void Game::Player::cPlayer::setup()
 #include <Game/cClientAdapter.h>
 void Game::Player::cPlayer::update(const float & delta_time)
 {
+	no_damage_blind++;
+	no_damage_count += delta_time;
 	drill(delta_time);
 	root->entry_update(delta_time);
 	aabb = mCollider.createAABB(mCollider.getPosition());
@@ -506,6 +514,8 @@ void Game::Player::cPlayer::update(const float & delta_time)
 	}
 	light->color = lightColor;
 	light->reAttachPositionWithRadius( mPos, 1 + 2 - ( status.hp / Player::MAX_HP ) * 2 );
+
+
 }
 
 void Game::Player::cPlayer::draw()
@@ -520,7 +530,15 @@ void Game::Player::cPlayer::draw()
 		(CAMERA->getCameraMode() != CameraManager::CAMERA_MODE::TPS)) {
 		return;
 	}
-	ci::gl::translate(mPos); 
+
+	//再出撃ときに点滅させる処理
+	if (no_damage_count < DEFAULT_NO_DAMAGE_TIME) {
+		if (no_damage_blind % 2 == 0) {
+			return;
+		}
+	}
+
+	ci::gl::translate(mPos);
 	playerRotationY();
 	playerRotationX();
 	/*if (active_user) {

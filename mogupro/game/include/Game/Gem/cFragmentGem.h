@@ -50,7 +50,7 @@ namespace Game
 
 
 			hardptr<Node::node> node;
-
+			Game::Light::PointLightHandle handle;
 		private:
 
 			int         mId;
@@ -67,7 +67,7 @@ namespace Game
 			vec3        mDirection;
 			Collision::cRigidBody mRb;
 			Collision::cAABBCollider mAabb;
-			Game::Light::PointLightHandle handle;
+			
 		};
 	}
 }
