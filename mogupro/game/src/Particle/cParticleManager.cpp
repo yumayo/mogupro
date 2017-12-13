@@ -49,6 +49,12 @@ const std::array<ci::vec2, 4> tex_coords
     ci::vec2( 1.0 ,0.0 ),
 };
 
+//-------------------------------------------------------------------------------------------------------------------
+//
+// ParticleParam
+//
+//-------------------------------------------------------------------------------------------------------------------
+
 ParticleParam::ParticleParam() :
     mPosition( NULL ),
     mCurrentPosition( vec3( 0 ) ),
@@ -175,6 +181,13 @@ ParticleParam & ParticleParam::isCube( const bool & is_cube )
     return *this;
 }
 
+
+//-------------------------------------------------------------------------------------------------------------------
+//
+// cParticle
+//
+//-------------------------------------------------------------------------------------------------------------------
+
 cParticle::cParticle( const ci::vec3& position,
                       const ci::vec3& vec,
                       const float& time,
@@ -262,6 +275,13 @@ float cParticle::getAlpha()
     return glm::clamp( mAlpha, 0.0f, 1.0f );
 }
 
+
+//-------------------------------------------------------------------------------------------------------------------
+//
+// cParticleHolder
+//
+//-------------------------------------------------------------------------------------------------------------------
+
 cParticleHolder::cParticleHolder( const ParticleParam& param ) :
     mParam( param )
     , mIndicesIndex( 0 )
@@ -322,16 +342,15 @@ cParticleHolder::~cParticleHolder()
 
 void cParticleHolder::update( const float& delta_time )
 {
-    float errRange = 30.0f;
-    if ( mParam.mPosition != NULL )
-        if ( ( mParam.mPosition->x < mParam.mCurrentPosition.x + errRange &&
-               mParam.mPosition->x > mParam.mCurrentPosition.x - errRange ) &&
-
-               ( mParam.mPosition->y < mParam.mCurrentPosition.y + errRange &&
-                 mParam.mPosition->y > mParam.mCurrentPosition.y - errRange ) &&
-
-                 ( mParam.mPosition->z < mParam.mCurrentPosition.z + errRange &&
-                   mParam.mPosition->z > mParam.mCurrentPosition.z - errRange ) )
+    float errRange = 10.0f;
+    if ( mParam.mPosition != NULL && mParam.mPosition != nullptr )
+        if ( *mParam.mPosition == vec3( 0 ) ||
+            ( mParam.mPosition->x < mParam.mCurrentPosition.x + errRange &&
+              mParam.mPosition->x > mParam.mCurrentPosition.x - errRange &&
+              mParam.mPosition->y < mParam.mCurrentPosition.y + errRange &&
+              mParam.mPosition->y > mParam.mCurrentPosition.y - errRange &&
+              mParam.mPosition->z < mParam.mCurrentPosition.z + errRange &&
+              mParam.mPosition->z > mParam.mCurrentPosition.z - errRange ) )
             mParam.mCurrentPosition = *mParam.mPosition;
 
     // パーティクルの更新
@@ -593,6 +612,13 @@ void cParticleHolder::clearMesh()
     mMesh->clear();
     mIndicesIndex = 0;
 }
+
+
+//-------------------------------------------------------------------------------------------------------------------
+//
+// cParticleManager
+//
+//-------------------------------------------------------------------------------------------------------------------
 
 cParticleManager::cParticleManager()
 {
