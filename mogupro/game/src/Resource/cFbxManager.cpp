@@ -22,6 +22,7 @@ std::string getUTF8Path( const std::string & path )
 
     return coverted_path;
 }
+
 FbxAMatrix GetGeometry( FbxNode * pNode )
 {
     const FbxVector4 lT = pNode->GetGeometricTranslation( FbxNode::eSourcePivot );
@@ -43,36 +44,31 @@ glm::mat4 getMatrix44( const FbxAMatrix & matrix )
     return m;
 }
 
-cFbxManager::cFbxManager()
+cFbx::cFbx()
 {
 
 }
-cFbxManager::~cFbxManager()
+cFbx::~cFbx()
 {
 
 }
-void cFbxManager::setup()
-{
-    // FBXSDK生成
-    manager = FbxManager::Create();
-    assert( manager );
 
+void cFbx::setup( FbxManager *manager, const std::string& filename )
+{
     // 読み込み機能を生成
     auto* importer = FbxImporter::Create( manager, "" );
     assert( importer );
 
     // FBXファイルを読み込む
-    // TIPS: getAssetPathは、assets内のファイルを探して、フルパスを取得する
-    std::string path = getAssetPath( "Fbx/mogura.fbx" ).string();
+    // assets内のファイルを探して、フルパスを取得する
+    std::string path = getAssetPath( "Fbx/" + filename + ".fbx" ).string();
 #ifdef _MSC_VER
     path = getUTF8Path( path );
 #endif
 
-    //TIPS: std::string → char*
+    // std::string → char*
     if ( !importer->Initialize( path.c_str() ) )
-    {
         console() << "FBX:can't open " << path << std::endl;
-    }
 
     // 読み込み用のシーンを生成
     scene = FbxScene::Create( manager, "" );
@@ -92,12 +88,12 @@ void cFbxManager::setup()
 
     // TIPS:マテリアルごとにメッシュを分離
     geometryConverter.SplitMeshesPerMaterial( scene, true );
-
     console() << "Converted." << std::endl;
 
     // FBX内の構造を取得しておく
     root_node = scene->GetRootNode();
     assert( root_node );
+
     root_node->GetChild( 0 );
     {
         // シーンに含まれるメッシュの解析
@@ -109,10 +105,10 @@ void cFbxManager::setup()
             auto* mesh = scene->GetSrcObject<FbxMesh>( i );
             std::string name = mesh->GetName();
 
-            if ( meshes.count( name ) ) continue;
+            if ( meshes.count( name ) )
+                continue;
 
             Mesh mesh_info = createMesh( mesh );
-
             meshes.insert( { name, mesh_info } );
         }
     }
@@ -121,18 +117,16 @@ void cFbxManager::setup()
     //    // シーンに含まれるマテリアルの解析
     //    auto materialCount = scene->GetMaterialCount();
     //    console() << "material:" << materialCount << std::endl;
-
     //    for ( int i = 0; i < materialCount; ++i )
     //    {
     //        FbxSurfaceMaterial* material = scene->GetMaterial( i );
     //        std::string name = material->GetName();
-
     //        if ( materials.count( name ) ) continue;
-
     //        Material mat = createMaterial( material );
     //        materials.insert( { name, mat } );
     //    }
     //}
+
     animation_stack_count = 0;
 
     // アニメーションに必要な情報を収集
@@ -145,7 +139,7 @@ void cFbxManager::setup()
     // FBS SDKを破棄
     // manager->Destroy();
 }
-void cFbxManager::update()
+void cFbx::update()
 {
     // アニメーション経過時間を進める
     animation_time += 1 / 60.0;
@@ -155,7 +149,7 @@ void cFbxManager::update()
     }
 
 }
-void cFbxManager::draw()
+void cFbx::draw()
 {
     gl::pushModelView();
     gl::translate( 5, 16, 5 );
@@ -169,7 +163,11 @@ void cFbxManager::draw()
 
     gl::popModelView();
 }
-void cFbxManager::drawFbx( FbxNode * node, FbxTime & time )
+void cFbx::animationReset()
+{
+    animation_time = 0.0f;
+}
+void cFbx::drawFbx( FbxNode * node, FbxTime & time )
 {
     // TIPS:見えているノードのみ描画(物理演算用の描画をスキップ)
     if ( node->GetVisibility() )
@@ -219,7 +217,7 @@ void cFbxManager::drawFbx( FbxNode * node, FbxTime & time )
         drawFbx( child, time );
     }
 }
-Mesh cFbxManager::createMesh( FbxMesh * mesh )
+Mesh cFbx::createMesh( FbxMesh * mesh )
 {
     Mesh mesh_info;
 
@@ -284,7 +282,7 @@ Mesh cFbxManager::createMesh( FbxMesh * mesh )
 
     return mesh_info;
 }
-Skin cFbxManager::createSkin( FbxMesh * mesh )
+Skin cFbx::createSkin( FbxMesh * mesh )
 {
     Skin skin_info;
     skin_info.has_skins = false;
@@ -381,8 +379,7 @@ vec3 transformVec( const mat4& m, const vec3& rhs )
     return vec3( x, y, z );
 }
 
-
-ci::TriMesh cFbxManager::getDeformedTriMesh( FbxMesh * mesh, const Mesh & src_mesh, FbxAMatrix & parent_matrix, FbxTime & time )
+ci::TriMesh cFbx::getDeformedTriMesh( FbxMesh * mesh, const Mesh & src_mesh, FbxAMatrix & parent_matrix, FbxTime & time )
 {
     TriMesh dst_mesh( src_mesh.tri_mesh );
 
@@ -453,7 +450,7 @@ ci::TriMesh cFbxManager::getDeformedTriMesh( FbxMesh * mesh, const Mesh & src_me
 
     return dst_mesh;
 }
-const ci::TriMesh & cFbxManager::getTriMesh( FbxMesh * mesh, Mesh & src_mesh, FbxAMatrix & parent_matrix, FbxTime & time )
+const ci::TriMesh & cFbx::getTriMesh( FbxMesh * mesh, Mesh & src_mesh, FbxAMatrix & parent_matrix, FbxTime & time )
 {
     if ( src_mesh.skin.has_skins )
     {
@@ -465,11 +462,13 @@ const ci::TriMesh & cFbxManager::getTriMesh( FbxMesh * mesh, Mesh & src_mesh, Fb
         return src_mesh.tri_mesh;
     }
 }
-void cFbxManager::setAnimation( const int index )
+
+void cFbx::setAnimation( const int index )
 {
     auto* stack = scene->GetSrcObject<FbxAnimStack>( index );
     // assert(stack);
-    if ( !stack ) return;
+    if ( !stack )
+        return;
 
     animation_start = stack->LocalStart.Get().GetSecondDouble();
     animation_stop = stack->LocalStop.Get().GetSecondDouble();
@@ -478,5 +477,76 @@ void cFbxManager::setAnimation( const int index )
     animation_time = animation_start;
 
     scene->SetCurrentAnimationStack( stack );
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+//
+// cFbxManager
+//
+//-------------------------------------------------------------------------------------------------------------------
+
+cFbxManager::cFbxManager()
+{
+}
+
+cFbxManager::~cFbxManager()
+{
+}
+
+void cFbxManager::setup()
+{
+    // FBXSDK生成
+    manager = FbxManager::Create();
+    assert( manager );
+
+    std::string name = "mogura";
+    std::shared_ptr<cFbx> model1 = std::make_shared<cFbx>();
+    model1->setup( manager, name );
+    models.insert( std::make_pair( name, model1 ) );
+
+    name = "mogura_attack";
+    std::shared_ptr<cFbx> model2 = std::make_shared<cFbx>();
+    model2->setup( manager, name );
+    models.insert( std::make_pair( name, model2 ) );
+
+    name = "mogura_dig";
+    std::shared_ptr<cFbx> model3 = std::make_shared<cFbx>();
+    model3->setup( manager, name );
+    models.insert( std::make_pair( name, model3 ) );
+}
+
+void cFbxManager::update()
+{
+    for ( auto& it : models )
+        it.second->update();
+}
+
+int test_time = 0;
+void cFbxManager::draw()
+{
+    gl::pushModelView();
+
+    if ( test_time >= 600 )
+    {
+        for ( auto& it : models )
+            it.second->animationReset();
+        test_time = 0;
+    }
+
+    if ( test_time >= 0 && test_time < 200 )
+        draw( "mogura" );
+    if ( test_time >= 200 && test_time < 400 )
+        draw( "mogura_dig" );
+    if ( test_time >= 400 && test_time < 600 )
+        draw( "mogura_attack" );
+
+    test_time++;
+
+    gl::popModelView();
+}
+
+void cFbxManager::draw( const std::string & name )
+{
+    models[name]->draw();
 }
 }
