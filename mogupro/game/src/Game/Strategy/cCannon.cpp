@@ -69,13 +69,18 @@ namespace Game
 
 		void cCannon::update(const float & delta_time)
 		{
-
+			if (lightradius>0) {
+				mLightSinAngle += delta_time;
+				float max = lightradius*(0.8f + 0.2f*sin(mLightSinAngle));
+				light->reAttachRadius(max);
+			}
 		}
 
 		void cCannon::setup()
 		{
 			mAABB.addWorld();
 			mFoundatioAABB.addWorld();
+			light = cLightManager::getInstance()->addPointLight(mGemStorePos, ci::vec3(mColor.r, mColor.g, mColor.b) , lightradius);
 			mToPlayerAABB.set(mAABB.getPosition() - mAABB.getSize()*0.55f, mAABB.getPosition() + mAABB.getSize()*0.55f);
 		}
 
@@ -94,7 +99,9 @@ namespace Game
 			if (mGetgems.size() >= GEM_MAXNUM)return;
 
 			Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(), getgemnum);
-
+			////////////
+		
+			////////////
 			//sendCollectMaxGem();
 		}
 
@@ -104,6 +111,9 @@ namespace Game
 
 			if (ismyobject) {
 				Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(), getgems.size());
+			}
+			else {
+				setAddCanonPower(mGetgems.size());
 			}
 
 			ci::app::console() << "‚¢‚ê‚é‚à‚Ì‚Í‚¶‚ß" << std::endl;
@@ -133,6 +143,9 @@ namespace Game
 			if (ismyobject) {
 				Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(),getgemnum);
 			}
+			else {
+				setAddCanonPower(getgemnum);
+			}
 		}
 	
 		ci::vec3 cCannon::getGemStorePos()
@@ -148,6 +161,12 @@ namespace Game
 		bool cCannon::getIsCollectMaxGem()
 		{
 			return mGetgems.size() >= GEM_MAXNUM;
+		}
+
+		void cCannon::setAddCanonPower(const int getgemnum)
+		{
+			lightradius += (float(getgemnum) / GEM_MAXNUM)*6.f;
+			light->reAttachRadius(lightradius);
 		}
 
 		void cCannon::sendCollectMaxGem()
