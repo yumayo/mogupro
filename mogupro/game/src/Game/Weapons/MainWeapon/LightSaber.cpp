@@ -255,9 +255,6 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 		ray[0].setDirection(player_pos);
 
 	}
-	else if(charge_is_attack) {
-		;
-	}
 	else {
 		return;
 	}
@@ -284,6 +281,7 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 		Resource::cSoundManager::getInstance()->findSe("Player/katana-slash5.wav").play();
 		charge_flag1 = false;
 		charge_flag2 = false;
+		charge_start = false;
 		charge_is_attack = false;
 		shock_wave_time = 0;
 		if (charge_light == nullptr) {
@@ -324,6 +322,7 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 		Resource::cSoundManager::getInstance()->findSe("Player/iainuki1.wav").play();
 		charge_flag1 = false;
 		charge_flag2 = false;
+		charge_start = false;
 		charge_is_attack = false;
 		shock_wave_time = 0;
 		if (charge_light == nullptr) {
@@ -355,6 +354,7 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").stop();
 		charge_flag1 = false;
 		charge_flag2 = false;
+		charge_start = false;
 		charge_is_attack = false;
 		shock_wave_time = 0;
 		Resource::cSoundManager::getInstance()->findSe("Player/swing2.wav").setGain(0.2f);
@@ -389,34 +389,42 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 		rotate_before_frame = rotate;
 	}
 	//貯めるパーティクル１
-	if (shock_wave_time >= shock_wave_first / 2 &&
+	if (shock_wave_time >= shock_wave_first / 4 &&
+		charge_start == false) {
+		charge_start = true;
+		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").setGain(0.2f);
+		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").setLooping(true);
+		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").play();
+		Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(weapon_draw_pos)
+			.scale(0.3f).vanishBeginTime(0.f).vanishTime(15.f / 60.f).vanishTimeRange(0.0f).
+			easeTime(15.f).
+			speed(0.0f).
+			textureType(Particle::ParticleTextureType::SPARK).
+			color(ci::ColorA(1, 1, 0)).
+			moveType(Particle::ParticleType::CONVERGE).count(3).isTrajectory(true).effectTime(0.3f).easeType(EaseType::CircIn));
+	}
+
+	if (shock_wave_time >= shock_wave_first &&
 		charge_flag1 == false) {
 		charge_flag1 = true;
 		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").setGain(0.2f);
 		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").setLooping(true);
 		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").play();
-		/*Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(weapon_pos)
-			.scale(0.3f).
-			vanishTime(0.5f).
-			speed(1.0f).
+		Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(weapon_draw_pos)
+			.scale(0.6f).vanishBeginTime(0.f).vanishTime(30.f / 60.f).vanishTimeRange(0.0f).
+			easeTime(30.f).
+			speed(0.0f).
 			textureType(Particle::ParticleTextureType::SPARK).
-			color(ci::ColorA::white()).
-			moveType(Particle::ParticleType::CONVERGE).count(10).isTrajectory(false));*/
+			color(ci::ColorA(1, 0, 0)).
+			moveType(Particle::ParticleType::CONVERGE).count(3).isTrajectory(true).effectTime(0.3f).easeType(EaseType::CircIn));
 	}
 	//貯めるパーティクル２
 	if (shock_wave_time >= shock_wave_second &&
 		charge_flag2 == false) {
 		charge_flag2 = true;
-		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").setGain(0.2f);
-		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").setLooping(true);
-		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").play();
-		/*Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(weapon_pos)
-			.scale(0.3f).
-			vanishTime(1.0f).
-			speed(1.0f).
-			textureType(Particle::ParticleTextureType::SPARK).
-			color(ci::ColorA::white()).
-			moveType(Particle::ParticleType::CONVERGE).count(1).isTrajectory(false));*/
+		Resource::cSoundManager::getInstance()->findSe("Player/decision1.wav").setGain(0.2f);
+		Resource::cSoundManager::getInstance()->findSe("Player/decision1.wav").setLooping(false);
+		Resource::cSoundManager::getInstance()->findSe("Player/decision1.wav").play();
 	}
 	
 }
@@ -544,7 +552,6 @@ void Game::Weapon::LightSaber::draw()
 	}
 	if (!is_attack) return;
 	if (charge_is_attack_now) {
-		ci::gl::drawStrokedCube(aabb);
 		ci::gl::pushModelView();
 		ci::gl::translate(shock_pos);
 		ci::gl::rotate(M_PI / 2, ci::vec3(0, 1, 0));

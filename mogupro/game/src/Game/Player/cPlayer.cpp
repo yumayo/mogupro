@@ -132,6 +132,7 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 	if (getgems.size() > 1) {
 		//持っているジェムが複数あれば1個前のジェムのライトを消す
 		GemManager->getFragmentGem(gem_id_buf)->handle->color = ci::vec3(0);
+		GemManager->getFragmentGem(gem_id_buf)->setVisible(true);
 	}
 	//ランダムの生成
 	std::random_device rd;
@@ -382,7 +383,7 @@ Game::Player::cPlayer::cPlayer(
 }
 
 
-void Game::Player::cPlayer::receiveDamage(const float & attack, const float& player_id)
+void Game::Player::cPlayer::receiveDamage(const float & attack, float player_id)
 {
 	if (no_damage_count < DEFAULT_NO_DAMAGE_TIME) return;
 

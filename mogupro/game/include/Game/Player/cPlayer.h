@@ -283,7 +283,7 @@ namespace Game {
 
 			//attack = UŒ‚—Í
 			//player_id = UŒ‚‚ğdŠ|‚¯‚½ƒvƒŒƒCƒ„[‚Ìid
-			void receiveDamage(const float& attack, const float& player_id);
+			void receiveDamage(const float& attack,float player_id);
 			void weaponUpdae(const float& delta_time);
 			void move(const ci::vec3& velocity);
 			void jump(bool flag);

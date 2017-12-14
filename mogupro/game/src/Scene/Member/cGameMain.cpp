@@ -113,7 +113,9 @@ void cGameMain::setup( )
 
 	ENV->disableKeyButton( );
 	ENV->disablePadButton();
+	ENV->disableMouseButton();
 	ENV->disablePadAxis();
+	
 	Game::cUIManager::getInstance( )->disable( );
 
 	ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
