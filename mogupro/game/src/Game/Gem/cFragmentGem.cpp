@@ -18,6 +18,7 @@ namespace Game
 
 		cFragmentGem::~cFragmentGem()
 		{
+			if (!mIsRigid) return;
 			mAabb.removeWorld();
 			mRb.removeWorld();
 		}
@@ -66,12 +67,13 @@ namespace Game
 			if (isRigid)
 			{
 				mRb.addWorld();
+				mAabb.addWorld();
 				mIsRigid = true;
 			}
 			else
 			{
 				mRb.removeWorld();
-				
+				mAabb.removeWorld();
 				Log::cLogManager::getInstance()->writeLog("remove", "remove rigidbody");
 				mIsRigid = false;
 			}
