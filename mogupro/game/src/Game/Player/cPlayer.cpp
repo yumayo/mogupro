@@ -462,12 +462,16 @@ void Game::Player::cPlayer::setup()
 	//初めにいっこだけライトボムを追加します
 	useSubWeapon.addSubWeapon(Game::Weapons::SubWeapon::LIGHT_BOMB);
 
+	mCollider.setLayer( isWatching( ) ? 0 : 1 << 0 );
+	mCollider.addWorld( );
 	if ( isWatching( ) )
 	{
-		mCollider.setSize( ci::vec3(0, 0, 0) );
+		mRigidbody.gravityOff( );
 	}
-	mCollider.setLayer( 1 << 0 );
-	mCollider.addWorld( );
+	else
+	{
+		mRigidbody.gravityOn( );
+	}
 	mRigidbody.addWorld( );
 
 	//最初に角度を設定するためにほんの少し動かす
@@ -518,7 +522,7 @@ void Game::Player::cPlayer::update(const float & delta_time)
 		break;
 	}
 	light->color = lightColor;
-	light->reAttachPositionWithRadius( mPos, 1 + 2 - ( status.hp / Player::MAX_HP ) * 2 );
+	light->reAttachPositionWithRadius( mPos, isWatching( ) ? 0.0F : 1 + 2 - ( status.hp / Player::MAX_HP ) * 2 );
 
 
 }

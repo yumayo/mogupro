@@ -83,6 +83,17 @@ ci::vec3 Game::cPlayerManager::playerNormalMoveKey(const float& delta_time)
 		diagonal++;
 	}
 
+	if ( active_player->isWatching( ) )
+	{
+		if ( ENV->pressKey( ci::app::KeyEvent::KEY_LSHIFT ) ) {
+			keybord_velocity.y = -active_player->getSpeed( );
+		}
+
+		if ( ENV->pressKey( ci::app::KeyEvent::KEY_SPACE ) ) {
+			keybord_velocity.y = active_player->getSpeed( );
+		}
+	}
+
 	keybord_velocity += ci::vec3(z_axis*sin(CAMERA->getCameraAngle().x), 0.0f, z_axis*cos(CAMERA->getCameraAngle().x));
 	keybord_velocity += ci::vec3(x_axis*cos(CAMERA->getCameraAngle().x), 0.0f, -x_axis*sin(CAMERA->getCameraAngle().x));
 
@@ -175,11 +186,11 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 		if ( ENV->isPadPush( ENV->BUTTON_7 ) ) {
 			active_player->useSubWeapon.useWeapon( active_player_id );
 		}
-	}
 
-	//ジャンプ X
-	if (ENV->isPadPush(ENV->BUTTON_1)) {
-		active_player->jump(true);
+		//ジャンプ X
+		if ( ENV->isPadPush( ENV->BUTTON_1 ) ) {
+			active_player->jump( true );
+		}
 	}
 
 	//ダッシュ □
@@ -209,15 +220,15 @@ void Game::cPlayerManager::keyMove(const float & delta_time)
 		if ( ENV->pullKey( ci::app::MouseEvent::LEFT_DOWN ) ) {
 			active_player->Drilling( false );
 		}
-	}
 
-	//ダッシュ
-	//304 = シフト
-	if (ENV->pullKey(304)) {
-		active_player->setDefaultSpeed();
-	}
-	if (ENV->pushKey(304)) {
-		active_player->setSpeed(10.0f);
+		//ダッシュ
+		//304 = シフト
+		if ( ENV->pullKey( 304 ) ) {
+			active_player->setDefaultSpeed( );
+		}
+		if ( ENV->pushKey( 304 ) ) {
+			active_player->setSpeed( 10.0f );
+		}
 	}
 
 	//G-BACK ふぅうううううはははははは

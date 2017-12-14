@@ -6,7 +6,7 @@ namespace Collision
 {
 void hitRayToCube( cinder::Ray const & ray, unsigned int layer, cColliderBase const* const bCollider, float & calcMin, cinder::Ray & calcRay, cinder::AxisAlignedBox & calcBoundingBox, cColliderBase const** targetCollider )
 {
-    if ( ( bCollider->getLayer( ) & layer ) != layer )
+    if ( ( bCollider->getLayer( ) & layer ) == 0U )
         return;
 
     if ( bCollider->getType( ) == cColliderBase::Type::AABB )
@@ -39,7 +39,7 @@ void hitRayToCube( cinder::Ray const & ray, cAABBCollider const* const bCollider
 }
 void hitCubeToCube( cColliderBase const* const aCollider, cRigidBody const* const aRigidBody, cColliderBase const* const bCollider, float& min, cinder::Ray& ray, cinder::AxisAlignedBox& boundingBox, cColliderBase const** targetCollider )
 {
-    if ( ( bCollider->getLayer( ) & aCollider->getLayer( ) ) != aCollider->getLayer( ) )
+    if ( ( bCollider->getLayer( ) & aCollider->getLayer( ) ) == 0U )
         return;
 
     if ( aCollider == bCollider ) return;
