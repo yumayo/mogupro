@@ -24,6 +24,9 @@ void cAnimation::create( const std::string & name,
                          const bool &is_just_once,
                          const bool &is_idle_animation )
 {
+    if ( mAnims.find( name ) != mAnims.end() )
+        return;
+
     cFbxManager::getInstance()->create( name );
 
     std::shared_ptr<Anim> anim = std::make_shared<Anim>();
@@ -44,7 +47,7 @@ void cAnimation::update()
 
     auto anim = getActiveAnimation();
     // アニメーション経過時間を進める
-    anim->animation_time += 1 / 60.0;
+    anim->animation_time += mAnimationIncrementTime;
 
     if ( isCrrentAnimationEnd() )
     {
@@ -68,6 +71,8 @@ void cAnimation::draw()
 
 void cAnimation::animationChange( const std::string & name )
 {
+    if ( mAnims.find( name ) == mAnims.end() )
+        return;
     mActiveName = name;
     allReset();
 }
