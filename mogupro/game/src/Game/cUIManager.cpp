@@ -118,7 +118,10 @@ void cUIManager::setup( )
 	for ( auto player : cPlayerManager::getInstance( )->getPlayers( ) )
 	{
 		if ( ( player->getPlayerId( ) == 3U ) || ( player->getPlayerId( ) == 7U ) )
+		{
+			if ( ++offset == 0 ) offset++;
 			continue;
+		}
 
 		auto ikiteru = mLive->add_child( Node::Renderer::sprite::create( "ikiteru.png" ) );
 		ikiteru->set_name( "ikiteru" + std::to_string( player->getPlayerId( ) ) );

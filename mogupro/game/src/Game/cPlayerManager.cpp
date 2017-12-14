@@ -335,7 +335,7 @@ void Game::cPlayerManager::playerCollisionAfterUpdate(const float& delta_time)
 	}
 	if ( active_player->isWatching( ) )
 	{
-		if ( watching_target_player_id == -1 )
+		if ( isTargetWatching( ) )
 		{
 			CAMERA->refPosition = active_player->getPos( );
 		}

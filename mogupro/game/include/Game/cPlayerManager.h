@@ -45,6 +45,10 @@ public:
 	{
 		return watching_target_player_id;
 	}
+	bool isTargetWatching( )
+	{
+		return watching_target_player_id == -1;
+	}
 	void setPlayersPosition(std::vector<ci::vec3> positions);
 	
 	//id‚É‰‚¶‚½ƒvƒŒƒCƒ„[‚ğ•Ô‚µ‚Ü‚·
