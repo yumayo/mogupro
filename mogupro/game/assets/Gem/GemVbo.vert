@@ -3,13 +3,13 @@
 uniform mat4	ciModelViewProjection;
 uniform float   deltaTime;
 uniform float   visibleRange;
-uniform vec3   playerPos;
+uniform vec3    playerPos;
 
-in vec4			ciPosition;
+in vec4		   ciPosition;
 in vec4        ciColor;
 in vec4        ciNormal;
 in vec4        ciTexCoord0;
-out vec4         vColor;		
+out vec4       vColor;		
 
 void main( void ) {
 	float dis;
