@@ -31,15 +31,6 @@ namespace Game
 
 	void cGemManager::draw()
 	{
-		//auto con = ci::gl::context();
-		//const ci::gl::GlslProg* curGlslProg = con->getGlslProg();
-		//con->pushVao();
-		//con->getDefaultVao()->replacementBindBegin();
-		//mGemsVbo->buildVao(curGlslProg);
-		//con->getDefaultVao()->replacementBindEnd();
-		//con->setDefaultShaderVars();
-		//   mGemsVbo->drawImpl();
-		//con->popVao();
 
 		auto ctx = ci::gl::context();
 		ci::gl::ScopedVao vaoScp(ctx->getDrawTextureVao());

@@ -1,7 +1,6 @@
 #version 150 core
 
 uniform vec4		uColor;
-//uniform float       uAlpha;
 uniform sampler2D	uTex0;
 uniform bool		horiz;
 
