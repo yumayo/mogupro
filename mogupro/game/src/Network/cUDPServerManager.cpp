@@ -161,8 +161,23 @@ void cUDPServerManager::connection( )
         }
         else
         {
+			// 再び接続してきた場合。
+
             cinder::app::console( ) << p->mNetworkHandle.ipAddress << ":" << p->mNetworkHandle.port << "＠";
-            cinder::app::console( ) << "cUDPServerManager: " << "connect faild " << (int)mIdCount << std::endl;
+            cinder::app::console( ) << "cUDPServerManager: " << "reconnect success!! " << (int)mIdCount << std::endl;
+
+			send( p->mNetworkHandle, new Packet::Response::cResConnect( ), false );
+
+			// pingコルーチンを走らせる。
+			mRoot->remove_action_by_tag( itr.first->second.id );
+			using namespace Node::Action;
+			auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [networkHandle = p->mNetworkHandle, this]
+			{
+				send( networkHandle, new Packet::Event::cEvePing( ) );
+			cinder::app::console( ) << "cUDPServerManager: " << "ping to " << (int)getPlayerId( networkHandle ) << std::endl;
+			} ) ) );
+			act->set_tag( itr.first->second.id );
+			mRoot->run_action( act );
         }
     }
 }
