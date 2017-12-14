@@ -7,7 +7,7 @@
 #include <Game/cClientAdapter.h>
 #include"Sound/Wav.h"
 #include"Sound\Stereophonic.h"
-
+#include"Resource\cObjectManager.h"
 namespace Game
 {
 namespace Weapons
@@ -167,7 +167,7 @@ namespace Weapons
 			rb.addWorld();
 			rb.setSpeed(mSpeed);
 			rb.setFriction(1.0f);
-			
+			mesh = Resource::cObjectManager::getInstance()->findObject("sphere.obj");
 			light = cLightManager::getInstance()->addPointLight(mPos, ci::vec3(0, 1, 0), 1.f);
 			mExprosionLength = 8.f*mScale.x;
 			mAroundLightLength = (mExprosionLength / 2.f) - 0.5f;
@@ -192,7 +192,13 @@ namespace Weapons
 		}
 		void cLightBomb::draw()
 		{
-			STRM->drawShere(mPos, mDrawscale, ci::vec3(0, 0, 0), ci::ColorA(light->color.r, light->color.g, light->color.b), 100);
+			ci::gl::pushModelView();
+			ci::gl::translate(mPos);
+			ci::gl::color(ci::ColorA(light->color.r, light->color.g, light->color.b));
+			ci::gl::scale(mDrawscale);
+			ci::gl::draw(mesh);
+			ci::gl::popModelView();
+			//STRM->drawShere(mPos, mDrawscale, ci::vec3(0, 0, 0), ci::ColorA(light->color.r, light->color.g, light->color.b), 100);
 		}
 		bool cLightBomb::deleteThis()
 		{

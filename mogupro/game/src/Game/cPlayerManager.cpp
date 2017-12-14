@@ -36,11 +36,13 @@ void Game::cPlayerManager::playerAttack(const float & delta_time)
 {
 	if ( active_player->isWatching( ) ) return; // yumayo
 	if (active_player->isDead())return;
-	if (ENV->pushKey(ci::app::MouseEvent::RIGHT_DOWN))
+
+	//メイン攻撃 R2 or 右クリック
+	if (ENV->pushKey(ci::app::MouseEvent::RIGHT_DOWN) || ENV->isPadPush(ENV->BUTTON_8))
 	{
 		cClientAdapter::getInstance()->sendPlayerAttack(active_player_id, 1);
 	}
-	if (ENV->pullKey(ci::app::MouseEvent::RIGHT_DOWN))
+	if (ENV->pullKey(ci::app::MouseEvent::RIGHT_DOWN) || ENV->isPadPull(ENV->BUTTON_8))
 	{
 		cClientAdapter::getInstance()->sendPlayerAttack(active_player_id, 2);
 	}
@@ -118,8 +120,8 @@ ci::vec3 Game::cPlayerManager::playerNormalMovePad(const float & delta_time)
 {
 	ci::vec3 pad_velocity = ci::vec3(0);
 
-	float x_axis = -10 * ENV->getPadAxis(0) * delta_time * active_player->getSpeed();
-	float z_axis = -10 * ENV->getPadAxis(1) * delta_time * active_player->getSpeed();
+	float x_axis = -50 * ENV->getPadAxis(0) * delta_time * active_player->getSpeed();
+	float z_axis = -50 * ENV->getPadAxis(1) * delta_time * active_player->getSpeed();
 
 	pad_velocity += ci::vec3(z_axis*sin(CAMERA->getCameraAngle().x), 0.0f, z_axis*cos(CAMERA->getCameraAngle().x));
 	pad_velocity += ci::vec3(x_axis*cos(CAMERA->getCameraAngle().x), 0.0f, -x_axis*sin(CAMERA->getCameraAngle().x));
@@ -143,9 +145,12 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	}
 	// ターゲットがいたらプレイヤーは動けません。
 	if ( watching_target_player_id != -1 ) return;
+	ENV->setMouseCursorAvtive(!active_player->isDead());
 	//プレイヤーが死んでいたらカメラ以外操作不能
 	if (active_player->isDead())return;
 
+	CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.07f), ENV->getPadAxis(3)*(-0.07f)));
+	
 	//大砲にジェムを入れる
 	auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];
 	if (cannon->getAABB().intersects(active_player->getAABB())) {
@@ -155,10 +160,11 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 		active_player->getgems.clear();
 	}
 
+
 	keyMove(delta_time);
 
 	//パッドの時に攻撃が上書きされないように注意
-	//padMove(delta_time);
+	padMove(delta_time);
 
 	//掘削中は動き方が変わる
 	if (active_player->isDrilling()) {
@@ -183,10 +189,6 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 			 Game::Field::WORLD_SIZE.y + 1 > active_player->getPos( ).y ) {
 			active_player->Drilling( true );
 		}
-
-		//メイン攻撃 R2
-		active_player->getMainWeapon( )->pushCall( ENV->isPadPush( ENV->BUTTON_8 ) );
-		active_player->getMainWeapon( )->pullCall( ENV->isPadPull( ENV->BUTTON_8 ) );
 
 		//サブ武器 R1
 		if ( ENV->isPadPush( ENV->BUTTON_7 ) ) {

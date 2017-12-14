@@ -1,9 +1,8 @@
 #include <Utility/cInput.h>
 #include <cinder/app/App.h>
 #include <Node/action.hpp>
-#include <Windows.h>
 #include <CameraManager/cCameraManager.h>
-#include <Game/cPlayerManager.h>
+
 extern "C"
 {
 	#include <GamePad.h>
@@ -21,6 +20,8 @@ cInputAll::cInputAll( )
 	: cursor_captured( false )
 	, mouse_active( false )
 {
+	mouse_cursor.x = 0;
+	mouse_cursor.y = 0;
 }
 void cInputAll::setMouseControl( const bool & flag )
 {
@@ -101,6 +102,10 @@ bool cInputAll::isPadPress( const int & num )
 bool cInputAll::isPadPull( const int & num )
 {
 	return padState.pull( num );
+}
+void cInputAll::setMouseCursorAvtive(bool flag)
+{
+	mouse_active_cursor = flag;
 }
 //０で左スティックの左右（ｘ）
 //１で左スティックの上下（ｙ）※注意　上下が逆
@@ -199,21 +204,23 @@ void cInputAll::padUp( const int & num )
 	padState.up( num );
 }
 void mouseCursolFixed( const ci::app::MouseEvent& event, ci::vec2& inc_pos,
-					   ci::vec2& mouse_vec, bool& cursor_captured, ci::ivec2& last_cursor_pos ) {
+					   ci::vec2& mouse_vec, bool& cursor_captured, ci::ivec2& last_cursor_pos,
+						POINT& mouse_cursor,bool mouse_active_cursor) {
 	//１フレーム目以降
 	if ( cursor_captured ) {
+
+		if (!mouse_active_cursor)return;
+
 		POINT pt;
 
 		GetCursorPos( &pt );
 		POINT delta;
 		delta.x = pt.x - last_cursor_pos.x;
 		delta.y = pt.y - last_cursor_pos.y;
-
-		if ( delta.x != 0 || delta.y != 0 ) {
+		//inputに動かさないboolを持たせて上げる
+		if ( delta.x != 0 && delta.y != 0 ) {
 			SetCursorPos( last_cursor_pos.x, last_cursor_pos.y );
-			if (!Game::cPlayerManager::getInstance()->getActivePlayer()->isDead()) {
-				CAMERA->addCameraAngle(ci::vec2(-delta.x, -delta.y) * 0.005f);
-			}
+			CAMERA->addCameraAngle(ci::vec2(-delta.x, -delta.y) * 0.005f);
 		}
 	}
 	//１フレーム目は何もしない
@@ -240,12 +247,12 @@ void cInputAll::mouseMove( const ci::app::MouseEvent & event )
 {
 	setMousePos( mouse_pos );
 	if ( !mouse_active ) return;
-	mouseCursolFixed( event, inc_pos, mouse_vec, cursor_captured, last_cursor_pos );
+	mouseCursolFixed( event, inc_pos, mouse_vec, cursor_captured, last_cursor_pos,mouse_cursor,mouse_active_cursor);
 }
 void cInputAll::mouseDrag( const ci::app::MouseEvent & event )
 {
 	if ( !mouse_active ) return;
-	mouseCursolFixed( event, inc_pos, mouse_vec, cursor_captured, last_cursor_pos );
+	mouseCursolFixed( event, inc_pos, mouse_vec, cursor_captured, last_cursor_pos, mouse_cursor, mouse_active_cursor);
 }
 void cInputAll::mouseDown( const ci::app::MouseEvent& event )
 {

@@ -45,6 +45,7 @@ void cGameMain::setup( )
 	Game::cUIManager::getInstance( )->awake( );
 	Game::cDebugManager::getInstance( )->setup( );
 	Sound::StereophonicManager::getInstance()->open();
+	Resource::cFbxManager::getInstance()->setup();
 
     skydome.setup( );
     CAMERA->setup( ); 
@@ -90,7 +91,9 @@ void cGameMain::setup( )
 
 	ENV->disableKeyButton( );
 	ENV->disablePadButton();
+	ENV->disableMouseButton();
 	ENV->disablePadAxis();
+	
 	Game::cUIManager::getInstance( )->disable( );
 }
 

@@ -3,6 +3,7 @@
 #include <Game/cLightManager.h>
 #include"Collision\cRigidBody.h"
 #include"Collision\cAABBCollider.h"
+#include"cinder\gl\gl.h"
 namespace Game
 {
 	namespace Weapons
@@ -19,7 +20,7 @@ namespace Game
 				Collision::cRigidBody rb;
 				Collision::cAABBCollider aabb;
 				int mTeamNum;
-
+				ci::gl::VboMeshRef mesh;
 			public://’ÊMŠÖŒW
 				void dmageToPlayer(const int playerid);
 			private:////’…’nŠÖ˜A

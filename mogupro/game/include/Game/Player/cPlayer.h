@@ -8,6 +8,7 @@
 #include <Game/Weapons/WeaponBase.h>
 #include<Game/Weapons/UseSubWeapon/cUseSubWeapon.h>
 #include <Game/Light/cPointLightParam.h>
+#include <Game/Animation/cAnimation.h>
 namespace Game {
 	namespace Gem {
 		class cFragmentGem;
@@ -73,6 +74,8 @@ namespace Game {
 			int damaged_id;
 			//プレイヤーのAABB
 			ci::AxisAlignedBox aabb;
+			//アニメーション
+			Animation::cAnimation animation;
 
 			//メイン武器
 			std::unique_ptr<Weapon::WeaponBase> main_weapon;
@@ -216,6 +219,10 @@ namespace Game {
 				return normalized_player_vec;
 			}
 
+			Animation::cAnimation& getPlayerAnimation() {
+				return animation;
+			}
+
 			Team getWhichTeam() {
 				return team;
 			}
@@ -288,7 +295,7 @@ namespace Game {
 
 			//attack = 攻撃力
 			//player_id = 攻撃を仕掛けたプレイヤーのid
-			void receiveDamage(const float& attack, const float& player_id);
+			void receiveDamage(const float& attack,float player_id);
 			void weaponUpdae(const float& delta_time);
 			void move(const ci::vec3& velocity);
 			void jump(bool flag);

@@ -127,33 +127,22 @@ void cFbx::setup( FbxManager *manager, const std::string& filename )
     //    }
     //}
 
-    animation_stack_count = 0;
-
-    // アニメーションに必要な情報を収集
-    animation_stack_count = scene->GetSrcObjectCount<FbxAnimStack>();
-    console() << "Anim:" << animation_stack_count << std::endl;
-    setAnimation( current_animation_stack );
-
-    console() << "Pose:" << scene->GetPoseCount() << std::endl;
 
     // FBS SDKを破棄
     // manager->Destroy();
 }
 void cFbx::update()
 {
-    // アニメーション経過時間を進める
-    animation_time += 1 / 60.0;
-    if ( animation_time > animation_stop )
-    {
-        animation_time = animation_start + animation_time - animation_stop;
-    }
 
 }
 void cFbx::draw()
 {
+    draw( 0.0 );
+}
+void cFbx::draw( const double & animation_time )
+{
     gl::pushModelView();
-    gl::translate( 5, 16, 5 );
-    float scale_ = 0.01f;
+    float scale_ = 0.013f;
     gl::scale( scale_, scale_, scale_ );
 
     // 描画
@@ -163,9 +152,17 @@ void cFbx::draw()
 
     gl::popModelView();
 }
-void cFbx::animationReset()
+void cFbx::createAnimation( Anim & anim )
 {
-    animation_time = 0.0f;
+    anim.animation_stack_count = 0;
+
+    // アニメーションに必要な情報を収集
+    anim.animation_stack_count = scene->GetSrcObjectCount<FbxAnimStack>();
+    console() << "Anim:" << anim.animation_stack_count << std::endl;
+    setAnimation( anim.current_animation_stack, anim );
+
+    console() << "Pose:" << scene->GetPoseCount() << std::endl;
+
 }
 void cFbx::drawFbx( FbxNode * node, FbxTime & time )
 {
@@ -463,18 +460,18 @@ const ci::TriMesh & cFbx::getTriMesh( FbxMesh * mesh, Mesh & src_mesh, FbxAMatri
     }
 }
 
-void cFbx::setAnimation( const int index )
+void cFbx::setAnimation( const int index, Anim &anim )
 {
     auto* stack = scene->GetSrcObject<FbxAnimStack>( index );
     // assert(stack);
     if ( !stack )
         return;
 
-    animation_start = stack->LocalStart.Get().GetSecondDouble();
-    animation_stop = stack->LocalStop.Get().GetSecondDouble();
-    console() << "Duration:" << animation_start << "-" << animation_stop << std::endl;
+    anim.animation_start = stack->LocalStart.Get().GetSecondDouble();
+    anim.animation_stop = stack->LocalStop.Get().GetSecondDouble();
+    console() << "Duration:" << anim.animation_start << "-" << anim.animation_stop << std::endl;
 
-    animation_time = animation_start;
+    anim.animation_time = anim.animation_start;
 
     scene->SetCurrentAnimationStack( stack );
 }
@@ -500,53 +497,62 @@ void cFbxManager::setup()
     assert( manager );
 
     std::string name = "mogura";
-    std::shared_ptr<cFbx> model1 = std::make_shared<cFbx>();
-    model1->setup( manager, name );
-    models.insert( std::make_pair( name, model1 ) );
-
+    create( name );
     name = "mogura_attack";
-    std::shared_ptr<cFbx> model2 = std::make_shared<cFbx>();
-    model2->setup( manager, name );
-    models.insert( std::make_pair( name, model2 ) );
-
+    create( name );
     name = "mogura_dig";
-    std::shared_ptr<cFbx> model3 = std::make_shared<cFbx>();
-    model3->setup( manager, name );
-    models.insert( std::make_pair( name, model3 ) );
-}
-
-void cFbxManager::update()
-{
-    for ( auto& it : models )
-        it.second->update();
+    create( name );
 }
 
 int test_time = 0;
+void cFbxManager::update()
+{
+    //for ( auto& it : models )
+    //    it.second->update();
+
+    //if ( test_time >= 0 && test_time < 200 )
+    //    models["mogura"]->update();
+    //if ( test_time >= 200 && test_time < 400 )
+    //    models["mogura_dig"]->update();
+    //if ( test_time >= 400 && test_time < 600 )
+    //    models["mogura_attack"]->update();
+}
+
 void cFbxManager::draw()
 {
     gl::pushModelView();
 
-    if ( test_time >= 600 )
-    {
-        for ( auto& it : models )
-            it.second->animationReset();
-        test_time = 0;
-    }
+    //if ( test_time >= 600 )
+    //    test_time = 0;
 
-    if ( test_time >= 0 && test_time < 200 )
-        draw( "mogura" );
-    if ( test_time >= 200 && test_time < 400 )
-        draw( "mogura_dig" );
-    if ( test_time >= 400 && test_time < 600 )
-        draw( "mogura_attack" );
+    //if ( test_time >= 0 && test_time < 200 )
+    //    draw( "mogura", 0.0 );
+    //if ( test_time >= 200 && test_time < 400 )
+    //    draw( "mogura_dig", 0.0 );
+    //if ( test_time >= 400 && test_time < 600 )
+    //    draw( "mogura_attack", 0.0 );
 
-    test_time++;
+    //test_time++;
 
     gl::popModelView();
 }
 
-void cFbxManager::draw( const std::string & name )
+void cFbxManager::draw( const std::string & name, const double &animation_time )
 {
-    models[name]->draw();
+    if ( models.find( name ) == models.end() )
+        return;
+    models[name]->draw( animation_time );
+}
+void cFbxManager::create( const std::string & name )
+{
+    std::shared_ptr<cFbx> model = std::make_shared<cFbx>();
+    model->setup( manager, name );
+    models.insert( std::make_pair( name, std::move( model ) ) );
+}
+void cFbxManager::createAnimation( const std::string & name, Anim & anim )
+{
+    if ( models.find( name ) == models.end() )
+        return;
+    models[name]->createAnimation( anim );
 }
 }
