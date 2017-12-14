@@ -142,8 +142,7 @@ void cFbx::draw()
 void cFbx::draw( const double & animation_time )
 {
     gl::pushModelView();
-    gl::translate( 5, 16, 5 );
-    float scale_ = 0.01f;
+    float scale_ = 0.013f;
     gl::scale( scale_, scale_, scale_ );
 
     // •`‰æ
