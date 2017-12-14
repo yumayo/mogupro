@@ -317,7 +317,7 @@ void Game::Player::cPlayer::gemsUpdate(const float& delta_time)
 		it->setPos(buf_pos);
 		//‰‰o‚ªI‚í‚Á‚½‚ç
 		if (gem_production_end[it->getId()] == true) {
-			it->setPos(mCollider.getPosition() - (normalized_player_vec * ci::vec3(0.1f)));
+			it->setPos(mCollider.getPosition() - (normalized_player_vec * ci::vec3(0.3f)) + ci::vec3(0,0.1f,0));
 		}
 	}
 }
@@ -482,14 +482,20 @@ void Game::Player::cPlayer::setup()
 
 	main_weapon->setup();
 
+	animation.create("mogura", false, true);
+	animation.create("mogura_dig");
+	animation.create("mogura_attack",true);
+	animation.animationChange("mogura");
+
 	mesh = Resource::cObjectManager::getInstance()->findObject("montamogura/moguraHontai.obj");
-	TEX->set("mogura", "OBJ/montamogura/moguraHontai.png");
+	TEX->set("mogura", "Fbx/UV_mogura_01.jpg");
 	
 }
 
 #include <Game/cClientAdapter.h>
 void Game::Player::cPlayer::update(const float & delta_time)
 {
+	animation.update();
 	no_damage_blind++;
 	no_damage_count += delta_time;
 	drill(delta_time);
@@ -552,8 +558,9 @@ void Game::Player::cPlayer::draw()
 			ci::gl::rotate(save_rotate_x, ci::vec3(1, 0, 0));
 		}
 	}*/
-	ci::gl::translate(-ci::vec3(0, 0.5f, 0));
-	ci::gl::scale(ci::vec3(0.01f, 0.01f, 0.012f));
-	ci::gl::draw(mesh);
+	//ci::gl::translate(-ci::vec3(0, 0.5f, 0));
+	ci::gl::scale(ci::vec3(0.65f, 0.65f, 0.65f));
+	animation.draw();
+	//ci::gl::draw(mesh);
 	ci::gl::popModelView();
 }

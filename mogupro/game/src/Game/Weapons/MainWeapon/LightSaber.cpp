@@ -350,6 +350,7 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 
 	//‚Ð‚Á‚©‚­ˆ—
 	if (pull) {
+		cPlayerManager::getInstance()->getPlayer(player_id)->getPlayerAnimation().animationChange("mogura_attack");
 		is_push = false;
 		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").stop();
 		charge_flag1 = false;
