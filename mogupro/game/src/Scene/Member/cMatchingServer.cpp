@@ -35,14 +35,6 @@ namespace Scene
 			n = Node::node::create();
 
 			n->add_child(font);
-		/*	n->run_action(repeat_forever::create(sequence::create(delay::create(1.5f),
-				call_func::create([this]
-			{
-				for each(auto m in cMatchingMemberManager::getInstance()->mPlayerDatas)
-				{
-					cUDPServerManager::getInstance()->broadcastOthers( m.networkHandle, new cEveTeamMember(m.teamNum, m.nameStr, m.playerID));
-				}
-			}))));*/
 			mStartGame = false;
 			teamCount = 0;
 		}
@@ -168,14 +160,14 @@ namespace Scene
 			while (auto reqWantTeamIn = cRequestManager::getInstance()->getReqWantTeamIn())
 			{
 				int teamNum = teamCount % 2;
-				++teamCount;
  				if (cMatchingMemberManager::getInstance()->changeTeamNum(teamNum,
 					reqWantTeamIn->mNetworkHandle) != true)
 				{
 					cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle, new cResWantTeamIn(0, teamNum));
 					continue;
 				}
-			
+
+				++teamCount;
 				cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle, new cResWantTeamIn(1, teamNum));
 				//V‹K’Ç‰Á‚µ‚½Player‚Ìî•ñæ“¾
 				std::string newPlayerStr;
@@ -203,6 +195,7 @@ namespace Scene
 					}
 				}
 			
+				ci::app::console() << "MemberCount : " << count << std::endl;
 				Log::cLogManager::getInstance()->add("MatchingServer");
 				Log::cLogManager::getInstance()->writeLog("MatchingServer", "MatchingMember : " + std::to_string(count));
 			}

@@ -39,7 +39,7 @@ namespace Sound
 			end(false)
 		{
 			source->bindBuffer(*buffer);
-			time = 5.0f;
+			time = 10.0f;
 			position();
 			direction();
 			soundPosition();
