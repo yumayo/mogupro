@@ -25,7 +25,7 @@ public:
     void animationTimeReturn( std::shared_ptr<Resource::Anim> anim );
     void animationTimeReset( std::shared_ptr<Resource::Anim> anim );
     void allReset();
-    void setAnimationIncrementTime( const double &time = 0.016 );
+    void setAnimationIncrementTime( const double &time = 0.016 ) { mAnimationIncrementTime = time; }
     std::shared_ptr<Resource::Anim> getActiveAnimation();
 
 private:
