@@ -53,6 +53,30 @@ struct Material
     boost::optional<ci::gl::Texture> texture;
 };
 
+struct Anim
+{
+    // アニメーションの経過時間
+    double animation_time = 0.0;
+    double animation_start;
+    double animation_stop;
+
+    // シーン内のアニメーション数
+    int animation_stack_count;
+    int current_animation_stack = 0;
+
+    Anim() :
+        animation_time( 0.0 ),
+        animation_start( 0.0 ),
+        animation_stop( 0.0 ),
+        animation_stack_count( 0 ),
+        current_animation_stack( 0 )
+    {
+
+    }
+
+    static Anim zero() { return Anim(); }
+};
+
 class cFbx
 {
 public:
@@ -63,7 +87,9 @@ public:
     void setup( FbxManager *manager, const std::string& filename );
     void update();
     void draw();
-    void animationReset();
+    void draw( const double &animation_time );
+
+    void createAnimation( Anim &anim );
 
 private:
 
@@ -79,7 +105,7 @@ private:
                                    FbxAMatrix &parent_matrix,
                                    FbxTime& time );
 
-    void setAnimation( const int index );
+    void setAnimation( const int index, Anim &anim );
 
     FbxScene* scene;
     FbxNode* root_node;
@@ -87,15 +113,6 @@ private:
     // 表示物の情報を名前で管理
     std::map<std::string, Mesh> meshes;
     std::map<std::string, Material> materials;
-
-    // アニメーションの経過時間
-    double animation_time = 0.0;
-    double animation_start;
-    double animation_stop;
-
-    // シーン内のアニメーション数
-    int animation_stack_count;
-    int current_animation_stack = 0;
 
 };
 
@@ -109,13 +126,15 @@ public:
     void setup();
     void update();
     void draw();
-    void draw( const std::string& name );
+    void draw( const std::string &name, const double &animation_time );
+    void create( const std::string &name );
+    void createAnimation( const std::string &name,
+                          Anim &anim );
 
 private:
 
     // FBX情報
     FbxManager* manager;
-
     std::unordered_map<std::string, std::shared_ptr<cFbx>> models;
 };
 }
