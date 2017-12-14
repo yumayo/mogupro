@@ -13,6 +13,7 @@ public:
     // —á: Assets/JSON/player.json ‚È‚ç
     // „: player.json ‚Æ“ü—Í‚·‚éB
 	boost::optional<Json::Value const&> find( std::string const& underAssetsUnderJSONUnderPath ) const noexcept;
+	void reload( );
 private:
     std::map<std::string, Json::Value> mJsons;
 };
