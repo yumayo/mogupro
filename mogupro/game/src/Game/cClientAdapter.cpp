@@ -149,10 +149,12 @@ void cClientAdapter::recvAllCannons( )
 		if ( packet->teamId == Game::Player::Red )
 		{
 			cUIManager::getInstance( )->addRedCannonPower( packet->power );
+			cStrategyManager::getInstance()->getCannons()[int(packet->teamId)]->setAddCanonPower(packet->power);
 		}
 		else if ( packet->teamId == Game::Player::Blue )
 		{
 			cUIManager::getInstance( )->addBlueCannonPower( packet->power );
+			cStrategyManager::getInstance()->getCannons()[int(packet->teamId)]->setAddCanonPower(packet->power);
 		}
 		else
 		{
