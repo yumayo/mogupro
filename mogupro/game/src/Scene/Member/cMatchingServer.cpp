@@ -175,16 +175,15 @@ namespace Scene
 		{
 			while (auto reqWantTeamIn = cRequestManager::getInstance()->getReqWantTeamIn())
 			{
-				int teamNum = teamCount % 2;
- 				if (cMatchingMemberManager::getInstance()->changeTeamNum(teamNum,
-					reqWantTeamIn->mNetworkHandle) != true)
+				auto team = cMatchingMemberManager::getInstance( )->whatTeam( reqWantTeamIn->mNetworkHandle );
+ 				if (cMatchingMemberManager::getInstance()->whatTeam( reqWantTeamIn->mNetworkHandle) == -1)
 				{
-					cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle, new cResWantTeamIn(0, teamNum));
+					cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle, new cResWantTeamIn(0, -1));
 					continue;
 				}
 
 				++teamCount;
-				cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle, new cResWantTeamIn(1, teamNum));
+				cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle, new cResWantTeamIn(1, team ));
 				//新規追加したPlayerの情報取得
 				std::string newPlayerStr;
 				int newPlayerID;
@@ -203,7 +202,7 @@ namespace Scene
 						//!@LookMe : マッチングがランダムになったから出来る事であって本来はできない
 						//メンバーに新規Playerの送信						
 						cUDPServerManager::getInstance()->send(m.networkHandle,
-							new cEveTeamMember(teamNum, newPlayerStr, newPlayerID));
+							new cEveTeamMember( team, newPlayerStr, newPlayerID));
 						//新規Playerに他の既存Playerの送信
 						cUDPServerManager::getInstance()->send(reqWantTeamIn->mNetworkHandle,
 							new cEveTeamMember(m.teamNum, m.nameStr, m.playerID));
