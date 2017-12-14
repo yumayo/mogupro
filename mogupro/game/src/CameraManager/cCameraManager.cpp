@@ -27,7 +27,8 @@ void cCameraManager::MovingCamera( )
 {
 	//プレイヤーが死んだらキルカメラ
 	if (Game::cPlayerManager::getInstance()->getActivePlayer() != nullptr &&
-		Game::cPlayerManager::getInstance()->getActivePlayer()->isDead()) {
+		Game::cPlayerManager::getInstance()->getActivePlayer()->isDead() || 
+		Game::cPlayerManager::getInstance( )->getActivePlayer( )->isWatching( ) ) {
 		//慣性移動
 		buf_pos = refPosition - pos;
 		buf_pos *= 0.25f;

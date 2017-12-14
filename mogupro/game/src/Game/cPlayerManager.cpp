@@ -137,6 +137,8 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	if (!active_player->isDead()) {
 		CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
 	}
+	// ターゲットがいたらプレイヤーは動けません。
+	if ( watching_target_player_id != -1 ) return;
 	//プレイヤーが死んでいたらカメラ以外操作不能
 	if (active_player->isDead())return;
 
@@ -276,6 +278,38 @@ void Game::cPlayerManager::killCamera(const float & delta_time)
 		}
 	}
 }
+void Game::cPlayerManager::watchingCamera( const float & delta_time )
+{
+	if ( ENV->pushKey( ci::app::KeyEvent::KEY_1 ) )
+	{
+		watching_target_player_id = 0;
+	}
+	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_2 ) )
+	{
+		watching_target_player_id = 1;
+	}
+	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_3 ) )
+	{
+		watching_target_player_id = 2;
+	}
+	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_4 ) )
+	{
+		watching_target_player_id = 4; // 3は観戦者
+	}
+	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_5 ) )
+	{
+		watching_target_player_id = 5;
+	}
+	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_6 ) )
+	{
+		watching_target_player_id = 6;
+	}
+	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_RETURN ) )
+	{
+		watching_target_player_id = -1;
+	}
+	// 7は観戦者
+}
 void Game::cPlayerManager::setPlayersPosition(std::vector<ci::vec3> positions)
 {
 	for (int i = 0; i < players.size(); i++) {
@@ -293,8 +327,22 @@ void Game::cPlayerManager::playerCollisionAfterUpdate(const float& delta_time)
 		it->gemsUpdate(delta_time);
 		it->weaponUpdae(delta_time);
 	}
-	if (!active_player->isDead()) {
-		CAMERA->refPosition = active_player->getPos() + ci::vec3(0, 0, 0);
+	if ( active_player->isWatching( ) )
+	{
+		if ( watching_target_player_id == -1 )
+		{
+			CAMERA->refPosition = active_player->getPos( );
+		}
+		else
+		{
+			CAMERA->refPosition = getPlayer( watching_target_player_id )->getPos( );
+		}
+	}
+	else
+	{
+		if ( !active_player->isDead( ) ) {
+			CAMERA->refPosition = active_player->getPos( ) + ci::vec3( 0, 0, 0 );
+		}
 	}
 }
 void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
@@ -307,11 +355,12 @@ void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& pla
 }
 void Game::cPlayerManager::update(const float& delta_time)
 {
-	playerMove(delta_time);
+	playerMove( delta_time );
 	for (auto& it : players) {
 		it->update(delta_time);
 	}
 	killCamera(delta_time);
+	watchingCamera(delta_time);
 	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), ci::vec2(active_player->getRotateX(), active_player->getRotateY()));
 }
 
