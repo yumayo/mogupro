@@ -49,29 +49,9 @@ const std::array<ci::vec2, 4> tex_coords
     ci::vec2( 1.0 ,0.0 ),
 };
 
-//template<typename T>
-//void sortByCamera( std::vector<std::shared_ptr<T>>& list, const vec3& offset_pos )
-//{
-//    vec3 camera_pos = CameraManager::cCameraManager::getInstance()->getCamera().getEyePoint();
-//
-//    for ( size_t i = 0; i < list.size(); i++ )
-//    {
-//        for ( size_t k = 0; k < list.size() - i - 1; k++ )
-//        {
-//            const vec3& p1_pos = offset_pos + list[k]->mPosition;
-//            const vec3& p2_pos = offset_pos + list[k + 1]->mPosition;
-//
-//            float length1 = getLength( camera_pos, p1_pos );
-//            float length2 = getLength( camera_pos, p2_pos );
-//
-//            if ( length1 < length2 )
-//                std::swap( list[k], list[k + 1] );
-//        }
-//    }
-//}
-
 ParticleParam::ParticleParam() :
-    mPosition( ci::vec3( 0 ) ),
+    mPosition( NULL ),
+    mCurrentPosition( vec3( 0 ) ),
     mScale( 1.0f ),
     mMoveType( ParticleType::EXPROTION ),
     mTextureType( ParticleTextureType::NONE ),
@@ -92,9 +72,16 @@ ParticleParam::ParticleParam() :
     mIsCube( false )
 {
 }
+ParticleParam & ParticleParam::position( ci::vec3 & position )
+{
+    mPosition = &position;
+    mCurrentPosition = position;
+    return *this;
+}
 ParticleParam & ParticleParam::position( const ci::vec3 & position )
 {
-    mPosition = position;
+    mCurrentPosition = position;
+    mPosition = NULL;
     return *this;
 }
 ParticleParam & ParticleParam::scale( const float & scale )
@@ -291,7 +278,7 @@ cParticleHolder::cParticleHolder( const ParticleParam& param ) :
     mVbo = gl::VboMesh::create( *mMesh );
 }
 
-cParticleHolder::cParticleHolder( const vec3& position,
+cParticleHolder::cParticleHolder( vec3& position,
                                   const ParticleType& type,
                                   const ParticleTextureType& texture_type,
                                   const float& scale,
@@ -301,7 +288,8 @@ cParticleHolder::cParticleHolder( const vec3& position,
                                   const bool& lighting,
                                   const ci::ColorA& color )
 {
-    mParam.mPosition = position;
+    mParam.mCurrentPosition = position;
+    mParam.mPosition = &position;
     mParam.mMoveType = type;
     mParam.mTextureType = texture_type;
     mParam.mScale = scale;
@@ -334,6 +322,18 @@ cParticleHolder::~cParticleHolder()
 
 void cParticleHolder::update( const float& delta_time )
 {
+    float errRange = 30.0f;
+    if ( mParam.mPosition != NULL )
+        if ( ( mParam.mPosition->x < mParam.mCurrentPosition.x + errRange &&
+               mParam.mPosition->x > mParam.mCurrentPosition.x - errRange ) &&
+
+               ( mParam.mPosition->y < mParam.mCurrentPosition.y + errRange &&
+                 mParam.mPosition->y > mParam.mCurrentPosition.y - errRange ) &&
+
+                 ( mParam.mPosition->z < mParam.mCurrentPosition.z + errRange &&
+                   mParam.mPosition->z > mParam.mCurrentPosition.z - errRange ) )
+            mParam.mCurrentPosition = *mParam.mPosition;
+
     // パーティクルの更新
     for ( auto& it = mParticles.begin(); it != mParticles.end(); )
     {
@@ -403,7 +403,7 @@ bool cParticleHolder::isActive()
 void cParticleHolder::createParticle()
 {
     const vec3& position = createPosition();
-    const auto& rand_vec = createVec( mParam.mPosition + position );
+    const auto& rand_vec = createVec( mParam.mCurrentPosition + position );
     const float& vanish_time = createVanishTime();
 
     mParticles.emplace_back( std::make_shared<cParticle>( position,
@@ -447,7 +447,7 @@ ci::vec3 cParticleHolder::createVec( const ci::vec3& particle_position )
     }
     else if ( mParam.mMoveType == ParticleType::CONVERGE )
     {
-        //vec3 center_vec = mParam.mPosition - particle_position;
+        //vec3 center_vec = mParam.mCurrentPosition - particle_position;
         //vec = glm::normalize( center_vec );
         //vec *= mParam.mSpeed;
     }
@@ -539,7 +539,7 @@ void cParticleHolder::createMesh( const glm::quat& rotation,
 
 void cParticleHolder::particleDraw( const glm::quat& rotation )
 {
-    gl::translate( mParam.mPosition );
+    gl::translate( mParam.mCurrentPosition );
     gl::scale( vec3( mParam.mScale ) );
     if ( mParam.mIsCube == false )
     {
@@ -583,7 +583,7 @@ void cParticleHolder::setTexture( const ParticleTextureType & texture_type )
 void cParticleHolder::setLight( bool is_lighting )
 {
     if ( is_lighting )
-        mHandle = Game::cLightManager::getInstance()->addPointLight( mParam.mPosition,
+        mHandle = Game::cLightManager::getInstance()->addPointLight( mParam.mCurrentPosition,
                                                                      vec3( 1, 1, 1 ),
                                                                      2.0f );
 }
@@ -645,7 +645,7 @@ void cParticleManager::create( const ParticleParam& param )
     mParticleHolders.emplace_back( std::make_shared<cParticleHolder>( param ) );
 }
 
-void cParticleManager::create( const ci::vec3 & position,
+void cParticleManager::create( ci::vec3 & position,
                                const ParticleType & type,
                                const ParticleTextureType & texture_type,
                                const float & scale,
@@ -658,7 +658,7 @@ void cParticleManager::create( const ci::vec3 & position,
     mParticleHolders.emplace_back( std::make_shared<cParticleHolder>( position, type, texture_type, scale, time, count, speed, lighting, color ) );
 }
 
-void cParticleManager::create( const ci::vec3 & position,
+void cParticleManager::create( ci::vec3 & position,
                                const ParticleType & type,
                                const ParticleTextureType & texture_type,
                                const ci::vec3 & scale,

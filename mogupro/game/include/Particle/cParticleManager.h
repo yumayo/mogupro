@@ -28,11 +28,13 @@ class ParticleParam
 {
 public:
     friend class cParticleHolder;
+    friend class cParticleManager;
 
     // デフォルトの設定
     ParticleParam();
 
     // 生成の中心位置
+    ParticleParam& position( ci::vec3& position );
     ParticleParam& position( const ci::vec3& position );
     // パーティクルのスケール
     ParticleParam& scale( const float& scale );
@@ -77,7 +79,8 @@ public:
 
 private:
 
-    ci::vec3 mPosition;
+    ci::vec3* mPosition;
+    ci::vec3 mCurrentPosition;
     float mScale;
     ParticleType mMoveType;
     ParticleTextureType mTextureType;
@@ -136,7 +139,7 @@ class cParticleHolder
 public:
 
     cParticleHolder( const ParticleParam& param );
-    cParticleHolder( const ci::vec3& position,
+    cParticleHolder( ci::vec3& position,
                      const ParticleType& type,
                      const ParticleTextureType& texture_type,
                      const float& scale,
@@ -169,7 +172,7 @@ public:
 
     ParticleParam mParam;
     std::string mTextureName;
-	Game::Light::PointLightHandle mHandle;
+    Game::Light::PointLightHandle mHandle;
     std::vector<std::shared_ptr<cParticle>> mParticles;
     std::vector<std::shared_ptr<cParticle>> mTrajectoryParticles;
     glm::quat mRotation;
@@ -204,7 +207,7 @@ public:
     // param : ParticleParam
     void create( const ParticleParam& param );
 
-    void create( const ci::vec3& position,
+    void create( ci::vec3& position,
                  const ParticleType& type = ParticleType::EXPROTION,
                  const ParticleTextureType& texture_type = ParticleTextureType::SPARK,
                  const float& scale = 0.3f,
@@ -214,7 +217,7 @@ public:
                  const bool& lighting = false,
                  const ci::ColorA& color = ci::ColorA( 1, 1, 1, 1 ) );
 
-    void create( const ci::vec3& position,
+    void create( ci::vec3& position,
                  const ParticleType& type = ParticleType::EXPROTION,
                  const ParticleTextureType& texture_type = ParticleTextureType::SPARK,
                  const ci::vec3& scale = ci::vec3( 0.3f ),
@@ -224,13 +227,16 @@ public:
                  const bool& lighting = false,
                  const ci::ColorA& color = ci::ColorA( 1, 1, 1, 1 ) );
 
+    void move( ci::vec3& position );
+
 private:
 
     void builbordUpdate();
 
 private:
 
-    std::vector<std::shared_ptr<cParticleHolder>> mParticleHolders;
+    std::list<std::shared_ptr<cParticleHolder>> mParticleHolders;
+
     glm::quat mBuilbordRotate;
 
 };
