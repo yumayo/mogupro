@@ -108,6 +108,13 @@ private:
     std::stack<Packet::Request::cReqInRoom> mReqInRoom;
     std::map<ubyte4, double> mReqInRoomSequenceIds;
 public:
+    boost::optional<Packet::Request::cReqInRoomWatching> getReqInRoomWatching( );
+    void ungetReqInRoomWatching( Packet::Request::cReqInRoomWatching&& data );
+    bool isNewReqInRoomWatching( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Request::cReqInRoomWatching> mReqInRoomWatching;
+    std::map<ubyte4, double> mReqInRoomWatchingSequenceIds;
+public:
     boost::optional<Packet::Request::cReqWantTeamIn> getReqWantTeamIn( );
     void ungetReqWantTeamIn( Packet::Request::cReqWantTeamIn&& data );
     bool isNewReqWantTeamIn( Packet::PacketHeader const& header );

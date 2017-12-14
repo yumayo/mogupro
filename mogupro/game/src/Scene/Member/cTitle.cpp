@@ -9,6 +9,7 @@
 #include <Scene/cSceneManager.h>
 #include <Network.hpp>
 #include <Game/cGameManager.h>
+#include <Network/cMatchingMemberManager.h>
 using namespace cinder;
 namespace Scene
 {
@@ -68,17 +69,23 @@ void cTitle::update( float deltaTime )
 		{
 			cSceneManager::getInstance( )->shift<Scene::Member::cMatchingServer>( );
 		}
-	}
-	else
-	{
-		if ( Utility::cInputAll::getInstance( )->pushKey( ) )
+		if ( Utility::cInputAll::getInstance( )->pushKey( cinder::app::KeyEvent::KEY_RETURN ) )
 		{
 			Network::cUDPClientManager::getInstance( )->open( );
 			Network::cUDPServerManager::getInstance( )->open( );
 			Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
-			Game::cGameManager::getInstance( )->setTime( boost::posix_time::microsec_clock::local_time() + boost::posix_time::seconds( 5 ) );
+			Game::cGameManager::getInstance( )->setTime( boost::posix_time::microsec_clock::local_time( ) + boost::posix_time::seconds( 5 ) );
+			Network::cMatchingMemberManager::getInstance( )->mPlayerID = 3U;
 			cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
 		}
+	}
+	else if( ENV->pushKey( ) )
+	{
+		Network::cUDPClientManager::getInstance( )->open( );
+		Network::cUDPServerManager::getInstance( )->open( );
+		Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
+		Game::cGameManager::getInstance( )->setTime( boost::posix_time::microsec_clock::local_time( ) + boost::posix_time::seconds( 5 ) );
+		cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
 	}
 }
 void cTitle::draw( )

@@ -102,6 +102,8 @@ enum class PacketId : ubyte1
 	REQ_MAKE_ROOM,
 	//Matching時にクライアントが部屋に入る申請
 	REQ_IN_ROOM,
+	//Matching時にクライアントが部屋に入る申請
+	REQ_IN_ROOM_WATCHING,
 	//Matching時にどっちのチームに入るのかの申請
 	REQ_WANT_TEAM_IN,
 	//Masterからゲームが開始できるかどうかを確認するために送信

@@ -48,6 +48,10 @@ void Game::Weapon::LightSaber::ShockCollisionPlayers()
 {
 	for (auto& it : cPlayerManager::getInstance()->getPlayers()) {		//自分の操作しているプレイヤーなら返す
 		
+		if ( it->isWatching( ) )
+		{
+			continue;
+		}
 		if (it->getActiveUser()) {
 			continue;
 		}
@@ -91,6 +95,10 @@ void Game::Weapon::LightSaber::CollisionPlayers()
 {
 	for (auto& it : cPlayerManager::getInstance()->getPlayers()) {
 		
+		if ( it->isWatching( ) )
+		{
+			continue;
+		}
 		//自分の操作しているプレイヤーなら返す
 		if (it->getActiveUser()) {
 			continue;

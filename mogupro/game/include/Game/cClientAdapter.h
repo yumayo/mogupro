@@ -37,6 +37,8 @@ private:
 	void recvAllBombs( );
 	// 全ての大砲イベントを行う。
 	void recvAllCannons( );
+	//
+	void recvAllGameInfo( );
 public:
     // ブロックを破壊したら呼んでください。
     void sendBreakBlock( cinder::vec3 const& position, float radius, Network::ubyte1 type );

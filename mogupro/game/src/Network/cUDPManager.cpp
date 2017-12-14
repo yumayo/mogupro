@@ -397,6 +397,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
+        case Network::Packet::PacketId::REQ_IN_ROOM_WATCHING:
+        {
+            if ( cRequestManager::getInstance( )->isNewReqInRoomWatching( packetHeader ) )
+			{
+                Packet::Request::cReqInRoomWatching data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cRequestManager::getInstance( )->ungetReqInRoomWatching( std::move( data ) );
+            }
+            break;
+        }
         case Network::Packet::PacketId::REQ_WANT_TEAM_IN:
         {
             if ( cRequestManager::getInstance( )->isNewReqWantTeamIn( packetHeader ) )

@@ -117,6 +117,12 @@ void cUIManager::setup( )
 	int offset = cPlayerManager::getInstance( )->getPlayers( ).size( ) / 2 * -1;
 	for ( auto player : cPlayerManager::getInstance( )->getPlayers( ) )
 	{
+		if ( ( player->getPlayerId( ) == 3U ) || ( player->getPlayerId( ) == 7U ) )
+		{
+			if ( ++offset == 0 ) offset++;
+			continue;
+		}
+
 		auto ikiteru = mLive->add_child( Node::Renderer::sprite::create( "ikiteru.png" ) );
 		ikiteru->set_name( "ikiteru" + std::to_string( player->getPlayerId( ) ) );
 		ikiteru->set_anchor_point( vec2( 0.5F, 0 ) );
@@ -126,6 +132,11 @@ void cUIManager::setup( )
 		yarareta->set_anchor_point( vec2( 0.5F, 0 ) );
 		yarareta->set_position( yarareta->get_content_size( ) * vec2( offset, 0.0F ) );
 		yarareta->set_visible( false );
+		auto watch = mLive->add_child( Node::Renderer::sprite::create( "watch.png" ) );
+		watch->set_name( "watch" + std::to_string( player->getPlayerId( ) ) );
+		watch->set_anchor_point( vec2( 0.5F, 0 ) );
+		watch->set_position( yarareta->get_content_size( ) * vec2( offset, 0.0F ) );
+		watch->set_visible( false );
 		if ( ++offset == 0 ) offset++;
 	}
 	if ( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) == Player::Blue )
@@ -146,8 +157,12 @@ void cUIManager::update( float delta )
 
 	for ( auto player : cPlayerManager::getInstance( )->getPlayers( ) )
 	{
+		if ( ( player->getPlayerId( ) == 3U ) || ( player->getPlayerId( ) == 7U ) )
+			continue;
+
 		mLive->get_child_by_name( "ikiteru" + std::to_string( player->getPlayerId( ) ) )->set_visible( !player->isDead( ) );
 		mLive->get_child_by_name( "yarareta" + std::to_string( player->getPlayerId( ) ) )->set_visible( player->isDead( ) );
+		mLive->get_child_by_name( "watch" + std::to_string( player->getPlayerId( ) ) )->set_visible( cPlayerManager::getInstance( )->getWatchingTargetPlayerId( ) == player->getPlayerId( ) );
 	}
 
 	//プレイヤーがダメージを受けた時の画面の周りの光

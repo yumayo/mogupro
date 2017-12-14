@@ -88,7 +88,15 @@ namespace Scene
 			}
 			outRoomFunc.emplace_back(
 				[this] {
-				cUDPClientManager::getInstance()->send(new cReqInRoom(100));
+				// とりあえずコントロールを押しながらで観戦者。
+				if ( ENV->pressKey( cinder::app::KeyEvent::KEY_LCTRL ) )
+				{
+					cUDPClientManager::getInstance( )->send( new cReqInRoomWatching( 100 ) );
+				}
+				else
+				{
+					cUDPClientManager::getInstance( )->send( new cReqInRoom( 100 ) );
+				}
 				mCanSend = false;
 				mWaitClassState = ClassState::CLIENT;
 				mSelectTag = 0;

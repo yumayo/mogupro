@@ -175,6 +175,8 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 
 void Game::Player::cPlayer::collisionGems()
 {
+	if ( isWatching( ) ) return;
+
 	//自分のAABBを生成
 	ci::vec3 aabb_begin_pos = mPos - size * ci::vec3(4);
 	ci::vec3 aabb_end_pos = mPos + size * ci::vec3(4);
@@ -261,8 +263,8 @@ void Game::Player::cPlayer::resetPlayerStatus()
 	//位置をリスポーン位置に
 	mCollider.setPosition(start_position);
 	is_dead = false;
-	mCollider.addWorld();
-	mRigidbody.addWorld();
+	mCollider.addWorld( );
+	mRigidbody.addWorld( );
 	no_damage_count = 0;
 }
 
@@ -288,12 +290,22 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 {
 	drill_sound += delta_time;
 	if (!active_user) return;
-	mRigidbody.gravityOn();
+	if ( isWatching( ) )
+		;
+	else
+	{
+		mRigidbody.gravityOn( );
+	}
 	drillingCamera(delta_time);
 	//掘られてなければ処理しない
 	if (!drilling)return;
 	if (Game::Field::WORLD_SIZE.y > mCollider.getPosition().y) {
-		mRigidbody.gravityOff();
+		if ( isWatching( ) )
+			;
+		else
+		{
+			mRigidbody.gravityOff( );
+		}
 	}
 	if (drill_sound > 0.1f) {
 		if(Game::cFieldManager::getInstance()->isBreakBlock(mCollider.getPosition() + (glm::normalize(CAMERA->getCamera().getViewDirection()) * ci::vec3(status.drill_speed / 3)),1)) {
@@ -379,7 +391,7 @@ Game::Player::cPlayer::cPlayer(
 	default:
 		break;
 	}
-	light = cLightManager::getInstance( )->addPointLight( mPos, lightColor, 1.0F );
+	light = cLightManager::getInstance( )->addPointLight( mPos, lightColor, isWatching( ) ? 0.0F : 1.0F );
 }
 
 
@@ -437,7 +449,7 @@ void Game::Player::cPlayer::move(const ci::vec3 & velocity)
 		normalized_player_vec = glm::normalize( velocity );
 	}
 	auto vec = velocity;
-	vec.y = drilling ? velocity.y : mRigidbody.getSpeed( ).y;
+	vec.y = drilling || isWatching( ) ? velocity.y : mRigidbody.getSpeed( ).y;
 	mRigidbody.setSpeed( vec );
 }
 
@@ -461,9 +473,17 @@ void Game::Player::cPlayer::setup()
 	//初めにいっこだけライトボムを追加します
 	useSubWeapon.addSubWeapon(Game::Weapons::SubWeapon::LIGHT_BOMB);
 
-	mCollider.setLayer(1 << 0);
-	mCollider.addWorld();
-	mRigidbody.addWorld();
+	mCollider.setLayer( isWatching( ) ? 1 << 1 : 1 << 0 );
+	mCollider.addWorld( );
+	if ( isWatching( ) )
+	{
+		mRigidbody.gravityOff( );
+	}
+	else
+	{
+		mRigidbody.gravityOn( );
+	}
+	mRigidbody.addWorld( );
 
 	//最初に角度を設定するためにほんの少し動かす
 	move(ci::vec3(0, 0, 0.01f));
@@ -519,13 +539,19 @@ void Game::Player::cPlayer::update(const float & delta_time)
 		break;
 	}
 	light->color = lightColor;
-	light->reAttachPositionWithRadius( mPos, 1 + 2 - ( status.hp / Player::MAX_HP ) * 2 );
+	light->reAttachPositionWithRadius( mPos, isWatching( ) ? 0.0F : 1 + 2 - ( status.hp / Player::MAX_HP ) * 2 );
 
 
 }
 
 void Game::Player::cPlayer::draw()
 {
+	// 観戦者です。 2017/12/14
+	if ( isWatching( ) )
+	{
+		return;
+	}
+
 	//死亡中は描画しない
 	if (is_dead)return;
 	ci::gl::ScopedTextureBind tex(TEX->get("mogura"));

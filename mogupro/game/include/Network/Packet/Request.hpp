@@ -13,6 +13,7 @@
 #include<Network/Packet/Request/cReqDamage.h>
 #include<Network/Packet/Request/cReqMakeRoom.h>
 #include<Network/Packet/Request/cReqInRoom.h>
+#include<Network/Packet/Request/cReqInRoomWatching.h>
 #include<Network/Packet/Request/cReqWantTeamIn.h>
 #include<Network/Packet/Request/cReqCheckBeginGame.h>
 #include<Network/Packet/Request/cReqCheckMember.h>

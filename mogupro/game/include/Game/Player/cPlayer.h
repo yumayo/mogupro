@@ -176,6 +176,11 @@ namespace Game {
 				}
 				mCollider.setPosition(pos);
 			}
+			bool isWatching( )
+			{
+				return (player_id == 3U) || (player_id == 7U);
+			}
+
 			//ƒvƒŒƒCƒ„[‚ª“®‚¯‚È‚¢ó‘Ô‚©‚Ç‚¤‚©
 			bool getStan() {
 				return stan;
