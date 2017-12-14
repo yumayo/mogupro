@@ -38,8 +38,8 @@ namespace Game
 		void      buildMesh();
 		void      clearMesh();
 
-		std::vector<std::shared_ptr<Gem::cGemStone>>         getGemStones()          { return mGemStone; }
-		std::vector<std::shared_ptr<Gem::cFragmentGem>>      getFragmentGems()       { return mFragmentGems; }
+		std::vector<std::shared_ptr<Gem::cGemStone>>         getGemStones() { return mGemStone; }
+		std::vector<std::shared_ptr<Gem::cFragmentGem>>      getFragmentGems() { return mFragmentGems; }
 		std::shared_ptr<Gem::cGemStone>                      getGemStone(int id);
 		std::vector<std::shared_ptr<Gem::cFragmentGem>>      breakGemStone(int id);
 		std::shared_ptr<Gem::cFragmentGem>                   getFragmentGem(int id);
@@ -68,7 +68,8 @@ namespace Game
 		float                mTime;
 		float                mLightingSpeed;
 		const int            mCreateFGemNum = 5;
-		
+		const float          mVisibleRange = 10;
+		int                  mFragGemIDCount = 0;
 		//ci::gl::GlslProgRef mHShader;
 		//ci::gl::GlslProgRef mVShader;
 	};
