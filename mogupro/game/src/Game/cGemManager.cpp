@@ -65,6 +65,8 @@ namespace Game
 
 				ci::gl::ScopedGlslProg    shaderScp(mVboShader);
 				mVboShader->uniform("deltaTime", mTime);
+				mVboShader->uniform("visibleRange", mVisibleRange);
+				mVboShader->uniform("playerPos", Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 
 				ci::gl::clear(ci::ColorA(0, 0, 0, 0));
 				for (size_t i = 0; i < mFragmentGems.size(); i++)
@@ -266,9 +268,10 @@ namespace Game
 					offset.x = ci::randFloat(-0.8, 0.8);
 					offset.y = ci::randFloat(-0.8, 0.8);
 					offset.z = ci::randFloat(-0.8, 0.8);
-					mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mGemStone[i]->getPos() + offset, mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType(),glm::normalize(dir)));
+					mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragGemIDCount, mGemStone[i]->getPos() + offset, mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType(),glm::normalize(dir)));
 					mFragmentGems[mFragmentGems.size() - 1]->setup();
 					addGems.push_back(mFragmentGems[mFragmentGems.size() - 1]);
+					mFragGemIDCount++;
 				}
 				mGemStone[i]->deleteGem();
 				buildMesh();
