@@ -95,6 +95,10 @@ void Game::Weapon::LightSaber::CollisionPlayers()
 {
 	for (auto& it : cPlayerManager::getInstance()->getPlayers()) {
 		
+		if ( it->isWatching( ) )
+		{
+			continue;
+		}
 		//Ž©•ª‚Ì‘€ì‚µ‚Ä‚¢‚éƒvƒŒƒCƒ„[‚È‚ç•Ô‚·
 		if (it->getActiveUser()) {
 			continue;

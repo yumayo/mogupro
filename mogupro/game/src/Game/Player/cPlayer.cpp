@@ -174,6 +174,8 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 
 void Game::Player::cPlayer::collisionGems()
 {
+	if ( isWatching( ) ) return;
+
 	//自分のAABBを生成
 	ci::vec3 aabb_begin_pos = mPos - size * ci::vec3(4);
 	ci::vec3 aabb_end_pos = mPos + size * ci::vec3(4);
@@ -260,14 +262,8 @@ void Game::Player::cPlayer::resetPlayerStatus()
 	//位置をリスポーン位置に
 	mCollider.setPosition(start_position);
 	is_dead = false;
-	if ( isWatching( ) )
-		;
-	else
-	{
-		// removeしていないので二重add防止 yumayo
-		//mCollider.addWorld( );
-		//mRigidbody.addWorld( );
-	}
+	mCollider.addWorld( );
+	mRigidbody.addWorld( );
 	no_damage_count = 0;
 }
 
@@ -384,7 +380,7 @@ Game::Player::cPlayer::cPlayer(
 	default:
 		break;
 	}
-	light = cLightManager::getInstance( )->addPointLight( mPos, lightColor, 1.0F );
+	light = cLightManager::getInstance( )->addPointLight( mPos, lightColor, isWatching( ) ? 0.0F : 1.0F );
 }
 
 
@@ -467,13 +463,12 @@ void Game::Player::cPlayer::setup()
 	useSubWeapon.addSubWeapon(Game::Weapons::SubWeapon::LIGHT_BOMB);
 
 	if ( isWatching( ) )
-		;
-	else
 	{
-		mCollider.setLayer( 1 << 0 );
-		mCollider.addWorld( );
-		mRigidbody.addWorld( );
+		mCollider.setSize( ci::vec3(0, 0, 0) );
 	}
+	mCollider.setLayer( 1 << 0 );
+	mCollider.addWorld( );
+	mRigidbody.addWorld( );
 
 	//最初に角度を設定するためにほんの少し動かす
 	move(ci::vec3(0, 0, 0.01f));
