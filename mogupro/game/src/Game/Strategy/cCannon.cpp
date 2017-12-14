@@ -7,7 +7,8 @@
 #include"cinder\gl\scoped.h"
 #include"Game\cClientAdapter.h"
 #include"Game\cPlayerManager.h"
-#include"Game\Field\FieldData.h"
+#include"Resource\cObjectManager.h"
+#include"Resource\cSoundManager.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -55,7 +56,13 @@ namespace Game
 			//////////////////
 
 			/////////////////スフィア
-			STRM->drawShere(mPos, ci::vec3(mScale.x / 2.f), vec3(0, 0, 0), ColorA(1, 1, 1, 1), 30);
+			ci::gl::pushModelView();
+			ci::gl::translate(mPos);
+			ci::gl::color(ColorA(1, 1, 1, 1));
+			ci::gl::scale(ci::vec3(mScale.x / 2.f));
+			ci::gl::draw(mesh);
+			ci::gl::popModelView();
+			//STRM->drawShere(mPos, ci::vec3(mScale.x / 2.f), vec3(0, 0, 0), ColorA(1, 1, 1, 1), 30);
 			/////////////////
 
 			/////////////////本体
@@ -69,11 +76,9 @@ namespace Game
 
 		void cCannon::update(const float & delta_time)
 		{
-			if (lightradius>0) {
-				mLightSinAngle += delta_time;
-				float max = lightradius*(0.8f + 0.2f*sin(mLightSinAngle));
-				light->reAttachRadius(max);
-			}
+			mLightSinAngle += delta_time*getSinspeed();
+			float max = lightradius*(0.8f + 0.2f*sin(mLightSinAngle));
+			light->reAttachRadius(max);
 		}
 
 		void cCannon::setup()
@@ -82,6 +87,7 @@ namespace Game
 			mFoundatioAABB.addWorld();
 			light = cLightManager::getInstance()->addPointLight(mGemStorePos, ci::vec3(mColor.r, mColor.g, mColor.b) , lightradius);
 			mToPlayerAABB.set(mAABB.getPosition() - mAABB.getSize()*0.55f, mAABB.getPosition() + mAABB.getSize()*0.55f);
+			mesh = Resource::cObjectManager::getInstance()->findObject("sphere.obj");
 		}
 
 		Game::Player::Team cCannon::getTeam()
@@ -96,21 +102,27 @@ namespace Game
 
 		void cCannon::receivePlayerGem(int getgemnum, int playerid)
 		{
-			if (mGetgems.size() >= GEM_MAXNUM)return;
-
+			if (getgemnum == 0) return;
+			if (mGemCount >= GEM_MAXNUM)return;
+		
 			Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(), getgemnum);
 			////////////
-		
+			Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").setGain(0.4f);
+			Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").play();
 			////////////
 			//sendCollectMaxGem();
 		}
 
 		void cCannon::receiveQuarryGem(std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>& getgems, int playerid, bool ismyobject)
 		{
-			if (mGetgems.size() >= GEM_MAXNUM)return;
+			if (getgems.size() == 0) return;
+			if (mGemCount >= GEM_MAXNUM)return;
 
 			if (ismyobject) {
+			
 				Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(), getgems.size());
+				Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").setGain(0.4f);
+				Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").play();
 			}
 			else {
 				setAddCanonPower(mGetgems.size());
@@ -138,10 +150,14 @@ namespace Game
 
 		void cCannon::receiveQuarryGem(int getgemnum, int playerid, bool ismyobject)
 		{
-			if (mGetgems.size() >= GEM_MAXNUM)return;
+			if (getgemnum == 0) return;
+			if (mGemCount >= GEM_MAXNUM)return;
 
 			if (ismyobject) {
+			
 				Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(),getgemnum);
+				Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").setGain(0.4f);
+				Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").play();
 			}
 			else {
 				setAddCanonPower(getgemnum);
@@ -167,6 +183,8 @@ namespace Game
 		{
 			lightradius += (float(getgemnum) / GEM_MAXNUM)*6.f;
 			light->reAttachRadius(lightradius);
+			mGemCount += getgemnum;
+			if (mGemCount >= GEM_MAXNUM)mGemCount = GEM_MAXNUM;
 		}
 
 		void cCannon::sendCollectMaxGem()
@@ -174,6 +192,21 @@ namespace Game
 			if (mGetgems.size() >= GEM_MAXNUM) {
 
 			}
+		}
+
+		float cCannon::getSinspeed()
+		{
+			float speed = 2.5f;
+			if (mGemCount > GEM_MAXNUM*0.8f) {
+				speed = 8.f;
+			}
+			else if(mGemCount > GEM_MAXNUM*0.5f){
+				speed = 4.f;
+			}
+			else {
+				speed = 2.5f;
+			}
+			return speed;
 		}
 
 	}
