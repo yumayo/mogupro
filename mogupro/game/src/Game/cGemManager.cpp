@@ -9,21 +9,21 @@ namespace Game
 
 	void cGemManager::setUp(ci::vec3 position, ci::vec3 randomRange, float mapChipSize, float gemScale, int gemMaxNum, unsigned long seed)
 	{
-		mPosition      = position;
-		mRandomRange   = randomRange;
-		mMapChipSize   = mapChipSize;
-		mGemScale      = gemScale;
-		mGemMaxNum     = gemMaxNum;
-		mSeed          = seed;
-		mTime          = 0.0f;
+		mPosition = position;
+		mRandomRange = randomRange;
+		mMapChipSize = mapChipSize;
+		mGemScale = gemScale;
+		mGemMaxNum = gemMaxNum;
+		mSeed = seed;
+		mTime = 0.0f;
 		mLightingSpeed = 0.4f;
 
-		mGemBuffer     = ci::gl::Fbo::create(ci::app::getWindowWidth(), ci::app::getWindowHeight(), true);
-		mShader        = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/GemManager.frag"));
-		mVboShader     = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemVbo.vert"), ci::app::loadAsset("Gem/GemVbo.frag"));
-		mesh           = ci::TriMesh::create(ci::TriMesh::Format().colors(4).positions().normals().texCoords());
+		mGemBuffer = ci::gl::Fbo::create(ci::app::getWindowWidth(), ci::app::getWindowHeight(), true);
+		mShader = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemManager.vert"), ci::app::loadAsset("Gem/GemManager.frag"));
+		mVboShader = ci::gl::GlslProg::create(ci::app::loadAsset("Gem/GemVbo.vert"), ci::app::loadAsset("Gem/GemVbo.frag"));
+		mesh = ci::TriMesh::create(ci::TriMesh::Format().colors(4).positions().normals().texCoords());
 
-	
+
 
 		create();
 	}
@@ -38,12 +38,12 @@ namespace Game
 		//mGemsVbo->buildVao(curGlslProg);
 		//con->getDefaultVao()->replacementBindEnd();
 		//con->setDefaultShaderVars();
-	 //   mGemsVbo->drawImpl();
+		//   mGemsVbo->drawImpl();
 		//con->popVao();
 
-		auto ctx = ci::gl::context( );
-		ci::gl::ScopedVao vaoScp( ctx->getDrawTextureVao( ) );
-		ci::gl::ScopedBuffer vboScp( ctx->getDrawTextureVbo( ) );
+		auto ctx = ci::gl::context();
+		ci::gl::ScopedVao vaoScp(ctx->getDrawTextureVao());
+		ci::gl::ScopedBuffer vboScp(ctx->getDrawTextureVbo());
 		ci::gl::draw(mGemsVbo);
 		for (size_t i = 0; i < mFragmentGems.size(); i++)
 		{
@@ -55,47 +55,49 @@ namespace Game
 
 	void cGemManager::drawFbo()
 	{
-			using namespace ci;
+		using namespace ci;
 
+		{
+			ci::gl::pushMatrices();
+			ci::gl::ScopedFramebuffer fbScp(mGemBuffer);
+			ci::gl::ScopedViewport    scpVp2(ci::ivec2(0), mGemBuffer->getSize());
+			ci::gl::setMatrices(CAMERA->getCamera());
+
+			ci::gl::ScopedGlslProg    shaderScp(mVboShader);
+			mVboShader->uniform("deltaTime", mTime);
+			mVboShader->uniform("visibleRange", mVisibleRange);
+			mVboShader->uniform("playerPos", Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
+
+			ci::gl::clear(ci::ColorA(0, 0, 0, 0));
+			for (size_t i = 0; i < mFragmentGems.size(); i++)
 			{
-				ci::gl::pushMatrices();
-				ci::gl::ScopedFramebuffer fbScp(mGemBuffer);
-				ci::gl::ScopedViewport    scpVp2(ci::ivec2(0), mGemBuffer->getSize());
-				ci::gl::setMatrices(CAMERA->getCamera());
-
-				ci::gl::ScopedGlslProg    shaderScp(mVboShader);
-				mVboShader->uniform("deltaTime", mTime);
-
-				ci::gl::clear(ci::ColorA(0, 0, 0, 0));
-				for (size_t i = 0; i < mFragmentGems.size(); i++)
-				{
-					mFragmentGems[i]->update();
-					mFragmentGems[i]->draw();
-				}
-
-				//auto con = ci::gl::context();
-				//const ci::gl::GlslProg* curGlslProg = con->getGlslProg();
-				//con->pushVao();
-				//con->getDefaultVao()->replacementBindBegin();
-				//mGemsVbo->buildVao(curGlslProg);
-				//con->getDefaultVao()->replacementBindEnd();
-				//con->setDefaultShaderVars();
-				//mGemsVbo->drawImpl();
-				//con->popVao();
-				ci::gl::draw(mGemsVbo);
-				ci::gl::color(ci::Color(1, 1, 1));
-				ci::gl::popMatrices();
+				mFragmentGems[i]->update();
+				mFragmentGems[i]->draw();
 			}
 
-			auto rect = ci::Rectf(-ci::app::getWindowSize() / 2, ci::app::getWindowSize() / 2);
-			ci::gl::ScopedGlslProg    glsl(mShader);
-			ci::gl::ScopedTextureBind tex(mGemBuffer->getColorTexture());
+			//auto con = ci::gl::context();
+			//const ci::gl::GlslProg* curGlslProg = con->getGlslProg();
+			//con->pushVao();
+			//con->getDefaultVao()->replacementBindBegin();
+			//mGemsVbo->buildVao(curGlslProg);
+			//con->getDefaultVao()->replacementBindEnd();
+			//con->setDefaultShaderVars();
+			//mGemsVbo->drawImpl();
+			//con->popVao();
+			ci::gl::draw(mGemsVbo);
+			ci::gl::color(ci::Color(1, 1, 1));
+			ci::gl::popMatrices();
+		}
 
-			mShader->uniform("uTex0", 0);
-			mShader->uniform("uColor", ci::vec4(1, 1, 1, 1));
-			mShader->uniform("uWindowSize", ci::vec2(ci::app::getWindowSize() / 2));
+		auto rect = ci::Rectf(-ci::app::getWindowSize() / 2, ci::app::getWindowSize() / 2);
+		ci::gl::ScopedGlslProg    glsl(mShader);
+		ci::gl::ScopedTextureBind tex(mGemBuffer->getColorTexture());
 
-			ci::gl::drawSolidRect(rect);
+		mShader->uniform("uTex0", 0);
+		mShader->uniform("uColor", ci::vec4(1, 1, 1, 1));
+		mShader->uniform("uWindowSize", ci::vec2(ci::app::getWindowSize() / 2));
+
+		ci::gl::drawSolidRect(rect);
 	}
 
 
@@ -107,7 +109,7 @@ namespace Game
 
 	void cGemManager::lateUpdate(const float& delta_time)
 	{
-		for(size_t i = 0; i < mFragmentGems.size(); i++)
+		for (size_t i = 0; i < mFragmentGems.size(); i++)
 		{
 			mFragmentGems[i]->lateUpdate(delta_time);
 		}
@@ -120,10 +122,10 @@ namespace Game
 		for (int i = 0; i < mGemMaxNum; i += 2)
 		{
 
-			int x             = ci::randInt(0, int32_t(mRandomRange.x - 1));
-			int y             = ci::randInt(0, int32_t(mRandomRange.y - 1));
-			int z             = ci::randInt(0, int32_t(mRandomRange.z - 1));
-			float delay       = ci::randFloat(0, 20);
+			int x = ci::randInt(0, int32_t(mRandomRange.x - 1));
+			int y = ci::randInt(0, int32_t(mRandomRange.y - 1));
+			int z = ci::randInt(0, int32_t(mRandomRange.z - 1));
+			float delay = ci::randFloat(0, 20);
 			Gem::GemType type = Game::Gem::GemType(ci::randInt(0, Game::Gem::GemType::Coal + 1));
 
 
@@ -147,7 +149,7 @@ namespace Game
 				break;
 			}
 
-			color.a = cinder::randFloat(0,1);
+			color.a = cinder::randFloat(0, 1);
 
 			mGemStone.push_back(std::make_shared<Gem::cGemStone>(i, (ci::vec3(x, y, z) * mMapChipSize) + mPosition, ci::vec3(mGemScale), color, type));
 			mGemStone.push_back(std::make_shared<Gem::cGemStone>(i + 1, mPosition + ci::vec3(mRandomRange.x - x + mRandomRange.x - 1, y, mRandomRange.z - z - 1) * mMapChipSize, ci::vec3(mGemScale), color, type));
@@ -170,17 +172,17 @@ namespace Game
 		mesh->clear();
 		for (size_t i = 0; i < mGemStone.size(); i++)
 		{
-			auto indices       = mGemStone[i]->getIndices();
-			ci::vec3 pos       = mGemStone[i]->getPos();
-			ci::vec3 scale     = mGemStone[i]->getScale() / 2.0f;
+			auto indices = mGemStone[i]->getIndices();
+			ci::vec3 pos = mGemStone[i]->getPos();
+			ci::vec3 scale = mGemStone[i]->getScale() / 2.0f;
 
 			mesh->appendIndices(&indices[0], indices.size());
 			mesh->appendNormals(&mGemStone[i]->getNomals()[0], mGemStone[i]->getNomals().size());
 			mesh->appendColors(&mGemStone[i]->getColorAs()[0], mGemStone[i]->getColorAs().size());
 
 			std::vector<cinder::vec2> texCoords;
-			for ( int i = 0; i < 24; ++i ) { texCoords.emplace_back( cinder::vec2( 0, 0 ) ); }
-			mesh->appendTexCoords0( texCoords.data(), texCoords.size() );
+			for (int i = 0; i < 24; ++i) { texCoords.emplace_back(cinder::vec2(0, 0)); }
+			mesh->appendTexCoords0(texCoords.data(), texCoords.size());
 
 			//Vert
 			mesh->appendPosition(pos + ci::vec3(scale.x, scale.y, scale.z));
@@ -251,7 +253,7 @@ namespace Game
 					ci::app::console() << "This is no GemStone that has that " << id << std::endl;
 					return addGems;
 				}
-				
+
 				auto& Se = Resource::cSoundManager::getInstance()->findSe("Gem/stonebreak.wav");
 
 				Se.play();
@@ -266,9 +268,10 @@ namespace Game
 					offset.x = ci::randFloat(-0.8, 0.8);
 					offset.y = ci::randFloat(-0.8, 0.8);
 					offset.z = ci::randFloat(-0.8, 0.8);
-					mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragmentGems.size(), mGemStone[i]->getPos() + offset, mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType(),glm::normalize(dir)));
+					mFragmentGems.push_back(std::make_shared<Gem::cFragmentGem>(mFragGemIDCount, mGemStone[i]->getPos() + offset, mGemStone[i]->getScale() / 2.0f, mGemStone[i]->getColor(), mGemStone[i]->getType(), glm::normalize(dir)));
 					mFragmentGems[mFragmentGems.size() - 1]->setup();
 					addGems.push_back(mFragmentGems[mFragmentGems.size() - 1]);
+					mFragGemIDCount++;
 				}
 				mGemStone[i]->deleteGem();
 				buildMesh();
