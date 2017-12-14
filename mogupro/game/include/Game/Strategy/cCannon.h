@@ -9,6 +9,7 @@
 #include"Collision\cAABBCollider.h"
 #include"cinder\AxisAlignedBox.h"
 #include <Game/cLightManager.h>
+#include"cinder/gl/gl.h"
 namespace Game
 {
 	namespace Strategy
@@ -38,6 +39,7 @@ namespace Game
 			void setAddCanonPower(const int getgemnum);
 		private:
 			void sendCollectMaxGem();
+			ci::gl::VboMeshRef mesh;
 			Game::Light::PointLightHandle light;
 			std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>mGetgems;
 			Collision::cAABBCollider mAABB;
@@ -50,10 +52,12 @@ namespace Game
 			ci::vec3 mFoundationPos;
 			ci::vec3 mFoundationScale;
 			ci::vec3 mGemStorePos;
-			float lightradius = 0.0f;
+			float lightradius = 2.0f;
 			float direction;
 			float mLightSinAngle = 0.0f;
 			bool mIsCollectMaxNum = false;
+			int mGemCount = 0;
+			float getSinspeed();
 		};
 	}
 }
