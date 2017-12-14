@@ -7,7 +7,8 @@ cMatchingMemberManager::cMatchingMemberManager( )
 	teamCount[0] = 0;
 	teamCount[1] = 0;
 
-	mEmptyIds = { { 0, false }, { 1, false }, { 2, false }, { 4, false }, { 5, false }, { 6, false }, };
+	mEmptyRedTeamIds = { { 0, false }, { 1, false }, { 2, false } };
+	mEmptyBlueTeamIds = { { 4, false }, { 5, false }, { 6, false } };
 }
 
 cMatchingMemberManager::~cMatchingMemberManager( )
@@ -25,17 +26,37 @@ bool cMatchingMemberManager::addRoomMembers(Network::cNetworkHandle addMember)
 			return false;
 	}
 
-	// 観戦者のIDが間に入ってきたのでsizeをIDにすることができなくなりました。yumayo
-	auto& itr = std::find_if( mEmptyIds.begin( ), mEmptyIds.end( ), [ ] ( std::pair<int/*playerID*/, bool/*IDが埋まったかどうか*/> const& p ) { return p.second == false; } );
-	if ( itr != mEmptyIds.end( ) )
+	if ( ( playerCount % 2 ) == 0 )
 	{
-		mPlayerDatas.push_back( PlayerData( -1, "Mogura" + addMember.ipAddress, itr->first, addMember ) );
-		itr->second = true;
-		return true;
+		// 観戦者のIDが間に入ってきたのでsizeをIDにすることができなくなりました。yumayo
+		auto& itr = std::find_if( mEmptyRedTeamIds.begin( ), mEmptyRedTeamIds.end( ), [ ] ( std::pair<int/*playerID*/, bool/*IDが埋まったかどうか*/> const& p ) { return p.second == false; } );
+		if ( itr != mEmptyRedTeamIds.end( ) )
+		{
+			mPlayerDatas.push_back( PlayerData( 0, "Mogura" + addMember.ipAddress, itr->first, addMember ) );
+			itr->second = true;
+			playerCount++;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	else
 	{
-		return false;
+		// 観戦者のIDが間に入ってきたのでsizeをIDにすることができなくなりました。yumayo
+		auto& itr = std::find_if( mEmptyBlueTeamIds.begin( ), mEmptyBlueTeamIds.end( ), [ ] ( std::pair<int/*playerID*/, bool/*IDが埋まったかどうか*/> const& p ) { return p.second == false; } );
+		if ( itr != mEmptyBlueTeamIds.end( ) )
+		{
+			mPlayerDatas.push_back( PlayerData( 1, "Mogura" + addMember.ipAddress, itr->first, addMember ) );
+			itr->second = true;
+			playerCount++;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 }
 
@@ -54,13 +75,13 @@ bool cMatchingMemberManager::addRoomMembersWatching( Network::cNetworkHandle add
 
 	if ( !p3 )
 	{
-		mPlayerDatas.push_back( PlayerData( -1, "Mogura" + addMember.ipAddress, 3, addMember ) );
+		mPlayerDatas.push_back( PlayerData( 0, "Mogura" + addMember.ipAddress, 3, addMember ) );
 		return true;
 	}
 	else if ( !p7 )
 	{
 
-		mPlayerDatas.push_back( PlayerData( -1, "Mogura" + addMember.ipAddress, 7, addMember ) );
+		mPlayerDatas.push_back( PlayerData( 1, "Mogura" + addMember.ipAddress, 7, addMember ) );
 		return true;
 	}
 	else
@@ -70,27 +91,28 @@ bool cMatchingMemberManager::addRoomMembersWatching( Network::cNetworkHandle add
 	}
 }
 
-bool cMatchingMemberManager::changeTeamNum(int teamNum, Network::cNetworkHandle member)
-{
-	if (teamCount[teamNum] > 4/*観戦者分増えました。yumayo*/)	
-		return false;
-
-	for (int i = 0; i < mPlayerDatas.size(); ++i)
-	{
-		if (mPlayerDatas[i].networkHandle != member)
-			continue;
-
-		mPlayerDatas[i].teamNum = teamNum;
-		int id = teamCount[teamNum];
-		teamCount[teamNum]++;
-		if (teamNum == 1)
-			id += 4;
-		// addRoomMembersでちゃんと決めたので大丈夫です。yumayo
-//		mPlayerDatas[i].playerID = id;
-		return true;
-	}
-	return false;
-}
+// 決め打ちにすることにしました。
+//bool cMatchingMemberManager::changeTeamNum(int teamNum, Network::cNetworkHandle member)
+//{
+//	if (teamCount[teamNum] > 4/*観戦者分増えました。yumayo*/)	
+//		return false;
+//
+//	for (int i = 0; i < mPlayerDatas.size(); ++i)
+//	{
+//		if (mPlayerDatas[i].networkHandle != member)
+//			continue;
+//
+//		mPlayerDatas[i].teamNum = teamNum;
+//		int id = teamCount[teamNum];
+//		teamCount[teamNum]++;
+//		if (teamNum == 1)
+//			id += 4;
+//		// addRoomMembersでちゃんと決めたので大丈夫です。yumayo
+////		mPlayerDatas[i].playerID = id;
+//		return true;
+//	}
+//	return false;
+//}
 
 bool cMatchingMemberManager::checkInMembers(Network::cNetworkHandle member)
 {
@@ -100,6 +122,16 @@ bool cMatchingMemberManager::checkInMembers(Network::cNetworkHandle member)
 			return true;
 	}
 	return false;
+}
+
+int cMatchingMemberManager::whatTeam( Network::cNetworkHandle handle )
+{
+	for ( auto& m : mPlayerDatas )
+	{
+		if ( m.networkHandle == handle )
+			return m.teamNum;
+	}
+	return -1;
 }
 
 bool cMatchingMemberManager::checkMaster(cNetworkHandle masterHandle)
