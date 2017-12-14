@@ -68,7 +68,7 @@ namespace Game
 		float                mTime;
 		float                mLightingSpeed;
 		const int            mCreateFGemNum = 5;
-		const float          mVisibleRange = 10;
+		const float          mVisibleRange = 30;
 		int                  mFragGemIDCount = 0;
 		//ci::gl::GlslProgRef mHShader;
 		//ci::gl::GlslProgRef mVShader;
