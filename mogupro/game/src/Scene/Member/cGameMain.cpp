@@ -47,6 +47,7 @@ void cGameMain::setup( )
 	Game::cUIManager::getInstance( )->awake( );
 	Game::cDebugManager::getInstance( )->setup( );
 	Sound::StereophonicManager::getInstance()->open();
+	Resource::cFbxManager::getInstance()->setup();
 
     skydome.setup( );
     CAMERA->setup( ); 
