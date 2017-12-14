@@ -122,12 +122,12 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 			mouse_on = true;
 		}
 	}
-	if (!active_player->isDead()) {
-		CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
-	}
+	ENV->setMouseCursorAvtive(!active_player->isDead());
 	//プレイヤーが死んでいたらカメラ以外操作不能
 	if (active_player->isDead())return;
 
+	CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
+	
 	//大砲にジェムを入れる
 	auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];
 	if (cannon->getAABB().intersects(active_player->getAABB())) {
@@ -156,7 +156,7 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 }
 void Game::cPlayerManager::padMove(const float & delta_time)
 {
-
+	
 	//掘る L1
 	if (ENV->isPadPress(ENV->BUTTON_5) &&
 		Game::Field::WORLD_SIZE.y + 1 > active_player->getPos().y) {
@@ -189,6 +189,7 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 }
 void Game::cPlayerManager::keyMove(const float & delta_time)
 {
+	
 	//掘削中はtrue 
 	if (ENV->pressKey(ci::app::MouseEvent::LEFT_DOWN) &&
 		Game::Field::WORLD_SIZE.y + 1 > active_player->getPos().y) {

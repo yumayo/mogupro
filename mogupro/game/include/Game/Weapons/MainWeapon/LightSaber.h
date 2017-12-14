@@ -43,6 +43,7 @@ namespace Game {
 			ci::AxisAlignedBox shock_aabb;
 			bool charge_flag1 = false;
 			bool charge_flag2 = false;
+			bool charge_start = false;
 			bool charge_is_attack = false;
 			ci::vec3 shock_pos_buf;
 			Game::Light::PointLightHandle charge_light;

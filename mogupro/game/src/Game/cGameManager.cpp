@@ -108,6 +108,7 @@ cGameManager::cGameManager( )
 			ENV->enableKeyButton( );
 			ENV->enablePadAxis( );
 			ENV->enablePadButton( );
+			ENV->enableMouseButton();
 			cUIManager::getInstance( )->enable( );
 			auto go = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 128 ) );
 			go->set_text( u8"GO!!" );

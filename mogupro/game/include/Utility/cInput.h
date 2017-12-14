@@ -4,6 +4,7 @@
 #include <set>
 #include <Utility/cSingletonAble.h>
 #include <Node/node.h>
+#include <Windows.h>
 #include <Utility/Schedule.h>
 #define ENV Utility::cInputAll::getInstance()
 class gameApp;
@@ -46,6 +47,7 @@ public:
 	void enablePadAxis( );
 	ci::vec2 getMouseVec( );
 	ci::vec2 getMousePos( );
+	POINT mouse_cursor;
 	bool pressKey( const int& pressed_key );
 	bool pushKey( const int& pressed_key );
 	bool pullKey( const int& pressed_key );
@@ -56,6 +58,7 @@ public:
 	bool isPadPush( const int& num );
 	bool isPadPress( const int& num );
 	bool isPadPull( const int& num );
+	void setMouseCursorAvtive(bool flag);
 	void flashInput( );
 private:
 	friend class gameApp;
@@ -187,6 +190,7 @@ private:
 	bool cursor_captured;
 	ci::ivec2 last_cursor_pos;
 	bool mouse_active;
+	bool mouse_active_cursor = true;
 
 	//ゲームパッド
 	State padState;
