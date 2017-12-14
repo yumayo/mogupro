@@ -34,6 +34,7 @@ void Game::cPlayerManager::playerDrillMove(const float & delta_time)
 
 void Game::cPlayerManager::playerAttack(const float & delta_time)
 {
+	if ( active_player->isWatching( ) ) return; // yumayo
 	if (active_player->isDead())return;
 	if (ENV->pushKey(ci::app::MouseEvent::RIGHT_DOWN))
 	{
@@ -156,20 +157,24 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 }
 void Game::cPlayerManager::padMove(const float & delta_time)
 {
+	if ( active_player->isWatching( ) )
+		;
+	else
+	{
+		//掘る L1
+		if ( ENV->isPadPress( ENV->BUTTON_5 ) &&
+			 Game::Field::WORLD_SIZE.y + 1 > active_player->getPos( ).y ) {
+			active_player->Drilling( true );
+		}
 
-	//掘る L1
-	if (ENV->isPadPress(ENV->BUTTON_5) &&
-		Game::Field::WORLD_SIZE.y + 1 > active_player->getPos().y) {
-		active_player->Drilling(true);
-	}
+		//メイン攻撃 R2
+		active_player->getMainWeapon( )->pushCall( ENV->isPadPush( ENV->BUTTON_8 ) );
+		active_player->getMainWeapon( )->pullCall( ENV->isPadPull( ENV->BUTTON_8 ) );
 
-	//メイン攻撃 R2
-	active_player->getMainWeapon()->pushCall(ENV->isPadPush(ENV->BUTTON_8));
-	active_player->getMainWeapon()->pullCall(ENV->isPadPull(ENV->BUTTON_8));
-
-	//サブ武器 R1
-	if (ENV->isPadPush(ENV->BUTTON_7)) {
-		active_player->useSubWeapon.useWeapon(active_player_id);
+		//サブ武器 R1
+		if ( ENV->isPadPush( ENV->BUTTON_7 ) ) {
+			active_player->useSubWeapon.useWeapon( active_player_id );
+		}
 	}
 
 	//ジャンプ X
@@ -189,16 +194,21 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 }
 void Game::cPlayerManager::keyMove(const float & delta_time)
 {
-	//掘削中はtrue 
-	if (ENV->pressKey(ci::app::MouseEvent::LEFT_DOWN) &&
-		Game::Field::WORLD_SIZE.y + 1 > active_player->getPos().y) {
-		active_player->Drilling(true);
-	}
-	else {
-		active_player->Drilling(false);
-	}
-	if (ENV->pullKey(ci::app::MouseEvent::LEFT_DOWN)) {
-		active_player->Drilling(false);
+	if ( active_player->isWatching( ) )
+		;
+	else
+	{
+		//掘削中はtrue 
+		if ( ENV->pressKey( ci::app::MouseEvent::LEFT_DOWN ) &&
+			 Game::Field::WORLD_SIZE.y + 1 > active_player->getPos( ).y ) {
+			active_player->Drilling( true );
+		}
+		else {
+			active_player->Drilling( false );
+		}
+		if ( ENV->pullKey( ci::app::MouseEvent::LEFT_DOWN ) ) {
+			active_player->Drilling( false );
+		}
 	}
 
 	//ダッシュ
@@ -210,7 +220,7 @@ void Game::cPlayerManager::keyMove(const float & delta_time)
 		active_player->setSpeed(10.0f);
 	}
 
-	//G-BACK
+	//G-BACK ふぅうううううはははははは
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_l)) {
 		active_player->receiveDamage(10.0f, 5);
 	}
@@ -228,16 +238,21 @@ void Game::cPlayerManager::keyMove(const float & delta_time)
 		if (ENV->pressKey(ci::app::KeyEvent::KEY_LEFT))
 			CAMERA->addCameraAngle(ci::vec2(0.05f, 0));
 	}
-	///////////////////デバックでライトボムを増やす
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_h)) {
-		active_player->useSubWeapon.addSubWeapon(Game::Weapons::SubWeapon::LIGHT_BOMB);
+	
+	if ( active_player->isWatching( ) )
+		;
+	else
+	{
+		///////////////////デバックでライトボムを増やす
+		if ( ENV->pushKey( ci::app::KeyEvent::KEY_h ) ) {
+			active_player->useSubWeapon.addSubWeapon( Game::Weapons::SubWeapon::LIGHT_BOMB );
+		}
+		/////////////////アイテムを使う
+		if ( ENV->pushKey( ci::app::KeyEvent::KEY_g ) ) {
+			active_player->useSubWeapon.useWeapon( active_player_id );
+		}
+		///////////////////
 	}
-
-	/////////////////アイテムを使う
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_g)) {
-		active_player->useSubWeapon.useWeapon(active_player_id);
-	}
-	///////////////////
 }
 void Game::cPlayerManager::killCamera(const float & delta_time)
 {

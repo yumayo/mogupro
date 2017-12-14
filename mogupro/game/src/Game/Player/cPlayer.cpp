@@ -260,8 +260,14 @@ void Game::Player::cPlayer::resetPlayerStatus()
 	//位置をリスポーン位置に
 	mCollider.setPosition(start_position);
 	is_dead = false;
-	mCollider.addWorld();
-	mRigidbody.addWorld();
+	if ( isWatching( ) )
+		;
+	else
+	{
+		// removeしていないので二重add防止 yumayo
+		//mCollider.addWorld( );
+		//mRigidbody.addWorld( );
+	}
 	no_damage_count = 0;
 }
 
@@ -460,9 +466,14 @@ void Game::Player::cPlayer::setup()
 	//初めにいっこだけライトボムを追加します
 	useSubWeapon.addSubWeapon(Game::Weapons::SubWeapon::LIGHT_BOMB);
 
-	mCollider.setLayer(1 << 0);
-	mCollider.addWorld();
-	mRigidbody.addWorld();
+	if ( isWatching( ) )
+		;
+	else
+	{
+		mCollider.setLayer( 1 << 0 );
+		mCollider.addWorld( );
+		mRigidbody.addWorld( );
+	}
 
 	//最初に角度を設定するためにほんの少し動かす
 	move(ci::vec3(0, 0, 0.01f));
@@ -520,7 +531,7 @@ void Game::Player::cPlayer::update(const float & delta_time)
 void Game::Player::cPlayer::draw()
 {
 	// 観戦者です。 2017/12/14
-	if ( ( player_id == 3U ) || ( player_id == 7U ) )
+	if ( isWatching( ) )
 	{
 		return;
 	}

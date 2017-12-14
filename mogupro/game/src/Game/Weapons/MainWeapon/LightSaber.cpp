@@ -48,6 +48,10 @@ void Game::Weapon::LightSaber::ShockCollisionPlayers()
 {
 	for (auto& it : cPlayerManager::getInstance()->getPlayers()) {		//Ž©•ª‚Ì‘€ì‚µ‚Ä‚¢‚éƒvƒŒƒCƒ„[‚È‚ç•Ô‚·
 		
+		if ( it->isWatching( ) )
+		{
+			continue;
+		}
 		if (it->getActiveUser()) {
 			continue;
 		}
