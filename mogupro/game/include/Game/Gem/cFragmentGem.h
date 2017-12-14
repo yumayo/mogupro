@@ -65,9 +65,9 @@ namespace Game
 			bool        mIsRigid;
 			bool        mVisible;
 			vec3        mDirection;
-			Collision::cRigidBody           mRb;
-			Collision::cAABBCollider        mAabb;
-			Game::Light::PointLightHandle   handle;
+			Collision::cRigidBody mRb;
+			Collision::cAABBCollider mAabb;
+			Game::Light::PointLightHandle handle;
 		};
 	}
 }
