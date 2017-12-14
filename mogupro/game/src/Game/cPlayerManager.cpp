@@ -122,8 +122,9 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 			mouse_on = true;
 		}
 	}
-	CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
-
+	if (!active_player->isDead()) {
+		CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
+	}
 	//プレイヤーが死んでいたらカメラ以外操作不能
 	if (active_player->isDead())return;
 
@@ -213,18 +214,19 @@ void Game::cPlayerManager::keyMove(const float & delta_time)
 		active_player->receiveDamage(10.0f, 5);
 	}
 	
-	if (ENV->pressKey(ci::app::KeyEvent::KEY_UP)) {
-		CAMERA->addCameraAngle(ci::vec2(0, 0.05f));
+	if (!active_player->isDead()) {
+		if (ENV->pressKey(ci::app::KeyEvent::KEY_UP)) {
+			CAMERA->addCameraAngle(ci::vec2(0, 0.05f));
+		}
+		if (ENV->pressKey(ci::app::KeyEvent::KEY_DOWN))
+			CAMERA->addCameraAngle(ci::vec2(0, -0.05f));
+
+		if (ENV->pressKey(ci::app::KeyEvent::KEY_RIGHT))
+			CAMERA->addCameraAngle(ci::vec2(-0.05f, 0));
+
+		if (ENV->pressKey(ci::app::KeyEvent::KEY_LEFT))
+			CAMERA->addCameraAngle(ci::vec2(0.05f, 0));
 	}
-	if (ENV->pressKey(ci::app::KeyEvent::KEY_DOWN))
-		CAMERA->addCameraAngle(ci::vec2(0, -0.05f));
-
-	if (ENV->pressKey(ci::app::KeyEvent::KEY_RIGHT))
-		CAMERA->addCameraAngle(ci::vec2(-0.05f, 0));
-
-	if (ENV->pressKey(ci::app::KeyEvent::KEY_LEFT))
-		CAMERA->addCameraAngle(ci::vec2(0.05f, 0));
-
 	///////////////////デバックでライトボムを増やす
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_h)) {
 		active_player->useSubWeapon.addSubWeapon(Game::Weapons::SubWeapon::LIGHT_BOMB);

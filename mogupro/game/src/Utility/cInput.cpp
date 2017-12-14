@@ -3,6 +3,7 @@
 #include <Node/action.hpp>
 #include <Windows.h>
 #include <CameraManager/cCameraManager.h>
+#include <Game/cPlayerManager.h>
 extern "C"
 {
 	#include <GamePad.h>
@@ -210,7 +211,9 @@ void mouseCursolFixed( const ci::app::MouseEvent& event, ci::vec2& inc_pos,
 
 		if ( delta.x != 0 || delta.y != 0 ) {
 			SetCursorPos( last_cursor_pos.x, last_cursor_pos.y );
-			CAMERA->addCameraAngle( ci::vec2( -delta.x, -delta.y ) * 0.005f );
+			if (!Game::cPlayerManager::getInstance()->getActivePlayer()->isDead()) {
+				CAMERA->addCameraAngle(ci::vec2(-delta.x, -delta.y) * 0.005f);
+			}
 		}
 	}
 	//‚PƒtƒŒ[ƒ€–Ú‚Í‰½‚à‚µ‚È‚¢

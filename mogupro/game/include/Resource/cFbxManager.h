@@ -37,12 +37,10 @@ struct Skin
     std::vector<FbxAMatrix> base_inv;
 };
 
-
 // 表示用のメッシュ
 struct Mesh
 {
     ci::TriMesh tri_mesh;
-
     Skin skin;
     ci::TriMesh deformed_mesh;
 };
@@ -55,16 +53,19 @@ struct Material
     boost::optional<ci::gl::Texture> texture;
 };
 
-class cFbxManager : public Utility::cSingletonAble<cFbxManager>
+class cFbx
 {
 public:
 
-    cFbxManager();
-    ~cFbxManager();
+    cFbx();
+    ~cFbx();
 
-    void setup();
+    void setup( FbxManager *manager, const std::string& filename );
     void update();
     void draw();
+    void animationReset();
+
+private:
 
     void drawFbx( FbxNode *node, FbxTime &time );
     Mesh createMesh( FbxMesh *mesh );
@@ -80,10 +81,6 @@ public:
 
     void setAnimation( const int index );
 
-public:
-
-    // FBX情報
-    FbxManager* manager;
     FbxScene* scene;
     FbxNode* root_node;
 
@@ -100,5 +97,25 @@ public:
     int animation_stack_count;
     int current_animation_stack = 0;
 
+};
+
+class cFbxManager : public Utility::cSingletonAble<cFbxManager>
+{
+public:
+
+    cFbxManager();
+    ~cFbxManager();
+
+    void setup();
+    void update();
+    void draw();
+    void draw( const std::string& name );
+
+private:
+
+    // FBX情報
+    FbxManager* manager;
+
+    std::unordered_map<std::string, std::shared_ptr<cFbx>> models;
 };
 }
