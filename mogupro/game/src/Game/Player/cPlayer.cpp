@@ -290,6 +290,8 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 	drill_sound += delta_time;
 	if (!active_user) return;
 	if ( isWatching( ) )
+		;
+	else
 	{
 		mRigidbody.gravityOn( );
 	}
@@ -298,6 +300,8 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 	if (!drilling)return;
 	if (Game::Field::WORLD_SIZE.y > mCollider.getPosition().y) {
 		if ( isWatching( ) )
+			;
+		else
 		{
 			mRigidbody.gravityOff( );
 		}
@@ -444,7 +448,7 @@ void Game::Player::cPlayer::move(const ci::vec3 & velocity)
 		normalized_player_vec = glm::normalize( velocity );
 	}
 	auto vec = velocity;
-	vec.y = drilling ? velocity.y : mRigidbody.getSpeed( ).y;
+	vec.y = drilling || isWatching( ) ? velocity.y : mRigidbody.getSpeed( ).y;
 	mRigidbody.setSpeed( vec );
 }
 

@@ -222,11 +222,10 @@ void Game::cPlayerManager::keyMove(const float & delta_time)
 		}
 
 		//ダッシュ
-		//304 = シフト
-		if ( ENV->pullKey( 304 ) ) {
+		if ( ENV->pullKey( ci::app::KeyEvent::KEY_LCTRL ) ) {
 			active_player->setDefaultSpeed( );
 		}
-		if ( ENV->pushKey( 304 ) ) {
+		if ( ENV->pushKey( ci::app::KeyEvent::KEY_LCTRL ) ) {
 			active_player->setSpeed( 10.0f );
 		}
 	}
