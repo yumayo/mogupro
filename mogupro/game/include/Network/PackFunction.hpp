@@ -49,7 +49,7 @@ public:
     cExporter& operator<<( Ty const& value );
     template<class Ty>
     cExporter& operator<<( std::vector<Ty> const& value );
-    operator ubyte2( ) const noexcept;
+	ubyte2 getSize( ) const noexcept;
 private:
     ubyte2 mOffset;
     char* const mBuffer;

@@ -24,7 +24,7 @@ ubyte2 cReqAddCannonPower::packetExport( char* const data )
     // Žg‚¢•û: vec2 pos1, pos2; ubyte2 a1, a2;
     // exp << pos1 << a1 << pos2 << a2;
 	exp << teamId << power;
-    return exp;
+    return exp.getSize( );
 }
 }
 }

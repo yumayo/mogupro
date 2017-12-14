@@ -25,7 +25,9 @@ void cResCheckBeginGame::packetImport( cNetworkHandle networkHandle, ubyte2 tran
 
 ubyte2 cResCheckBeginGame::packetExport( char* const data )
 {
-	return cExporter(data) << mPlayerID;
+	cExporter exp( data );
+	exp << mPlayerID;
+	return exp.getSize( );
 }
 }
 }

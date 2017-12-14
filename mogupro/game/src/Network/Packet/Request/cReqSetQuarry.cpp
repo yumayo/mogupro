@@ -13,7 +13,9 @@ void cReqSetQuarry::packetImport( cNetworkHandle networkHandle, ubyte2 transferr
 }
 ubyte2 cReqSetQuarry::packetExport( char* const data )
 {
-    return cExporter( data ) << mPosition << mPlayerId;
+	cExporter exp( data );
+	exp << mPosition << mPlayerId;
+	return exp.getSize( );
 }
 }
 }

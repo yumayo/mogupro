@@ -19,7 +19,7 @@ void cReqCheckBeginGame::packetImport( cNetworkHandle networkHandle, ubyte2 tran
 ubyte2 cReqCheckBeginGame::packetExport( char* const data )
 {
 
-    return 1;
+    return 0;
 }
 }
 }

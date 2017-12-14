@@ -22,8 +22,8 @@ ubyte2 cEveGetJemPlayer::packetExport( char* const data )
     cExporter exp( data );
     // Žg‚¢•û: vec2 pos1, pos2; ubyte2 a1, a2;
     // exp << pos1 << a1 << pos2 << a2;
-	exp << mPlayerId >> mGemId;
-    return exp;
+	exp << mPlayerId << mGemId;
+    return exp.getSize( );
 }
 }
 }
