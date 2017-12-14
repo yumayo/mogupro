@@ -289,12 +289,18 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 {
 	drill_sound += delta_time;
 	if (!active_user) return;
-	mRigidbody.gravityOn();
+	if ( isWatching( ) )
+	{
+		mRigidbody.gravityOn( );
+	}
 	drillingCamera(delta_time);
 	//Œ@‚ç‚ê‚Ä‚È‚¯‚ê‚Îˆ—‚µ‚È‚¢
 	if (!drilling)return;
 	if (Game::Field::WORLD_SIZE.y > mCollider.getPosition().y) {
-		mRigidbody.gravityOff();
+		if ( isWatching( ) )
+		{
+			mRigidbody.gravityOff( );
+		}
 	}
 	if (drill_sound > 0.1f) {
 		if(Game::cFieldManager::getInstance()->isBreakBlock(mCollider.getPosition() + (glm::normalize(CAMERA->getCamera().getViewDirection()) * ci::vec3(status.drill_speed / 3)),1)) {

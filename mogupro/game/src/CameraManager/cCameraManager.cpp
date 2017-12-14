@@ -86,7 +86,7 @@ void cCameraManager::update( const float& delta_time ) {
 
     cinder::Ray ray( origin, direction );
 
-    target = Collision::cCollisionManager::getInstance( )->calcNearestPoint( ray, 1 << 1 );
+    target = Collision::cCollisionManager::getInstance( )->calcNearestPoint( ray, 1 << 2 );
 
 
 	if (camera_mode == CAMERA_MODE::TPS) {
