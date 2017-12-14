@@ -462,7 +462,7 @@ void Game::Player::cPlayer::setup()
 	//‰‚ß‚É‚¢‚Á‚±‚¾‚¯ƒ‰ƒCƒgƒ{ƒ€‚ğ’Ç‰Á‚µ‚Ü‚·
 	useSubWeapon.addSubWeapon(Game::Weapons::SubWeapon::LIGHT_BOMB);
 
-	mCollider.setLayer( isWatching( ) ? 0 : 1 << 0 );
+	mCollider.setLayer( isWatching( ) ? 1 << 1 : 1 << 0 );
 	mCollider.addWorld( );
 	if ( isWatching( ) )
 	{
