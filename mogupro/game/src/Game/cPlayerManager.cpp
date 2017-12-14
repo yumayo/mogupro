@@ -286,6 +286,7 @@ void Game::cPlayerManager::killCamera(const float & delta_time)
 }
 void Game::cPlayerManager::watchingCamera( const float & delta_time )
 {
+	if ( !isActivePlayerWatching( ) ) return;
 	if ( ENV->pushKey( ci::app::KeyEvent::KEY_1 ) )
 	{
 		watching_target_player_id = 0;
