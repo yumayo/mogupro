@@ -133,6 +133,7 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	if (cannon->getAABB().intersects(active_player->getAABB())) {
 		cannon->receivePlayerGem(active_player->getgems.size(), active_player_id);
 		cGemManager::getInstance()->deleteFragmentGems(active_player->getgems);
+		active_player->gem_production_end.clear();
 		active_player->getgems.clear();
 	}
 

@@ -79,7 +79,6 @@ void Game::Player::cPlayer::playerRotationX()
 
 	//移動先のベクトル
 	ci::vec3 yzVector = ci::vec3( 0, normalized_player_vec.y, normalized_player_vec.x + normalized_player_vec.z);
-	yzVector.z += normalized_player_vec.x;
 	//回転軸
 	ci::vec3 quataxis = glm::cross(rotateaxis, yzVector );
 
@@ -130,7 +129,7 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 	//自分の所持しているジェムにプッシュバック
 	getgems.push_back(GemManager->getFragmentGem(_gemid));
 	GemManager->getFragmentGem(_gemid)->setIsActive(false);
-	if (getgems.size() > 0) {
+	if (getgems.size() > 1) {
 		//持っているジェムが複数あれば1個前のジェムのライトを消す
 		GemManager->getFragmentGem(gem_id_buf)->handle->color = ci::vec3(0);
 	}

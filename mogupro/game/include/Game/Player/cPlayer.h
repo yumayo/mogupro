@@ -114,7 +114,6 @@ namespace Game {
 			//イージング用
 			ci::vec3 begin_pos;
 			Utility::hardptr<Node::node> root;
-			std::unordered_map<int,bool> gem_production_end;
 
 			// プレイヤーに常に付きまとうライト
 			Light::PointLightHandle light;
@@ -148,6 +147,8 @@ namespace Game {
 				mCollider.removeWorld();
 				mRigidbody.removeWorld();
 			}
+			//ジェムの演出が終わっているかどうか
+			std::unordered_map<int, bool> gem_production_end;
 			/////アイテムを使用するのに使います
 			Game::Weapons::UseSubWeapon::cUseSubWeapon useSubWeapon;
 			std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>getgems;
