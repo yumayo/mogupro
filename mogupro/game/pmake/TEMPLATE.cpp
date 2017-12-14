@@ -22,7 +22,7 @@ ubyte2 _TEMPLATE_CLASS_::packetExport( char* const data )
     cExporter packet( data );
     // 使い方: vec2 pos1, pos2; ubyte2 a1, a2;
     // packet << pos1 << a1 << pos2 << a2;
-    return packet;
+    return packet.getSize( );
 }
 }
 }

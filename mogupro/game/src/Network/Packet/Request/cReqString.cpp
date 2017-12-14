@@ -21,7 +21,9 @@ void cReqString::packetImport( cNetworkHandle networkHandle, ubyte2 transferredB
 }
 ubyte2 cReqString::packetExport( char* const data )
 {
-    return cExporter( data ) << str;
+	cExporter exp( data );
+	exp << str;
+	return exp.getSize( );
 }
 }
 }

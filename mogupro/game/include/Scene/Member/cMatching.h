@@ -60,6 +60,8 @@ private:
 	bool mBeginAnimation;
 	bool mIsEndAnimation;
 
+	int teamCount[2];
+
 	class DrillUI
 	{
 	public:

@@ -368,8 +368,8 @@ namespace Network
         , mOffset( 0U )
     {
     }
-    cExporter::operator ubyte2( ) const noexcept
-    {
-        return mOffset;
-    }
+	ubyte2 cExporter::getSize( ) const noexcept
+	{
+		return mOffset;
+	}
 }

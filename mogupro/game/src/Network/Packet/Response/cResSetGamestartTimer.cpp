@@ -24,7 +24,7 @@ ubyte2 cResSetGamestartTimer::packetExport( char* const data )
 {
     cExporter exp( data );
 	exp << mTimerStr;
-    return exp;
+    return exp.getSize( );
 }
 }
 }

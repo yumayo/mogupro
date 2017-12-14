@@ -16,7 +16,7 @@ ubyte2 cEvePlayerDeath::packetExport( char* const data )
 {
 	cExporter exp( data );
 	exp << playerId << enemyId;
-	return exp;
+	return exp.getSize( );
 }
 }
 }

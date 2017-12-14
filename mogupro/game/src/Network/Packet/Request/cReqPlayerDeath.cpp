@@ -22,7 +22,7 @@ ubyte2 cReqPlayerDeath::packetExport( char* const data )
 {
 	cExporter exp( data );
 	exp << playerId << enemyId;
-    return 0;
+    return exp.getSize( );
 }
 }
 }
