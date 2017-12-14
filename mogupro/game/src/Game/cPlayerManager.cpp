@@ -102,10 +102,14 @@ ci::vec3 Game::cPlayerManager::playerNormalMoveKey(const float& delta_time)
 		std::sqrtf(keybord_velocity.z);
 	}
 
-
-	//ジャンプはMoveの後に呼ぶ
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_SPACE)) {
-		active_player->jump(true);
+	if ( active_player->isWatching( ) )
+		;
+	else
+	{
+		//ジャンプはMoveの後に呼ぶ
+		if ( ENV->pushKey( ci::app::KeyEvent::KEY_SPACE ) ) {
+			active_player->jump( true );
+		}
 	}
 
 	return keybord_velocity;
@@ -222,14 +226,14 @@ void Game::cPlayerManager::keyMove(const float & delta_time)
 		if ( ENV->pullKey( ci::app::MouseEvent::LEFT_DOWN ) ) {
 			active_player->Drilling( false );
 		}
+	}
 
-		//ダッシュ
-		if ( ENV->pullKey( ci::app::KeyEvent::KEY_LCTRL ) ) {
-			active_player->setDefaultSpeed( );
-		}
-		if ( ENV->pushKey( ci::app::KeyEvent::KEY_LCTRL ) ) {
-			active_player->setSpeed( 10.0f );
-		}
+	//ダッシュ
+	if ( ENV->pullKey( ci::app::KeyEvent::KEY_LCTRL ) ) {
+		active_player->setDefaultSpeed( );
+	}
+	if ( ENV->pushKey( ci::app::KeyEvent::KEY_LCTRL ) ) {
+		active_player->setSpeed( 10.0f );
 	}
 
 	//G-BACK ふぅうううううはははははは
