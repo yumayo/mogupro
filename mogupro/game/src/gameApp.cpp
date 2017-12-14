@@ -6,6 +6,7 @@
 #include <Utility/cInput.h>
 #include <Scene/Member/cBegin.h>
 #include <Utility/cScheduler.h>
+#include <Resource/cJsonManager.h>
 class gameApp : public cinder::app::App
 {
 private:
@@ -38,6 +39,11 @@ void gameApp::mouseUp( cinder::app::MouseEvent event )
 void gameApp::keyDown( cinder::app::KeyEvent event )
 {
     ENV->keyDown( event );
+
+	if ( event.getCode( ) == event.KEY_F5 )
+	{
+		Resource::cJsonManager::getInstance( )->reload( );
+	}
 }
 void gameApp::keyUp( cinder::app::KeyEvent event )
 {
