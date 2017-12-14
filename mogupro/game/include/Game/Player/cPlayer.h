@@ -40,6 +40,10 @@ namespace Game {
 
 		static const float MAX_HP = 100.0f;
 
+		static const float DEFAULT_RESPAWN_TIME = 7.0f;
+
+		static const float DEFAULT_NO_DAMAGE_TIME = 3.0f;
+
 		class cPlayer : public Game::cObjectBase {
 		private:
 			ci::vec3 size;
@@ -62,6 +66,9 @@ namespace Game {
 			bool is_dead;
 			//再出撃までの待機時間のカウント
 			float respawn_count;
+			//再出撃してからの無敵時間用カウント
+			float no_damage_count = 99;
+			int no_damage_blind = 0;
 			//攻撃された時の敵のid
 			int damaged_id;
 			//プレイヤーのAABB
@@ -101,6 +108,8 @@ namespace Game {
 			//画像を貼るためのシェーダー
 			ci::gl::GlslProgRef mGlsl;
 
+			//取得する一つ前のジェム
+			int gem_id_buf = 0;
 
 			//イージング用
 			ci::vec3 begin_pos;
