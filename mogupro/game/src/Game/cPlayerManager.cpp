@@ -311,7 +311,7 @@ void Game::cPlayerManager::watchingCamera( const float & delta_time )
 	{
 		watching_target_player_id = 6;
 	}
-	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_RETURN ) )
+	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_ESCAPE ) )
 	{
 		watching_target_player_id = -1;
 	}
