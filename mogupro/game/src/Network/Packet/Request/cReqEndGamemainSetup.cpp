@@ -17,7 +17,7 @@ void cReqEndGamemainSetup::packetImport( cNetworkHandle networkHandle, ubyte2 tr
 ubyte2 cReqEndGamemainSetup::packetExport( char* const data )
 {
     cExporter exp( data );
-    return exp;
+    return exp.getSize( );
 }
 }
 }

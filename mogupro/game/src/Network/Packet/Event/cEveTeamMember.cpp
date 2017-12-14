@@ -25,7 +25,7 @@ ubyte2 cEveTeamMember::packetExport( char* const data )
 {
     cExporter exp( data );
      exp << mTeamNum << mNameStr << mPlayerID;
-    return exp;
+    return exp.getSize( );
 }
 }
 }

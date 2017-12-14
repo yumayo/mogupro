@@ -24,7 +24,7 @@ ubyte2 cEvePlayerAttack::packetExport( char* const data )
     // Žg‚¢•û: vec2 pos1, pos2; ubyte2 a1, a2;
     // packet << pos1 << a1 << pos2 << a2;
 	packet << playerId << call;
-    return packet;
+    return packet.getSize( );
 }
 }
 }

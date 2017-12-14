@@ -25,7 +25,7 @@ ubyte2 cEvePlayers::packetExport( char* const data )
     {
         exp << o.playerId << o.position << o.rotation;
     }
-    return exp;
+    return exp.getSize( );
 }
 }
 }

@@ -38,7 +38,7 @@ ubyte2 cDliBreakBlocks::packetExport( char* const data )
         exp << convertFixedpoint( o.radius );
         exp << o.type;
     }
-    return exp;
+    return exp.getSize( );
 }
 }
 }

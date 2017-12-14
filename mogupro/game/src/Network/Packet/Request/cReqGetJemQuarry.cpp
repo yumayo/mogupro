@@ -13,7 +13,9 @@ void cReqGetJemQuarry::packetImport( cNetworkHandle networkHandle, ubyte2 transf
 }
 ubyte2 cReqGetJemQuarry::packetExport( char* const data )
 {
-    return  cExporter( data ) << mObjectId << mGemId;
+	cExporter exp( data );
+	exp << mObjectId << mGemId;
+    return exp.getSize( );
 }
 }
 }
