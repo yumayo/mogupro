@@ -28,15 +28,6 @@ bool cMatchingMemberManager::addRoomMembers(Network::cNetworkHandle addMember)
 
 bool cMatchingMemberManager::changeTeamNum(int teamNum, Network::cNetworkHandle member)
 {
-	int teamNums[2];
-	teamNums[0] = 0;
-	teamNums[1] = 0;
-	for each(auto p in mPlayerDatas)
-	{
-		if (p.teamNum == 0 || p.teamNum == 1)
-			teamNums[p.teamNum]++;
-	}	
-
 	if (teamCount[teamNum] > 3)	
 		return false;
 

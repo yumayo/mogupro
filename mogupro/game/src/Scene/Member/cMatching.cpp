@@ -41,6 +41,10 @@ namespace Scene
 				ci::app::getWindowHeight(), true);
 			Resource::TextureManager::getInstance()->set("nightSky.png", "nightSky.png");
 			sceneChange = false;
+			teamCount[0] = 0;
+			teamCount[1] = 0;
+			Log::cLogManager::getInstance()->add("Matching");
+			Log::cLogManager::getInstance()->add("TeamNum");
 		}
 
 		void cMatching::registerFunc()
@@ -333,11 +337,13 @@ namespace Scene
 				Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum = mTeamNum;
 				mCanSend = true;
 				if (resWantTeamIn->mTeamNum == 0)
-					drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * drillUI1Ps.size()),
-						ci::vec2(-200, 200 - 200 * drillUI1Ps.size()), "You"));
-				else
-					drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * drillUI2Ps.size()),
-						ci::vec2(200, 200 - 200 * drillUI2Ps.size()), "You"));
+					drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * teamCount[0]),
+						ci::vec2(-200, 200 - 200 * teamCount[0]), "You"));
+				
+				else if(resWantTeamIn->mTeamNum == 1)
+					drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * teamCount[1]),
+						ci::vec2(200, 200 - 200 * teamCount[1]), "You"));
+				teamCount[mTeamNum]++;
 			}
 			//TODO : ŽQ‰Á‚µ‚½ê‡‚ÆTeam‚ª•ÏX‚³‚ê‚½ê‡‚Í•ª‚¯‚é‚×‚«
 			int count = 0;
@@ -346,14 +352,17 @@ namespace Scene
 				cMatchingMemberManager::getInstance()->addPlayerDatas(
 					eveTeamMember->mNameStr, eveTeamMember->mTeamNum, eveTeamMember->mPlayerID, cNetworkHandle("", 0));
 				if (eveTeamMember->mTeamNum == 0)
-					drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * drillUI1Ps.size()),
-						ci::vec2(-200, 200 - 200 * drillUI1Ps.size()), eveTeamMember->mNameStr));
-				else
-					drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * drillUI2Ps.size()),
-						ci::vec2(200, 200 - 200 * drillUI2Ps.size()), eveTeamMember->mNameStr));
+					drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * teamCount[0]),
+						ci::vec2(-200, 200 - 200 * teamCount[0]), eveTeamMember->mNameStr));
+				else if (eveTeamMember->mTeamNum == 1)
+					drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * teamCount[1]),
+						ci::vec2(200, 200 - 200 * teamCount[1]), eveTeamMember->mNameStr));
+				teamCount[eveTeamMember->mTeamNum]++;
+				Log::cLogManager::getInstance()->writeLog("TeamNum", "TeamNum0 : " + std::to_string(teamCount[0]));
+				Log::cLogManager::getInstance()->writeLog("TeamNum", "TeamNum1 : " + std::to_string(teamCount[1]));
 				++ count;
 			}
-			Log::cLogManager::getInstance()->add("Matching");
+			
 			Log::cLogManager::getInstance()->writeLog("Matching", "Matching : " + std::to_string(count));
 		}
 
