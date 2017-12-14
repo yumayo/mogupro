@@ -42,8 +42,6 @@ namespace Member
 {
 void cGameMain::setup( )
 {
-	ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
-
 	Game::cUIManager::getInstance( )->awake( );
 	Game::cDebugManager::getInstance( )->setup( );
 	Sound::StereophonicManager::getInstance()->open();
@@ -53,11 +51,7 @@ void cGameMain::setup( )
     Game::cFieldManager::getInstance( )->setup( );
     Game::cStrategyManager::getInstance( )->setup( );
 
-	int player_numbers = 8;
-
 	const int active_player_id = Network::cMatchingMemberManager::getInstance( )->mPlayerID;
-
-	ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
 
 	// チーム決め
 	std::vector<int> teams;
@@ -74,24 +68,8 @@ void cGameMain::setup( )
         teams[o.playerID] = o.teamNum;
     }
 	teams[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum;
-	
-	ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
 
-	for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
-	{
-		ci::app::console( ) << __FILE__ << __LINE__ << "o.playerID: " << (int)o.playerID << std::endl;
-		ci::app::console( ) << __FILE__ << __LINE__ << "o.teamNum: " << (int)o.teamNum << std::endl;
-		ci::app::console( ) << __FILE__ << __LINE__ << "active_player_id: " << (int)active_player_id << std::endl;
-	}
-
-	// リスポーン位置の設定。
-	std::vector<ci::vec3> positions = Game::Field::RESPAWN_POINT;
-    Game::cPlayerManager::getInstance( )->setup(positions, player_numbers, active_player_id, teams);
-	// プレイヤーの向きを変えようとしたが失敗。
-	//for ( int i = 0; i < positions.size( ) / 2; ++i )
-	//{
-	//	Game::cPlayerManager::getInstance( )->getPlayer( i )->move( vec3( 0, 0, 0.01F ) );
-	//}
+    Game::cPlayerManager::getInstance( )->setup( Game::Field::RESPAWN_POINT, 8U, active_player_id, teams);
 
 	int seed = 20171031;
 	GemManager->setUp(vec3(0,0,0),
@@ -107,7 +85,6 @@ void cGameMain::setup( )
     Resource::cFbxManager::getInstance( )->setup( );
 
 	sendEndSetup = false;
-	endTimer = false;
     gl::enableDepthRead( );
     gl::enableDepthWrite( );
 
@@ -115,8 +92,6 @@ void cGameMain::setup( )
 	ENV->disablePadButton();
 	ENV->disablePadAxis();
 	Game::cUIManager::getInstance( )->disable( );
-
-	ci::app::console( ) << __FILE__ << __LINE__ << std::endl;
 }
 
 void cGameMain::shutDown( )
@@ -137,43 +112,28 @@ void cGameMain::shutDown( )
 	Particle::cParticleManager::removeInstance( );
 	Game::cGemManager::removeInstance( );
 	Game::cGameManager::removeInstance( );
-	cinder::app::console( ) << __LINE__ << std::endl;
 	// 全てのマネージャーのライトを削除するためライトを使っているマネージャーより下。
 	Game::cLightManager::removeInstance( );
-	cinder::app::console( ) << __LINE__ << std::endl;
 	// ライトを削除する時にチャンクIDを取得しているためライトより下。
 	Game::cFieldManager::getInstance( )->shutdown( );
 	Game::cFieldManager::removeInstance( );
-	cinder::app::console( ) << __LINE__ << std::endl;
 	// コライダーの削除に耐えるためフィールドより下。
 	Collision::cCollisionManager::removeInstance( );
 	//立体音響の削除
 	Sound::StereophonicManager::getInstance()->clear();
 	Sound::StereophonicManager::getInstance()->close();
-	cinder::app::console( ) << __LINE__ << std::endl;
 }
 
 void cGameMain::update( float deltaTime )
 {
     Network::cUDPClientManager::getInstance( )->update( deltaTime );
     Network::cUDPServerManager::getInstance( )->update( deltaTime );
-	Sound::StereophonicManager::getInstance()->update(deltaTime);
     if ( Network::cUDPClientManager::getInstance( )->isConnected( ) )
     {
 		if (sendEndSetup == false)
 		{
 			Network::cUDPClientManager::getInstance()->send(new Network::Packet::Request::cReqEndGamemainSetup());
 			sendEndSetup = true;
-		}
-		if (endTimer == false)
-		{
-			while (auto resSetGamestartTimer = Network::cResponseManager::getInstance()->getResSetGamestartTimer())
-			{
-				boost::posix_time::ptime nowTime = boost::posix_time::second_clock::universal_time();
-				auto startTime = boost::posix_time::from_iso_string(resSetGamestartTimer->mTimerStr);
-				Game::cGameManager::getInstance( )->setTime( startTime );
-				continue;
-			}
 		}
 
 		// 他のアップデートよりも先に行います。
@@ -182,6 +142,7 @@ void cGameMain::update( float deltaTime )
 		Game::cDebugManager::getInstance( )->update( deltaTime );
         Game::cClientAdapter::getInstance( )->update( );
         Game::cServerAdapter::getInstance( )->update( );
+		Sound::StereophonicManager::getInstance( )->update( deltaTime );
         Game::cUIManager::getInstance( )->update( deltaTime );
         Game::cFieldManager::getInstance( )->update( deltaTime );
         Game::cPlayerManager::getInstance( )->update( deltaTime );

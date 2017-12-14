@@ -15,6 +15,7 @@ public:
 	void update(float deltaTime);
 	void checkReqMakeRoom();
 	void checkReqInRoom();
+	void checkReqInRoomWatching( ); // 2017/12/14 yumayo ŠÏí—p
 	void checkTeamIn();
 	void checkBeginGame();
 	void resetMember();

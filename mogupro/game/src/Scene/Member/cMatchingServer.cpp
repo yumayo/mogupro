@@ -50,6 +50,7 @@ namespace Scene
 			updateServer(deltaTime);
 			checkReqMakeRoom();
 			checkReqInRoom();
+			checkReqInRoomWatching( ); // 2017/12/14 yumayo
 			checkTeamIn();
 			checkBeginGame();
 			resetMember();
@@ -151,6 +152,21 @@ namespace Scene
 					continue;
 				}
 				cUDPServerManager::getInstance()->send(reqInRoom->mNetworkHandle, new cResInRoom(true));
+			}
+
+		}
+
+		void cMatchingServer::checkReqInRoomWatching( )
+		{
+			while ( auto reqInRoom = cRequestManager::getInstance( )->getReqInRoomWatching( ) )
+			{
+				if ( mOpenRoom != true || mPhaseState != PhaseState::IN_ROOM ||
+					 cMatchingMemberManager::getInstance( )->addRoomMembersWatching( reqInRoom->networkHandle ) != true )
+				{
+					cUDPServerManager::getInstance( )->send( reqInRoom->networkHandle, new cResInRoom( false ) );
+					continue;
+				}
+				cUDPServerManager::getInstance( )->send( reqInRoom->networkHandle, new cResInRoom( true ) );
 			}
 
 		}

@@ -519,6 +519,12 @@ void Game::Player::cPlayer::update(const float & delta_time)
 
 void Game::Player::cPlayer::draw()
 {
+	// ŠÏíÒ‚Å‚·B 2017/12/14
+	if ( ( player_id == 3U ) || ( player_id == 7U ) )
+	{
+		return;
+	}
+
 	//€–S’†‚Í•`‰æ‚µ‚È‚¢
 	if (is_dead)return;
 	ci::gl::ScopedTextureBind tex(TEX->get("mogura"));
