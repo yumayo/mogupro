@@ -23,7 +23,6 @@ public:
 private:
     Game::SkyDome::cSkyDome skydome;
 	bool sendEndSetup;
-	bool endTimer;
 };
 }
 }

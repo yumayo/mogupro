@@ -9,6 +9,7 @@
 #include <Game/cStrategyManager.h>
 #include <Game/cFieldManager.h>
 #include <Game/cSubWeaponManager.h>
+#include <Game/cGameManager.h>
 #include <Game/cUIManager.h>
 using namespace cinder;
 using namespace Network;
@@ -40,6 +41,7 @@ void cClientAdapter::update( )
     recvAllBreakBlocks( );
 	recvAllBombs( );
 	recvAllCannons( );
+	recvAllGameInfo( );
 }
 void cClientAdapter::recvAllPlayers( )
 {
@@ -160,6 +162,14 @@ void cClientAdapter::recvAllCannons( )
 		{
 			continue;
 		}
+	}
+}
+void cClientAdapter::recvAllGameInfo( )
+{
+	while ( auto packet = Network::cResponseManager::getInstance( )->getResSetGamestartTimer( ) )
+	{
+		auto startTime = boost::posix_time::from_iso_string( packet->mTimerStr );
+		Game::cGameManager::getInstance( )->setTime( startTime );
 	}
 }
 void cClientAdapter::sendBreakBlock( cinder::vec3 const & position, float radius, Network::ubyte1 type )

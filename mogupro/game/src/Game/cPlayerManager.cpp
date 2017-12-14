@@ -34,6 +34,7 @@ void Game::cPlayerManager::playerDrillMove(const float & delta_time)
 
 void Game::cPlayerManager::playerAttack(const float & delta_time)
 {
+	if ( active_player->isWatching( ) ) return; // yumayo
 	if (active_player->isDead())return;
 
 	//メイン攻撃 R2 or 右クリック
@@ -84,6 +85,17 @@ ci::vec3 Game::cPlayerManager::playerNormalMoveKey(const float& delta_time)
 		diagonal++;
 	}
 
+	if ( active_player->isWatching( ) )
+	{
+		if ( ENV->pressKey( ci::app::KeyEvent::KEY_LSHIFT ) ) {
+			keybord_velocity.y = -active_player->getSpeed( );
+		}
+
+		if ( ENV->pressKey( ci::app::KeyEvent::KEY_SPACE ) ) {
+			keybord_velocity.y = active_player->getSpeed( );
+		}
+	}
+
 	keybord_velocity += ci::vec3(z_axis*sin(CAMERA->getCameraAngle().x), 0.0f, z_axis*cos(CAMERA->getCameraAngle().x));
 	keybord_velocity += ci::vec3(x_axis*cos(CAMERA->getCameraAngle().x), 0.0f, -x_axis*sin(CAMERA->getCameraAngle().x));
 
@@ -92,10 +104,14 @@ ci::vec3 Game::cPlayerManager::playerNormalMoveKey(const float& delta_time)
 		std::sqrtf(keybord_velocity.z);
 	}
 
-
-	//ジャンプはMoveの後に呼ぶ
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_SPACE)) {
-		active_player->jump(true);
+	if ( active_player->isWatching( ) )
+		;
+	else
+	{
+		//ジャンプはMoveの後に呼ぶ
+		if ( ENV->pushKey( ci::app::KeyEvent::KEY_SPACE ) ) {
+			active_player->jump( true );
+		}
 	}
 
 	return keybord_velocity;
@@ -124,6 +140,11 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 			mouse_on = true;
 		}
 	}
+	if (!active_player->isDead()) {
+		CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
+	}
+	// ターゲットがいたらプレイヤーは動けません。
+	if ( watching_target_player_id != -1 ) return;
 	ENV->setMouseCursorAvtive(!active_player->isDead());
 	//プレイヤーが死んでいたらカメラ以外操作不能
 	if (active_player->isDead())return;
@@ -159,21 +180,25 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 }
 void Game::cPlayerManager::padMove(const float & delta_time)
 {
-	
-	//掘る L1
-	if (ENV->isPadPress(ENV->BUTTON_5) &&
-		Game::Field::WORLD_SIZE.y + 1 > active_player->getPos().y) {
-		active_player->Drilling(true);
-	}
+	if ( active_player->isWatching( ) )
+		;
+	else
+	{
+		//掘る L1
+		if ( ENV->isPadPress( ENV->BUTTON_5 ) &&
+			 Game::Field::WORLD_SIZE.y + 1 > active_player->getPos( ).y ) {
+			active_player->Drilling( true );
+		}
 
-	//サブ武器 R1
-	if (ENV->isPadPush(ENV->BUTTON_7)) {
-		active_player->useSubWeapon.useWeapon(active_player_id);
-	}
+		//サブ武器 R1
+		if ( ENV->isPadPush( ENV->BUTTON_7 ) ) {
+			active_player->useSubWeapon.useWeapon( active_player_id );
+		}
 
-	//ジャンプ X
-	if (ENV->isPadPush(ENV->BUTTON_1)) {
-		active_player->jump(true);
+		//ジャンプ X
+		if ( ENV->isPadPush( ENV->BUTTON_1 ) ) {
+			active_player->jump( true );
+		}
 	}
 
 	//ダッシュ □
@@ -188,29 +213,32 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 }
 void Game::cPlayerManager::keyMove(const float & delta_time)
 {
-	
-	//掘削中はtrue 
-	if (ENV->pressKey(ci::app::MouseEvent::LEFT_DOWN) &&
-		Game::Field::WORLD_SIZE.y + 1 > active_player->getPos().y) {
-		active_player->Drilling(true);
-	}
-	else {
-		active_player->Drilling(false);
-	}
-	if (ENV->pullKey(ci::app::MouseEvent::LEFT_DOWN)) {
-		active_player->Drilling(false);
+	if ( active_player->isWatching( ) )
+		;
+	else
+	{
+		//掘削中はtrue 
+		if ( ENV->pressKey( ci::app::MouseEvent::LEFT_DOWN ) &&
+			 Game::Field::WORLD_SIZE.y + 1 > active_player->getPos( ).y ) {
+			active_player->Drilling( true );
+		}
+		else {
+			active_player->Drilling( false );
+		}
+		if ( ENV->pullKey( ci::app::MouseEvent::LEFT_DOWN ) ) {
+			active_player->Drilling( false );
+		}
 	}
 
 	//ダッシュ
-	//304 = シフト
-	if (ENV->pullKey(304)) {
-		active_player->setDefaultSpeed();
+	if ( ENV->pullKey( ci::app::KeyEvent::KEY_LCTRL ) ) {
+		active_player->setDefaultSpeed( );
 	}
-	if (ENV->pushKey(304)) {
-		active_player->setSpeed(10.0f);
+	if ( ENV->pushKey( ci::app::KeyEvent::KEY_LCTRL ) ) {
+		active_player->setSpeed( 10.0f );
 	}
 
-	//G-BACK
+	//G-BACK ふぅうううううはははははは
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_l)) {
 		active_player->receiveDamage(10.0f, 5);
 	}
@@ -228,16 +256,21 @@ void Game::cPlayerManager::keyMove(const float & delta_time)
 		if (ENV->pressKey(ci::app::KeyEvent::KEY_LEFT))
 			CAMERA->addCameraAngle(ci::vec2(0.05f, 0));
 	}
-	///////////////////デバックでライトボムを増やす
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_h)) {
-		active_player->useSubWeapon.addSubWeapon(Game::Weapons::SubWeapon::LIGHT_BOMB);
+	
+	if ( active_player->isWatching( ) )
+		;
+	else
+	{
+		///////////////////デバックでライトボムを増やす
+		if ( ENV->pushKey( ci::app::KeyEvent::KEY_h ) ) {
+			active_player->useSubWeapon.addSubWeapon( Game::Weapons::SubWeapon::LIGHT_BOMB );
+		}
+		/////////////////アイテムを使う
+		if ( ENV->pushKey( ci::app::KeyEvent::KEY_g ) ) {
+			active_player->useSubWeapon.useWeapon( active_player_id );
+		}
+		///////////////////
 	}
-
-	/////////////////アイテムを使う
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_g)) {
-		active_player->useSubWeapon.useWeapon(active_player_id);
-	}
-	///////////////////
 }
 void Game::cPlayerManager::killCamera(const float & delta_time)
 {
@@ -250,6 +283,39 @@ void Game::cPlayerManager::killCamera(const float & delta_time)
 			}
 		}
 	}
+}
+void Game::cPlayerManager::watchingCamera( const float & delta_time )
+{
+	if ( !isActivePlayerWatching( ) ) return;
+	if ( ENV->pushKey( ci::app::KeyEvent::KEY_1 ) )
+	{
+		watching_target_player_id = 0;
+	}
+	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_2 ) )
+	{
+		watching_target_player_id = 1;
+	}
+	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_3 ) )
+	{
+		watching_target_player_id = 2;
+	}
+	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_4 ) )
+	{
+		watching_target_player_id = 4; // 3は観戦者
+	}
+	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_5 ) )
+	{
+		watching_target_player_id = 5;
+	}
+	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_6 ) )
+	{
+		watching_target_player_id = 6;
+	}
+	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_RETURN ) )
+	{
+		watching_target_player_id = -1;
+	}
+	// 7は観戦者
 }
 void Game::cPlayerManager::setPlayersPosition(std::vector<ci::vec3> positions)
 {
@@ -268,8 +334,22 @@ void Game::cPlayerManager::playerCollisionAfterUpdate(const float& delta_time)
 		it->gemsUpdate(delta_time);
 		it->weaponUpdae(delta_time);
 	}
-	if (!active_player->isDead()) {
-		CAMERA->refPosition = active_player->getPos() + ci::vec3(0, 0, 0);
+	if ( active_player->isWatching( ) )
+	{
+		if ( isTargetWatching( ) )
+		{
+			CAMERA->refPosition = active_player->getPos( );
+		}
+		else
+		{
+			CAMERA->refPosition = getPlayer( watching_target_player_id )->getPos( );
+		}
+	}
+	else
+	{
+		if ( !active_player->isDead( ) ) {
+			CAMERA->refPosition = active_player->getPos( ) + ci::vec3( 0, 0, 0 );
+		}
 	}
 }
 void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
@@ -282,11 +362,12 @@ void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& pla
 }
 void Game::cPlayerManager::update(const float& delta_time)
 {
-	playerMove(delta_time);
+	playerMove( delta_time );
 	for (auto& it : players) {
 		it->update(delta_time);
 	}
 	killCamera(delta_time);
+	watchingCamera(delta_time);
 	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), ci::vec2(active_player->getRotateX(), active_player->getRotateY()));
 }
 

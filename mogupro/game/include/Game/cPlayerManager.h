@@ -15,6 +15,8 @@ private:
     int active_player_id;
     int active_player_team_id;
 
+	int watching_target_player_id = -1;
+
     bool mouse_on = false;
     void playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams);
 	ci::vec3 playerNormalMoveKey(const float& delta_time);
@@ -24,7 +26,8 @@ private:
 	void playerMove(const float& delta_time);
 	void padMove(const float & delta_time);
 	void keyMove(const float & delta_time);
-	void killCamera(const float & delta_time);
+	void killCamera( const float & delta_time );
+	void watchingCamera(const float & delta_time);
 public:
     int getActivePlayerId( )
     {
@@ -34,6 +37,18 @@ public:
     {
         return active_player_team_id;
     }
+	bool isActivePlayerWatching( )
+	{
+		return active_player->isWatching( );
+	}
+	int getWatchingTargetPlayerId( )
+	{
+		return watching_target_player_id;
+	}
+	bool isTargetWatching( )
+	{
+		return watching_target_player_id == -1;
+	}
 	void setPlayersPosition(std::vector<ci::vec3> positions);
 	
 	//id‚É‰‚¶‚½ƒvƒŒƒCƒ„[‚ğ•Ô‚µ‚Ü‚·
