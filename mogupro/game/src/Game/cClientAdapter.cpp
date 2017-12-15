@@ -50,7 +50,11 @@ void cClientAdapter::recvAllPlayers( )
 
     while ( auto packet = e->getEvePlayers( ) )
     {
-        auto players = Game::cPlayerManager::getInstance( )->getPlayers( );
+		if ( packet->getSequenceId( ) < mPlayerSeq )
+		{
+			continue;
+		}
+		mPlayerSeq = packet->getSequenceId( );
         for ( auto& o : packet->mPlayerFormats )
         {
 			Game::cPlayerManager::getInstance( )->getPlayer( o.playerId )->setPos( o.position );
