@@ -512,7 +512,7 @@ void Game::Player::cPlayer::setup()
 	animation.animationChange("mogura");
 
 	mesh = Resource::cObjectManager::getInstance()->findObject("montamogura/moguraHontai.obj");
-	TEX->set("mogura", "Fbx/UV_mogura_01.png");
+	TEX->set("mogura", "Fbx/UV_mogura_01.jpg");
 	
 }
 
