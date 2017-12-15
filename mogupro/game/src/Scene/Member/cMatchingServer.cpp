@@ -240,8 +240,7 @@ namespace Scene
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mOpenRoom = false;
 			mIsGameUpdate = false;
-			cMatchingMemberManager::getInstance()->mPlayerDatas.clear();
-			cMatchingMemberManager::getInstance()->mMasterHandle = cNetworkHandle();
+			cMatchingMemberManager::removeInstance();
 			cUDPServerManager::getInstance()->close();
 			cUDPServerManager::getInstance()->open();
 		}
