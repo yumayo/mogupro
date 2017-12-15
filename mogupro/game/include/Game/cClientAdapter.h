@@ -69,5 +69,6 @@ private:
     void sendBreakBlocks( );
 private:
     Network::Packet::Deliver::cDliBreakBlocks* mBreakBlocksPecket = nullptr;
+	ubyte4 mPlayerSeq = 0U;
 };
 }
