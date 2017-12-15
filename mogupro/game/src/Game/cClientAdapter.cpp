@@ -1,6 +1,5 @@
 #include <Game/cClientAdapter.h>
 #include <Network/cUDPClientManager.h>
-#include <Network/cDeliverManager.h>
 #include <Network/cEventManager.h>
 #include <Network/cRequestManager.h>
 #include <Network/cResponseManager.h>
@@ -14,14 +13,13 @@
 using namespace cinder;
 using namespace Network;
 using namespace Network::Packet;
-using namespace Network::Packet::Deliver;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
 using namespace Network::Packet::Response;
 namespace Game
 {
 cClientAdapter::cClientAdapter( )
-    : mBreakBlocksPecket( new cDliBreakBlocks( ) )
+    : mBreakBlocksPecket( new cReqBreakBlocks( ) )
 {
 }
 cClientAdapter::~cClientAdapter( )
@@ -190,7 +188,7 @@ void cClientAdapter::sendSetQuarry( cinder::vec3 const & position )
 }
 void cClientAdapter::sendPlayer( cinder::vec3 const & position, cinder::vec2 const & rotation )
 {
-    auto packet = new cDliPlayer( );
+    auto packet = new cReqPlayer( );
     packet->mFormat.playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
     packet->mFormat.position = position;
     packet->mFormat.rotation = rotation;
@@ -263,7 +261,7 @@ void cClientAdapter::sendBreakBlocks( )
     if ( !mBreakBlocksPecket->mBreakFormats.empty( ) )
     {
         cUDPClientManager::getInstance( )->send( mBreakBlocksPecket );
-        mBreakBlocksPecket = new Packet::Deliver::cDliBreakBlocks( );
+        mBreakBlocksPecket = new Packet::Request::cReqBreakBlocks( );
     }
 }
 }
