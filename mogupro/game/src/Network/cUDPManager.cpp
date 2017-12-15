@@ -1,6 +1,5 @@
 #include <Network/cUDPManager.h>
 #include <Network/Packet/PacketId.h>
-#include <Network/cDeliverManager.h>
 #include <Network/cEventManager.h>
 #include <Network/cRequestManager.h>
 #include <Network/cResponseManager.h>
@@ -217,46 +216,6 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
             }
             break;
         }
-        case Network::Packet::PacketId::DLI_STRING:
-        {
-            if ( cDeliverManager::getInstance( )->isNewDliString( packetHeader ) )
-			{
-                Packet::Deliver::cDliString data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cDeliverManager::getInstance( )->ungetDliString( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::DLI_PING:
-        {
-            if ( cDeliverManager::getInstance( )->isNewDliPing( packetHeader ) )
-			{
-                Packet::Deliver::cDliPing data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cDeliverManager::getInstance( )->ungetDliPing( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::DLI_PLAYER:
-        {
-            if ( cDeliverManager::getInstance( )->isNewDliPlayer( packetHeader ) )
-			{
-                Packet::Deliver::cDliPlayer data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cDeliverManager::getInstance( )->ungetDliPlayer( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::DLI_BREAK_BLOCKS:
-        {
-            if ( cDeliverManager::getInstance( )->isNewDliBreakBlocks( packetHeader ) )
-			{
-                Packet::Deliver::cDliBreakBlocks data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cDeliverManager::getInstance( )->ungetDliBreakBlocks( std::move( data ) );
-            }
-            break;
-        }
         case Network::Packet::PacketId::REQ_STRING:
         {
             if ( cRequestManager::getInstance( )->isNewReqString( packetHeader ) )
@@ -274,6 +233,36 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
                 Packet::Request::cReqConnect data;
                 data.onReceive( networkHandle, bufferSize, bufferData );
                 cRequestManager::getInstance( )->ungetReqConnect( std::move( data ) );
+            }
+            break;
+        }
+        case Network::Packet::PacketId::REQ_PING:
+        {
+            if ( cRequestManager::getInstance( )->isNewReqPing( packetHeader ) )
+			{
+                Packet::Request::cReqPing data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cRequestManager::getInstance( )->ungetReqPing( std::move( data ) );
+            }
+            break;
+        }
+        case Network::Packet::PacketId::REQ_PLAYER:
+        {
+            if ( cRequestManager::getInstance( )->isNewReqPlayer( packetHeader ) )
+			{
+                Packet::Request::cReqPlayer data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cRequestManager::getInstance( )->ungetReqPlayer( std::move( data ) );
+            }
+            break;
+        }
+        case Network::Packet::PacketId::REQ_BREAK_BLOCKS:
+        {
+            if ( cRequestManager::getInstance( )->isNewReqBreakBlocks( packetHeader ) )
+			{
+                Packet::Request::cReqBreakBlocks data;
+                data.onReceive( networkHandle, bufferSize, bufferData );
+                cRequestManager::getInstance( )->ungetReqBreakBlocks( std::move( data ) );
             }
             break;
         }

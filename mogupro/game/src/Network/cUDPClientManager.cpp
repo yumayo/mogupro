@@ -1,5 +1,4 @@
 #include <Network/cUDPClientManager.h>
-#include <Network/cDeliverManager.h>
 #include <Network/cEventManager.h>
 #include <Network/cRequestManager.h>
 #include <Network/cResponseManager.h>
@@ -99,7 +98,7 @@ void cUDPClientManager::connection( )
         using namespace Node::Action;
         auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
         {
-            send( new Packet::Deliver::cDliPing( ) );
+            send( new Packet::Request::cReqPing( ) );
         } ) ) );
         act->set_name( "ping" );
         mRoot->run_action( act );

@@ -1,7 +1,6 @@
 #include <Game/cServerAdapter.h>
 #include <Network/cUDPServerManager.h>
 #include <Network/cUDPManager.h>
-#include <Network/cDeliverManager.h>
 #include <Network/cEventManager.h>
 #include <Network/cRequestManager.h>
 #include <Network/cResponseManager.h>
@@ -10,7 +9,6 @@
 #include <Game/Player/cPlayer.h>
 using namespace Network;
 using namespace Network::Packet;
-using namespace Network::Packet::Deliver;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
 using namespace Network::Packet::Response;
@@ -44,10 +42,9 @@ void cServerAdapter::update( )
 }
 void cServerAdapter::sendPlayers( )
 {
-	auto dli = Network::cDeliverManager::getInstance( );
 	auto req = Network::cRequestManager::getInstance( );
 
-	while ( auto packet = dli->getDliPlayer( ) )
+	while ( auto packet = req->getReqPlayer( ) )
 	{
 		auto id = packet->mFormat.playerId;
 		mPlayers[id].id = packet->mFormat.playerId;
@@ -146,9 +143,9 @@ void cServerAdapter::sendGetGemQuarry( )
 }
 void cServerAdapter::sendBreakBlocks( )
 {
-	auto dli = ::Network::cDeliverManager::getInstance( );
+	auto req = ::Network::cRequestManager::getInstance( );
 	auto breakBlocksPacket = new cEveBreakBlocks( );
-	while ( auto packet = dli->getDliBreakBlocks( ) )
+	while ( auto packet = req->getReqBreakBlocks( ) )
 	{
 		std::copy( packet->mBreakFormats.begin( ),
 				   packet->mBreakFormats.end( ),

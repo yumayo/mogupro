@@ -1,6 +1,5 @@
 #include <Network/cUDPServerManager.h>
 #include <Network/cUDPManager.h>
-#include <Network/cDeliverManager.h>
 #include <Network/cEventManager.h>
 #include <Network/cRequestManager.h>
 #include <Network/cResponseManager.h>
@@ -183,9 +182,9 @@ void cUDPServerManager::connection( )
 }
 void cUDPServerManager::ping( )
 {
-    while ( auto p = cDeliverManager::getInstance( )->getDliPing( ) )
+    while ( auto p = cRequestManager::getInstance( )->getReqPing( ) )
     {
-        auto itr = mConnections.find( p->mNetworkHandle );
+        auto itr = mConnections.find( p->networkHandle );
         if ( itr != mConnections.end( ) )
         {
             itr->second.closeSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
