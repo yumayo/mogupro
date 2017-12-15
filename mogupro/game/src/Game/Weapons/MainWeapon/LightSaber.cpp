@@ -19,8 +19,10 @@ void Game::Weapon::LightSaber::Attack1()
 	root_x->run_action(Node::Action::sequence::create(
 		ease<ci::EaseOutCubic>::create(float_to::create(time, rotate.x, M_PI / 2, [this](float t) {
 		this->rotate.x = t;
-	}))));
-
+	})), Node::Action::call_func::create([this]() {
+		//cPlayerManager::getInstance()->getPlayer(player_id)->getPlayerAnimation().setAnimationIncrementTime(0.016);
+	})));
+	
 	root_y->set_schedule_update();
 	
 	root_y->run_action(Node::Action::sequence::create(
@@ -191,6 +193,7 @@ void Game::Weapon::LightSaber::Attack(const float & delta_time)
 	}
 	else {
 		if (is_attack) {
+			cPlayerManager::getInstance()->getPlayer(player_id)->getPlayerAnimation().setAnimationIncrementTime(0.1);
 			if (light != nullptr) {
 				light->color = ci::vec3(0.5f, 0.5f, 0);
 				light->reAttachPositionWithRadius(weapon_draw_pos, 2);
@@ -280,13 +283,13 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 	if (pull &&
 		charge_flag1 &&
 		shock_wave_time < shock_wave_second) {
-		is_push = false;
 		charge_motion = ChargeMotion::charge_attack_1;
 		charge_is_attack_now = true;
 		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").stop();
 		Resource::cSoundManager::getInstance()->findSe("Player/swing2.wav").stop();
 		Resource::cSoundManager::getInstance()->findSe("Player/katana-slash5.wav").setGain(0.2f);
 		Resource::cSoundManager::getInstance()->findSe("Player/katana-slash5.wav").play();
+		is_push = false;
 		charge_flag1 = false;
 		charge_flag2 = false;
 		charge_start = false;
@@ -419,12 +422,19 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").setGain(0.2f);
 		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").setLooping(true);
 		Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").play();
+		ci::ColorA col;
+		if (cPlayerManager::getInstance()->getPlayer(player_id)->getWhichTeam() == Player::Team::Red) {
+			col = ci::ColorA(1, 0, 0);
+		}
+		else {
+			col = ci::ColorA(0, 1, 1);
+		}
 		Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(weapon_draw_pos)
 			.scale(0.6f).vanishBeginTime(0.f).vanishTime(30.f / 60.f).vanishTimeRange(0.0f).
 			easeTime(30.f).
 			speed(0.0f).
 			textureType(Particle::ParticleTextureType::SPARK).
-			color(ci::ColorA(1, 0, 0)).
+			color(col).
 			moveType(Particle::ParticleType::CONVERGE).count(3).isTrajectory(true).effectTime(0.3f).easeType(EaseType::CircIn));
 	}
 	//貯めるパーティクル２
@@ -584,4 +594,16 @@ void Game::Weapon::LightSaber::draw()
 	ci::gl::scale(ci::vec3(0.02f, 0.02f, 0.02f));
 	ci::gl::draw(mesh);
 	ci::gl::popModelView();
+}
+
+void Game::Weapon::LightSaber::reset() {
+	charge_flag1 = false;
+	charge_flag2 = false;
+	charge_start = false;
+	charge_is_attack = false;
+	shock_wave_time = 0;
+	is_attack = false;
+	is_push = false;
+	Resource::cSoundManager::getInstance()->findSe("Player/aura1.wav").stop();
+	Resource::cSoundManager::getInstance()->findSe("Player/swing2.wav").stop();
 }
