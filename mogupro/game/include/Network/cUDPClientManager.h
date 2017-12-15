@@ -5,6 +5,7 @@
 #include <Network/Packet/PacketId.h>
 #include <Network/cReliableManager.h>
 #include <Node/node.h>
+#include <boost/date_time/posix_time/ptime.hpp>
 namespace Network
 {
 class cUDPClientManager : public Utility::cSingletonAble<cUDPClientManager>
@@ -31,6 +32,7 @@ public:
     void connect( std::string const& ipAddress );
     void connectOfflineServer( );
     void update( float delta );
+	boost::posix_time::ptime const& getServerTime( );
 
     // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
     // くコ:彡
@@ -61,5 +63,7 @@ private:
     // サーバーに接続できたかを保証します。
     // 5秒以上応答がない場合は切断します。
     float mConnectSecond;
+
+	boost::posix_time::ptime mServerTime;
 };
 }
