@@ -229,6 +229,8 @@ void Game::Player::cPlayer::dead()
 		CAMERA->shakeCamera(0.1f,0.5f);
 	}
 	deadGems();
+	drilling = false;
+	main_weapon->reset();
 	mRigidbody.setSpeed(ci::vec3(0));
 	mCollider.removeWorld();
 	mRigidbody.removeWorld();
@@ -297,8 +299,10 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 		mRigidbody.gravityOn( );
 	}
 	drillingCamera(delta_time);
+	animation.setAnimationIncrementTime(0.016);
 	//Œ@‚ç‚ê‚Ä‚È‚¯‚ê‚Îˆ—‚µ‚È‚¢
 	if (!drilling)return;
+	animation.setAnimationIncrementTime(0.3);
 	if (Game::Field::WORLD_SIZE.y > mCollider.getPosition().y) {
 		if ( isWatching( ) )
 			;
@@ -401,7 +405,7 @@ void Game::Player::cPlayer::receiveDamage(const float & attack, float player_id)
 
 	//€–S’†‚Íƒ_ƒ[ƒW‚ğó‚¯‚È‚¢
 	if (is_dead)return;
-
+	
 	CAMERA->shakeCamera(0.1f, 0.2f);
 
 	//hp‚ğŒ¸‚ç‚·

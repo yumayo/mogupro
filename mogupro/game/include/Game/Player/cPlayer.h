@@ -166,7 +166,9 @@ namespace Game {
 				return mCollider.getPosition();
 			}
 			void setPos(const ci::vec3 pos) {
-				if(active_user) return;
+				if (active_user) {
+					return;
+				}
 				auto vec = pos - mCollider.getPosition();
 				if (vec.x >= 0.01f ||
 					vec.x <= -0.01f ||

@@ -29,6 +29,7 @@ namespace Game {
 			virtual void setup() = 0;
 			virtual void update(const float& delta_time) = 0;
 			virtual void draw() = 0;
+			virtual void reset() = 0;
 		};
 	}
 }
