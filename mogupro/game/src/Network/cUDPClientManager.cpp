@@ -10,6 +10,7 @@
 #include <Scene/Member/cTitle.h>
 #include <Node/action.hpp>
 #include <Network/IpHost.h>
+#include <boost/date_time/posix_time/posix_time.hpp>
 namespace Network
 {
 cUDPClientManager::cUDPClientManager( )
@@ -18,6 +19,7 @@ cUDPClientManager::cUDPClientManager( )
     , mConnectSecond( std::numeric_limits<float>::max( ) )
 	, mSequenceId( 0U )
 	, mIsConnected(false)
+	, mServerTime( )
 {
     mRoot->set_schedule_update( );
 }
@@ -46,9 +48,17 @@ void cUDPClientManager::connectOfflineServer( )
 }
 void cUDPClientManager::update( float delta )
 {
+	if ( isConnected( ) )
+	{
+		mServerTime += boost::posix_time::milliseconds( delta * 1000.0F );
+	}
     updateRecv( );
     updateSend( );
     mRoot->entry_update( delta );
+}
+boost::posix_time::ptime const & cUDPClientManager::getServerTime( )
+{
+	return mServerTime;
 }
 void cUDPClientManager::updateSend( )
 {
@@ -95,10 +105,12 @@ void cUDPClientManager::connection( )
 
         mCloseSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
 
+		mServerTime = boost::posix_time::from_iso_string( p->time );
+
         using namespace Node::Action;
         auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
         {
-            send( new Packet::Request::cReqPing( ) );
+			send( new Packet::Request::cReqPing( ) );
         } ) ) );
         act->set_name( "ping" );
         mRoot->run_action( act );
@@ -118,6 +130,8 @@ void cUDPClientManager::ping( )
     while ( auto p = cEventManager::getInstance( )->getEvePing( ) )
     {
         mCloseSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
+
+		mServerTime = boost::posix_time::from_iso_string( p->time );
     }
     if (mConnectServerHandle.ipAddress != Network::getLocalIpAddressHost())
     {

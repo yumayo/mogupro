@@ -8,6 +8,7 @@
 #include <Node/action.hpp>
 #include <Utility/MessageBox.h>
 #include <Network/IpHost.h>
+#include <boost/date_time/posix_time/posix_time.hpp>
 namespace Network
 {
 cUDPServerManager::cUDPServerManager( )
@@ -146,13 +147,18 @@ void cUDPServerManager::connection( )
 
             mIdCount += 1;
 
-            send( p->mNetworkHandle, new Packet::Response::cResConnect( ), false );
+			auto response = new Packet::Response::cResConnect( );
+			response->time = boost::posix_time::to_iso_string( boost::posix_time::microsec_clock::local_time( ) );
+
+            send( p->mNetworkHandle, response, false );
 
 			// pingコルーチンを走らせる。
             using namespace Node::Action;
             auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ networkHandle = p->mNetworkHandle, this ]
             {
-                send( networkHandle, new Packet::Event::cEvePing( ) );
+				auto p = new Packet::Event::cEvePing( );
+			    p->time = boost::posix_time::to_iso_string( boost::posix_time::microsec_clock::local_time( ) );
+                send( networkHandle, p );
                 cinder::app::console( ) << "cUDPServerManager: " << "ping to " << (int)getPlayerId( networkHandle ) << std::endl;
             } ) ) );
             act->set_tag( itr.first->second.id );
@@ -165,7 +171,10 @@ void cUDPServerManager::connection( )
             cinder::app::console( ) << p->mNetworkHandle.ipAddress << ":" << p->mNetworkHandle.port << "＠";
             cinder::app::console( ) << "cUDPServerManager: " << "reconnect success!! " << (int)mIdCount << std::endl;
 
-			send( p->mNetworkHandle, new Packet::Response::cResConnect( ), false );
+			auto response = new Packet::Response::cResConnect( );
+			response->time = boost::posix_time::to_iso_string( boost::posix_time::microsec_clock::local_time( ) );
+
+			send( p->mNetworkHandle, response, false );
 
 			// pingコルーチンを走らせる。
 			mRoot->remove_action_by_tag( itr.first->second.id );
