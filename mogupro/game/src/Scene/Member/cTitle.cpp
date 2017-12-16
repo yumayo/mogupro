@@ -58,28 +58,28 @@ void cTitle::resize( )
 void cTitle::update( float deltaTime )
 {
 	mContentsRoot->entry_update( deltaTime );
-
-	if ( ENV->pressKey( cinder::app::KeyEvent::KEY_LCTRL ) )
+	if ( ENV->pushKey( cinder::app::KeyEvent::KEY_F1 ) )
 	{
-		if ( ENV->pushKey( cinder::app::KeyEvent::KEY_F1 ) )
-		{
-			cSceneManager::getInstance( )->shift<Scene::Member::cMatching>( );
-		}
-		else if ( ENV->pushKey( cinder::app::KeyEvent::KEY_F2 ) )
-		{
-			cSceneManager::getInstance( )->shift<Scene::Member::cMatchingServer>( );
-		}
-		if ( Utility::cInputAll::getInstance( )->pushKey( cinder::app::KeyEvent::KEY_RETURN ) )
-		{
-			Network::cUDPClientManager::getInstance( )->open( );
-			Network::cUDPServerManager::getInstance( )->open( );
-			Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
-			Game::cGameManager::getInstance( )->setTime( boost::posix_time::microsec_clock::local_time( ) + boost::posix_time::seconds( 5 ) );
-			Network::cMatchingMemberManager::getInstance( )->mPlayerID = 3U;
-			cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
-		}
+		cSceneManager::getInstance( )->shift<Scene::Member::cMatching>( );
 	}
-	else if( ENV->pushKey( ) )
+	else if ( ENV->pushKey( cinder::app::KeyEvent::KEY_F2 ) )
+	{
+		cSceneManager::getInstance( )->shift<Scene::Member::cMatchingServer>( );
+	}
+	else if ( Utility::cInputAll::getInstance( )->pushKey( cinder::app::KeyEvent::KEY_RETURN ) )
+	{
+		Network::cUDPClientManager::getInstance( )->open( );
+		Network::cUDPServerManager::getInstance( )->open( );
+		Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
+		Game::cGameManager::getInstance( )->setTime( boost::posix_time::microsec_clock::local_time( ) + boost::posix_time::seconds( 5 ) );
+		Network::cMatchingMemberManager::getInstance( )->mPlayerID = 3U;
+		cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
+	}
+	else if ( ENV->pushKey( cinder::app::KeyEvent::KEY_F5 ) )
+	{
+		/* nothing */
+	}
+	else if ( ENV->pushKey( ) )
 	{
 		Network::cUDPClientManager::getInstance( )->open( );
 		Network::cUDPServerManager::getInstance( )->open( );
