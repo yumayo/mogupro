@@ -170,7 +170,7 @@ void cClientAdapter::recvAllGameInfo( )
 {
 	while ( auto packet = Network::cResponseManager::getInstance( )->getResSetGamestartTimer( ) )
 	{
-		auto startTime = boost::posix_time::from_iso_string( packet->mTimerStr );
+		auto startTime = packet->time;
 		Game::cGameManager::getInstance( )->setTime( startTime );
 	}
 }

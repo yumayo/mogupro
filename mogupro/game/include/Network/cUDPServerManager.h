@@ -72,6 +72,7 @@ public:
     void openAccepter( );
     void update( float delta );
     ubyte1 getPlayerId( cNetworkHandle const& handle );
+	float const& getServerTime( );
 
     // ªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªª
     // ‚­ƒR:œc
@@ -91,5 +92,7 @@ private:
     ubyte1 mIdCount;
 
 	ubyte4 mSequenceId;
+
+	float mServerTime;
 };
 }

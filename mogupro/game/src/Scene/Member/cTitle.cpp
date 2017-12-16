@@ -71,7 +71,7 @@ void cTitle::update( float deltaTime )
 		Network::cUDPClientManager::getInstance( )->open( );
 		Network::cUDPServerManager::getInstance( )->open( );
 		Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
-		Game::cGameManager::getInstance( )->setTime( boost::posix_time::microsec_clock::local_time( ) + boost::posix_time::seconds( 5 ) );
+		Game::cGameManager::getInstance( )->setTime( 0.0F );
 		Network::cMatchingMemberManager::getInstance( )->mPlayerID = 3U;
 		cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
 	}
@@ -84,7 +84,7 @@ void cTitle::update( float deltaTime )
 		Network::cUDPClientManager::getInstance( )->open( );
 		Network::cUDPServerManager::getInstance( )->open( );
 		Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
-		Game::cGameManager::getInstance( )->setTime( boost::posix_time::microsec_clock::local_time( ) + boost::posix_time::seconds( 5 ) );
+		Game::cGameManager::getInstance( )->setTime( 0.0F );
 		cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
 	}
 }
