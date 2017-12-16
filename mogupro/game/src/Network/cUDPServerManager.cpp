@@ -8,7 +8,6 @@
 #include <Node/action.hpp>
 #include <Utility/MessageBox.h>
 #include <Network/IpHost.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
 namespace Network
 {
 cUDPServerManager::cUDPServerManager( )
@@ -16,6 +15,7 @@ cUDPServerManager::cUDPServerManager( )
 	closeAccepter( );
 	mRoot = Node::node::create( );
 	mRoot->set_schedule_update( );
+	mServerTime = 0.0F;
 }
 void cUDPServerManager::close( )
 {
@@ -26,6 +26,7 @@ void cUDPServerManager::close( )
 void cUDPServerManager::open( )
 {
     mRoot = Node::node::create( );
+	mServerTime = 0.0F;
     mRoot->set_schedule_update( );
     mSocket.open( 25565 );
     openAccepter( );
@@ -45,6 +46,7 @@ void cUDPServerManager::update( float delta )
     updateRecv( );
     updateSend( );
     mRoot->entry_update( delta );
+	mServerTime += delta;
 }
 ubyte1 cUDPServerManager::getPlayerId( cNetworkHandle const & handle )
 {
@@ -57,6 +59,10 @@ ubyte1 cUDPServerManager::getPlayerId( cNetworkHandle const & handle )
     {
         throw std::runtime_error( "Networkhandle nothing" );
     }
+}
+float const & cUDPServerManager::getServerTime( )
+{
+	return mServerTime;
 }
 void cUDPServerManager::updateSend( )
 {
@@ -148,7 +154,7 @@ void cUDPServerManager::connection( )
             mIdCount += 1;
 
 			auto response = new Packet::Response::cResConnect( );
-			response->time = boost::posix_time::to_iso_string( boost::posix_time::microsec_clock::local_time( ) );
+			response->time = mServerTime;
 
             send( p->mNetworkHandle, response, false );
 
@@ -157,7 +163,7 @@ void cUDPServerManager::connection( )
             auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ networkHandle = p->mNetworkHandle, this ]
             {
 				auto p = new Packet::Event::cEvePing( );
-			    p->time = boost::posix_time::to_iso_string( boost::posix_time::microsec_clock::local_time( ) );
+			    p->time = mServerTime;
                 send( networkHandle, p );
                 cinder::app::console( ) << "cUDPServerManager: " << "ping to " << (int)getPlayerId( networkHandle ) << std::endl;
             } ) ) );
@@ -172,7 +178,7 @@ void cUDPServerManager::connection( )
             cinder::app::console( ) << "cUDPServerManager: " << "reconnect success!! " << (int)mIdCount << std::endl;
 
 			auto response = new Packet::Response::cResConnect( );
-			response->time = boost::posix_time::to_iso_string( boost::posix_time::microsec_clock::local_time( ) );
+			response->time = mServerTime;
 
 			send( p->mNetworkHandle, response, false );
 

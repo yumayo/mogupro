@@ -10,7 +10,7 @@ cResSetGamestartTimer::cResSetGamestartTimer( )
 {
 
 }
-cResSetGamestartTimer::cResSetGamestartTimer(std::string timerStr):mTimerStr(timerStr)
+cResSetGamestartTimer::cResSetGamestartTimer(float time) : time(time)
 {
 
 }
@@ -18,12 +18,12 @@ cResSetGamestartTimer::cResSetGamestartTimer(std::string timerStr):mTimerStr(tim
 void cResSetGamestartTimer::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
     cImporter imp( data );
-	imp >> mTimerStr;
+	imp >> time;
 }
 ubyte2 cResSetGamestartTimer::packetExport( char* const data )
 {
     cExporter exp( data );
-	exp << mTimerStr;
+	exp << time;
     return exp.getSize( );
 }
 }

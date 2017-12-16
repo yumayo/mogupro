@@ -1,6 +1,5 @@
 #pragma once
 #include <Utility/cSingletonAble.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <map>
 #include <Node/node.h>
 namespace Game
@@ -32,7 +31,7 @@ public:
 	};
 public:
 	// ゲーム開始パケットが届いたらステートごとの絶対移行時間を代入してください。
-	void setTime( boost::posix_time::ptime loadTime );
+	void setTime( float loadTime );
 	std::string getLeftBattleTime( );
 	void preUpdate( float delta );
 	void update( float delta );
@@ -56,7 +55,7 @@ private:
 
 	// ステートごとの絶対移行時間。
 	// ゲームメインに移動した時点で明確に決めておきます。
-	std::map<State, boost::posix_time::ptime> shiftSeconds;
+	std::map<State, float> shiftSeconds;
 
 	// 
 	std::map<State, std::function<void( float )>> mUpdates;

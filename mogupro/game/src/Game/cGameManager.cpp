@@ -31,7 +31,7 @@ cGameManager::cGameManager( )
 		auto cameraPosition = root->add_child( Node::node::create( ) );
 		cameraPosition->set_schedule_update( );
 		cameraPosition->set_position_3d( Game::Field::WORLD_SIZE * cinder::vec3( 0.4F, 1.0F, 0.4F ) + cinder::vec3( 0, 1.0F, 0 ) );
-		cameraPosition->run_action( move_by::create( 5.0F, cinder::vec3( 5.0F, 3.0F, 7.0F ) ) );
+		cameraPosition->run_action( move_by::create( 15.0F, cinder::vec3( 5.0F, 3.0F, 7.0F ) ) );
 		cameraPosition->set_name( "cameraPosition" );
 
 		auto cameraAngle = root->add_child( Node::node::create( ) );
@@ -41,9 +41,9 @@ cGameManager::cGameManager( )
 		cameraAngle->set_name( "cameraAngle" );
 
 		auto fieldName = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 64 ) );
-		fieldName->set_anchor_point( cinder::vec2( 0, 0 ) );
+		fieldName->set_anchor_point( cinder::vec2( 1, 1 ) );
 		fieldName->set_text( u8"‚à‚®‚à‚®ƒRƒƒj[" );
-		fieldName->set_position( cinder::vec2( 50, 50 ) );
+		fieldName->set_position( root->get_content_size( ) - cinder::vec2( 50, 50 ) );
 
 		auto rule = root->add_child( Node::node::create( ) );
 		rule->set_position( root->get_content_size( ) / 2.0F );
@@ -237,14 +237,14 @@ cGameManager::cGameManager( )
 		}
 	} );
 }
-void cGameManager::setTime( boost::posix_time::ptime loadTime )
+void cGameManager::setTime( float loadTime )
 {
-	auto myTeam = loadTime + boost::posix_time::seconds( 2 );
-	auto enemyTeam = myTeam + boost::posix_time::seconds( 2 );
-	auto ready = enemyTeam + boost::posix_time::seconds( 2 );
-	auto battle = ready + boost::posix_time::minutes( 5 );
-	auto battleEnd = battle + boost::posix_time::seconds( 3 );
-	auto result = battleEnd + boost::posix_time::seconds( 3 );
+	auto myTeam = loadTime + 2.0F;
+	auto enemyTeam = myTeam + 2.0F;
+	auto ready = enemyTeam + 2.0F;
+	auto battle = ready + 60.0F * 5.0F;
+	auto battleEnd = battle + 3.0F;
+	auto result = battleEnd + 3.0F;
 
 	shiftSeconds[State::LOAD] = loadTime;
 	shiftSeconds[State::MY_TEAM] = myTeam;
@@ -257,11 +257,11 @@ void cGameManager::setTime( boost::posix_time::ptime loadTime )
 std::string cGameManager::getLeftBattleTime( )
 {
 	auto duration = shiftSeconds[State::BATTLE] - Network::cUDPClientManager::getInstance()->getServerTime( );
-	if ( duration.is_negative( ) )
+	if ( duration < 0.0F )
 	{
 		return "00:00";
 	}
-	return boost::str( boost::format( "%02d:%02d" ) % duration.minutes( ) % duration.seconds( ) );
+	return boost::str( boost::format( "%02d:%02d" ) % (int)( duration / 60.0F ) % (int)( std::fmodf( duration, 60.0F ) ) );
 }
 void cGameManager::preUpdate( float delta )
 {
@@ -280,13 +280,10 @@ void cGameManager::draw( )
 void cGameManager::skipReady( )
 {
 	auto now = Network::cUDPClientManager::getInstance()->getServerTime( );
-	shiftSeconds[State::LOAD] = now;
-	shiftSeconds[State::MY_TEAM] = now;
-	shiftSeconds[State::ENEMY_TEAM] = now;
-	shiftSeconds[State::READY] = now;
-	shiftSeconds[State::BATTLE] = now + boost::posix_time::minutes( 5 );
-	shiftSeconds[State::BATTLE_END] = now + boost::posix_time::minutes( 5 ) + boost::posix_time::seconds( 3 );
-	shiftSeconds[State::RESULT] = now + boost::posix_time::minutes( 5 ) + boost::posix_time::seconds( 3 ) + boost::posix_time::seconds( 3 );
+	shiftSeconds[State::LOAD] = shiftSeconds[State::MY_TEAM] = shiftSeconds[State::ENEMY_TEAM] = shiftSeconds[State::READY] = now;
+	shiftSeconds[State::BATTLE] = shiftSeconds[State::READY] + 60.0F * 5.0F;
+	shiftSeconds[State::BATTLE_END] = shiftSeconds[State::BATTLE] + 3.0F;
+	shiftSeconds[State::RESULT] = shiftSeconds[State::BATTLE_END] + 3.0F;
 }
 void cGameManager::addPreUpdate( State state, std::function<void( float )> method )
 {
