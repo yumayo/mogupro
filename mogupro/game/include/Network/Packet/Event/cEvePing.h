@@ -1,6 +1,7 @@
 #pragma once
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
+#include <string>
 namespace Network
 {
 namespace Packet
@@ -15,6 +16,7 @@ public:
     ubyte2 packetExport( char* const data ) override;
 public:
     cNetworkHandle mNetworkHandle;
+	std::string time;
 };
 }
 }

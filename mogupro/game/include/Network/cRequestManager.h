@@ -24,6 +24,27 @@ private:
     std::stack<Packet::Request::cReqConnect> mReqConnect;
     std::map<ubyte4, double> mReqConnectSequenceIds;
 public:
+    boost::optional<Packet::Request::cReqPing> getReqPing( );
+    void ungetReqPing( Packet::Request::cReqPing&& data );
+    bool isNewReqPing( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Request::cReqPing> mReqPing;
+    std::map<ubyte4, double> mReqPingSequenceIds;
+public:
+    boost::optional<Packet::Request::cReqPlayer> getReqPlayer( );
+    void ungetReqPlayer( Packet::Request::cReqPlayer&& data );
+    bool isNewReqPlayer( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Request::cReqPlayer> mReqPlayer;
+    std::map<ubyte4, double> mReqPlayerSequenceIds;
+public:
+    boost::optional<Packet::Request::cReqBreakBlocks> getReqBreakBlocks( );
+    void ungetReqBreakBlocks( Packet::Request::cReqBreakBlocks&& data );
+    bool isNewReqBreakBlocks( Packet::PacketHeader const& header );
+private:
+    std::stack<Packet::Request::cReqBreakBlocks> mReqBreakBlocks;
+    std::map<ubyte4, double> mReqBreakBlocksSequenceIds;
+public:
     boost::optional<Packet::Request::cReqGetJemSeed> getReqGetJemSeed( );
     void ungetReqGetJemSeed( Packet::Request::cReqGetJemSeed&& data );
     bool isNewReqGetJemSeed( Packet::PacketHeader const& header );

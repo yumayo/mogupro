@@ -1,4 +1,5 @@
 #include <Game/cGameManager.h>
+#include <Network/cUDPClientManager.h>
 #include <boost/format.hpp>
 #include <Scene/cSceneManager.h>
 #include <Scene/Member/cTitle.h>
@@ -12,7 +13,6 @@
 #include <Game/Field/FieldData.h>
 #include <Resource/cSoundManager.h>
 #include <Game/cPlayerManager.h>
-namespace pt = boost::posix_time;
 namespace Game
 {
 cGameManager::cGameManager( )
@@ -59,7 +59,7 @@ cGameManager::cGameManager( )
 		}
 		// タイマーが来るまで待機します。
 		if ( timeEmpty( ) ) return;
-		if ( shiftSeconds[State::LOAD] < boost::posix_time::microsec_clock::local_time( ) )
+		if ( shiftSeconds[State::LOAD] < Network::cUDPClientManager::getInstance()->getServerTime( ) )
 		{
 			next( );
 			root->remove_all_children( );
@@ -67,14 +67,14 @@ cGameManager::cGameManager( )
 	} );
 	addPreUpdate( State::MY_TEAM, [ this ] ( float t )
 	{
-		if ( shiftSeconds[State::MY_TEAM] < boost::posix_time::microsec_clock::local_time( ) )
+		if ( shiftSeconds[State::MY_TEAM] < Network::cUDPClientManager::getInstance()->getServerTime( ) )
 		{
 			next( );
 		}
 	} );
 	addPreUpdate( State::ENEMY_TEAM, [ this ] ( float t )
 	{
-		if ( shiftSeconds[State::ENEMY_TEAM] < boost::posix_time::microsec_clock::local_time( ) )
+		if ( shiftSeconds[State::ENEMY_TEAM] < Network::cUDPClientManager::getInstance()->getServerTime( ) )
 		{
 			next( );
 			root->remove_all_children( );
@@ -100,7 +100,7 @@ cGameManager::cGameManager( )
 	} );
 	addPreUpdate( State::READY, [ this ] ( float t )
 	{
-		if ( shiftSeconds[State::READY] < boost::posix_time::microsec_clock::local_time( ) )
+		if ( shiftSeconds[State::READY] < Network::cUDPClientManager::getInstance()->getServerTime( ) )
 		{
 			next( );
 			root->remove_all_children( );
@@ -119,7 +119,7 @@ cGameManager::cGameManager( )
 	} );
 	addPreUpdate( State::BATTLE, [ this ] ( float t )
 	{
-		if ( shiftSeconds[State::BATTLE] < boost::posix_time::microsec_clock::local_time( ) )
+		if ( shiftSeconds[State::BATTLE] < Network::cUDPClientManager::getInstance()->getServerTime( ) )
 		{
 			next( );
 
@@ -167,7 +167,7 @@ cGameManager::cGameManager( )
 	} );
 	addPreUpdate( State::BATTLE_END, [ this ] ( float t )
 	{
-		if ( shiftSeconds[State::BATTLE_END] < boost::posix_time::microsec_clock::local_time( ) )
+		if ( shiftSeconds[State::BATTLE_END] < Network::cUDPClientManager::getInstance()->getServerTime( ) )
 		{
 			next( );
 		}
@@ -256,7 +256,7 @@ void cGameManager::setTime( boost::posix_time::ptime loadTime )
 }
 std::string cGameManager::getLeftBattleTime( )
 {
-	auto duration = shiftSeconds[State::BATTLE] - pt::microsec_clock::local_time( );
+	auto duration = shiftSeconds[State::BATTLE] - Network::cUDPClientManager::getInstance()->getServerTime( );
 	if ( duration.is_negative( ) )
 	{
 		return "00:00";
@@ -279,7 +279,7 @@ void cGameManager::draw( )
 }
 void cGameManager::skipReady( )
 {
-	auto now = boost::posix_time::microsec_clock::local_time( );
+	auto now = Network::cUDPClientManager::getInstance()->getServerTime( );
 	shiftSeconds[State::LOAD] = now;
 	shiftSeconds[State::MY_TEAM] = now;
 	shiftSeconds[State::ENEMY_TEAM] = now;

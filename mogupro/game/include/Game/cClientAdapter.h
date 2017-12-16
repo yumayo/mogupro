@@ -9,9 +9,9 @@ namespace Network
 {
 namespace Packet
 {
-namespace Deliver
+namespace Request
 {
-class cDliBreakBlocks;
+class cReqBreakBlocks;
 }
 }
 }
@@ -68,7 +68,7 @@ private:
     // 上記でたまったブロックを実際に送ります。
     void sendBreakBlocks( );
 private:
-    Network::Packet::Deliver::cDliBreakBlocks* mBreakBlocksPecket = nullptr;
+    Network::Packet::Request::cReqBreakBlocks* mBreakBlocksPecket = nullptr;
 	Network::ubyte4 mPlayerSeq = 0U;
 };
 }

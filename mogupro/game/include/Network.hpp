@@ -1,7 +1,6 @@
 #pragma once
 #include <Network/cUDPClientManager.h>
 #include <Network/cUDPServerManager.h>
-#include <Network/cDeliverManager.h>
 #include <Network/cEventManager.h>
 #include <Network/cRequestManager.h>
 #include <Network/cResponseManager.h>
