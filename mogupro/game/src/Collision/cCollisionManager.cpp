@@ -198,6 +198,77 @@ cinder::vec3 cCollisionManager::calcNearestPoint( cinder::Ray const & ray, unsig
 	}
 	return worldRay.calcPosition( resultMin );
 }
+CollisionStatus cCollisionManager::simulation( cRigidBody & rigidBody, unsigned int div )
+{
+	CollisionStatus result;
+
+	ci::vec3 position = rigidBody.mCollider.getPosition( );
+	ci::vec3 speed = rigidBody.getSpeed( );
+
+	result.positions.emplace_back( rigidBody.mCollider.getPosition( ) );
+
+	for(int i = 0; i < 10 * div; ++i)
+	{
+		{
+			rigidBody.update( 1.0F / div );
+		}
+
+		{
+			auto&& aabb = std::move( rigidBody.createAABB( ) );
+			ivec3 min, max;
+			fitWorldSpaceMinMax( min, max, aabb );
+			float length = std::numeric_limits<float>::max( );
+			cinder::Ray ray;
+			cinder::AxisAlignedBox boundingBox;
+			cColliderBase const* targetCollider = nullptr;
+			for ( int x = min.x; x <= max.x; ++x )
+			{
+				for ( int y = min.y; y <= max.y; ++y )
+				{
+					for ( int z = min.z; z <= max.z; ++z )
+					{
+						auto const& rigidCollider = rigidBody.mCollider;
+						auto const& colliders = mWorld[x][y][z];
+						for ( auto const& collider : colliders )
+						{
+							hitCubeToCube( &rigidCollider, &rigidBody, collider, length, ray, boundingBox, &targetCollider );
+						}
+					}
+				}
+			}
+			if ( targetCollider != nullptr )
+			{
+				auto pair = rigidBody.calc( length, ray, boundingBox, targetCollider );
+				result.positions.emplace_back( pair.first );
+				result.normal = pair.second;
+				break;
+			}
+		}
+
+		{
+			if ( auto* coll = dynamic_cast<cAABBCollider*>( &rigidBody.mCollider ) )
+			{
+				auto pos = coll->getPosition( );
+				auto size_2 = coll->getSize( ) / 2.0F;
+				if ( pos.x < size_2.x || Game::Field::WORLD_COLLISION_SIZE.x - size_2.x < pos.x ||
+					 pos.y < size_2.y || Game::Field::WORLD_COLLISION_SIZE.y - size_2.y < pos.y ||
+					 pos.z < size_2.z || Game::Field::WORLD_COLLISION_SIZE.z - size_2.z < pos.z )
+				{
+					pos = clamp( pos, size_2, Game::Field::WORLD_COLLISION_SIZE - size_2 );
+					rigidBody.mCollider.setPosition( pos );
+				}
+			}
+			rigidBody.lateUpdate( 1.0F / div );
+		}
+
+		result.positions.emplace_back( rigidBody.mCollider.getPosition( ) );
+	}
+
+	rigidBody.setSpeed( speed );
+	rigidBody.mCollider.setPosition( position );
+
+	return result;
+}
 bool cCollisionManager::isRange( int x, int y, int z )
 {
     return 0 <= x && 0 <= y && 0 <= z &&

@@ -5,6 +5,9 @@
 #include <cinder/gl/GlslProg.h>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time.hpp>
+#include <Collision/cCollisionManager.h>
+#include <Collision/cAABBCollider.h>
+#include <Collision/cRigidBody.h>
 
 namespace Scene
 {
@@ -13,6 +16,7 @@ namespace Member
 class cGameMain : public cSceneBase
 {
 public:
+	cGameMain( );
     void setup( );
     void shutDown( );
     void update(float deltaTime);
@@ -23,6 +27,8 @@ public:
 private:
     Game::SkyDome::cSkyDome skydome;
 	bool sendEndSetup;
+	Collision::cAABBCollider collider;
+	Collision::cRigidBody rigid;
 };
 }
 }

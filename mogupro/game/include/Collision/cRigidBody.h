@@ -27,7 +27,7 @@ public:
 	void addSpeed( cinder::vec3 value );
 	float getFriction( ) const;
 	void setFriction( float value );
-    void calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase const* targetCollider );
+	std::pair<cinder::vec3 /*colPos*/, cinder::vec3 /*normal*/> calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase const* targetCollider );
 public:
     cColliderBase& mCollider;
 private:
