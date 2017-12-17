@@ -125,7 +125,7 @@ public:
 
     void setup();
     void update();
-    void draw();
+    void draw( const std::string & name );
     void draw( const std::string &name, const double &animation_time );
     void create( const std::string &name );
     void createAnimation( const std::string &name,
