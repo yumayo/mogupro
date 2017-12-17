@@ -134,7 +134,7 @@ cinder::vec3 cRigidBody::calcWallScratchVector( cinder::vec3 spd, cinder::vec3 n
     float t = -( nor.x * spd.x + nor.y * spd.y + nor.z * spd.z ) / ( nor.x * nor.x + nor.y * nor.y + nor.z * nor.z );
     return cinder::vec3( spd.x + t * nor.x, spd.y + t * nor.y, spd.z + t * nor.z );
 }
-void cRigidBody::calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase const* targetCollider )
+std::pair<cinder::vec3, cinder::vec3> cRigidBody::calc( float minValue, cinder::Ray const& ray, cinder::AxisAlignedBox const& aabb, cColliderBase const* targetCollider )
 {
     auto intersectPoint = ray.calcPosition( minValue );
     auto normal = getNormal( intersectPoint, aabb );
@@ -148,5 +148,7 @@ void cRigidBody::calc( float minValue, cinder::Ray const& ray, cinder::AxisAlign
     auto position = intersectPoint + getSpeedCalcedDelta( ) - pullVector;
 
     mCollider.setPosition( position );
+
+	return std::make_pair( intersectPoint, normal );
 }
 }
