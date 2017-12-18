@@ -10,7 +10,6 @@
 #include <Scene/Member/cTitle.h>
 #include <Node/action.hpp>
 #include <Network/IpHost.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
 namespace Network
 {
 cUDPClientManager::cUDPClientManager( )
@@ -50,13 +49,13 @@ void cUDPClientManager::update( float delta )
 {
 	if ( isConnected( ) )
 	{
-		mServerTime += boost::posix_time::milliseconds( delta * 1000.0F );
+		mServerTime += delta;
 	}
     updateRecv( );
     updateSend( );
     mRoot->entry_update( delta );
 }
-boost::posix_time::ptime const & cUDPClientManager::getServerTime( )
+float const & cUDPClientManager::getServerTime( )
 {
 	return mServerTime;
 }
@@ -105,7 +104,7 @@ void cUDPClientManager::connection( )
 
         mCloseSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
 
-		mServerTime = boost::posix_time::from_iso_string( p->time );
+		mServerTime = p->time;
 
         using namespace Node::Action;
         auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
@@ -131,7 +130,7 @@ void cUDPClientManager::ping( )
     {
         mCloseSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
 
-		mServerTime = boost::posix_time::from_iso_string( p->time );
+		mServerTime = p->time;
     }
     if (mConnectServerHandle.ipAddress != Network::getLocalIpAddressHost())
     {

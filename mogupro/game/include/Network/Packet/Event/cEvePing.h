@@ -16,7 +16,7 @@ public:
     ubyte2 packetExport( char* const data ) override;
 public:
     cNetworkHandle mNetworkHandle;
-	std::string time;
+	float time;
 };
 }
 }

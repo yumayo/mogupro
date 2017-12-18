@@ -7,8 +7,6 @@
 #include <CameraManager/cCameraManager.h>
 #include <Utility/cInput.h>
 #include <Game/cServerAdapter.h>
-#include <boost/date_time/gregorian/gregorian.hpp>
-#include <boost/date_time.hpp>
 #include <cinder/Rand.h>
 #include <Log/Log.h>
 
@@ -81,11 +79,8 @@ namespace Scene
 				}
 				n->remove_all_actions( );
 				mIsGameUpdate = true;
-				mGameStartTime = boost::posix_time::microsec_clock::local_time( );
-				mGameStartTime += boost::posix_time::seconds( 5 );
-				mTimeStr = boost::posix_time::to_iso_string( mGameStartTime );
 
-				cUDPServerManager::getInstance( )->broadcast( new cResSetGamestartTimer( mTimeStr ) );
+				cUDPServerManager::getInstance( )->broadcast( new cResSetGamestartTimer( Network::cUDPServerManager::getInstance()->getServerTime( ) + 2.0F ) );
 			}
 			else
 			{

@@ -47,7 +47,7 @@ void cTitle::setup( )
 	auto version = mContentsRoot->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
 	version->set_anchor_point( vec2( 0, 1 ) );
 	version->set_position( mContentsRoot->get_content_size( ) * vec2( 0, 1 ) );
-	version->set_text( "ver0.1.0" );
+	version->set_text( "ver0.2.0" );
 }
 void cTitle::shutDown( )
 {
@@ -66,12 +66,12 @@ void cTitle::update( float deltaTime )
 	{
 		cSceneManager::getInstance( )->shift<Scene::Member::cMatchingServer>( );
 	}
-	else if ( Utility::cInputAll::getInstance( )->pushKey( cinder::app::KeyEvent::KEY_RETURN ) )
+	else if ( Utility::cInputAll::getInstance( )->pushKey( cinder::app::KeyEvent::KEY_F3 ) )
 	{
 		Network::cUDPClientManager::getInstance( )->open( );
 		Network::cUDPServerManager::getInstance( )->open( );
 		Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
-		Game::cGameManager::getInstance( )->setTime( boost::posix_time::microsec_clock::local_time( ) + boost::posix_time::seconds( 5 ) );
+		Game::cGameManager::getInstance( )->setTime( 0.0F );
 		Network::cMatchingMemberManager::getInstance( )->mPlayerID = 3U;
 		cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
 	}
@@ -84,7 +84,7 @@ void cTitle::update( float deltaTime )
 		Network::cUDPClientManager::getInstance( )->open( );
 		Network::cUDPServerManager::getInstance( )->open( );
 		Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
-		Game::cGameManager::getInstance( )->setTime( boost::posix_time::microsec_clock::local_time( ) + boost::posix_time::seconds( 5 ) );
+		Game::cGameManager::getInstance( )->setTime( 0.0F );
 		cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
 	}
 }
