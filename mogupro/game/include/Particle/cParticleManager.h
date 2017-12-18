@@ -8,7 +8,7 @@
 
 namespace Particle
 {
-enum ParticleType
+enum class ParticleType
 {
     NONE,
     SCATTER,    // ”ò‚ÑU‚è
@@ -18,7 +18,7 @@ enum ParticleType
     ABSORB,     // ƒƒKƒhƒŒƒCƒ“
 };
 
-enum ParticleTextureType
+enum class ParticleTextureType
 {
     NONE,
     SAND,
