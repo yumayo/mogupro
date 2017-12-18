@@ -54,7 +54,7 @@ public:
     void add( float& target, float end, float end_frame, EaseType ease_type );
 
     // waitを追加する関数
-    void addWait( float& target, int wait );
+    void addWait( float& target, float wait );
 
     void setIsStop( const bool& value ) { is_stop = value; }
     void setIsLoop( const bool& value ) { is_loop = value; }
@@ -126,15 +126,15 @@ public:
     // イージングを止める処理を追加する関数
     // target       イージングを止めるfloatの値
     // wait_count   止める時間
-    void wait( float& target, int wait_count );
+    void wait( float& target, float wait_count );
     // イージングを止める処理を追加する関数
     // target       イージングを止めるvec3の値
     // wait_count   止める時間
-    void wait( ci::vec3 & target, int wait_count );
+    void wait( ci::vec3 & target, float wait_count );
     // イージングを止める処理を追加する関数
     // target       イージングを止めるvec3の値
     // wait_count   止める時間
-    void wait( ci::vec2 & target, int wait_count );
+    void wait( ci::vec2 & target, float wait_count );
 
     // イージングの更新を止める関数
     void stop( float& target, const bool& is_enable = true );
