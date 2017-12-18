@@ -1,6 +1,5 @@
 #pragma once
 #include <array>
-#include <tuple>
 namespace Network
 {
 static_assert( sizeof( unsigned short ) == 2, "<unsinged short>が\"2バイト\"じゃありません。" );
@@ -18,6 +17,8 @@ using cBuffer = std::array<char, PACKET_MAX_BYTE>;
 constexpr float PING_HOLD_SECOND = 60.0F;
 constexpr ubyte1 RELIABLE_COUNT = 4U; // 信頼性を保証するための回数。
 constexpr double RELIABLE_HOLD_SECOND = 8.0;
+#define PACKET_TEMPLATE_BEGIN // pmakeで置き換えのためにおいている。
+#define PACKET_TEMPLATE_END
 class cPacketBuffer
 {
 public:
@@ -90,5 +91,4 @@ public:
     cNetworkHandle networkHandle;
     cPacketBuffer packetBuffer;
 };
-#pragma pack()
 }

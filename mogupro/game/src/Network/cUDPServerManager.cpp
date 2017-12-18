@@ -1,8 +1,5 @@
 #include <Network/cUDPServerManager.h>
 #include <Network/cUDPManager.h>
-#include <Network/cEventManager.h>
-#include <Network/cRequestManager.h>
-#include <Network/cResponseManager.h>
 #include <cinder/app/App.h>
 #include <limits>
 #include <Node/action.hpp>
@@ -91,10 +88,10 @@ void cUDPServerManager::updateRecv( )
     while ( !mSocket.emptyChunk( ) )
     {
         auto chunk = mSocket.popChunk( );
-        if ( cUDPManager::getInstance( )->isConnectPacket( chunk ) ||
+        if ( mPackets.isConnectPacket( chunk ) ||
             ( mConnections.find( chunk.networkHandle ) != mConnections.end( ) ) )
         {
-            cUDPManager::getInstance( )->onReceive( chunk );
+			mPackets.onReceive( chunk );
         }
         else
         {
@@ -138,7 +135,7 @@ void cUDPServerManager::sendDataBufferAdd( cNetworkHandle const & networkHandle,
 }
 void cUDPServerManager::connection( )
 {
-    while ( auto p = cRequestManager::getInstance( )->getReqConnect( ) )
+    while ( auto p = mPackets.ReqConnect.get( ) )
     {
         if ( !mIsAccept ) continue;
 
@@ -201,7 +198,7 @@ void cUDPServerManager::connection( )
 }
 void cUDPServerManager::ping( )
 {
-    while ( auto p = cRequestManager::getInstance( )->getReqPing( ) )
+    while ( auto p = mPackets.ReqPing.get( ) )
     {
         auto itr = mConnections.find( p->networkHandle );
         if ( itr != mConnections.end( ) )

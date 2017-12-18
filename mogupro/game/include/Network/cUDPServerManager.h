@@ -3,6 +3,7 @@
 #include <Network/cUDP.h>
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
+#include <Network/cUDPManager.h>
 #include <Network/cReliableManager.h>
 #include <Network/cConnectionInfo.h>
 #include <set>
@@ -73,6 +74,10 @@ public:
     void update( float delta );
     ubyte1 getPlayerId( cNetworkHandle const& handle );
 	float const& getServerTime( );
+	inline cUDPManager* const getUDPManager( )
+	{
+		return &mPackets;
+	}
 
     // ªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªª
     // ‚­ƒR:œc
@@ -86,6 +91,7 @@ private:
     void ping( );
 private:
     cUDP mSocket;
+	cUDPManager mPackets;
     std::map<cNetworkHandle, cConnectionInfo> mConnections;
     hardptr<Node::node> mRoot;
     bool mIsAccept;
