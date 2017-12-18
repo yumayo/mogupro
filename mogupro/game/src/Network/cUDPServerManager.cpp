@@ -174,8 +174,12 @@ void cUDPServerManager::connection( )
         {
 			// Ä‚ÑÚ‘±‚µ‚Ä‚«‚½ê‡B
 
+			// Ä“o˜^
+			mConnections.erase( p->mNetworkHandle );
+			mConnections.insert( std::make_pair( p->mNetworkHandle, std::move( cConnectionInfo( itr.first->second.id ) ) ) );
+
             cinder::app::console( ) << p->mNetworkHandle.ipAddress << ":" << p->mNetworkHandle.port << "—";
-            cinder::app::console( ) << "cUDPServerManager: " << "reconnect success!! " << (int)mIdCount << std::endl;
+            cinder::app::console( ) << "cUDPServerManager: " << "reconnect success!! " << (int)itr.first->second.id << std::endl;
 
 			auto response = new Packet::Response::cResConnect( );
 			response->time = mServerTime;
