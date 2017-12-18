@@ -1,8 +1,5 @@
 #include <Game/cClientAdapter.h>
 #include <Network/cUDPClientManager.h>
-#include <Network/cEventManager.h>
-#include <Network/cRequestManager.h>
-#include <Network/cResponseManager.h>
 #include <Game/cGemManager.h>
 #include <Game/cPlayerManager.h>
 #include <Game/cStrategyManager.h>
@@ -43,10 +40,9 @@ void cClientAdapter::update( )
 }
 void cClientAdapter::recvAllPlayers( )
 {
-    auto e = cEventManager::getInstance( );
-	auto s = cResponseManager::getInstance( );
+    auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
 
-    while ( auto packet = e->getEvePlayers( ) )
+    while ( auto packet = m->EvePlayers.get( ) )
     {
 		if ( packet->getSequenceId( ) < mPlayerSeq )
 		{
@@ -59,17 +55,17 @@ void cClientAdapter::recvAllPlayers( )
 			//Game::cPlayerManager::getInstance( )->getPlayer( o.playerId )->setRotate(o.rotation.x, o.rotation.x);
         }
     }
-	while ( auto packet = e->getEveDamage( ) )
+	while ( auto packet = m->EveDamage.get( ) )
 	{
 		Game::cPlayerManager::getInstance( )->getPlayer( packet->enemyId )->receiveDamage( packet->damage, packet->playerId );
 	}
-	while ( auto packet = e->getEvePlayerDeath( ) )
+	while ( auto packet = m->EvePlayerDeath.get( ) )
 	{
 		// TODO:プレイヤーをキルする。
 		packet->enemyId;
 		packet->playerId;
 	}
-	while ( auto packet = e->getEveRespawn( ) )
+	while ( auto packet = m->EveRespawn.get( ) )
 	{
 		// TODO:プレイヤーをリスポーンさせる。
 		packet->playerId;
@@ -80,7 +76,7 @@ void cClientAdapter::recvAllPlayers( )
 		player->getMainWeapon( )->pushCall( false );
 		player->getMainWeapon( )->pullCall( false );
 	}
-	while ( auto packet = e->getEvePlayerAttack( ) )
+	while ( auto packet = m->EvePlayerAttack.get( ) )
 	{
 		switch ( packet->call )
 		{
@@ -97,8 +93,8 @@ void cClientAdapter::recvAllPlayers( )
 }
 void cClientAdapter::recvAllQuarrys( )
 {
-    auto eve = cEventManager::getInstance( );
-    while ( auto packet = eve->getEveSetQuarry( ) )
+    auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
+    while ( auto packet = m->EveSetQuarry.get( ) )
     {
 		cSubWeaponManager::getInstance( )->createQuarry(
 			packet->mPosition
@@ -109,15 +105,15 @@ void cClientAdapter::recvAllQuarrys( )
 }
 void cClientAdapter::recvAllGems( )
 {
-    auto eve = cEventManager::getInstance( );
-    while ( auto packet = eve->getEveGetJemQuarry( ) )
+    auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
+    while ( auto packet = m->EveGetJemQuarry.get( ) )
     {
         cSubWeaponManager::getInstance( )->HitDrillToGem(
             packet->mObjectId,
             packet->mGemId
         );
     }
-    while ( auto packet = eve->getEveGetJemPlayer( ) )
+    while ( auto packet = m->EveGetJemPlayer.get( ) )
     {
 		// TODO: プレイヤーが宝石を取得する。
 		packet->mGemId;
@@ -126,8 +122,8 @@ void cClientAdapter::recvAllGems( )
 }
 void cClientAdapter::recvAllBreakBlocks( )
 {
-    auto eve = cEventManager::getInstance( );
-    while ( auto packet = eve->getEveBreakBlocks( ) )
+    auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
+    while ( auto packet = m->EveBreakBlocks.get( ) )
     {
         for ( auto& o : packet->mBreakFormats )
         {
@@ -139,16 +135,16 @@ void cClientAdapter::recvAllBreakBlocks( )
 }
 void cClientAdapter::recvAllBombs( )
 {
-	auto eve = cEventManager::getInstance( );
-	while ( auto packet = eve->getEveLightBomb( ) )
+	auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
+	while ( auto packet = m->EveLightBomb.get( ) )
 	{
 		cSubWeaponManager::getInstance( )->createLightBomb( packet->position, packet->speed, cinder::vec3(0.5F), packet->objectId, packet->playerId );
 	}
 }
 void cClientAdapter::recvAllCannons( )
 {
-	auto e = cEventManager::getInstance( );
-	while ( auto packet = e->getEveAddCannonPower( ) )
+	auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
+	while ( auto packet = m->EveAddCannonPower.get( ) )
 	{
 		if ( packet->teamId == Game::Player::Red )
 		{
@@ -168,7 +164,9 @@ void cClientAdapter::recvAllCannons( )
 }
 void cClientAdapter::recvAllGameInfo( )
 {
-	while ( auto packet = Network::cResponseManager::getInstance( )->getResSetGamestartTimer( ) )
+	auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
+
+	while ( auto packet = m->ResSetGamestartTimer.get( ) )
 	{
 		auto startTime = packet->time;
 		Game::cGameManager::getInstance( )->setTime( startTime );

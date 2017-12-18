@@ -4,6 +4,7 @@
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
 #include <Network/cReliableManager.h>
+#include <Network/cUDPManager.h>
 #include <Node/node.h>
 namespace Network
 {
@@ -32,6 +33,10 @@ public:
     void connectOfflineServer( );
     void update( float delta );
 	float const& getServerTime( );
+	inline cUDPManager* const getUDPManager( )
+	{
+		return &mPackets;
+	}
 
     // ªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªª
     // ‚­ƒR:œc
@@ -50,6 +55,8 @@ private:
 	bool mIsConnected;
 
 	cReliableManager mReliableManager;
+
+	cUDPManager mPackets;
 
     hardptr<Node::node> mRoot;
 

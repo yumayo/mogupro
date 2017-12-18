@@ -2,7 +2,6 @@
 #include <Resource/TextureManager.h>
 #include <Utility/cTimeMeasurement.h>
 #include <Network/cUDPManager.h>
-#include <Network/cRequestManager.h>
 #include <Utility/cString.h>
 #include <Game/cClientAdapter.h>
 

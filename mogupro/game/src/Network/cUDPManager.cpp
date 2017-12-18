@@ -1,620 +1,617 @@
 #include <Network/cUDPManager.h>
 #include <Network/Packet/PacketId.h>
-#include <Network/cEventManager.h>
-#include <Network/cRequestManager.h>
-#include <Network/cResponseManager.h>
 namespace Network
 {
 bool cUDPManager::isConnectPacket( cPacketChunk const & packetChunk )
 {
-    cNetworkHandle const& networkHandle = packetChunk.networkHandle;
-    cPacketBuffer const& packetBuffer = packetChunk.packetBuffer;
-    ubyte2 const& transferredBytes = packetBuffer.transferredBytes;
-    cBuffer const& buffer = packetBuffer.buffer;
+	cNetworkHandle const& networkHandle = packetChunk.networkHandle;
+	cPacketBuffer const& packetBuffer = packetChunk.packetBuffer;
+	ubyte2 const& transferredBytes = packetBuffer.transferredBytes;
+	cBuffer const& buffer = packetBuffer.buffer;
 
 	ubyte2 headerOffset = 0U;
-    do
-    {
-        Packet::PacketHeader packetHeader;
-        char const* bufferData = buffer.data( ) + headerOffset;
-        memcpy( &packetHeader, bufferData, sizeof( Packet::PacketHeader ) );
-        ubyte2 bufferSize = packetHeader.mPacketByte;
-        switch ( packetHeader.mPacketId )
-        {
-        case Network::Packet::PacketId::REQ_CONNECT:
-        {
-            return true;
-            break;
-        }
-        default:
-            break;
-        }
-        headerOffset += packetHeader.mPacketByte;
-        if ( headerOffset > transferredBytes )
-        {
-            throw std::exception( "やばい。" );
-        }
-    
-    } while ( headerOffset != transferredBytes );
+	do
+	{
+		Packet::PacketHeader packetHeader;
+		char const* bufferData = buffer.data( ) + headerOffset;
+		memcpy( &packetHeader, bufferData, sizeof( Packet::PacketHeader ) );
+		ubyte2 bufferSize = packetHeader.mPacketByte;
+		switch ( packetHeader.mPacketId )
+		{
+		case Network::Packet::PacketId::REQ_CONNECT:
+		{
+			return true;
+			break;
+		}
+		default:
+			break;
+		}
+		headerOffset += packetHeader.mPacketByte;
+		if ( headerOffset > transferredBytes )
+		{
+			throw std::exception( "やばい。" );
+		}
 
-    return false;
+	} while ( headerOffset != transferredBytes );
+
+	return false;
 }
 void cUDPManager::onReceive( cPacketChunk const & packetChunk )
 {
-    cNetworkHandle const& networkHandle = packetChunk.networkHandle;
-    cPacketBuffer const& packetBuffer = packetChunk.packetBuffer;
-    ubyte2 const& transferredBytes = packetBuffer.transferredBytes;
-    cBuffer const& buffer = packetBuffer.buffer;
+	cNetworkHandle const& networkHandle = packetChunk.networkHandle;
+	cPacketBuffer const& packetBuffer = packetChunk.packetBuffer;
+	ubyte2 const& transferredBytes = packetBuffer.transferredBytes;
+	cBuffer const& buffer = packetBuffer.buffer;
 
-    ubyte2 headerOffset = 0U;
-    do
-    {
-        Packet::PacketHeader packetHeader;
-        char const* bufferData = buffer.data( ) + headerOffset;
-        memcpy( &packetHeader, bufferData, sizeof( Packet::PacketHeader ) );
-        ubyte2 bufferSize = packetHeader.mPacketByte;
-        switch ( packetHeader.mPacketId )
-        {
-            // P=====BEGIN=====P
-        case Network::Packet::PacketId::EVE_STRING:
-        {
-            if ( cEventManager::getInstance( )->isNewEveString( packetHeader ) )
+	ubyte2 headerOffset = 0U;
+	do
+	{
+		Packet::PacketHeader packetHeader;
+		char const* bufferData = buffer.data( ) + headerOffset;
+		memcpy( &packetHeader, bufferData, sizeof( Packet::PacketHeader ) );
+		ubyte2 bufferSize = packetHeader.mPacketByte;
+		switch ( packetHeader.mPacketId )
+		{
+			PACKET_TEMPLATE_BEGIN
+		case Network::Packet::PacketId::EVE_STRING:
 			{
-                Packet::Event::cEveString data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEveString( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_PING:
-        {
-            if ( cEventManager::getInstance( )->isNewEvePing( packetHeader ) )
+				if ( EveString.isNew( packetHeader ) )
+				{
+					Packet::Event::cEveString data;
+					data.onReceive( networkHandle, bufferSize, bufferData );
+					EveString.unget( std::move( data ) );
+				}
+				break;
+			}
+		case Network::Packet::PacketId::EVE_PING:
+		{
+			if ( EvePing.isNew( packetHeader ) )
 			{
-                Packet::Event::cEvePing data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEvePing( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_PLAYERS:
-        {
-            if ( cEventManager::getInstance( )->isNewEvePlayers( packetHeader ) )
+				Packet::Event::cEvePing data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EvePing.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_PLAYERS:
+		{
+			if ( EvePlayers.isNew( packetHeader ) )
 			{
-                Packet::Event::cEvePlayers data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEvePlayers( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_GET_JEM_PLAYER:
-        {
-            if ( cEventManager::getInstance( )->isNewEveGetJemPlayer( packetHeader ) )
+				Packet::Event::cEvePlayers data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EvePlayers.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_GET_JEM_PLAYER:
+		{
+			if ( EveGetJemPlayer.isNew( packetHeader ) )
 			{
-                Packet::Event::cEveGetJemPlayer data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEveGetJemPlayer( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_GET_JEM_QUARRY:
-        {
-            if ( cEventManager::getInstance( )->isNewEveGetJemQuarry( packetHeader ) )
+				Packet::Event::cEveGetJemPlayer data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EveGetJemPlayer.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_GET_JEM_QUARRY:
+		{
+			if ( EveGetJemQuarry.isNew( packetHeader ) )
 			{
-                Packet::Event::cEveGetJemQuarry data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEveGetJemQuarry( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_BREAK_BLOCKS:
-        {
-            if ( cEventManager::getInstance( )->isNewEveBreakBlocks( packetHeader ) )
+				Packet::Event::cEveGetJemQuarry data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EveGetJemQuarry.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_BREAK_BLOCKS:
+		{
+			if ( EveBreakBlocks.isNew( packetHeader ) )
 			{
-                Packet::Event::cEveBreakBlocks data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEveBreakBlocks( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_SET_QUARRY:
-        {
-            if ( cEventManager::getInstance( )->isNewEveSetQuarry( packetHeader ) )
+				Packet::Event::cEveBreakBlocks data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EveBreakBlocks.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_SET_QUARRY:
+		{
+			if ( EveSetQuarry.isNew( packetHeader ) )
 			{
-                Packet::Event::cEveSetQuarry data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEveSetQuarry( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_PLAYER_ROB_JEM:
-        {
-            if ( cEventManager::getInstance( )->isNewEvePlayerRobJem( packetHeader ) )
+				Packet::Event::cEveSetQuarry data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EveSetQuarry.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_PLAYER_ROB_JEM:
+		{
+			if ( EvePlayerRobJem.isNew( packetHeader ) )
 			{
-                Packet::Event::cEvePlayerRobJem data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEvePlayerRobJem( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_PLAYER_DEATH:
-        {
-            if ( cEventManager::getInstance( )->isNewEvePlayerDeath( packetHeader ) )
+				Packet::Event::cEvePlayerRobJem data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EvePlayerRobJem.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_PLAYER_DEATH:
+		{
+			if ( EvePlayerDeath.isNew( packetHeader ) )
 			{
-                Packet::Event::cEvePlayerDeath data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEvePlayerDeath( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_RESPAWN:
-        {
-            if ( cEventManager::getInstance( )->isNewEveRespawn( packetHeader ) )
+				Packet::Event::cEvePlayerDeath data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EvePlayerDeath.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_RESPAWN:
+		{
+			if ( EveRespawn.isNew( packetHeader ) )
 			{
-                Packet::Event::cEveRespawn data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEveRespawn( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_ADD_CANNON_POWER:
-        {
-            if ( cEventManager::getInstance( )->isNewEveAddCannonPower( packetHeader ) )
+				Packet::Event::cEveRespawn data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EveRespawn.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_ADD_CANNON_POWER:
+		{
+			if ( EveAddCannonPower.isNew( packetHeader ) )
 			{
-                Packet::Event::cEveAddCannonPower data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEveAddCannonPower( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_LIGHT_BOMB:
-        {
-            if ( cEventManager::getInstance( )->isNewEveLightBomb( packetHeader ) )
+				Packet::Event::cEveAddCannonPower data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EveAddCannonPower.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_LIGHT_BOMB:
+		{
+			if ( EveLightBomb.isNew( packetHeader ) )
 			{
-                Packet::Event::cEveLightBomb data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEveLightBomb( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_TEAM_MEMBER:
-        {
-            if ( cEventManager::getInstance( )->isNewEveTeamMember( packetHeader ) )
+				Packet::Event::cEveLightBomb data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EveLightBomb.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_TEAM_MEMBER:
+		{
+			if ( EveTeamMember.isNew( packetHeader ) )
 			{
-                Packet::Event::cEveTeamMember data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEveTeamMember( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_DAMAGE:
-        {
-            if ( cEventManager::getInstance( )->isNewEveDamage( packetHeader ) )
+				Packet::Event::cEveTeamMember data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EveTeamMember.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_DAMAGE:
+		{
+			if ( EveDamage.isNew( packetHeader ) )
 			{
-                Packet::Event::cEveDamage data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEveDamage( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_PLAYER_ATTACK:
-        {
-            if ( cEventManager::getInstance( )->isNewEvePlayerAttack( packetHeader ) )
+				Packet::Event::cEveDamage data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EveDamage.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_PLAYER_ATTACK:
+		{
+			if ( EvePlayerAttack.isNew( packetHeader ) )
 			{
-                Packet::Event::cEvePlayerAttack data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEvePlayerAttack( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::EVE_FRAGMENT_GEM:
-        {
-            if ( cEventManager::getInstance( )->isNewEveFragmentGem( packetHeader ) )
+				Packet::Event::cEvePlayerAttack data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EvePlayerAttack.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_FRAGMENT_GEM:
+		{
+			if ( EveFragmentGem.isNew( packetHeader ) )
 			{
-                Packet::Event::cEveFragmentGem data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cEventManager::getInstance( )->ungetEveFragmentGem( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_STRING:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqString( packetHeader ) )
+				Packet::Event::cEveFragmentGem data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EveFragmentGem.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_STRING:
+		{
+			if ( ReqString.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqString data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqString( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_CONNECT:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqConnect( packetHeader ) )
+				Packet::Request::cReqString data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqString.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_CONNECT:
+		{
+			if ( ReqConnect.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqConnect data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqConnect( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_PING:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqPing( packetHeader ) )
+				Packet::Request::cReqConnect data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqConnect.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_PING:
+		{
+			if ( ReqPing.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqPing data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqPing( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_PLAYER:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqPlayer( packetHeader ) )
+				Packet::Request::cReqPing data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqPing.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_PLAYER:
+		{
+			if ( ReqPlayer.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqPlayer data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqPlayer( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_BREAK_BLOCKS:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqBreakBlocks( packetHeader ) )
+				Packet::Request::cReqPlayer data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqPlayer.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_BREAK_BLOCKS:
+		{
+			if ( ReqBreakBlocks.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqBreakBlocks data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqBreakBlocks( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_GET_JEM_SEED:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqGetJemSeed( packetHeader ) )
+				Packet::Request::cReqBreakBlocks data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqBreakBlocks.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_GET_JEM_SEED:
+		{
+			if ( ReqGetJemSeed.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqGetJemSeed data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqGetJemSeed( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_GET_JEM_POINT:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqGetJemPoint( packetHeader ) )
+				Packet::Request::cReqGetJemSeed data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqGetJemSeed.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_GET_JEM_POINT:
+		{
+			if ( ReqGetJemPoint.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqGetJemPoint data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqGetJemPoint( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_GET_JEM_PLAYER:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqGetJemPlayer( packetHeader ) )
+				Packet::Request::cReqGetJemPoint data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqGetJemPoint.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_GET_JEM_PLAYER:
+		{
+			if ( ReqGetJemPlayer.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqGetJemPlayer data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqGetJemPlayer( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_GET_JEM_QUARRY:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqGetJemQuarry( packetHeader ) )
+				Packet::Request::cReqGetJemPlayer data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqGetJemPlayer.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_GET_JEM_QUARRY:
+		{
+			if ( ReqGetJemQuarry.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqGetJemQuarry data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqGetJemQuarry( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_PLAYER_ROB_JEM:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqPlayerRobJem( packetHeader ) )
+				Packet::Request::cReqGetJemQuarry data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqGetJemQuarry.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_PLAYER_ROB_JEM:
+		{
+			if ( ReqPlayerRobJem.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqPlayerRobJem data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqPlayerRobJem( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_SET_QUARRY:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqSetQuarry( packetHeader ) )
+				Packet::Request::cReqPlayerRobJem data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqPlayerRobJem.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_SET_QUARRY:
+		{
+			if ( ReqSetQuarry.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqSetQuarry data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqSetQuarry( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_PLAYER_DEATH:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqPlayerDeath( packetHeader ) )
+				Packet::Request::cReqSetQuarry data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqSetQuarry.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_PLAYER_DEATH:
+		{
+			if ( ReqPlayerDeath.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqPlayerDeath data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqPlayerDeath( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_RESPAWN:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqRespawn( packetHeader ) )
+				Packet::Request::cReqPlayerDeath data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqPlayerDeath.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_RESPAWN:
+		{
+			if ( ReqRespawn.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqRespawn data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqRespawn( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_LIGHT_BOMB:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqLightBomb( packetHeader ) )
+				Packet::Request::cReqRespawn data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqRespawn.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_LIGHT_BOMB:
+		{
+			if ( ReqLightBomb.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqLightBomb data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqLightBomb( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_DAMAGE:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqDamage( packetHeader ) )
+				Packet::Request::cReqLightBomb data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqLightBomb.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_DAMAGE:
+		{
+			if ( ReqDamage.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqDamage data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqDamage( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_MAKE_ROOM:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqMakeRoom( packetHeader ) )
+				Packet::Request::cReqDamage data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqDamage.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_MAKE_ROOM:
+		{
+			if ( ReqMakeRoom.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqMakeRoom data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqMakeRoom( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_IN_ROOM:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqInRoom( packetHeader ) )
+				Packet::Request::cReqMakeRoom data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqMakeRoom.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_IN_ROOM:
+		{
+			if ( ReqInRoom.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqInRoom data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqInRoom( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_IN_ROOM_WATCHING:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqInRoomWatching( packetHeader ) )
+				Packet::Request::cReqInRoom data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqInRoom.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_IN_ROOM_WATCHING:
+		{
+			if ( ReqInRoomWatching.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqInRoomWatching data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqInRoomWatching( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_WANT_TEAM_IN:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqWantTeamIn( packetHeader ) )
+				Packet::Request::cReqInRoomWatching data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqInRoomWatching.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_WANT_TEAM_IN:
+		{
+			if ( ReqWantTeamIn.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqWantTeamIn data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqWantTeamIn( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_CHECK_BEGIN_GAME:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqCheckBeginGame( packetHeader ) )
+				Packet::Request::cReqWantTeamIn data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqWantTeamIn.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_CHECK_BEGIN_GAME:
+		{
+			if ( ReqCheckBeginGame.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqCheckBeginGame data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqCheckBeginGame( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_CHECK_MEMBER:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqCheckMember( packetHeader ) )
+				Packet::Request::cReqCheckBeginGame data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqCheckBeginGame.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_CHECK_MEMBER:
+		{
+			if ( ReqCheckMember.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqCheckMember data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqCheckMember( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_END_GAMEMAIN_SETUP:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqEndGamemainSetup( packetHeader ) )
+				Packet::Request::cReqCheckMember data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqCheckMember.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_END_GAMEMAIN_SETUP:
+		{
+			if ( ReqEndGamemainSetup.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqEndGamemainSetup data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqEndGamemainSetup( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_END_START_TIMER:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqEndStartTimer( packetHeader ) )
+				Packet::Request::cReqEndGamemainSetup data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqEndGamemainSetup.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_END_START_TIMER:
+		{
+			if ( ReqEndStartTimer.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqEndStartTimer data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqEndStartTimer( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_ADD_CANNON_POWER:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqAddCannonPower( packetHeader ) )
+				Packet::Request::cReqEndStartTimer data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqEndStartTimer.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_ADD_CANNON_POWER:
+		{
+			if ( ReqAddCannonPower.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqAddCannonPower data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqAddCannonPower( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_RESULT:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqResult( packetHeader ) )
+				Packet::Request::cReqAddCannonPower data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqAddCannonPower.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_RESULT:
+		{
+			if ( ReqResult.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqResult data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqResult( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_PLAYER_ATTACK:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqPlayerAttack( packetHeader ) )
+				Packet::Request::cReqResult data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqResult.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_PLAYER_ATTACK:
+		{
+			if ( ReqPlayerAttack.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqPlayerAttack data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqPlayerAttack( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::REQ_FRAGMENT_GEM:
-        {
-            if ( cRequestManager::getInstance( )->isNewReqFragmentGem( packetHeader ) )
+				Packet::Request::cReqPlayerAttack data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqPlayerAttack.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_FRAGMENT_GEM:
+		{
+			if ( ReqFragmentGem.isNew( packetHeader ) )
 			{
-                Packet::Request::cReqFragmentGem data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cRequestManager::getInstance( )->ungetReqFragmentGem( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_STRING:
-        {
-            if ( cResponseManager::getInstance( )->isNewResString( packetHeader ) )
+				Packet::Request::cReqFragmentGem data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqFragmentGem.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::RES_STRING:
+		{
+			if ( ResString.isNew( packetHeader ) )
 			{
-                Packet::Response::cResString data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResString( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_CONNECT:
-        {
-            if ( cResponseManager::getInstance( )->isNewResConnect( packetHeader ) )
+				Packet::Response::cResString data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ResString.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::RES_CONNECT:
+		{
+			if ( ResConnect.isNew( packetHeader ) )
 			{
-                Packet::Response::cResConnect data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResConnect( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_GET_JEM_SEED:
-        {
-            if ( cResponseManager::getInstance( )->isNewResGetJemSeed( packetHeader ) )
+				Packet::Response::cResConnect data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ResConnect.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::RES_GET_JEM_SEED:
+		{
+			if ( ResGetJemSeed.isNew( packetHeader ) )
 			{
-                Packet::Response::cResGetJemSeed data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResGetJemSeed( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_GET_JEM_POINT:
-        {
-            if ( cResponseManager::getInstance( )->isNewResGetJemPoint( packetHeader ) )
+				Packet::Response::cResGetJemSeed data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ResGetJemSeed.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::RES_GET_JEM_POINT:
+		{
+			if ( ResGetJemPoint.isNew( packetHeader ) )
 			{
-                Packet::Response::cResGetJemPoint data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResGetJemPoint( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_MAKE_ROOM:
-        {
-            if ( cResponseManager::getInstance( )->isNewResMakeRoom( packetHeader ) )
+				Packet::Response::cResGetJemPoint data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ResGetJemPoint.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::RES_MAKE_ROOM:
+		{
+			if ( ResMakeRoom.isNew( packetHeader ) )
 			{
-                Packet::Response::cResMakeRoom data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResMakeRoom( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_IN_ROOM:
-        {
-            if ( cResponseManager::getInstance( )->isNewResInRoom( packetHeader ) )
+				Packet::Response::cResMakeRoom data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ResMakeRoom.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::RES_IN_ROOM:
+		{
+			if ( ResInRoom.isNew( packetHeader ) )
 			{
-                Packet::Response::cResInRoom data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResInRoom( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_WANT_TEAM_IN:
-        {
-            if ( cResponseManager::getInstance( )->isNewResWantTeamIn( packetHeader ) )
+				Packet::Response::cResInRoom data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ResInRoom.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::RES_WANT_TEAM_IN:
+		{
+			if ( ResWantTeamIn.isNew( packetHeader ) )
 			{
-                Packet::Response::cResWantTeamIn data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResWantTeamIn( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_CHECK_BEGIN_GAME:
-        {
-            if ( cResponseManager::getInstance( )->isNewResCheckBeginGame( packetHeader ) )
+				Packet::Response::cResWantTeamIn data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ResWantTeamIn.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::RES_CHECK_BEGIN_GAME:
+		{
+			if ( ResCheckBeginGame.isNew( packetHeader ) )
 			{
-                Packet::Response::cResCheckBeginGame data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResCheckBeginGame( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_CHECK_MEMBER:
-        {
-            if ( cResponseManager::getInstance( )->isNewResCheckMember( packetHeader ) )
+				Packet::Response::cResCheckBeginGame data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ResCheckBeginGame.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::RES_CHECK_MEMBER:
+		{
+			if ( ResCheckMember.isNew( packetHeader ) )
 			{
-                Packet::Response::cResCheckMember data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResCheckMember( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_END_GAMEMAIN_SETUP:
-        {
-            if ( cResponseManager::getInstance( )->isNewResEndGamemainSetup( packetHeader ) )
+				Packet::Response::cResCheckMember data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ResCheckMember.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::RES_END_GAMEMAIN_SETUP:
+		{
+			if ( ResEndGamemainSetup.isNew( packetHeader ) )
 			{
-                Packet::Response::cResEndGamemainSetup data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResEndGamemainSetup( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_SET_GAMESTART_TIMER:
-        {
-            if ( cResponseManager::getInstance( )->isNewResSetGamestartTimer( packetHeader ) )
+				Packet::Response::cResEndGamemainSetup data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ResEndGamemainSetup.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::RES_SET_GAMESTART_TIMER:
+		{
+			if ( ResSetGamestartTimer.isNew( packetHeader ) )
 			{
-                Packet::Response::cResSetGamestartTimer data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResSetGamestartTimer( std::move( data ) );
-            }
-            break;
-        }
-        case Network::Packet::PacketId::RES_RESULT:
-        {
-            if ( cResponseManager::getInstance( )->isNewResResult( packetHeader ) )
+				Packet::Response::cResSetGamestartTimer data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ResSetGamestartTimer.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::RES_RESULT:
+		{
+			if ( ResResult.isNew( packetHeader ) )
 			{
-                Packet::Response::cResResult data;
-                data.onReceive( networkHandle, bufferSize, bufferData );
-                cResponseManager::getInstance( )->ungetResResult( std::move( data ) );
-            }
-            break;
-        }
-        // P=====END=====P
-        default:
-            break;
-        }
-        headerOffset += packetHeader.mPacketByte;
-        if ( headerOffset > transferredBytes )
-        {
-            throw std::exception( "やばい。" );
-        }
-    } while ( headerOffset != transferredBytes );
+				Packet::Response::cResResult data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ResResult.unget( std::move( data ) );
+			}
+			break;
+		}
+		PACKET_TEMPLATE_END
+		default:
+			break;
+		}
+		headerOffset += packetHeader.mPacketByte;
+		if ( headerOffset > transferredBytes )
+		{
+			throw std::exception( "やばい。" );
+		}
+	} while ( headerOffset != transferredBytes );
 }
 }

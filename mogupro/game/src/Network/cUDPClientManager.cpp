@@ -1,7 +1,4 @@
 #include <Network/cUDPClientManager.h>
-#include <Network/cEventManager.h>
-#include <Network/cRequestManager.h>
-#include <Network/cResponseManager.h>
 #include <cinder/app/App.h>
 #include <limits>
 #include <Utility/MessageBox.h>
@@ -90,7 +87,7 @@ void cUDPClientManager::updateRecv( )
     while ( !mSocket.emptyChunk( ) )
     {
         auto chunk = mSocket.popChunk( );
-        cUDPManager::getInstance( )->onReceive( chunk );
+		mPackets.onReceive( chunk );
     }
 
     connection( );
@@ -98,7 +95,7 @@ void cUDPClientManager::updateRecv( )
 }
 void cUDPClientManager::connection( )
 {
-    while ( auto p = cResponseManager::getInstance( )->getResConnect( ) )
+    while ( auto p = mPackets.ResConnect.get( ) )
     {
 		mIsConnected = true;
 
@@ -126,7 +123,7 @@ void cUDPClientManager::connection( )
 }
 void cUDPClientManager::ping( )
 {
-    while ( auto p = cEventManager::getInstance( )->getEvePing( ) )
+    while ( auto p = mPackets.EvePing.get( ) )
     {
         mCloseSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
 
