@@ -189,6 +189,11 @@ ParticleParam & ParticleParam::randomEaseTypes( const std::vector<EaseType>& eas
     mEaseTypes = ease_types;
     return *this;
 }
+ParticleParam & ParticleParam::colors( const std::vector<ci::ColorA>& pop_colors )
+{
+    mColors = pop_colors;
+    return *this;
+}
 ParticleParam & ParticleParam::convergePoint( const ci::vec3& converge_point )
 {
     mConvergePoint = converge_point;

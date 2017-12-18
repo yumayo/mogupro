@@ -81,6 +81,8 @@ public:
 
     // ランダムでイージングする場合のイージングの種類
     ParticleParam& randomEaseTypes( const std::vector<EaseType>& ease_types );
+    // パーティクル一つ一つの色
+    ParticleParam& colors( const std::vector<ci::ColorA>& pop_colors );
     // 収束地点
     ParticleParam& convergePoint( const ci::vec3& converge_point );
     // パーティクルが膨らむ時間
