@@ -45,7 +45,7 @@ void cGameMain::setup( )
 	Game::cUIManager::getInstance( )->awake( );
 	Game::cDebugManager::getInstance( )->setup( );
 	Sound::StereophonicManager::getInstance()->open();
-	Resource::cFbxManager::getInstance()->setup();
+	Resource::cFbxManager::getInstance( )->setup( );
 
     skydome.setup( );
     CAMERA->setup( ); 
@@ -83,7 +83,6 @@ void cGameMain::setup( )
 	Game::cCapsuleManager::getInstance()->setup();
 	Game::cSubWeaponManager::getInstance()->setup();
 	Game::cUIManager::getInstance( )->setup( );
-    Resource::cFbxManager::getInstance( )->setup( );
 
 	sendEndSetup = false;
     gl::enableDepthRead( );
@@ -161,7 +160,6 @@ void cGameMain::update( float deltaTime )
         Particle::cParticleManager::getInstance()->update( deltaTime );
 		GemManager->lateUpdate(deltaTime);
 		Game::cGameManager::getInstance( )->update( deltaTime );
-        Resource::cFbxManager::getInstance( )->update( );
     }
 }
 
@@ -192,7 +190,6 @@ void cGameMain::draw( )
 		gl::enableDepthRead( );
 		gl::enableDepthWrite( );
 		Game::cPlayerManager::getInstance( )->draw( );
-        Resource::cFbxManager::getInstance( )->draw( );
 
 		Particle::cParticleManager::getInstance( )->draw( );
 	} );
