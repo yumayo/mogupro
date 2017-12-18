@@ -23,6 +23,8 @@ std::string getTextureNameFromTextureType( const ParticleTextureType& type )
             return "dirt";
         case ParticleTextureType::SPARK:
             return "spark";
+		case ParticleTextureType::SPARK_PURE_WHITE:
+			return "spark_white";
     }
     return "";
 }
@@ -391,11 +393,11 @@ void cParticleHolder::update( const float& delta_time )
             // パーティクルの更新
             for ( auto& it : mParticles )
             {
-                Utility::RandomInt ri( 0, mParam.mEaseTypes.size() );
+                Utility::RandomInt ri( 0, mParam.mEaseTypes.size() - 1 );
                 Easing->wait( it->mPosition,
                               mParam.mSwellWaitTime );
                 Easing->add( it->mPosition,
-                             *mParam.mPosition - mParam.mConvergePoint,
+                             mParam.mConvergePoint- *mParam.mPosition,
                              mParam.mEaseTime,
                              mParam.mEaseTypes[ri()] );
             }
@@ -510,7 +512,8 @@ ci::vec3 cParticleHolder::createVec( const ci::vec3& particle_position )
 {
     vec3 vec( 0 );
     if ( mParam.mMoveType == ParticleType::EXPROTION ||
-         mParam.mMoveType == ParticleType::SCATTER )
+         mParam.mMoveType == ParticleType::SCATTER||
+		 mParam.mMoveType == ParticleType::ABSORB )
     {
         Utility::RandomFloat rv( -1, 1 );
         vec = vec3( rv(), rv(), rv() );
