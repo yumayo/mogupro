@@ -8,20 +8,22 @@
 
 namespace Particle
 {
-enum class ParticleType
+enum ParticleType
 {
     NONE,
     SCATTER,    // 飛び散り
     EXPROTION,  // 爆発
     GLITTER,    // キラキラ
     CONVERGE,   // 収束 ( Easing ) 
+    ABSORB,     // メガドレイン
 };
 
-enum class ParticleTextureType
+enum ParticleTextureType
 {
     NONE,
     SAND,
-    SPARK,
+    SPARK,              // 火花
+    SPARK_PURE_WHITE,   // 白い火花（着色用）
 };
 
 class ParticleParam
@@ -77,28 +79,49 @@ public:
     // パーティクルをCubeにするかどうか
     ParticleParam& isCube( const bool& is_cube = true );
 
+    // ランダムでイージングする場合のイージングの種類
+    ParticleParam& randomEaseTypes( const std::vector<EaseType>& ease_types );
+    // 収束地点
+    ParticleParam& convergePoint( const ci::vec3& converge_point );
+    // パーティクルが膨らむ時間
+    ParticleParam& swellEndTime( const float& swell_end_time );
+    // パーティクルが膨らんだ後イージングに移行するまで停止する時間
+    ParticleParam& swellWaitTime( const float& swell_wait_time );
+
 private:
 
     ci::vec3* mPosition;
     ci::vec3 mCurrentPosition;
     float mScale;
+
     ParticleType mMoveType;
     ParticleTextureType mTextureType;
     ci::ColorA mColor;
+
     int mCount;
     float mVanishTime;
     float mVanishTimeRange;
     float mVainshBeginTime;
     float mEffectTime;
+
     float mSpeed;
     ci::vec3 mAddVec;
     float mGravity;
+
     float mEffectRange;
     float mEaseTime;
     EaseType mEaseType;
+
     bool mIsLighting;
     bool mIsTrajectory;
     bool mIsCube;
+
+    // Absorb用
+    std::vector<EaseType> mEaseTypes;
+    std::vector<ci::ColorA> mColors;
+    ci::vec3 mConvergePoint;
+    float mSwellEndTime;
+    float mSwellWaitTime;
 
 };
 
@@ -176,6 +199,7 @@ public:
     std::vector<std::shared_ptr<cParticle>> mParticles;
     std::vector<std::shared_ptr<cParticle>> mTrajectoryParticles;
     glm::quat mRotation;
+    bool mIsSwellEnd;
 
     unsigned int mIndicesIndex;
     ci::TriMeshRef mMesh;
