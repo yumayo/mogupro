@@ -3,6 +3,11 @@
 #include <Collision/cCollisionManager.h>
 namespace Collision
 {
+cAABBCollider::cAABBCollider( )
+	: cColliderBase( Type::AABB, cinder::vec3( 0 ) )
+	, mSize( cinder::vec3( 0 ) )
+{
+}
 cAABBCollider::cAABBCollider( cinder::vec3 position, cinder::vec3 size )
     : cColliderBase( Type::AABB, position )
     , mSize( size )
