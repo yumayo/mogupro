@@ -113,6 +113,8 @@ void cUDPServerManager::updateRecv( )
 				inserted.first->second.manager.onReceive( chunk );
 				inserted.first->second.manager.ReqConnect.get( );
 
+				cinder::app::console( ) << "ƒ†[ƒU[“o˜^: " << (int)inserted.first->second.connection.id << std::endl;
+
 				auto response = new Packet::Response::cResConnect( );
 				response->time = mServerTime;
 				send( chunk.networkHandle, response, false );
