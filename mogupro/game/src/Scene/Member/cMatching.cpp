@@ -360,7 +360,6 @@ namespace Scene
 			}
 			//TODO : ŽQ‰Á‚µ‚½ê‡‚ÆTeam‚ª•ÏX‚³‚ê‚½ê‡‚Í•ª‚¯‚é‚×‚«
 			int count = 0;
-			auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
 			while (auto eveTeamMember = m->EveTeamMember.get())
 			{
 				cMatchingMemberManager::getInstance()->addPlayerDatas(
