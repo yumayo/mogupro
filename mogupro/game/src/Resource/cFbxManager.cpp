@@ -495,46 +495,17 @@ void cFbxManager::setup()
     // FBXSDK¶¬
     manager = FbxManager::Create();
     assert( manager );
-
-    std::string name = "mogura";
-    create( name );
-    name = "mogura_attack";
-    create( name );
-    name = "mogura_dig";
-    create( name );
 }
 
-int test_time = 0;
 void cFbxManager::update()
 {
-    //for ( auto& it : models )
-    //    it.second->update();
-
-    //if ( test_time >= 0 && test_time < 200 )
-    //    models["mogura"]->update();
-    //if ( test_time >= 200 && test_time < 400 )
-    //    models["mogura_dig"]->update();
-    //if ( test_time >= 400 && test_time < 600 )
-    //    models["mogura_attack"]->update();
 }
 
-void cFbxManager::draw()
+void cFbxManager::draw( const std::string & name )
 {
-    gl::pushModelView();
-
-    //if ( test_time >= 600 )
-    //    test_time = 0;
-
-    //if ( test_time >= 0 && test_time < 200 )
-    //    draw( "mogura", 0.0 );
-    //if ( test_time >= 200 && test_time < 400 )
-    //    draw( "mogura_dig", 0.0 );
-    //if ( test_time >= 400 && test_time < 600 )
-    //    draw( "mogura_attack", 0.0 );
-
-    //test_time++;
-
-    gl::popModelView();
+    if ( models.find( name ) == models.end() )
+        return;
+    models[name]->draw( 0.0 );
 }
 
 void cFbxManager::draw( const std::string & name, const double &animation_time )
@@ -545,6 +516,8 @@ void cFbxManager::draw( const std::string & name, const double &animation_time )
 }
 void cFbxManager::create( const std::string & name )
 {
+    if ( models.find( name ) != models.end() )
+        return;
     std::shared_ptr<cFbx> model = std::make_shared<cFbx>();
     model->setup( manager, name );
     models.insert( std::make_pair( name, std::move( model ) ) );

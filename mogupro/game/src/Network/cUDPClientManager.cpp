@@ -1,7 +1,4 @@
 #include <Network/cUDPClientManager.h>
-#include <Network/cEventManager.h>
-#include <Network/cRequestManager.h>
-#include <Network/cResponseManager.h>
 #include <cinder/app/App.h>
 #include <limits>
 #include <Utility/MessageBox.h>
@@ -10,7 +7,6 @@
 #include <Scene/Member/cTitle.h>
 #include <Node/action.hpp>
 #include <Network/IpHost.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
 namespace Network
 {
 cUDPClientManager::cUDPClientManager( )
@@ -39,7 +35,7 @@ bool cUDPClientManager::isConnected( )
 void cUDPClientManager::connect( std::string const& ipAddress )
 {
 	mConnectServerHandle = cNetworkHandle( ipAddress, 25565 );
-	send( new Packet::Request::cReqConnect( ), false );
+	send( new Packet::Request::cReqConnect( ), true );
 	mConnectSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
 }
 void cUDPClientManager::connectOfflineServer( )
@@ -50,13 +46,13 @@ void cUDPClientManager::update( float delta )
 {
 	if ( isConnected( ) )
 	{
-		mServerTime += boost::posix_time::milliseconds( delta * 1000.0F );
+		mServerTime += delta;
 	}
     updateRecv( );
     updateSend( );
     mRoot->entry_update( delta );
 }
-boost::posix_time::ptime const & cUDPClientManager::getServerTime( )
+float const & cUDPClientManager::getServerTime( )
 {
 	return mServerTime;
 }
@@ -91,7 +87,7 @@ void cUDPClientManager::updateRecv( )
     while ( !mSocket.emptyChunk( ) )
     {
         auto chunk = mSocket.popChunk( );
-        cUDPManager::getInstance( )->onReceive( chunk );
+		mPackets.onReceive( chunk );
     }
 
     connection( );
@@ -99,13 +95,13 @@ void cUDPClientManager::updateRecv( )
 }
 void cUDPClientManager::connection( )
 {
-    while ( auto p = cResponseManager::getInstance( )->getResConnect( ) )
+    while ( auto p = mPackets.ResConnect.get( ) )
     {
 		mIsConnected = true;
 
         mCloseSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
 
-		mServerTime = boost::posix_time::from_iso_string( p->time );
+		mServerTime = p->time;
 
         using namespace Node::Action;
         auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
@@ -127,11 +123,11 @@ void cUDPClientManager::connection( )
 }
 void cUDPClientManager::ping( )
 {
-    while ( auto p = cEventManager::getInstance( )->getEvePing( ) )
+    while ( auto p = mPackets.EvePing.get( ) )
     {
         mCloseSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
 
-		mServerTime = boost::posix_time::from_iso_string( p->time );
+		mServerTime = p->time;
     }
     if (mConnectServerHandle.ipAddress != Network::getLocalIpAddressHost())
     {

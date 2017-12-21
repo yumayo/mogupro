@@ -4,8 +4,8 @@
 #include <Network/Packet/cPacketBase.h>
 #include <Network/Packet/PacketId.h>
 #include <Network/cReliableManager.h>
+#include <Network/cUDPManager.h>
 #include <Node/node.h>
-#include <boost/date_time/posix_time/ptime.hpp>
 namespace Network
 {
 class cUDPClientManager : public Utility::cSingletonAble<cUDPClientManager>
@@ -32,7 +32,11 @@ public:
     void connect( std::string const& ipAddress );
     void connectOfflineServer( );
     void update( float delta );
-	boost::posix_time::ptime const& getServerTime( );
+	float const& getServerTime( );
+	inline cUDPManager* const getUDPManager( )
+	{
+		return &mPackets;
+	}
 
     // ªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªª
     // ‚­ƒR:œc
@@ -52,6 +56,8 @@ private:
 
 	cReliableManager mReliableManager;
 
+	cUDPManager mPackets;
+
     hardptr<Node::node> mRoot;
 
 	ubyte4 mSequenceId;
@@ -64,6 +70,6 @@ private:
     // 5•bˆÈã‰“š‚ª‚È‚¢ê‡‚ÍØ’f‚µ‚Ü‚·B
     float mConnectSecond;
 
-	boost::posix_time::ptime mServerTime;
+	float mServerTime;
 };
 }

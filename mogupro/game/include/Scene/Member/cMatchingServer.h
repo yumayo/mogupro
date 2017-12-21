@@ -39,8 +39,6 @@ private:
     bool mIsGameUpdate;
 	Utility::hardptr<Node::node> n;
 	Utility::hardptr<Node::Renderer::label> font;
-	std::string mTimeStr;
-	boost::posix_time::ptime mGameStartTime;
 	bool mStartGame;
 	int teamCount;
 };

@@ -9,6 +9,8 @@
 #include"Game\cPlayerManager.h"
 #include"Resource\cObjectManager.h"
 #include"Resource\cSoundManager.h"
+#include"Particle\cParticleManager.h"
+#include"cinder\Rand.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -105,6 +107,31 @@ namespace Game
 			if (getgemnum == 0) return;
 			if (mGemCount >= GEM_MAXNUM)return;
 		
+			ci::vec3 playerpos = Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getPos();
+
+			std::vector<ci::ColorA> color;
+			
+			for (int i = 0; i < getgemnum; i++) {
+				color.push_back(ci::ColorA(ci::randFloat(1.0f), ci::randFloat(1.0f), ci::randFloat(1.0f), 1));
+			}
+
+			Particle::cParticleManager::getInstance()->create(Particle::ParticleParam()
+				.position(playerpos)
+				.moveType(Particle::ParticleType::ABSORB)
+				.textureType(Particle::ParticleTextureType::SPARK)
+				.colors(color)
+				.convergePoint(mGemStorePos)
+				.speed(0.5f)
+				.swellEndTime(0.1f)
+				.swellWaitTime(30.0f)
+				.easeTime(30.0f)
+				.count(color.size()*2)
+				.effectTime(0)
+				.vanishTime(5.0)
+				.randomEaseTypes({EaseType::BackIn,EaseType::BackOut,EaseType::CircIn,EaseType::CircOut,EaseType::Linear,EaseType::CubicIn})
+			);
+
+
 			Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(), getgemnum);
 			////////////
 			Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").setGain(0.4f);

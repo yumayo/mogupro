@@ -30,6 +30,8 @@
 #include <Game/Field/FieldData.h>
 #include <Sound/Stereophonic.h>
 #include <Resource/cFbxManager.h>
+#include <Math/float3.h>
+#include <Math/Quat.h>
 
 static ci::vec3 testSoundPos;
 
@@ -40,12 +42,20 @@ namespace Scene
 {
 namespace Member
 {
+cGameMain::cGameMain( )
+	: collider( vec3( 0, 0, 0 ), vec3(0.1, 0.1, 0.1) )
+	, rigid( collider )
+{
+}
 void cGameMain::setup( )
 {
+	collider.addWorld( );
+	rigid.addWorld( );
+
 	Game::cUIManager::getInstance( )->awake( );
 	Game::cDebugManager::getInstance( )->setup( );
 	Sound::StereophonicManager::getInstance()->open();
-	Resource::cFbxManager::getInstance()->setup();
+	Resource::cFbxManager::getInstance( )->setup( );
 
     skydome.setup( );
     CAMERA->setup( ); 
@@ -83,7 +93,6 @@ void cGameMain::setup( )
 	Game::cCapsuleManager::getInstance()->setup();
 	Game::cSubWeaponManager::getInstance()->setup();
 	Game::cUIManager::getInstance( )->setup( );
-    Resource::cFbxManager::getInstance( )->setup( );
 
 	sendEndSetup = false;
     gl::enableDepthRead( );
@@ -142,6 +151,9 @@ void cGameMain::update( float deltaTime )
 		// 他のアップデートよりも先に行います。
 		Game::cGameManager::getInstance( )->preUpdate( deltaTime );
 
+		collider.setPosition( Game::Field::WORLD_SIZE * vec3(0.5F, 1, 0.5F) + vec3(0, 2, 0) );
+		rigid.setSpeed( vec3(0, 10, 5) );
+
 		Game::cDebugManager::getInstance( )->update( deltaTime );
         Game::cClientAdapter::getInstance( )->update( );
         Game::cServerAdapter::getInstance( )->update( );
@@ -161,7 +173,6 @@ void cGameMain::update( float deltaTime )
         Particle::cParticleManager::getInstance()->update( deltaTime );
 		GemManager->lateUpdate(deltaTime);
 		Game::cGameManager::getInstance( )->update( deltaTime );
-        Resource::cFbxManager::getInstance( )->update( );
     }
 }
 
@@ -178,6 +189,14 @@ void cGameMain::draw( )
 		Game::cStrategyManager::getInstance( )->draw( );
 		Game::cSubWeaponManager::getInstance()->draw();
 		Game::cCapsuleManager::getInstance()->draw();
+		{
+			gl::ScopedColor col( ColorA(1, 1, 1, 1) );
+			auto ret = Collision::cCollisionManager::getInstance( )->simulation( rigid );
+			for ( int i = 0; i < ret.positions.size( ) - 1; ++i )
+			{
+				gl::drawLine( ret.positions[i], ret.positions[i + 1] );
+			}
+		}
 		GemManager->draw( );
 		skydome.draw( );
 		CAMERA->unBind3D( );
@@ -192,7 +211,6 @@ void cGameMain::draw( )
 		gl::enableDepthRead( );
 		gl::enableDepthWrite( );
 		Game::cPlayerManager::getInstance( )->draw( );
-        Resource::cFbxManager::getInstance( )->draw( );
 
 		Particle::cParticleManager::getInstance( )->draw( );
 	} );

@@ -57,7 +57,7 @@ void RunEase::add( float & target, float end, float end_frame, EaseType ease_typ
     ease_accum.push_back( EaseOrigin( target, end, end_frame, ease_type ) );
 }
 
-void RunEase::addWait( float & target, int wait )
+void RunEase::addWait( float & target, float wait )
 {
     target_ = &target;
     ease_accum.push_back( EaseOrigin( target, target, wait, EaseType::NONE ) );
@@ -137,19 +137,19 @@ void cEase::add( ci::vec2 & target, const ci::vec2 & end, float end_frame, EaseT
     ease[&target.y].add( target.y, end.y, end_frame, ease_type );
 }
 
-void cEase::wait( float & target, int wait_count )
+void cEase::wait( float & target, float wait_count )
 {
     ease[&target].addWait( target, wait_count );
 }
 
-void cEase::wait( ci::vec3 & target, int wait_count )
+void cEase::wait( ci::vec3 & target, float wait_count )
 {
     ease[&target.x].addWait( target.x, wait_count );
     ease[&target.y].addWait( target.y, wait_count );
     ease[&target.z].addWait( target.z, wait_count );
 }
 
-void cEase::wait( ci::vec2 & target, int wait_count )
+void cEase::wait( ci::vec2 & target, float wait_count )
 {
     ease[&target.x].addWait( target.x, wait_count );
     ease[&target.y].addWait( target.y, wait_count );

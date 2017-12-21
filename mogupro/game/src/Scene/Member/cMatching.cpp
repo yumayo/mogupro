@@ -244,7 +244,8 @@ namespace Scene
 			if (mPhaseState == PhaseState::IN_ROOM && mClassState == ClassState::CLIENT
 				|| mClassState == ClassState::MASTER)
 			{
-				while (auto resCheckBeginGame = cResponseManager::getInstance()->getResCheckBeginGame())
+				for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
+				while (auto resCheckBeginGame = m->ResCheckBeginGame.get())
 				{
 					cMatchingMemberManager::getInstance()->mPlayerID = resCheckBeginGame->mPlayerID;
 					setAnimation();
@@ -259,7 +260,8 @@ namespace Scene
 
 			if (mWaitClassState == ClassState::NOT)
 			{
-				while (auto resMakeRoom = cResponseManager::getInstance()->getResMakeRoom())
+				for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
+				while (auto resMakeRoom = m->ResMakeRoom.get())
 				{
 					continue;
 				}
@@ -282,7 +284,8 @@ namespace Scene
 			}
 			else if (mWaitClassState == ClassState::CLIENT)
 			{
-				while (auto resInRoom = cResponseManager::getInstance()->getResInRoom())
+				for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
+				while (auto resInRoom = m->ResInRoom.get())
 				{
 					if (resInRoom->mFlag = false)
 					{
@@ -305,7 +308,8 @@ namespace Scene
 
 			else if (mWaitClassState == ClassState::MASTER)
 			{
-				while (auto resMakeRoom = cResponseManager::getInstance()->getResMakeRoom())
+				for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
+				while (auto resMakeRoom = m->ResMakeRoom.get())
 				{
 					if (resMakeRoom->mFlag == false)
 					{
@@ -337,7 +341,8 @@ namespace Scene
 				inRoomFunc[mSelectTag]();
 
 			//Team‚É“ü‚ê‚½‚©‚Ç‚¤‚©
-			while (auto resWantTeamIn = cResponseManager::getInstance()->getResWantTeamIn())
+			for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
+			while (auto resWantTeamIn = m->ResWantTeamIn.get())
 			{
 				//!@ TODO : Add Performance (Team%D‚É“ü‚ê‚Ü‚µ‚½ or Team%D‚É“ü‚ê‚Ü‚¹‚ñ‚Å‚µ‚½)
 				if (resWantTeamIn->mFlag == 1)
@@ -355,7 +360,8 @@ namespace Scene
 			}
 			//TODO : ŽQ‰Á‚µ‚½ê‡‚ÆTeam‚ª•ÏX‚³‚ê‚½ê‡‚Í•ª‚¯‚é‚×‚«
 			int count = 0;
-			while (auto eveTeamMember = cEventManager::getInstance()->getEveTeamMember())
+			for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
+			while (auto eveTeamMember = m->EveTeamMember.get())
 			{
 				cMatchingMemberManager::getInstance()->addPlayerDatas(
 					eveTeamMember->mNameStr, eveTeamMember->mTeamNum, eveTeamMember->mPlayerID, cNetworkHandle("", 0));

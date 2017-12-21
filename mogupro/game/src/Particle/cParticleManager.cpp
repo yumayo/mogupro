@@ -23,6 +23,8 @@ std::string getTextureNameFromTextureType( const ParticleTextureType& type )
             return "dirt";
         case ParticleTextureType::SPARK:
             return "spark";
+        case ParticleTextureType::SPARK_PURE_WHITE:
+            return "spark_white";
     }
     return "";
 }
@@ -75,9 +77,13 @@ ParticleParam::ParticleParam() :
     mEaseType( EaseType::Linear ),
     mIsLighting( false ),
     mIsTrajectory( false ),
-    mIsCube( false )
+    mIsCube( false ),
+    mConvergePoint( vec3( 0 ) ),
+    mSwellEndTime( 0.0f ),
+    mSwellWaitTime( 0.0f )
 {
 }
+
 ParticleParam & ParticleParam::position( ci::vec3 & position )
 {
     mPosition = &position;
@@ -178,6 +184,31 @@ ParticleParam & ParticleParam::isTrajectory( const bool & is_trajectory )
 ParticleParam & ParticleParam::isCube( const bool & is_cube )
 {
     mIsCube = is_cube;
+    return *this;
+}
+ParticleParam & ParticleParam::randomEaseTypes( const std::vector<EaseType>& ease_types )
+{
+    mEaseTypes = ease_types;
+    return *this;
+}
+ParticleParam & ParticleParam::colors( const std::vector<ci::ColorA>& pop_colors )
+{
+    mColors = pop_colors;
+    return *this;
+}
+ParticleParam & ParticleParam::convergePoint( const ci::vec3& converge_point )
+{
+    mConvergePoint = converge_point;
+    return *this;
+}
+ParticleParam & ParticleParam::swellEndTime( const float& swell_end_time )
+{
+    mSwellEndTime = swell_end_time;
+    return *this;
+}
+ParticleParam & ParticleParam::swellWaitTime( const float & swell_wait_time )
+{
+    mSwellWaitTime = swell_wait_time;
     return *this;
 }
 
@@ -286,6 +317,7 @@ cParticleHolder::cParticleHolder( const ParticleParam& param ) :
     mParam( param )
     , mIndicesIndex( 0 )
     , mVbo( nullptr )
+    , mIsSwellEnd( false )
 {
     setTexture( param.mTextureType );
     setLight( param.mIsLighting );
@@ -344,7 +376,7 @@ void cParticleHolder::update( const float& delta_time )
 {
     float errRange = 10.0f;
     if ( mParam.mPosition != NULL && mParam.mPosition != nullptr )
-        if ( *mParam.mPosition == vec3( 0 ) ||
+        if ( *mParam.mPosition != vec3( 0 ) ||
             ( mParam.mPosition->x < mParam.mCurrentPosition.x + errRange &&
               mParam.mPosition->x > mParam.mCurrentPosition.x - errRange &&
               mParam.mPosition->y < mParam.mCurrentPosition.y + errRange &&
@@ -368,6 +400,38 @@ void cParticleHolder::update( const float& delta_time )
                 createParticle();
 
 
+    if ( mParam.mMoveType == ParticleType::ABSORB )
+    {
+        if ( mIsSwellEnd == false && mParam.mSwellEndTime <= 0 )
+        {
+            mIsSwellEnd = true;
+            // パーティクルの更新
+            for ( auto& it : mParticles )
+            {
+                it->mVec = vec3( 0 );
+
+                Utility::RandomInt ri( 0, mParam.mEaseTypes.size() - 1 );
+                Utility::RandomFloat rf( 0.0f, mParam.mSwellWaitTime );
+
+                Easing->wait( it->mPosition, rf() );
+                Easing->add( it->mPosition.x,
+                             mParam.mConvergePoint.x - mParam.mCurrentPosition.x,
+                             mParam.mEaseTime,
+                             mParam.mEaseTypes[ri()] );
+                Easing->add( it->mPosition.y,
+                             mParam.mConvergePoint.y - mParam.mCurrentPosition.y,
+                             mParam.mEaseTime,
+                             mParam.mEaseTypes[ri()] );
+                Easing->add( it->mPosition.z,
+                             mParam.mConvergePoint.z - mParam.mCurrentPosition.z,
+                             mParam.mEaseTime,
+                             mParam.mEaseTypes[ri()] );
+            }
+        }
+        mParam.mSwellEndTime -= delta_time;
+    }
+
+
     // 軌跡の更新
     for ( auto& it = mTrajectoryParticles.begin(); it != mTrajectoryParticles.end(); )
     {
@@ -384,6 +448,7 @@ void cParticleHolder::update( const float& delta_time )
     // ホルダーの寿命
     mParam.mEffectTime -= delta_time;
 
+    // パーティクルの生成
     if ( mParam.mIsCube == false )
     {
         clearMesh();
@@ -397,6 +462,7 @@ void cParticleHolder::draw( const glm::quat& rotation )
     gl::pushModelView();
     gl::ScopedBlendAlpha blend;
 
+    // テクスチャがある描画
     if ( mTextureName != "" )
     {
         gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().color().texture() ) );
@@ -406,6 +472,7 @@ void cParticleHolder::draw( const glm::quat& rotation )
         gl::ScopedTextureBind tex( texture );
         particleDraw( rotation );
     }
+    // テクスチャがない描画
     else
     {
         gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().color() ) );
@@ -457,7 +524,8 @@ ci::vec3 cParticleHolder::createVec( const ci::vec3& particle_position )
 {
     vec3 vec( 0 );
     if ( mParam.mMoveType == ParticleType::EXPROTION ||
-         mParam.mMoveType == ParticleType::SCATTER )
+         mParam.mMoveType == ParticleType::SCATTER ||
+         mParam.mMoveType == ParticleType::ABSORB )
     {
         Utility::RandomFloat rv( -1, 1 );
         vec = vec3( rv(), rv(), rv() );
@@ -518,6 +586,7 @@ void cParticleHolder::createTrajectory( const ci::vec3 & position,
 void cParticleHolder::createMesh( const glm::quat& rotation,
                                   std::vector<std::shared_ptr<cParticle>>& particles )
 {
+    int ci = 0;
     for ( auto& it : particles )
     {
         mMesh->appendTexCoords0( &tex_coords[0], 4 );
@@ -532,10 +601,22 @@ void cParticleHolder::createMesh( const glm::quat& rotation,
             vertex += it->mPosition;
 
             mMesh->appendPosition( vertex );
+        }
 
-            mMesh->appendColorRgba( ColorA( mParam.mColor.r,
-                                            mParam.mColor.g,
-                                            mParam.mColor.b, it->getAlpha() ) );
+        // カラーを生成時に指定できるようにする
+        {
+            ColorA colors[4];
+            for ( int i = 0; i < 4; i++ )
+                colors[i] = ColorA( mParam.mColors[ci].r,
+                                    mParam.mColors[ci].g,
+                                    mParam.mColors[ci].b, it->getAlpha() );
+            if ( mParam.mColors.size() > ci )
+                mMesh->appendColors( colors, 4 );
+            else
+                mMesh->appendColorRgba( ColorA( mParam.mColor.r,
+                                                mParam.mColor.g,
+                                                mParam.mColor.b, it->getAlpha() ) );
+            ci++;
         }
 
         auto & indices = mMesh->getIndices();
@@ -595,7 +676,7 @@ void cParticleHolder::setTexture( const ParticleTextureType & texture_type )
     if ( texture_type != ParticleTextureType::NONE )
     {
         mTextureName = getTextureNameFromTextureType( texture_type );
-        TEX->set( mTextureName, mTextureName + ".png" );
+        TEX->set( mTextureName, "Particle/" + mTextureName + ".png" );
     }
 }
 

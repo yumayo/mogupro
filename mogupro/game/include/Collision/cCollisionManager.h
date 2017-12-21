@@ -16,6 +16,11 @@
 #include <Game/Field/FieldData.h>
 namespace Collision
 {
+struct CollisionStatus
+{
+	std::vector<cinder::vec3> positions;
+	cinder::vec3 normal;
+};
 class cCollisionManager : public Utility::cSingletonAble<cCollisionManager>
 {
 public:
@@ -29,6 +34,7 @@ public:
     void update( float delta );
     void draw( );
     cinder::vec3 calcNearestPoint( cinder::Ray const& ray, unsigned int layer );
+	CollisionStatus simulation( cRigidBody& rigidBody, unsigned int div = 10 );
     static constexpr size_t WORLD_X = Game::Field::CHUNK_RANGE_X * Game::Field::CHUNK_SIZE * Game::Field::BLOCK_SIZE;
     static constexpr size_t WORLD_Y = Game::Field::CHUNK_RANGE_Y * Game::Field::CHUNK_SIZE * Game::Field::BLOCK_SIZE;
     static constexpr size_t WORLD_Z = Game::Field::CHUNK_RANGE_Z * Game::Field::CHUNK_SIZE * Game::Field::BLOCK_SIZE;

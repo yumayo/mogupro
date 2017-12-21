@@ -61,7 +61,7 @@ namespace Weapons
 			light->color = ci::vec3(mTeamNum == 0, 0.5f + 0.5f*cos(lightsinrotate+M_PI), mTeamNum == 1);
 
 			if (mIsHitObject) {
-				lightsinrotate += mLandcount;
+				lightsinrotate += mLandcount*3.f;
 
 				for (int i = 0; i < int(mAroundLineLight.size()); i++) {
 					mAroundLineLight[i]->reAttachLine(mPos + ci::vec3(mAroundLightLength*cos(mAroundLightAngle[i]),
@@ -99,7 +99,7 @@ namespace Weapons
 		}
 		void cLightBomb::updateScale(const float & delta_time)
 		{
-			mDrawScaleSinAngle += mLandcount*mLandcount*delta_time*5.f;
+			mDrawScaleSinAngle += mLandcount*mLandcount*delta_time*10.f;
 			float scale = mScale.x/2.f + (0.25f*mScale.x)*sin((mDrawScaleSinAngle));
 
 			mDrawscale = ci::vec3(scale);
@@ -107,14 +107,14 @@ namespace Weapons
 		void cLightBomb::exprosion()
 		{
 			if (mIsExprosion)return;
-			float exprosiontime = 3.0f;
+			float exprosiontime = 1.0f;
 
-			if (mLandcount >= 3.0f) {
+			if (mLandcount >= exprosiontime) {
 				////////アクティブプレイヤーのみ行います
 				if (mPlayerId == cPlayerManager::getInstance()->getActivePlayerId()) {
 					collisonToPlayer();
 
-					Game::cFieldManager::getInstance()->blockBreak(mPos, mExprosionLength / 2.f);
+					Game::cFieldManager::getInstance()->blockBreak(mPos, mExprosionLength/2.f);
 				}
 				mIsExprosion = true;
 
@@ -147,7 +147,7 @@ namespace Weapons
 		void cLightBomb::createContractionEffect()
 		{
 			if (mIsContraction)return;
-			if (mLandcount >= 2.0f) {
+			if (mIsHitObject) {
 				mIsContraction = true;
 				//Resource::cSoundManager::getInstance()->findSe("SubWeapon/frontexprotion.wav").setGain(0.4f);
 				//Resource::cSoundManager::getInstance()->findSe("SubWeapon/frontexprotion.wav").play();
