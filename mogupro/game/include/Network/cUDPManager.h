@@ -9,6 +9,8 @@ namespace Network
 class cUDPManager
 {
 public:
+	cUDPManager( ) { }
+	~cUDPManager( ) { }
 	bool isConnectPacket( cPacketChunk const & packetChunk );
 	void onReceive( cPacketChunk const & packetChunk );
 public:

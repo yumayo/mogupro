@@ -62,7 +62,8 @@ namespace Scene
 
 			if ( !mIsGameUpdate )
 			{
-				while ( auto reqEndGamemainSetup = cUDPServerManager::getInstance( )->getUDPManager( )->ReqEndGamemainSetup.get( ) )
+				for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
+				while ( auto reqEndGamemainSetup = m->ReqEndGamemainSetup.get( ) )
 				{
 					for ( int i = 0; i < cMatchingMemberManager::getInstance( )->mPlayerDatas.size( ); ++i )
 					{
@@ -93,7 +94,8 @@ namespace Scene
 		{
 			if (mStartGame != false) return;
 
-			while (auto reqEndStartTimer = cUDPServerManager::getInstance( )->getUDPManager( )->ReqEndStartTimer.get())
+			for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
+			while (auto reqEndStartTimer = m->ReqEndStartTimer.get())
 			{
 				for (int i = 0; i < cMatchingMemberManager::getInstance()->mPlayerDatas.size(); ++i)
 				{
@@ -119,7 +121,8 @@ namespace Scene
 			if (mPhaseState != PhaseState::NOT_IN_ROOM)
 				return;
 
-			while (auto mReqMakeRoom = cUDPServerManager::getInstance( )->getUDPManager( )->ReqMakeRoom.get())
+			for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
+			while (auto mReqMakeRoom = m->ReqMakeRoom.get())
 			{
 				if (mOpenRoom != false)
 				{
@@ -138,7 +141,8 @@ namespace Scene
 
 		void cMatchingServer::checkReqInRoom()
 		{
-			while (auto reqInRoom = cUDPServerManager::getInstance( )->getUDPManager( )->ReqInRoom.get())
+			for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
+			while (auto reqInRoom = m->ReqInRoom.get())
 			{
 				if (mOpenRoom != true || mPhaseState != PhaseState::IN_ROOM ||
 					cMatchingMemberManager::getInstance()->addRoomMembers(reqInRoom->mNetworkHandle) != true)
@@ -153,7 +157,8 @@ namespace Scene
 
 		void cMatchingServer::checkReqInRoomWatching( )
 		{
-			while ( auto reqInRoom = cUDPServerManager::getInstance( )->getUDPManager( )->ReqInRoomWatching.get( ) )
+			for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
+			while ( auto reqInRoom = m->ReqInRoomWatching.get( ) )
 			{
 				if ( mOpenRoom != true || mPhaseState != PhaseState::IN_ROOM ||
 					 cMatchingMemberManager::getInstance( )->addRoomMembersWatching( reqInRoom->networkHandle ) != true )
@@ -168,7 +173,8 @@ namespace Scene
 
 		void cMatchingServer::checkTeamIn()
 		{
-			while (auto reqWantTeamIn = cUDPServerManager::getInstance( )->getUDPManager( )->ReqWantTeamIn.get())
+			for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
+			while (auto reqWantTeamIn = m->ReqWantTeamIn.get())
 			{
 				auto team = cMatchingMemberManager::getInstance( )->whatTeam( reqWantTeamIn->mNetworkHandle );
  				if (cMatchingMemberManager::getInstance()->whatTeam( reqWantTeamIn->mNetworkHandle) == -1)
@@ -213,7 +219,8 @@ namespace Scene
 
 		void cMatchingServer::checkBeginGame()
 		{
-			while (auto reqCheckBeginGame = cUDPServerManager::getInstance( )->getUDPManager( )->ReqCheckBeginGame.get())
+			for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
+			while (auto reqCheckBeginGame = m->ReqCheckBeginGame.get())
 			{
 				//Master‚¶‚á‚È‚¢l‚Í‚Í‚¶‚­
 				if (cMatchingMemberManager::getInstance()->checkMaster(reqCheckBeginGame->mNetworkHandle) != true)

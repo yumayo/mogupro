@@ -39,7 +39,7 @@ public:
     {
         if ( packetBase == nullptr ) return;
 
-        for ( auto& handle : mConnections )
+        for ( auto& handle : mInfo )
         {
             sendUnsafe( handle.first, packetBase, reliable );
         }
@@ -52,7 +52,7 @@ public:
     {
         if ( packetBase == nullptr ) return;
 
-        for ( auto& handle : mConnections )
+        for ( auto& handle : mInfo )
         {
             if ( networkHandle == handle.first ) continue;
 
@@ -74,10 +74,7 @@ public:
     void update( float delta );
     ubyte1 getPlayerId( cNetworkHandle const& handle );
 	float const& getServerTime( );
-	inline cUDPManager* const getUDPManager( )
-	{
-		return &mPackets;
-	}
+	std::vector<cUDPManager*> getUDPManager( );
 
     // ªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªª
     // ‚­ƒR:œc
@@ -91,8 +88,8 @@ private:
     void ping( );
 private:
     cUDP mSocket;
-	cUDPManager mPackets;
-    std::map<cNetworkHandle, cConnectionInfo> mConnections;
+	std::map<cNetworkHandle, cConnectionInfo> mInfo;
+	std::map<cNetworkHandle, cUDPManager> mPacket;
     hardptr<Node::node> mRoot;
     bool mIsAccept;
     ubyte1 mIdCount;
