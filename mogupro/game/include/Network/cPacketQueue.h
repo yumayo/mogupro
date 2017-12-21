@@ -10,6 +10,10 @@ template <class Ty>
 class cPacketQueue
 {
 public:
+	cPacketQueue( )
+	{
+
+	}
 	boost::optional<Ty> get( )
 	{
 		if ( mPacket.empty( ) )

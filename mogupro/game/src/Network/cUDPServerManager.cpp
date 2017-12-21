@@ -32,7 +32,7 @@ void cUDPServerManager::closeAccepter( )
 {
 	mIsAccept = false;
 	mIdCount = 0;
-	mConnections.clear( );
+	mInfo.clear( );
 }
 void cUDPServerManager::openAccepter( )
 {
@@ -47,8 +47,8 @@ void cUDPServerManager::update( float delta )
 }
 ubyte1 cUDPServerManager::getPlayerId( cNetworkHandle const & handle )
 {
-    auto itr = mConnections.find( handle );
-    if ( itr != mConnections.end( ) )
+    auto itr = mInfo.find( handle );
+    if ( itr != mInfo.end( ) )
     {
         return itr->second.id;
     }
@@ -61,16 +61,25 @@ float const & cUDPServerManager::getServerTime( )
 {
 	return mServerTime;
 }
+std::vector<cUDPManager*> cUDPServerManager::getUDPManager( )
+{
+	std::vector<cUDPManager*> mans;
+	for ( auto& m : mPacket )
+	{
+		mans.push_back( &m.second );
+	}
+	return mans;
+}
 void cUDPServerManager::updateSend( )
 {
     // 送信するものがあればバッファーから取り出して送る。
-    for ( auto& client : mConnections )
+    for ( auto& holder : mInfo )
     {
-		auto& handle = client.first;
-		auto& buf = client.second.buffer;
+		auto& handle = holder.first;
+		auto& buf = holder.second.buffer;
 
 		// リライアブルなデータを詰めます。
-		auto reliableData = client.second.reliableManager.update( );
+		auto reliableData = holder.second.reliableManager.update( );
 		std::copy( reliableData.begin(), reliableData.end(), std::back_inserter( buf ) );
 
         // 余ってたらパケットを送ります。
@@ -88,10 +97,10 @@ void cUDPServerManager::updateRecv( )
     while ( !mSocket.emptyChunk( ) )
     {
         auto chunk = mSocket.popChunk( );
-        if ( mPackets.isConnectPacket( chunk ) ||
-            ( mConnections.find( chunk.networkHandle ) != mConnections.end( ) ) )
+        if ( mPacket[chunk.networkHandle].isConnectPacket( chunk ) ||
+            ( mPacket.find( chunk.networkHandle ) != mPacket.end( ) ) )
         {
-			mPackets.onReceive( chunk );
+			mPacket[chunk.networkHandle].onReceive( chunk );
         }
         else
         {
@@ -104,8 +113,8 @@ void cUDPServerManager::updateRecv( )
 }
 void cUDPServerManager::sendDataBufferAdd( cNetworkHandle const & networkHandle, cPacketBuffer const & packetBuffer, bool reliable )
 {
-    auto itr = mConnections.find( networkHandle );
-    if ( itr == mConnections.end( ) ) return;
+    auto itr = mInfo.find( networkHandle );
+    if ( itr == mInfo.end( ) ) return;
 
     auto& buf = itr->second.buffer;
 
@@ -135,14 +144,16 @@ void cUDPServerManager::sendDataBufferAdd( cNetworkHandle const & networkHandle,
 }
 void cUDPServerManager::connection( )
 {
-    while ( auto p = mPackets.ReqConnect.get( ) )
+	for( auto& m : getUDPManager( ) )
+    while ( auto p = m->ReqConnect.get( ) )
     {
         if ( !mIsAccept ) continue;
 
         cinder::app::console( ) << p->mNetworkHandle.ipAddress << ":" << p->mNetworkHandle.port << "＠";
         cinder::app::console( ) << "cUDPServerManager: " << "connecting..." << (int)mIdCount << std::endl;
 
-        auto itr = mConnections.insert( std::make_pair( p->mNetworkHandle, std::move( cConnectionInfo( mIdCount ) ) ) );
+		auto itr = mInfo.insert( std::make_pair( p->mNetworkHandle, mIdCount ) );
+		mPacket.insert( std::make_pair( p->mNetworkHandle, std::move( cUDPManager( ) ) ) );
         if ( itr.second )
         {
             cinder::app::console( ) << p->mNetworkHandle.ipAddress << ":" << p->mNetworkHandle.port << "＠";
@@ -172,8 +183,10 @@ void cUDPServerManager::connection( )
 			// 再び接続してきた場合。
 
 			// 再登録
-			mConnections.erase( p->mNetworkHandle );
-			mConnections.insert( std::make_pair( p->mNetworkHandle, std::move( cConnectionInfo( itr.first->second.id ) ) ) );
+			mInfo.erase( p->mNetworkHandle );
+			mInfo.insert( std::make_pair( p->mNetworkHandle, mIdCount ) );
+			mPacket.erase( p->mNetworkHandle );
+			mPacket.insert( std::make_pair( p->mNetworkHandle, std::move( cUDPManager( ) ) ) );
 
             cinder::app::console( ) << p->mNetworkHandle.ipAddress << ":" << p->mNetworkHandle.port << "＠";
             cinder::app::console( ) << "cUDPServerManager: " << "reconnect success!! " << (int)itr.first->second.id << std::endl;
@@ -198,16 +211,17 @@ void cUDPServerManager::connection( )
 }
 void cUDPServerManager::ping( )
 {
-    while ( auto p = mPackets.ReqPing.get( ) )
+	for ( auto& m : getUDPManager( ) )
+    while ( auto p = m->ReqPing.get( ) )
     {
-        auto itr = mConnections.find( p->networkHandle );
-        if ( itr != mConnections.end( ) )
+        auto itr = mInfo.find( p->networkHandle );
+        if ( itr != mInfo.end( ) )
         {
             itr->second.closeSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
         }
     }
 
-    for ( auto itr = mConnections.begin( ); itr != mConnections.end( ); )
+    for ( auto itr = mInfo.begin( ); itr != mInfo.end( ); )
     {
         // ローカルの場合はカウントダウンをしません。
         if ( itr->first.ipAddress != Network::getLocalIpAddressHost( ) )
@@ -217,7 +231,8 @@ void cUDPServerManager::ping( )
                 cinder::app::console( ) << itr->first.ipAddress << ":" << itr->first.port << "＠";
                 cinder::app::console( ) << "cUDPServerManager: " << "disconnect" << itr->second.id << std::endl;
                 mRoot->remove_action_by_tag( itr->second.id );
-                mConnections.erase( itr++ );
+				mPacket.erase( itr->first );
+				mInfo.erase( itr++ );
                 continue;
             }
         }

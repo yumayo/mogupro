@@ -7,7 +7,7 @@ namespace Network
 class cConnectionInfo
 {
 public:
-	cConnectionInfo( ubyte1 idCount );
+	explicit cConnectionInfo( ubyte1 idCount );
 public:
 	cReliableManager reliableManager;
 	std::vector<char> buffer;
