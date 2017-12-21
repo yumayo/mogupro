@@ -23,8 +23,8 @@ std::string getTextureNameFromTextureType( const ParticleTextureType& type )
             return "dirt";
         case ParticleTextureType::SPARK:
             return "spark";
-		case ParticleTextureType::SPARK_PURE_WHITE:
-			return "spark_white";
+        case ParticleTextureType::SPARK_PURE_WHITE:
+            return "spark_white";
     }
     return "";
 }
@@ -376,7 +376,7 @@ void cParticleHolder::update( const float& delta_time )
 {
     float errRange = 10.0f;
     if ( mParam.mPosition != NULL && mParam.mPosition != nullptr )
-        if ( *mParam.mPosition == vec3( 0 ) ||
+        if ( *mParam.mPosition != vec3( 0 ) ||
             ( mParam.mPosition->x < mParam.mCurrentPosition.x + errRange &&
               mParam.mPosition->x > mParam.mCurrentPosition.x - errRange &&
               mParam.mPosition->y < mParam.mCurrentPosition.y + errRange &&
@@ -384,26 +384,6 @@ void cParticleHolder::update( const float& delta_time )
               mParam.mPosition->z < mParam.mCurrentPosition.z + errRange &&
               mParam.mPosition->z > mParam.mCurrentPosition.z - errRange ) )
             mParam.mCurrentPosition = *mParam.mPosition;
-
-    if ( mParam.mMoveType == ParticleType::ABSORB )
-    {
-        if ( mIsSwellEnd == false && mParam.mSwellEndTime <= 0 )
-        {
-            mIsSwellEnd = true;
-            // パーティクルの更新
-            for ( auto& it : mParticles )
-            {
-                Utility::RandomInt ri( 0, mParam.mEaseTypes.size() - 1 );
-                Easing->wait( it->mPosition,
-                              mParam.mSwellWaitTime );
-                Easing->add( it->mPosition,
-                             mParam.mConvergePoint- *mParam.mPosition,
-                             mParam.mEaseTime,
-                             mParam.mEaseTypes[ri()] );
-            }
-        }
-        mParam.mSwellEndTime -= delta_time;
-    }
 
     // パーティクルの更新
     for ( auto& it = mParticles.begin(); it != mParticles.end(); )
@@ -418,6 +398,38 @@ void cParticleHolder::update( const float& delta_time )
         if ( mParam.mMoveType != ParticleType::EXPROTION )
             for ( int i = 0; i < mParam.mCount; i++ )
                 createParticle();
+
+
+    if ( mParam.mMoveType == ParticleType::ABSORB )
+    {
+        if ( mIsSwellEnd == false && mParam.mSwellEndTime <= 0 )
+        {
+            mIsSwellEnd = true;
+            // パーティクルの更新
+            for ( auto& it : mParticles )
+            {
+                it->mVec = vec3( 0 );
+
+                Utility::RandomInt ri( 0, mParam.mEaseTypes.size() - 1 );
+                Utility::RandomFloat rf( 0.0f, mParam.mSwellWaitTime );
+
+                Easing->wait( it->mPosition, rf() );
+                Easing->add( it->mPosition.x,
+                             mParam.mConvergePoint.x - mParam.mCurrentPosition.x,
+                             mParam.mEaseTime,
+                             mParam.mEaseTypes[ri()] );
+                Easing->add( it->mPosition.y,
+                             mParam.mConvergePoint.y - mParam.mCurrentPosition.y,
+                             mParam.mEaseTime,
+                             mParam.mEaseTypes[ri()] );
+                Easing->add( it->mPosition.z,
+                             mParam.mConvergePoint.z - mParam.mCurrentPosition.z,
+                             mParam.mEaseTime,
+                             mParam.mEaseTypes[ri()] );
+            }
+        }
+        mParam.mSwellEndTime -= delta_time;
+    }
 
 
     // 軌跡の更新
@@ -512,8 +524,8 @@ ci::vec3 cParticleHolder::createVec( const ci::vec3& particle_position )
 {
     vec3 vec( 0 );
     if ( mParam.mMoveType == ParticleType::EXPROTION ||
-         mParam.mMoveType == ParticleType::SCATTER||
-		 mParam.mMoveType == ParticleType::ABSORB )
+         mParam.mMoveType == ParticleType::SCATTER ||
+         mParam.mMoveType == ParticleType::ABSORB )
     {
         Utility::RandomFloat rv( -1, 1 );
         vec = vec3( rv(), rv(), rv() );
@@ -574,6 +586,7 @@ void cParticleHolder::createTrajectory( const ci::vec3 & position,
 void cParticleHolder::createMesh( const glm::quat& rotation,
                                   std::vector<std::shared_ptr<cParticle>>& particles )
 {
+    int ci = 0;
     for ( auto& it : particles )
     {
         mMesh->appendTexCoords0( &tex_coords[0], 4 );
@@ -588,17 +601,22 @@ void cParticleHolder::createMesh( const glm::quat& rotation,
             vertex += it->mPosition;
 
             mMesh->appendPosition( vertex );
+        }
 
-            // カラーを生成時に指定できるようにする
-            if ( mParam.mColors.size() > i )
-                mMesh->appendColorRgba( ColorA( mParam.mColors[i].r,
-                                                mParam.mColors[i].g,
-                                                mParam.mColors[i].b, it->getAlpha() ) );
+        // カラーを生成時に指定できるようにする
+        {
+            ColorA colors[4];
+            for ( int i = 0; i < 4; i++ )
+                colors[i] = ColorA( mParam.mColors[ci].r,
+                                    mParam.mColors[ci].g,
+                                    mParam.mColors[ci].b, it->getAlpha() );
+            if ( mParam.mColors.size() > ci )
+                mMesh->appendColors( colors, 4 );
             else
                 mMesh->appendColorRgba( ColorA( mParam.mColor.r,
                                                 mParam.mColor.g,
                                                 mParam.mColor.b, it->getAlpha() ) );
-
+            ci++;
         }
 
         auto & indices = mMesh->getIndices();
