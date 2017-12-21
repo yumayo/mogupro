@@ -605,17 +605,22 @@ void cParticleHolder::createMesh( const glm::quat& rotation,
 
         // ƒJƒ‰[‚ğ¶¬‚Éw’è‚Å‚«‚é‚æ‚¤‚É‚·‚é
         {
-            ColorA colors[4];
-            for ( int i = 0; i < 4; i++ )
-                colors[i] = ColorA( mParam.mColors[ci].r,
-                                    mParam.mColors[ci].g,
-                                    mParam.mColors[ci].b, it->getAlpha() );
+            ColorA dColor( mParam.mColor.r, mParam.mColor.g, mParam.mColor.b, it->getAlpha() );
+            ColorA dColors[4] = {
+                dColor, dColor, dColor, dColor
+            };
+
             if ( mParam.mColors.size() > ci )
-                mMesh->appendColors( colors, 4 );
+            {
+                ColorA colors[4];
+                for ( int i = 0; i < 4; i++ )
+                    colors[i] = ColorA( mParam.mColors[ci].r,
+                                        mParam.mColors[ci].g,
+                                        mParam.mColors[ci].b, it->getAlpha() );
+                mMesh->appendColors( &colors[0], 4 );
+            }
             else
-                mMesh->appendColorRgba( ColorA( mParam.mColor.r,
-                                                mParam.mColor.g,
-                                                mParam.mColor.b, it->getAlpha() ) );
+                mMesh->appendColors( &dColors[0], 4 );
             ci++;
         }
 
