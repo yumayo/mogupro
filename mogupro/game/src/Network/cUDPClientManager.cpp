@@ -35,7 +35,7 @@ bool cUDPClientManager::isConnected( )
 void cUDPClientManager::connect( std::string const& ipAddress )
 {
 	mConnectServerHandle = cNetworkHandle( ipAddress, 25565 );
-	send( new Packet::Request::cReqConnect( ), false );
+	send( new Packet::Request::cReqConnect( ), true );
 	mConnectSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
 }
 void cUDPClientManager::connectOfflineServer( )

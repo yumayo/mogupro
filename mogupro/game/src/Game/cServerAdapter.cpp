@@ -38,8 +38,7 @@ void cServerAdapter::update( )
 }
 void cServerAdapter::sendPlayers( )
 {
-	auto m = Network::cUDPServerManager::getInstance( )->getUDPManager( );
-
+	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto packet = m->ReqPlayer.get( ) )
 	{
 		auto id = packet->mFormat.playerId;
@@ -56,6 +55,7 @@ void cServerAdapter::sendPlayers( )
 		Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
 	}
 
+	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto p = m->ReqPlayerDeath.get( ) )
 	{
 		if ( mPlayers[p->enemyId].kill( ) )
@@ -67,6 +67,7 @@ void cServerAdapter::sendPlayers( )
 		}
 	}
 
+	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto p = m->ReqDamage.get( ) )
 	{
 		auto eve = new cEveDamage( );
@@ -76,6 +77,7 @@ void cServerAdapter::sendPlayers( )
 		Network::cUDPServerManager::getInstance( )->broadcast( eve );
 	}
 
+	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto p = m->ReqRespawn.get( ) )
 	{
 		auto eve = new cEveRespawn( );
@@ -84,6 +86,7 @@ void cServerAdapter::sendPlayers( )
 		cUDPServerManager::getInstance( )->broadcast( eve );
 	}
 
+	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto p = m->ReqPlayerAttack.get( ) )
 	{
 		auto eve = new cEvePlayerAttack( );
@@ -94,7 +97,7 @@ void cServerAdapter::sendPlayers( )
 }
 void cServerAdapter::sendSetQuarry( )
 {
-	auto m = Network::cUDPServerManager::getInstance( )->getUDPManager( );
+	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto packet = m->ReqSetQuarry.get( ) )
 	{
 		if ( true )
@@ -109,7 +112,7 @@ void cServerAdapter::sendSetQuarry( )
 }
 void cServerAdapter::sendGetGemPlayer( )
 {
-	auto m = Network::cUDPServerManager::getInstance( )->getUDPManager( );
+	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto packet = m->ReqGetJemPlayer.get( ) )
 	{
 		// 成功なら他の人に俺、宝石採ったぜアピールをします。
@@ -124,7 +127,7 @@ void cServerAdapter::sendGetGemPlayer( )
 }
 void cServerAdapter::sendGetGemQuarry( )
 {
-	auto m = Network::cUDPServerManager::getInstance( )->getUDPManager( );
+	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto packet = m->ReqGetJemQuarry.get( ) )
 	{
 		// 成功なら他の人に俺の掘削機、宝石採ったぜアピールをします。
@@ -139,8 +142,8 @@ void cServerAdapter::sendGetGemQuarry( )
 }
 void cServerAdapter::sendBreakBlocks( )
 {
-	auto m = Network::cUDPServerManager::getInstance( )->getUDPManager( );
 	auto breakBlocksPacket = new cEveBreakBlocks( );
+	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto packet = m->ReqBreakBlocks.get( ) )
 	{
 		std::copy( packet->mBreakFormats.begin( ),
@@ -154,7 +157,7 @@ void cServerAdapter::sendBreakBlocks( )
 }
 void cServerAdapter::sendLightBombs( )
 {
-	auto m = Network::cUDPServerManager::getInstance( )->getUDPManager( );
+	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto packet = m->ReqLightBomb.get( ) )
 	{
 		auto eventPack = new cEveLightBomb( );
@@ -167,7 +170,7 @@ void cServerAdapter::sendLightBombs( )
 }
 void cServerAdapter::sendResult( )
 {
-	auto m = Network::cUDPServerManager::getInstance( )->getUDPManager( );
+	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto p = m->ReqResult.get( ) )
 	{
 		auto s = new cResResult( );
@@ -178,7 +181,7 @@ void cServerAdapter::sendResult( )
 }
 void cServerAdapter::sendAddCannonPower( )
 {
-	auto m = Network::cUDPServerManager::getInstance( )->getUDPManager( );
+	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto p = m->ReqAddCannonPower.get( ) )
 	{
 		if ( p->teamId == Game::Player::Red )

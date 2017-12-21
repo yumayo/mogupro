@@ -70,6 +70,7 @@ std::function<float( float, float, float )> getEaseFunc( EaseType ease_type )
         case SineInOut:
             return EaseSineInOut;
     }
+    return nullptr;
 }
 
 float EaseLinear( float t, float b, float e )
