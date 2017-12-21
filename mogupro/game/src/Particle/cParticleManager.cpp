@@ -374,9 +374,9 @@ cParticleHolder::~cParticleHolder()
 
 void cParticleHolder::update( const float& delta_time )
 {
-    float errRange = 10.0f;
+    float errRange = 5.0f;
     if ( mParam.mPosition != NULL && mParam.mPosition != nullptr )
-        if ( *mParam.mPosition != vec3( 0 ) ||
+        if ( *mParam.mPosition != vec3( 0 ) &&
             ( mParam.mPosition->x < mParam.mCurrentPosition.x + errRange &&
               mParam.mPosition->x > mParam.mCurrentPosition.x - errRange &&
               mParam.mPosition->y < mParam.mCurrentPosition.y + errRange &&
