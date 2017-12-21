@@ -121,13 +121,13 @@ namespace Game
 				.textureType(Particle::ParticleTextureType::SPARK)
 				.colors(color)
 				.convergePoint(mGemStorePos)
-				.speed(0.02f)
-				.swellEndTime(0.3f)
-				.swellWaitTime(1.0f)
-				.easeTime(0.5f)
+				.speed(0.5f)
+				.swellEndTime(0.1f)
+				.swellWaitTime(30.0f)
+				.easeTime(30.0f)
 				.count(color.size()*2)
 				.effectTime(0)
-				.vanishTime(2.0)
+				.vanishTime(5.0)
 				.randomEaseTypes({EaseType::BackIn,EaseType::BackOut,EaseType::CircIn,EaseType::CircOut,EaseType::Linear,EaseType::CubicIn})
 			);
 
