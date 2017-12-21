@@ -11,7 +11,7 @@ class cUDPManager
 public:
 	cUDPManager( ) { }
 	~cUDPManager( ) { }
-	bool isConnectPacket( cPacketChunk const & packetChunk );
+	static bool isConnectPacket( cPacketChunk const & packetChunk );
 	void onReceive( cPacketChunk const & packetChunk );
 public:
 	PACKET_TEMPLATE_BEGIN
