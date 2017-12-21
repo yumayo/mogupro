@@ -23,9 +23,7 @@ namespace Game
 			// scale       大きさ
 			// color       カラー（ここは本来Texture）
 			// type        Gemの種類(これ入れたらtexture引数にいらないかも)
-			cGemStone(int id,ci::vec3 postion, ci::vec3 scale, ci::ColorA color, GemType type)
-				: mId(id),mPosition(postion), mScale(scale), mColor(color), mType(type), mIsActive(true), mAabb(postion,scale)
-			    {};
+			cGemStone(int id, ci::vec3 postion, ci::vec3 scale, ci::ColorA color, GemType type);
 			~cGemStone();
 
 			void         setUp();
