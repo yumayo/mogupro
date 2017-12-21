@@ -70,7 +70,6 @@ namespace Game
 		const int            mCreateFGemNum = 5;
 		const float          mVisibleRange = 30;
 		int                  mFragGemIDCount = 0;
-		//ci::gl::GlslProgRef mHShader;
-		//ci::gl::GlslProgRef mVShader;
+		ci::gl::GlslProgRef  mFragGemShader;
 	};
 }
