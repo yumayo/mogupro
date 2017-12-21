@@ -8,6 +8,7 @@ out vec4        oPosition;
 out vec2		TexCoord0;
 out vec3        oColor;		
 
+
 void main( void ) {
 	oPosition = ciPosition;
 	gl_Position	= ciModelViewProjection * ciPosition;
