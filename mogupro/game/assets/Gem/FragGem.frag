@@ -13,7 +13,7 @@ void main()
 {
 	float bias = 1.0 / 40;
 	vec4 calcColor = vec4(0, 0, 0, 0);
-	vec2 m = vec2(1,1) / (uWindowSize);
+	vec2 m = vec2(1,1) / uWindowSize;
 
 	int x = 0;
 	int y = 0;
