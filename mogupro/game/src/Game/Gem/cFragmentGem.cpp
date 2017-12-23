@@ -9,6 +9,7 @@ namespace Game
 			mId(id), mPosition(position), mScale(scale), mColorA(color), mType(type), mDirection(direction), mAabb(position, scale), mRb(mAabb)
 		{
 			mIsActive    = true;
+			//mVisible     = true;
 			mSinRotate   = 0.0f;
 			mPutPos      = vec3(0.0f);
 			mSpeed       = vec3(0, 10, 0);
