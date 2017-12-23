@@ -495,16 +495,37 @@ void cFbxManager::setup()
     // FBXSDK¶¬
     manager = FbxManager::Create();
     assert( manager );
+
+    Resource::cFbxManager::getInstance()->create( "Gemstone" );
+    Resource::cFbxManager::getInstance()->create( "cannon" );
 }
 
-void cFbxManager::update()
+void cFbxManager::testUpdate( const float& delta_time )
 {
+}
+
+void cFbxManager::testDraw()
+{
+    gl::ScopedColor scoped_color( 1, 1, 1, 1 );
+    gl::pushModelView();
+    gl::translate( vec3( 5, 17, 5 ) );
+
+    Resource::cFbxManager::getInstance()->draw( "Gemstone" );
+
+    gl::translate( vec3( 0, 0, 5 ) );
+    gl::scale( vec3( 300 ) );
+
+    Resource::cFbxManager::getInstance()->draw( "cannon" );
+    gl::popModelView();
 }
 
 void cFbxManager::draw( const std::string & name )
 {
     if ( models.find( name ) == models.end() )
+    {
+        assert( !"Model not found" );
         return;
+    }
     models[name]->draw( 0.0 );
 }
 

@@ -171,6 +171,7 @@ void cGameMain::update( float deltaTime )
 		Game::cLightManager::getInstance( )->update( );
         Game::cShaderManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
         Particle::cParticleManager::getInstance()->update( deltaTime );
+        Resource::cFbxManager::getInstance()->testUpdate( deltaTime );
 		GemManager->lateUpdate(deltaTime);
 		Game::cGameManager::getInstance( )->update( deltaTime );
     }
@@ -189,6 +190,7 @@ void cGameMain::draw( )
 		Game::cStrategyManager::getInstance( )->draw( );
 		Game::cSubWeaponManager::getInstance()->draw();
 		Game::cCapsuleManager::getInstance()->draw();
+        Resource::cFbxManager::getInstance()->testDraw( );
 		{
 			gl::ScopedColor col( ColorA(1, 1, 1, 1) );
 			auto ret = Collision::cCollisionManager::getInstance( )->simulation( rigid );
