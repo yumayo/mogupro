@@ -124,7 +124,8 @@ public:
     ~cFbxManager();
 
     void setup();
-    void update();
+    void testUpdate( const float& delta_time );
+    void testDraw();
     void draw( const std::string & name );
     void draw( const std::string &name, const double &animation_time );
     void create( const std::string &name );
