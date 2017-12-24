@@ -21,7 +21,7 @@ namespace Sound
 	{
 		for (auto& m : stereophonics)
 		{
-			ci::vec3 pos = Game::cPlayerManager::getInstance()->getActivePlayer()->getReferencePos();
+			ci::vec3 pos = CAMERA->getPos();
 			m.position(0,0,0);
 			ci::vec3 direction = CAMERA->getCameraLook();
 			direction = glm::normalize(direction);
