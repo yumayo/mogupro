@@ -149,6 +149,23 @@ int cChunkLayer::getIndex( const int& x, const  int& y, const int& z )
     return x + y * CHUNK_AREA + z * CHUNK_SIZE;
 }
 
+bool cChunkLayer::isFieldEdge( const int& x, const  int& y, const int& z )
+{
+    if ( y == 0 && mHeight == 0 )
+        return true;
+
+    if ( ( x == 0 && getChunkCell().x == 0 ) )
+        return true;
+    if ( ( z == 0 && getChunkCell().z == 0 ) )
+        return true;
+
+    if ( ( x >= CHUNK_SIZE - 1 && getChunkCell().x >= CHUNK_RANGE_X - 1 ) )
+        return true;
+    if ( ( z >= CHUNK_SIZE - 1 && getChunkCell().z >= CHUNK_RANGE_Z - 1 ) )
+        return true;
+    return false;
+}
+
 void cChunkLayer::addFace( const std::array<GLfloat, 12>& block_face,
                            const std::array<GLfloat, 12>& block_normal,
                            const std::array<ci::vec2, 4> &texture_coords,
@@ -315,24 +332,7 @@ void cChunkLayer::createBlocks()
                 cBlockRef block;
                 block = std::make_shared<cBlock>( position, BLOCK_SIZE, id++ );
 
-
-
-
-                bool is_unbkreaking = false;
-                if ( y == 0 && mHeight == 0 )
-                    is_unbkreaking = true;
-
-                if ( ( x == 0 && getChunkCell().x == 0 ) )
-                    is_unbkreaking = true;
-                if ( ( z == 0 && getChunkCell().z == 0 ) )
-                    is_unbkreaking = true;
-
-                if ( ( x >= CHUNK_SIZE - 1 && getChunkCell().x >= CHUNK_RANGE_X - 1 ) )
-                    is_unbkreaking = true;
-                if ( ( z >= CHUNK_SIZE - 1 && getChunkCell().z >= CHUNK_RANGE_Z - 1 ) )
-                    is_unbkreaking = true;
-
-                if ( is_unbkreaking )
+                if ( isFieldEdge( x, y, z ) )
                     block->setType( BlockType::UNBREAKING );
 
                 // 一番上のレイヤーはブロックを生成しない

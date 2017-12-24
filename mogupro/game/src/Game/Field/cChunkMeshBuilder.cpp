@@ -97,13 +97,35 @@ static std::array<GLfloat, 12> bottom_normal
     0.0f, -1.0f, 0.0f ,
 };
 
-const std::array<ci::vec2, 4> texture_coords
+const std::array<ci::vec2, 4> texture_coords0
 {
     ci::vec2( 0.0 ,0.0 ),
-    ci::vec2( 0.0 ,1.0 ),
-    ci::vec2( 1.0 ,1.0 ),
-    ci::vec2( 1.0 ,0.0 ),
+    ci::vec2( 0.0 ,0.5 ),
+    ci::vec2( 0.5 ,0.5 ),
+    ci::vec2( 0.5 ,0.0 ),
 };
+const std::array<ci::vec2, 4> texture_coords1
+{
+    ci::vec2( 0.5 ,0.5 ),
+    ci::vec2( 0.5 ,1.0 ),
+    ci::vec2( 1.0 ,1.0 ),
+    ci::vec2( 1.0 ,0.5 ),
+};
+
+std::array<ci::vec2, 4> getTexCoordsFromBlockType( const BlockType& type )
+{
+    switch ( type )
+    {
+        case BlockType::AIR:
+            break;
+        case BlockType::NORMAL:
+            return texture_coords0;
+        case BlockType::HARD:
+            break;
+        case BlockType::UNBREAKING:
+            return texture_coords1;
+    }
+}
 
 struct AdjacentBlockPositions
 {
@@ -150,17 +172,18 @@ bool cChunkMeshBuilder::buildMesh()
                 if ( block->isActive() == false )
                     continue;
 
+                const std::array<ci::vec2, 4> tex_coords = getTexCoordsFromBlockType( block->getType() );
                 auto position = block->getPosition();
 
                 directions.update( x, y, z );
 
-                tryAddFaceToMesh( front_face, front_normal, position, directions.front );
-                tryAddFaceToMesh( back_face, back_normal, position, directions.back );
-                tryAddFaceToMesh( left_face, left_normal, position, directions.left );
-                tryAddFaceToMesh( right_face, right_normal, position, directions.right );
-                tryAddFaceToMesh( top_face, top_normal, position, directions.up );
+                tryAddFaceToMesh( front_face, front_normal, tex_coords, position, directions.front );
+                tryAddFaceToMesh( back_face, back_normal, tex_coords, position, directions.back );
+                tryAddFaceToMesh( left_face, left_normal, tex_coords, position, directions.left );
+                tryAddFaceToMesh( right_face, right_normal, tex_coords, position, directions.right );
+                tryAddFaceToMesh( top_face, top_normal, tex_coords, position, directions.up );
                 if ( mChunkLayer->getChunkCell().y != 0 || y != 0 )
-                    tryAddFaceToMesh( bottom_face, bottom_normal, position, directions.down );
+                    tryAddFaceToMesh( bottom_face, bottom_normal, tex_coords, position, directions.down );
             }
         }
     }
@@ -169,21 +192,23 @@ bool cChunkMeshBuilder::buildMesh()
 
 void cChunkMeshBuilder::tryAddFaceToMesh( const std::array<GLfloat, 12>& block_face,
                                           const std::array<GLfloat, 12>& block_normal,
+                                          const std::array<ci::vec2, 4>& tex_coords,
                                           const ci::vec3 & position,
                                           const ci::ivec3 & block_facing )
 {
     auto block = mChunkLayer->getBlock( block_facing );
     if ( block->isActive() == false )
-        addFace( block_face, block_normal, position );
+        addFace( block_face, block_normal, tex_coords, position );
 }
 
 void cChunkMeshBuilder::addFace( const std::array<GLfloat, 12>& block_face,
                                  const std::array<GLfloat, 12>& block_normal,
+                                 const std::array<ci::vec2, 4>& tex_coords,
                                  const ci::vec3 & block_position )
 {
     mChunkLayer->addFace( block_face,
                           block_normal,
-                          texture_coords,
+                          tex_coords,
                           block_position );
 }
 
