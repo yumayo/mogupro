@@ -25,7 +25,7 @@ cUnderGround::~cUnderGround()
 
 void cUnderGround::setup()
 {
-    TEX->set( "dirt", "dirt.png" );
+    TEX->set( "blocks", "blocks.png" );
 
     mChunkHolder = new cChunkHolder( this );
 
@@ -56,7 +56,7 @@ void cUnderGround::draw()
 {
     //std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
 
-    auto texture = TEX->get( "dirt" );
+    auto texture = TEX->get( "blocks" );
     if ( !texture )
         return;
 
