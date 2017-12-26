@@ -13,6 +13,7 @@
 #include <Game/Field/FieldData.h>
 #include <Resource/cSoundManager.h>
 #include <Game/cPlayerManager.h>
+#include <Sound/Wav.h>
 namespace Game
 {
 cGameManager::cGameManager( )
@@ -22,6 +23,10 @@ cGameManager::cGameManager( )
 	root->set_content_size( cinder::app::getWindowSize( ) );
 	root->set_scale( cinder::vec2( 1, -1 ) );
 	root->set_position( root->get_content_size( ) * cinder::vec2( -0.5F, 0.5F ) );
+
+	auto bgm = Sound::Wav( cinder::app::getAssetDirectories().front().string() + "/BGM/testbgm2.wav" );
+	introloopBGM.create( bgm.data( ), bgm.size( ), 9.63499F, 69.45829F );
+	introloopBGM.gain( 0.3F );
 
 	using namespace Node::Action;
 	addPreUpdate( State::INIT, [ this ] ( float t )
@@ -114,7 +119,7 @@ cGameManager::cGameManager( )
 			go->set_text( u8"GO!!" );
 			go->set_position( root->get_content_size( ) / 2.0F );
 			go->run_action( sequence::create( delay::create( 2.0F ), fade_out::create( 1.0F ), remove_self::create( ) ) );
-			playBgm( "testbgm2.wav", 0.3f, 0.0f, 0.0f );
+			introloopBGM.play( );
 		}
 	} );
 	addPreUpdate( State::BATTLE, [ this ] ( float t )
@@ -141,7 +146,7 @@ cGameManager::cGameManager( )
 				ENV->enableMouseButton( );
 				ENV->enablePadButton( );
 				ENV->enablePadAxis( );
-				stopBgm( "testbgm2.wav" );
+				introloopBGM.stop( );
 				cUIManager::getInstance( )->disable( );
 				root->get_child_by_name( "fader" )->run_action( Node::Action::sequence::create( Node::Action::fade_out::create( 1.0F ), Node::Action::remove_self::create( ) ) );
 				auto label = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 64 ) );
@@ -271,6 +276,7 @@ void cGameManager::preUpdate( float delta )
 void cGameManager::update( float delta )
 {
 	root->entry_update( delta );
+	introloopBGM.update( delta );
 	mUpdates[state]( delta );
 }
 void cGameManager::draw( )
@@ -298,16 +304,6 @@ void cGameManager::next( )
 	flash = true;
 	prevState = state;
 	state = static_cast<State>( static_cast<int>( state ) + 1 );
-}
-void cGameManager::playBgm( const std::string& name, const float gain, const float loopbegin, const float loopend )
-{
-	Resource::cSoundManager::getInstance( )->findBgm( name ).setLooping( true );
-	Resource::cSoundManager::getInstance( )->findBgm( name ).setGain( gain );
-	Resource::cSoundManager::getInstance( )->findBgm( name ).play( );
-}
-void cGameManager::stopBgm( const std::string& name )
-{
-	Resource::cSoundManager::getInstance( )->findBgm( name ).stop( );
 }
 bool cGameManager::timeEmpty( )
 {

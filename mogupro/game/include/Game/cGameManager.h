@@ -2,6 +2,7 @@
 #include <Utility/cSingletonAble.h>
 #include <map>
 #include <Node/node.h>
+#include <Sound/cIntroLoopableBGM.h>
 namespace Game
 {
 class cGameManager : public Utility::cSingletonAble<cGameManager>
@@ -41,9 +42,6 @@ private:
 	void addPreUpdate( State state, std::function<void( float )> method );
 	void addUpdate( State state, std::function<void( float )> method );
 	void next( );
-	//ループの開始と終わりはまだ未実装です０、０をいれてね
-	void playBgm( const std::string& name, const float gain, const float loopbegin, const float loopend );
-	void stopBgm( const std::string& name );
 	// 現在のステート
 	State state = State::INIT;
 	// 一フレーム前のステート
@@ -63,5 +61,7 @@ private:
 	std::map<State, std::function<void( float )>> mPreUpdates;
 
 	hardptr<Node::node> root;
+
+	Sound::cIntroLoopableBGM introloopBGM;
 };
 }
