@@ -9,21 +9,7 @@ cObjectManager::cObjectManager( )
 {
     Utility::cSearchSystem search;
     search.search( Utility::cString::getAssetPath( ) + "OBJ\\" );
-    auto& files = search.unixNotationFullPaths( );
-    for ( int i = 0, size = files.size( ); i < size; ++i )
-    {
-        auto const& fileName = files[i];
-        auto extension = Utility::cString::getExtensionName( fileName );
-        if ( extension == "obj" )
-        {
-            auto underObjPos = fileName.find( "OBJ/" ) + sizeof( "OBJ/" ) - sizeof( '\0' );
-            auto unferObjName = fileName.substr( underObjPos );
-            cinder::ObjLoader loader( cinder::app::loadAsset( "OBJ/" + unferObjName ) );
-            auto mesh = cinder::TriMesh::create( loader );
-            auto vbo = cinder::gl::VboMesh::create( *mesh );
-            mObjects.insert( std::make_pair( unferObjName, vbo ) );
-        }
-    }
+    mFilePaths = search.unixNotationFullPaths( );
 }
 cinder::gl::VboMeshRef & cObjectManager::findObject( std::string const & underAssetsUnderSEUnderPath )
 {
@@ -36,5 +22,34 @@ cinder::gl::VboMeshRef & cObjectManager::findObject( std::string const & underAs
     {
         throw std::runtime_error( underAssetsUnderSEUnderPath + ": ファイルが存在しません。" );
     }
+}
+void cObjectManager::loadOne( )
+{
+	if ( isFinished( ) ) return;
+
+	auto const& fileName = mFilePaths[mCurrentLoadIndex];
+	mCurrentLoadIndex = std::min( mCurrentLoadIndex + 1, (int)mFilePaths.size( ) );
+	auto extension = Utility::cString::getExtensionName( fileName );
+	if ( extension == "obj" )
+	{
+		auto underObjPos = fileName.find( "OBJ/" ) + sizeof( "OBJ/" ) - sizeof( '\0' );
+		auto unferObjName = fileName.substr( underObjPos );
+		cinder::ObjLoader loader( cinder::app::loadAsset( "OBJ/" + unferObjName ) );
+		auto mesh = cinder::TriMesh::create( loader );
+		auto vbo = cinder::gl::VboMesh::create( *mesh );
+		mObjects.insert( std::make_pair( unferObjName, vbo ) );
+	}
+}
+bool cObjectManager::isFinished( )
+{
+	return mCurrentLoadIndex == mFilePaths.size( );
+}
+int cObjectManager::maxNum( )
+{
+	return mFilePaths.size( );
+}
+int cObjectManager::currentNum( )
+{
+	return mCurrentLoadIndex;
 }
 }
