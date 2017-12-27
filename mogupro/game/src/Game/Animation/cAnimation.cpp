@@ -27,7 +27,7 @@ void cAnimation::create( const std::string & name,
     if ( mAnims.find( name ) != mAnims.end() )
         return;
 
-    cFbxManager::getInstance()->create( name );
+ // cFbxManager::getInstance()->create( name );
 
     std::shared_ptr<Anim> anim = std::make_shared<Anim>();
     cFbxManager::getInstance()->createAnimation( name, *anim );

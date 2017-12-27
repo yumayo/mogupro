@@ -1,5 +1,6 @@
 #pragma once
 #include <Scene/cSceneBase.h>
+#include <Node/node.h>
 namespace Scene
 {
 namespace Member
@@ -16,6 +17,9 @@ public:
 	void draw( ) override;
 	void draw2D( ) override;
 	void resize( ) override;
+private:
+	hardptr<Node::node> root;
+	softptr<Node::node> loadBar;
 };
 }
 }
