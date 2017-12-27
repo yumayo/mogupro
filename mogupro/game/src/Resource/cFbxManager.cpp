@@ -497,6 +497,8 @@ void cFbxManager::setup()
     assert( manager );
 
     Resource::cFbxManager::getInstance()->create( "Gemstone" );
+    Resource::cFbxManager::getInstance()->create( "Gemstone2" );
+
     Resource::cFbxManager::getInstance()->create( "cannon" );
 }
 
@@ -509,12 +511,13 @@ void cFbxManager::testDraw()
     gl::ScopedColor scoped_color( 1, 1, 1, 1 );
     gl::pushModelView();
     gl::translate( vec3( 5, 17, 5 ) );
-
     Resource::cFbxManager::getInstance()->draw( "Gemstone" );
+
+    gl::translate( vec3( 0, 0, 1 ) );
+    Resource::cFbxManager::getInstance()->draw( "Gemstone2" );
 
     gl::translate( vec3( 0, 0, 5 ) );
     gl::scale( vec3( 300 ) );
-
     Resource::cFbxManager::getInstance()->draw( "cannon" );
     gl::popModelView();
 }
