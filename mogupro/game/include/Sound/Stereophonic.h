@@ -166,7 +166,5 @@ namespace Sound
 
 		std::list<Stereophonic> stereophonics;
 	private:
-		ALCdevice*  device;
-		ALCcontext* context;
 	};
 }

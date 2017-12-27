@@ -6,6 +6,7 @@
 #include <Resource/cFbxManager.h>
 #include <Scene/cSceneManager.h>
 #include <Scene/Member/cTitle.h>
+#include <Sound/cALContextManager.h>
 namespace Scene
 {
 namespace Member
@@ -15,6 +16,7 @@ void cBegin::setup( )
 	Resource::cObjectManager::getInstance( );
 	Resource::cSoundManager::getInstance( );
 	Resource::cJsonManager::getInstance( );
+	Sound::cALContextManager::getInstance( );
 	cSceneManager::getInstance( )->shift<cTitle>( );
     Resource::cFbxManager::getInstance( );
 }

@@ -5,16 +5,10 @@ namespace Sound
 {
 	void StereophonicManager::open()
 	{
-		device = alcOpenDevice(nullptr);
-		context = alcCreateContext(device, nullptr);
-		alcMakeContextCurrent(context);
 	}
 
 	void StereophonicManager::close()
 	{
-		alcMakeContextCurrent(nullptr);
-		alcDestroyContext(context);
-		alcCloseDevice(device);
 	}
 
 	void StereophonicManager::update(float deltaTime)

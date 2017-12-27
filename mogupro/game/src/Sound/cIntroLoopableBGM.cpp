@@ -4,9 +4,6 @@ namespace Sound
 {
 cIntroLoopableBGM::cIntroLoopableBGM( )
 {
-	device = alcOpenDevice( nullptr );
-	context = alcCreateContext( device, nullptr );
-	alcMakeContextCurrent( context );
 	alGenSources( 1, &source );
 }
 cIntroLoopableBGM::~cIntroLoopableBGM( )
@@ -24,10 +21,6 @@ cIntroLoopableBGM::~cIntroLoopableBGM( )
 	{
 		alDeleteBuffers( 1, &mainId );
 	}
-
-	alcMakeContextCurrent( nullptr );
-	alcDestroyContext( context );
-	alcCloseDevice( device );
 }
 void cIntroLoopableBGM::create( char const* const rawData, size_t rawDataByte, float loopBeginSecond, float loopEndSecond )
 {

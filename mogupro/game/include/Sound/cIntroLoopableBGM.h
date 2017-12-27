@@ -6,9 +6,6 @@ namespace Sound
 {
 class cIntroLoopableBGM
 {
-	ALCdevice* device = nullptr;
-	ALCcontext* context = nullptr;
-
 	ALuint source = 0;
 	ALuint introId = 0;
 	ALuint mainId = 0;
