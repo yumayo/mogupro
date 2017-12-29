@@ -84,7 +84,7 @@ void cIntroLoopableBGM::update( float delta )
 {
 	if ( !introDeleted )
 	{
-		if ( loopBeginSecond < time )
+		if ( loopBeginSecond + 1.0F < time )
 		{
 			alSourceUnqueueBuffers( source, 1, &introId );
 			auto e = alGetError( );
