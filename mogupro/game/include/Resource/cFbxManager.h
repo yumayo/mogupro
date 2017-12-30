@@ -15,6 +15,8 @@
 #include <fbxsdk.h>                // FBX SDK
 #include <cinder/ImageIo.h>
 #include <Utility/cSingletonAble.h>
+#include <vector>
+#include <string>
 namespace Resource
 {
 #ifdef _MSC_VER
@@ -124,17 +126,23 @@ public:
     ~cFbxManager();
 
     void setup();
-    void update();
+    void testUpdate( const float& delta_time );
+    void testDraw();
     void draw( const std::string & name );
     void draw( const std::string &name, const double &animation_time );
-    void create( const std::string &name );
+    void create( std::string const& name, const std::string &fullpath );
     void createAnimation( const std::string &name,
                           Anim &anim );
-
+	void loadOne( );
+	bool isFinished( );
+	int maxNum( );
+	int currentNum( );
 private:
 
     // FBXèÓïÒ
     FbxManager* manager;
     std::unordered_map<std::string, std::shared_ptr<cFbx>> models;
+	std::vector<std::string> mFilePaths;
+	int mCurrentLoadIndex = 0;
 };
 }

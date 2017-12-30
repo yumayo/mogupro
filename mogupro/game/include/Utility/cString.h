@@ -12,6 +12,10 @@ public:
     static std::string getDirectoryNameUnix( std::string const& path );
     static std::string getDirectoryNameWindows( std::string const& path );
     static std::string getExtensionName( std::string const& path );
+	static std::string getFilename( const std::string& path );
+	static std::string getFileNameWithoutExtension( const std::string& path );
+	static std::string toUpper( std::string const& str );
+	static std::string toLower( std::string const& str );
     static std::string toHex( unsigned char value );
     static std::string toHex( unsigned int value );
     static std::string createUniqueIdentifier( );

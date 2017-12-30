@@ -6,6 +6,7 @@
 #include <Game/cFieldManager.h>
 #include <Game/cClientAdapter.h>
 #include <Game/cGemManager.h>
+#include <Node/renderer.hpp>
 
 void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
@@ -359,6 +360,30 @@ void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& pla
 	for (auto& it : players) {
 		it->setup();
 	}
+
+	root = Node::node::create( );
+	root->set_content_size( cinder::app::getWindowSize( ) );
+	root->set_scale( cinder::vec2( 1, -1 ) );
+	root->set_position( root->get_content_size( ) * cinder::vec2( -0.5F, 0.5F ) );
+	for ( auto& it : players )
+	{
+		if ( getActivePlayerTeamId( ) != it->getWhichTeam( ) ) continue;
+		if ( it->isWatching( ) ) continue;
+
+		auto l = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
+		ci::Frustum fru( CAMERA->getCamera( ) );
+		auto aabb = it->getAABB( );
+		l->set_block_visible( !fru.intersects( aabb ) );
+		auto pos2D = CAMERA->getCamera( ).worldToScreen( it->getPos( ) + ci::vec3( 0, aabb.getSize( ).y / 2.0F, 0 ), cinder::app::getWindowWidth( ), cinder::app::getWindowHeight( ) );
+		l->set_position( pos2D + ci::vec2( 5 ) );
+		l->set_tag( it->getPlayerId( ) );
+		l->set_text( u8"‚à‚®‚ç" + std::to_string( it->getPlayerId( ) ) );
+		l->set_color( ci::ColorA( 0, 0, 0, 1 ) );
+
+		auto instance = l->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
+		instance->set_text( u8"‚à‚®‚ç" + std::to_string( it->getPlayerId( ) ) );
+		instance->set_position( ci::vec2( -5 ) );
+	}
 }
 void Game::cPlayerManager::update(const float& delta_time)
 {
@@ -376,4 +401,28 @@ void Game::cPlayerManager::draw()
 	for (auto& it : players) {
 		it->draw();
 	}
+}
+
+void Game::cPlayerManager::draw2D( )
+{
+	root->sort_children( [ this ] ( hardptr<Node::node>& a, hardptr<Node::node>& b )
+	{
+		auto depthA = CAMERA->getCamera( ).worldToEyeDepth( getPlayer( a->get_tag( ) )->getPos() );
+		auto depthB = CAMERA->getCamera( ).worldToEyeDepth( getPlayer( b->get_tag( ) )->getPos( ) );
+		return depthA < depthB;
+	} );
+
+	for ( auto& it : players )
+	{
+		if ( getActivePlayerTeamId( ) != it->getWhichTeam( ) ) continue;
+		if ( it->isWatching( ) ) continue;
+		auto p = root->get_child_by_tag( it->getPlayerId( ) );
+		ci::Frustum fru( CAMERA->getCamera( ) );
+		auto aabb = it->getAABB( );
+		p->set_block_visible( !fru.intersects( aabb ) );
+		auto pos2D = CAMERA->getCamera( ).worldToScreen( it->getPos( ) + ci::vec3(0, aabb.getSize().y / 2.0F, 0), cinder::app::getWindowWidth( ), cinder::app::getWindowHeight( ) );
+		p->set_position( pos2D + ci::vec2( 5 ) );
+	}
+
+	root->entry_render( ci::mat4( ) );
 }

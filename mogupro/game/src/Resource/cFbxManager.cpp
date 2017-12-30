@@ -1,5 +1,6 @@
 #include <Resource/cFbxManager.h>
-
+#include <Utility/cSearchSystem.h>
+#include <Utility/cString.h>
 using namespace ci;
 using namespace ci::app;
 
@@ -53,7 +54,7 @@ cFbx::~cFbx()
 
 }
 
-void cFbx::setup( FbxManager *manager, const std::string& filename )
+void cFbx::setup( FbxManager *manager, const std::string& fullpath )
 {
     // 読み込み機能を生成
     auto* importer = FbxImporter::Create( manager, "" );
@@ -61,7 +62,8 @@ void cFbx::setup( FbxManager *manager, const std::string& filename )
 
     // FBXファイルを読み込む
     // assets内のファイルを探して、フルパスを取得する
-    std::string path = getAssetPath( "Fbx/" + filename + ".fbx" ).string();
+//  std::string path = getAssetPath( "Fbx/" + filename + ".fbx" ).string();
+	std::string path = fullpath;
 #ifdef _MSC_VER
     path = getUTF8Path( path );
 #endif
@@ -484,6 +486,13 @@ void cFbx::setAnimation( const int index, Anim &anim )
 
 cFbxManager::cFbxManager()
 {
+	// FBXSDK生成
+	manager = FbxManager::Create( );
+	assert( manager );
+
+	Utility::cSearchSystem search;
+	search.search( Utility::cString::getAssetPath( ) + "FBX\\" );
+	mFilePaths = search.unixNotationFullPaths( );
 }
 
 cFbxManager::~cFbxManager()
@@ -492,19 +501,35 @@ cFbxManager::~cFbxManager()
 
 void cFbxManager::setup()
 {
-    // FBXSDK生成
-    manager = FbxManager::Create();
-    assert( manager );
 }
 
-void cFbxManager::update()
+void cFbxManager::testUpdate( const float& delta_time )
 {
+}
+
+void cFbxManager::testDraw()
+{
+    gl::ScopedColor scoped_color( 1, 1, 1, 1 );
+    gl::pushModelView();
+    gl::translate( vec3( 5, 17, 5 ) );
+    Resource::cFbxManager::getInstance()->draw( "Gemstone" );
+
+    gl::translate( vec3( 0, 0, 1 ) );
+    Resource::cFbxManager::getInstance()->draw( "Gemstone2" );
+
+    gl::translate( vec3( 0, 0, 5 ) );
+    gl::scale( vec3( 300 ) );
+    Resource::cFbxManager::getInstance()->draw( "cannon" );
+    gl::popModelView();
 }
 
 void cFbxManager::draw( const std::string & name )
 {
     if ( models.find( name ) == models.end() )
+    {
+        assert( !"Model not found" );
         return;
+    }
     models[name]->draw( 0.0 );
 }
 
@@ -514,12 +539,12 @@ void cFbxManager::draw( const std::string & name, const double &animation_time )
         return;
     models[name]->draw( animation_time );
 }
-void cFbxManager::create( const std::string & name )
+void cFbxManager::create( std::string const& name, const std::string & fullpath )
 {
     if ( models.find( name ) != models.end() )
         return;
     std::shared_ptr<cFbx> model = std::make_shared<cFbx>();
-    model->setup( manager, name );
+    model->setup( manager, fullpath );
     models.insert( std::make_pair( name, std::move( model ) ) );
 }
 void cFbxManager::createAnimation( const std::string & name, Anim & anim )
@@ -527,5 +552,32 @@ void cFbxManager::createAnimation( const std::string & name, Anim & anim )
     if ( models.find( name ) == models.end() )
         return;
     models[name]->createAnimation( anim );
+}
+void cFbxManager::loadOne( )
+{
+	if ( isFinished( ) ) return;
+
+	auto const& fullpath = mFilePaths[mCurrentLoadIndex];
+	mCurrentLoadIndex = std::min( mCurrentLoadIndex + 1, (int)mFilePaths.size( ) );
+	auto extension = Utility::cString::getExtensionName( fullpath );
+	extension = Utility::cString::toUpper( extension );
+	if ( extension == "FBX" )
+	{
+		auto underImagePos = fullpath.find( "FBX/" ) + sizeof( "FBX/" ) - sizeof( '\0' );
+		auto unferImageName = fullpath.substr( underImagePos );
+		Resource::cFbxManager::getInstance( )->create( Utility::cString::getFileNameWithoutExtension( unferImageName ), fullpath );
+	}
+}
+bool cFbxManager::isFinished( )
+{
+	return mCurrentLoadIndex == mFilePaths.size( );
+}
+int cFbxManager::maxNum( )
+{
+	return mFilePaths.size( );
+}
+int cFbxManager::currentNum( )
+{
+	return mCurrentLoadIndex;
 }
 }

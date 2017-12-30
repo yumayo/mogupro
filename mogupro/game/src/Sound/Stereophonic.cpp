@@ -5,23 +5,17 @@ namespace Sound
 {
 	void StereophonicManager::open()
 	{
-		device = alcOpenDevice(nullptr);
-		context = alcCreateContext(device, nullptr);
-		alcMakeContextCurrent(context);
 	}
 
 	void StereophonicManager::close()
 	{
-		alcMakeContextCurrent(nullptr);
-		alcDestroyContext(context);
-		alcCloseDevice(device);
 	}
 
 	void StereophonicManager::update(float deltaTime)
 	{
 		for (auto& m : stereophonics)
 		{
-			ci::vec3 pos = Game::cPlayerManager::getInstance()->getActivePlayer()->getReferencePos();
+			ci::vec3 pos = CAMERA->getPos();
 			m.position(0,0,0);
 			ci::vec3 direction = CAMERA->getCameraLook();
 			direction = glm::normalize(direction);

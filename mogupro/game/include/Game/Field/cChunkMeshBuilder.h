@@ -17,11 +17,13 @@ private:
 
     void tryAddFaceToMesh( const std::array<GLfloat, 12>& block_face,
                            const std::array<GLfloat, 12>& block_normal,
+                           const std::array<ci::vec2, 4>& tex_coords,
                            const ci::vec3 & position,
                            const ci::ivec3 & block_facing );
 
     void addFace( const std::array<GLfloat, 12>& block_face,
                   const std::array<GLfloat, 12>& block_normal,
+                  const std::array<ci::vec2, 4>& tex_coords,
                   const ci::vec3 & block_position );
 
 private:

@@ -56,6 +56,27 @@ std::string cString::getExtensionName( std::string const & path )
     std::string::size_type pos( path.rfind( '.' ) );
     return ( pos != std::string::npos ) ? path.substr( pos + 1 ).c_str( ) : std::string( );
 }
+std::string cString::getFilename( const std::string & path )
+{
+	return path.substr( path.rfind( '/' ) + 1, path.length( ) );
+}
+std::string cString::getFileNameWithoutExtension( const std::string & path )
+{
+	std::string name = getFilename( path );
+	return name.substr( 0, name.rfind( '.' ) );
+}
+std::string cString::toUpper( std::string const & str )
+{
+	std::string lower = str;
+	transform( lower.begin( ), lower.end( ), lower.begin( ), ::toupper );
+	return lower;
+}
+std::string cString::toLower( std::string const & str )
+{
+	std::string lower = str;
+	transform( lower.begin( ), lower.end( ), lower.begin( ), ::tolower );
+	return lower;
+}
 std::string cString::toHex( unsigned char value )
 {
     std::stringstream ss;
