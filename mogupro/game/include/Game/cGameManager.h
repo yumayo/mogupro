@@ -3,13 +3,14 @@
 #include <map>
 #include <Node/node.h>
 #include <Sound/cIntroLoopableBGM.h>
+#include <boost/optional.hpp>
 namespace Game
 {
 class cGameManager : public Utility::cSingletonAble<cGameManager>
 {
 public:
 	cGameManager( );
-	~cGameManager( ) = default;
+	~cGameManager( );
 public:
 	enum class State
 	{
@@ -39,6 +40,7 @@ public:
 	void draw( );
 private:
 	void skipReady( );
+	void skipBattle( );
 	void addPreUpdate( State state, std::function<void( float )> method );
 	void addUpdate( State state, std::function<void( float )> method );
 	void next( );
@@ -63,5 +65,30 @@ private:
 	hardptr<Node::node> root;
 
 	Sound::cIntroLoopableBGM introloopBGM;
+
+public:
+	void addRedCannonPower( int value );
+	void addBlueCannonPower( int value );
+	int winTeam( );
+	void appendItem( int type );
+	void useItem( );
+	void kill( int playerId );
+	void death( int playerId );
+	void appendGem( int playerId, int gemNum );
+	std::pair<int, int> getResult( );
+	std::map<int, int> redTeamKillNum( );
+	std::map<int, int> redTeamDeathNum( );
+	std::map<int, int> redTeamAppendGemNum( );
+	std::map<int, int> blueTeamKillNum( );
+	std::map<int, int> blueTeamDeathNum( );
+	std::map<int, int> blueTeamAppendGemNum( );
+private:
+	int redCannonPower = 0;
+	int blueCannonPower = 0;
+	boost::optional<int> currentItem;
+	boost::optional<int> nextItem;
+	std::map<int, int> killNum;
+	std::map<int, int> deathNum;
+	std::map<int, int> appendGemNum;
 };
 }

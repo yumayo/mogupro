@@ -13,6 +13,7 @@
 #include <random>
 #include <Game/cPlayerManager.h>
 #include <Game/cLightManager.h>
+#include <Game/cGameManager.h>
 void Game::Player::cPlayer::playerRotationY()
 {
 	//プレイヤーの前方向
@@ -416,6 +417,8 @@ void Game::Player::cPlayer::receiveDamage(const float & attack, float player_id)
 	if (status.hp <= 0) {
 		is_dead = true;
 		respawn_count = 0;
+		cGameManager::getInstance( )->kill( player_id );
+		cGameManager::getInstance( )->death( this->player_id );
 		dead();
 	}
 

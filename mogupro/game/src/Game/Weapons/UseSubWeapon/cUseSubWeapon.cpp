@@ -1,6 +1,6 @@
 #include <Game/Weapons/UseSubWeapon/cUseSubWeapon.h>
 #include<Game/cSubWeaponManager.h>
-#include <Game/cUIManager.h>
+#include <Game/cGameManager.h>
 namespace Game
 {
 namespace Weapons
@@ -23,14 +23,14 @@ void cUseSubWeapon::useWeapon(const int playerid)
 {
 	if (!mSubWeaponTypes.empty()) {
 		SUBWM->createUseSubWeapon(mSubWeaponTypes[0],playerid);
-		cUIManager::getInstance( )->useItem( );
+		cGameManager::getInstance( )->useItem( );
 		mSubWeaponTypes.erase(mSubWeaponTypes.begin());
 	}
 }
 void cUseSubWeapon::addSubWeapon(const Game::Weapons::SubWeapon::SubWeaponType type)
 {
 	if (mSubWeaponTypes.size() >= 2)return;
-	cUIManager::getInstance( )->appendItem( type );
+	cGameManager::getInstance( )->appendItem( type );
 	mSubWeaponTypes.push_back(type);
 }
 void cUseSubWeapon::setCanUseWeapon(const bool iscanuse)

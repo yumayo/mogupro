@@ -9,17 +9,25 @@ CREATE_CPP( sprite, std::string const& relative_path )
 {
     CREATE( sprite, relative_path );
 }
+CREATE_CPP( sprite, cinder::gl::TextureRef handle )
+{
+	CREATE( sprite, handle );
+}
 bool sprite::init( std::string const& relative_path )
 {
-    set_anchor_point( { 0.5F, 0.5F } );
-    set_pivot( { 0.5F, 0.5F } );
-
     // assert_log( !app::getAssetPath( relative_path ).empty( ), "ファイルが見つかりません。", return false );
 
-    _texture = gl::Texture::create( loadImage( app::loadAsset( relative_path ) ), createSpriteFormat( ) );
-    _content_size = _texture->getSize( );
+    return init( gl::Texture::create( loadImage( app::loadAsset( relative_path ) ), createSpriteFormat( ) ) );
+}
+bool sprite::init( cinder::gl::TextureRef handle )
+{
+	set_anchor_point( { 0.5F, 0.5F } );
+	set_pivot( { 0.5F, 0.5F } );
 
-    return true;
+	_texture = handle;
+	_content_size = _texture->getSize( );
+
+	return true;
 }
 void sprite::render( )
 {

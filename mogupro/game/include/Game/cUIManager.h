@@ -1,6 +1,7 @@
 #pragma once
 #include <Node/node.h>
 #include <Utility/cSingletonAble.h>
+#include <boost/optional.hpp>
 namespace Game
 {
 class cUIManager : public Utility::cSingletonAble<cUIManager>
@@ -14,13 +15,9 @@ public:
 	void update( float delta );
 	void draw( );
 public:
-	void addRedCannonPower( int value );
-	void addBlueCannonPower( int value );
-	void appendItem( int type );
-	int winTeam( );
-	cinder::ivec2 result( ) { return cinder::ivec2( redCannonPower, blueCannonPower ); }
-	void useItem( );
-
+	void setRedCannonPower( int value );
+	void setBlueCannonPower( int value );
+	void setItem( boost::optional<int> currentItem, boost::optional<int> nextItem );
 	void enable( );
 	void disable( );
 private:
@@ -32,11 +29,5 @@ private:
 	softptr<Node::node> mRedTeamCannonPower;
 	softptr<Node::node> mBlueTeamCannonPower;
 	softptr<Node::node> mPlayerScreenEffect;
-
-	cinder::vec2 mDisableSlot;
-	cinder::vec2 mEnableSlot;
-
-	int redCannonPower;
-	int blueCannonPower;
 };
 }

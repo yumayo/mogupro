@@ -6,7 +6,6 @@
 #include <Game/cFieldManager.h>
 #include <Game/cSubWeaponManager.h>
 #include <Game/cGameManager.h>
-#include <Game/cUIManager.h>
 using namespace cinder;
 using namespace Network;
 using namespace Network::Packet;
@@ -148,12 +147,14 @@ void cClientAdapter::recvAllCannons( )
 	{
 		if ( packet->teamId == Game::Player::Red )
 		{
-			cUIManager::getInstance( )->addRedCannonPower( packet->power );
+			cGameManager::getInstance( )->addRedCannonPower( packet->power );
+			cGameManager::getInstance( )->appendGem( packet->playerId, packet->power );
 			cStrategyManager::getInstance()->getCannons()[int(packet->teamId)]->setAddCanonPower(packet->power);
 		}
 		else if ( packet->teamId == Game::Player::Blue )
 		{
-			cUIManager::getInstance( )->addBlueCannonPower( packet->power );
+			cGameManager::getInstance( )->addBlueCannonPower( packet->power );
+			cGameManager::getInstance( )->appendGem( packet->playerId, packet->power );
 			cStrategyManager::getInstance()->getCannons()[int(packet->teamId)]->setAddCanonPower(packet->power);
 		}
 		else
@@ -239,6 +240,7 @@ void cClientAdapter::sendAddCannonPower( Network::ubyte1 teamId, Network::ubyte1
 {
 	auto p = new cReqAddCannonPower( );
 	p->teamId = teamId;
+	p->playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
 	p->power = power;
 	cUDPClientManager::getInstance( )->send( p );
 }
