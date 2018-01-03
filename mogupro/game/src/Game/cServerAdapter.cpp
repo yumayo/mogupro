@@ -199,6 +199,7 @@ void cServerAdapter::sendAddCannonPower( )
 
 		auto e = new cEveAddCannonPower( );
 		e->teamId = p->teamId;
+		e->playerId = p->playerId;
 		e->power = p->power;
 		cUDPServerManager::getInstance( )->broadcast( e );
 	}
