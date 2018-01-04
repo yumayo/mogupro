@@ -12,7 +12,7 @@ public:
 	cImageManager( );
 	// —á: Assets/Image/player.png ‚È‚ç
 	// „: player.png ‚Æ“ü—Í‚·‚éB
-	cinder::gl::TextureRef& findObject( std::string const& underAssetsUnderImagePath );
+	cinder::gl::TextureRef& find( std::string const& underAssetsUnderImagePath );
 	void loadOne( );
 	bool isFinished( );
 	int maxNum( );

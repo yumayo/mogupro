@@ -14,6 +14,7 @@
 #include <Resource/cSoundManager.h>
 #include <Game/cPlayerManager.h>
 #include <Sound/Wav.h>
+#include <Game/cResultManager.h>
 namespace Game
 {
 cGameManager::cGameManager( )
@@ -124,6 +125,10 @@ cGameManager::cGameManager( )
 	} );
 	addPreUpdate( State::BATTLE, [ this ] ( float t )
 	{
+		if ( ENV->pushKey( cinder::app::KeyEvent::KEY_RETURN ) )
+		{
+			skipBattle( );
+		}
 		if ( shiftSeconds[State::BATTLE] < Network::cUDPClientManager::getInstance()->getServerTime( ) )
 		{
 			next( );
@@ -142,6 +147,8 @@ cGameManager::cGameManager( )
 			{
 				next( );
 
+				ENV->setMouseControl( false );
+
 				ENV->enableKeyButton( );
 				ENV->enableMouseButton( );
 				ENV->enablePadButton( );
@@ -149,24 +156,7 @@ cGameManager::cGameManager( )
 				introloopBGM.stop( );
 				cUIManager::getInstance( )->disable( );
 				root->get_child_by_name( "fader" )->run_action( Node::Action::sequence::create( Node::Action::fade_out::create( 1.0F ), Node::Action::remove_self::create( ) ) );
-				auto label = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 64 ) );
-				label->set_position( root->get_content_size( ) / 2.0F );
-				auto point = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 64 ) );
-				point->set_position( root->get_content_size( ) / 2.0F + cinder::vec2( 0, 100 ) );
-				auto p = cUIManager::getInstance( )->result( );
-				switch ( cUIManager::getInstance( )->winTeam( ) )
-				{
-				case Game::Player::Red:
-					label->set_text( "red team win" );
-					point->set_text( "red: " + std::to_string( p.x ) + " <----> blue: " + std::to_string( p.y ) );
-					break;
-				case Game::Player::Blue:
-					label->set_text( "blue team win" );
-					point->set_text( "blue: " + std::to_string( p.y ) + " <----> red: " + std::to_string( p.x ) );
-					break;
-				default:
-					break;
-				}
+				cResultManager::getInstance( )->setup( );
 			} ) ) );
 		}
 	} );
@@ -234,13 +224,12 @@ cGameManager::cGameManager( )
 	} );
 	addUpdate( State::RESULT, [ this ] ( float t )
 	{
-		CAMERA->refPosition = Game::Field::WORLD_SIZE * cinder::vec3( 0.5F, 2.5F, 0.5F );
-		CAMERA->setCameraAngle( cinder::vec2( -glm::pi<float>( ) / 2.0F, -glm::pi<float>( ) ) );
-		if ( ENV->pushKey( ) )
-		{
-			cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( );
-		}
+		cResultManager::getInstance( )->update( t );
 	} );
+}
+cGameManager::~cGameManager( )
+{
+	cResultManager::removeInstance( );
 }
 void cGameManager::setTime( float loadTime )
 {
@@ -282,12 +271,23 @@ void cGameManager::update( float delta )
 void cGameManager::draw( )
 {
 	root->entry_render( cinder::mat4( ) );
+	if ( state == State::RESULT )
+	{
+		cResultManager::getInstance( )->draw( );
+	}
 }
 void cGameManager::skipReady( )
 {
 	auto now = Network::cUDPClientManager::getInstance()->getServerTime( );
 	shiftSeconds[State::LOAD] = shiftSeconds[State::MY_TEAM] = shiftSeconds[State::ENEMY_TEAM] = shiftSeconds[State::READY] = now;
 	shiftSeconds[State::BATTLE] = shiftSeconds[State::READY] + 60.0F * 5.0F;
+	shiftSeconds[State::BATTLE_END] = shiftSeconds[State::BATTLE] + 3.0F;
+	shiftSeconds[State::RESULT] = shiftSeconds[State::BATTLE_END] + 3.0F;
+}
+void cGameManager::skipBattle( )
+{
+	auto now = Network::cUDPClientManager::getInstance( )->getServerTime( );
+	shiftSeconds[State::LOAD] = shiftSeconds[State::MY_TEAM] = shiftSeconds[State::ENEMY_TEAM] = shiftSeconds[State::READY] = shiftSeconds[State::BATTLE] = now;
 	shiftSeconds[State::BATTLE_END] = shiftSeconds[State::BATTLE] + 3.0F;
 	shiftSeconds[State::RESULT] = shiftSeconds[State::BATTLE_END] + 3.0F;
 }
@@ -308,5 +308,122 @@ void cGameManager::next( )
 bool cGameManager::timeEmpty( )
 {
 	return shiftSeconds.find( state ) == shiftSeconds.end( );
+}
+void cGameManager::addRedCannonPower( int value )
+{
+	redCannonPower += value;
+	cUIManager::getInstance( )->setRedCannonPower( value );
+}
+void cGameManager::addBlueCannonPower( int value )
+{
+	blueCannonPower += value;
+	cUIManager::getInstance( )->setBlueCannonPower( value );
+}
+void cGameManager::appendItem( int type )
+{
+	if ( nextItem )
+	{
+		return;
+	}
+	if ( currentItem )
+	{
+		nextItem = type;
+	}
+	else
+	{
+		currentItem = type;
+	}
+	cUIManager::getInstance( )->setItem( currentItem, nextItem );
+}
+void cGameManager::useItem( )
+{
+	if ( !currentItem )
+	{
+		return;
+	}
+	if(nextItem)
+	{
+		currentItem = nextItem;
+		nextItem = boost::none;
+	}
+	else if ( currentItem )
+	{
+		currentItem = boost::none;
+	}
+	cUIManager::getInstance( )->setItem( currentItem, nextItem );
+}
+void cGameManager::kill( int playerId )
+{
+	killNum[playerId]++;
+}
+void cGameManager::death( int playerId )
+{
+	deathNum[playerId]++;
+}
+void cGameManager::appendGem( int playerId, int gemNum )
+{
+	appendGemNum[playerId] += gemNum;
+}
+std::pair<int, int> cGameManager::getResult( )
+{
+	return std::make_pair( redCannonPower, blueCannonPower );
+}
+std::map<int, int> cGameManager::redTeamKillNum( )
+{
+	std::map<int, int> ret;
+	for ( int i = 0; i < 3; ++i )
+	{
+		ret[i] = killNum[i];
+	}
+	return ret;
+}
+std::map<int, int> cGameManager::redTeamDeathNum( )
+{
+	std::map<int, int> ret;
+	for ( int i = 0; i < 3; ++i )
+	{
+		ret[i] = deathNum[i];
+	}
+	return ret;
+}
+std::map<int, int> cGameManager::redTeamAppendGemNum( )
+{
+	std::map<int, int> ret;
+	for ( int i = 0; i < 3; ++i )
+	{
+		ret[i] = appendGemNum[i];
+	}
+	return ret;
+}
+std::map<int, int> cGameManager::blueTeamKillNum( )
+{
+	std::map<int, int> ret;
+	for ( int i = 4; i < 7; ++i )
+	{
+		ret[i] = killNum[i];
+	}
+	return ret;
+}
+std::map<int, int> cGameManager::blueTeamDeathNum( )
+{
+	std::map<int, int> ret;
+	for ( int i = 4; i < 7; ++i )
+	{
+		ret[i] = deathNum[i];
+	}
+	return ret;
+}
+std::map<int, int> cGameManager::blueTeamAppendGemNum( )
+{
+	std::map<int, int> ret;
+	for ( int i = 4; i < 7; ++i )
+	{
+		ret[i] = appendGemNum[i];
+	}
+	return ret;
+}
+int cGameManager::winTeam( )
+{
+	return ( redCannonPower > blueCannonPower ) ? Game::Player::Red : Game::Player::Blue;
 }
 }

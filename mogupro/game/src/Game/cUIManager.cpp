@@ -35,17 +35,11 @@ public:
 };
 void cUIManager::awake( )
 {
-	redCannonPower = 0;
-	blueCannonPower = 0;
-
 	mRoot = Node::node::create( );
 	mRoot->set_content_size( app::getWindowSize( ) - ivec2( 100, 100 ) );
 	mRoot->set_schedule_update( );
 	mRoot->set_scale( vec2( 1, -1 ) );
 	mRoot->set_position( mRoot->get_content_size( ) * vec2( -0.5F, 0.5F ) );
-
-	mDisableSlot = mRoot->get_content_size( ) * vec2( 1, 0 ) + vec2( 0, -300 );
-	mEnableSlot = mRoot->get_content_size( ) * vec2( 1, 0 ) + vec2( 0, 0 );
 
 	//プレイヤーがダメージを受けた時の画面の周りの光
 	mPlayerScreenEffect = mRoot->add_child( Node::node::create( ) );
@@ -66,7 +60,7 @@ void cUIManager::awake( )
 
 	mSlot = mRoot->add_child( Node::node::create( ) );
 	mSlot->set_schedule_update( );
-	mSlot->set_position( mDisableSlot );
+	mSlot->set_position( mRoot->get_content_size( ) * vec2( 1, 0 ) + vec2( 0, 0 ) );
 	auto mCapsuleGauge = Node::Renderer::sprite::create( "itemGauge.png" );
 	mCapsuleGauge->set_anchor_point( vec2( 1, 0 ) );
 	mCapsuleGauge->set_pivot( vec2( 0, 0 ) );
@@ -78,11 +72,11 @@ void cUIManager::awake( )
 		auto c1 = mCapsule->add_child( Node::node::create( ) );
 		c1->set_position( vec2( 182, 47 ) );
 		c1->set_scale( vec2( 35.0F ) );
-		c1->set_name( "subSlot" );
+		c1->set_name( "next" );
 		auto c2 = mCapsule->add_child( Node::node::create( ) );
 		c2->set_position( vec2( 87, 123 ) );
 		c2->set_scale( vec2( 62.0F ) );
-		c2->set_name( "mainSlot" );
+		c2->set_name( "current" );
 	}
 	mSlot->add_child( mCapsuleGauge );
 
@@ -174,60 +168,42 @@ void cUIManager::draw( )
 {
 	mRoot->entry_render( mat4( ) );
 }
-void cUIManager::addRedCannonPower( int value )
+void cUIManager::setRedCannonPower( int value )
 {
 	auto g = mRedTeamCannonPower->get_child_by_name( "gauge" );
 	auto scale = g->get_scale( );
-	redCannonPower += value;
-	scale.y = redCannonPower / 100.0F;
+	scale.y = value / 100.0F;
 	scale.y = clamp( scale.y, 0.0F, 1.0F );
 	g->set_scale( scale );
 }
-void cUIManager::addBlueCannonPower( int value )
+void cUIManager::setBlueCannonPower( int value )
 {
 	auto g = mBlueTeamCannonPower->get_child_by_name( "gauge" );
 	auto scale = g->get_scale( );
-	blueCannonPower += value;
-	scale.y = blueCannonPower / 100.0F;
+	scale.y = value / 100.0F;
 	scale.y = clamp( scale.y, 0.0F, 1.0F );
 	g->set_scale( scale );
 }
-void cUIManager::appendItem( int type )
+void cUIManager::setItem( boost::optional<int> currentItem, boost::optional<int> nextItem )
 {
-	auto mainSlot = mCapsule->get_child_by_name( "mainSlot" );
-	auto subSlot = mCapsule->get_child_by_name( "subSlot" );
-	if ( mainSlot->get_children( ).empty( ) )
+	auto current = mCapsule->get_child_by_name( "current" );
+	auto next = mCapsule->get_child_by_name( "next" );
+	if ( currentItem && current->get_children( ).empty( ) )
 	{
-		mainSlot->add_child( lambertCube::create( ) );
-		mSlot->remove_all_actions( );
-		mSlot->run_action( Node::Action::ease<cinder::EaseOutCubic>::create( Node::Action::move_to::create( 1.0F, mEnableSlot ) ) );
+		current->add_child( lambertCube::create( ) );
 	}
-	else if ( subSlot->get_children( ).empty( ) )
+	else if ( nextItem && next->get_children( ).empty( ) )
 	{
-		subSlot->add_child( lambertCube::create( ) );
+		next->add_child( lambertCube::create( ) );
 	}
-}
-int cUIManager::winTeam( )
-{
-	return ( redCannonPower > blueCannonPower ) ? Game::Player::Red : Game::Player::Blue;
-}
-void cUIManager::useItem( )
-{
-	auto mainSlot = mCapsule->get_child_by_name( "mainSlot" );
-	auto subSlot = mCapsule->get_child_by_name( "subSlot" );
-	if ( !mainSlot->get_children( ).empty( ) )
+	else if ( !nextItem && !next->get_children( ).empty( ) )
 	{
-		mainSlot->remove_all_children( );
-		if ( !subSlot->get_children( ).empty( ) )
-		{
-			subSlot->get_children( ).front( )->set_parent( mainSlot );
-		}
-		else
-		{
-			mSlot->remove_all_actions( );
-			mSlot->run_action( Node::Action::sequence::create( Node::Action::delay::create( 1.0F ),
-															   Node::Action::ease<cinder::EaseOutCubic>::create( Node::Action::move_to::create( 1.0F, mDisableSlot ) ) ) );
-		}
+		current->remove_all_children( );
+		next->get_children( ).front( )->set_parent( current );
+	}
+	else
+	{
+		current->remove_all_children( );
 	}
 }
 void cUIManager::enable( )
