@@ -96,17 +96,17 @@ void cResultManager::setup( )
 		scr->set_position( vec2( 17, 138 + i * 70 ) );
 
 		auto gem = scr->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32 ) );
-		gem->set_text( std::to_string( winAppendGemData[i + loseOffset] ) );
+		gem->set_text( std::to_string( loseAppendGemData[i + loseOffset] ) );
 		gem->set_anchor_point( vec2( 0, 0 ) );
 		gem->set_position( vec2( 403, 12 ) );
 
 		auto kill = scr->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 18 ) );
-		kill->set_text( std::to_string( winKillData[i + loseOffset] ) );
+		kill->set_text( std::to_string( loseKillData[i + loseOffset] ) );
 		kill->set_anchor_point( vec2( 0, 0 ) );
 		kill->set_position( vec2( 551, 8 ) );
 
 		auto death = scr->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 18 ) );
-		death->set_text( std::to_string( winDeathData[i + loseOffset] ) );
+		death->set_text( std::to_string( loseDeathData[i + loseOffset] ) );
 		death->set_anchor_point( vec2( 0, 0 ) );
 		death->set_position( vec2( 551, 34 ) );
 
