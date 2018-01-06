@@ -42,7 +42,7 @@ void cResultManager::setup( )
 		break;
 	}
 
-	auto win = root->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( "result_win.png" ) ) );
+	auto win = root->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( u8"result/win_board.png" ) ) );
 	win->set_color( winTeamColor );
 	win->set_position( root->get_content_size( ) * vec2( 1, 0 ) );
 	win->set_anchor_point( vec2( 1, 0 ) );
@@ -53,7 +53,7 @@ void cResultManager::setup( )
 	auto winAppendGemData = cGameManager::getInstance( )->winTeam( ) == Player::Red ? cGameManager::getInstance( )->redTeamAppendGemNum( ) : cGameManager::getInstance( )->blueTeamAppendGemNum( );
 	for ( int i = 0; i < 3; ++i )
 	{
-		auto scr = win->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( "result.png" ) ) );
+		auto scr = win->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( u8"result/bar.png" ) ) );
 		scr->set_anchor_point( vec2( 0, 0 ) );
 		scr->set_pivot( vec2( 0, 0 ) );
 		scr->set_position( vec2( 17, 138 + i * 70 ) );
@@ -79,7 +79,7 @@ void cResultManager::setup( )
 		name->set_position( vec2( 93, 12 ) );
 	}
 
-	auto lose = root->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( "result_lose.png" ) ) );
+	auto lose = root->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( u8"result/lose_board.png" ) ) );
 	lose->set_position( root->get_content_size( )* vec2( 1, 1 ) );
 	lose->set_color( loseTeamColor );
 	lose->set_anchor_point( vec2( 1, 1 ) );
@@ -90,7 +90,7 @@ void cResultManager::setup( )
 	auto loseAppendGemData = cGameManager::getInstance( )->winTeam( ) == Player::Red ? cGameManager::getInstance( )->blueTeamAppendGemNum( ) : cGameManager::getInstance( )->redTeamAppendGemNum( );
 	for ( int i = 0; i < 3; ++i )
 	{
-		auto scr = lose->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( "result.png" ) ) );
+		auto scr = lose->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( u8"result/bar.png" ) ) );
 		scr->set_anchor_point( vec2( 0, 0 ) );
 		scr->set_pivot( vec2( 0, 0 ) );
 		scr->set_position( vec2( 17, 138 + i * 70 ) );
