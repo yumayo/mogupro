@@ -23,11 +23,9 @@ public:
 private:
 	hardptr<Node::node> mRoot;
 	softptr<Node::node> mTime;
-	softptr<Node::node> mLive;
 	softptr<Node::node> mSlot;
-	softptr<Node::node> mCapsule;
-	softptr<Node::node> mRedTeamCannonPower;
-	softptr<Node::node> mBlueTeamCannonPower;
+	softptr<Node::node> mRedTeamCannonMeter;
+	softptr<Node::node> mBlueTeamCannonMeter;
 	softptr<Node::node> mPlayerScreenEffect;
 };
 }
