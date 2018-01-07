@@ -11,7 +11,7 @@ cImageManager::cImageManager( )
 	search.search( Utility::cString::getAssetPath( ) + "IMAGE\\" );
 	mFilePaths = search.unixNotationFullPaths( );
 }
-cinder::gl::TextureRef& cImageManager::find( std::string const & underAssetsUnderImagePath )
+cinder::gl::TextureRef cImageManager::find( std::string const & underAssetsUnderImagePath )
 {
 	auto findItr = mImages.find( underAssetsUnderImagePath );
 	if ( findItr != mImages.end( ) )
@@ -51,4 +51,5 @@ int cImageManager::currentNum( )
 {
 	return mCurrentLoadIndex;
 }
+ImageSuppoter const IMAGE;
 }

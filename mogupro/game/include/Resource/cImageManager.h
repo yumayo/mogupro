@@ -12,7 +12,7 @@ public:
 	cImageManager( );
 	// 例: Assets/Image/player.png なら
 	// ＞: player.png と入力する。
-	cinder::gl::TextureRef& find( std::string const& underAssetsUnderImagePath );
+	cinder::gl::TextureRef find( std::string const& underAssetsUnderImagePath );
 	void loadOne( );
 	bool isFinished( );
 	int maxNum( );
@@ -22,4 +22,26 @@ private:
 	int mCurrentLoadIndex = 0;
 	std::vector<std::string> mFilePaths;
 };
+struct ImageSuppoter
+{
+	class ImageNotFound : public std::runtime_error
+	{
+	public:
+		ImageNotFound( ) : std::runtime_error( "imageファイルが見つかりません。" )
+		{
+		}
+	};
+	cinder::gl::TextureRef operator[]( std::string const& underAssetsUnderIMAGEUnderPath ) const
+	{
+		try
+		{
+			return cImageManager::getInstance( )->find( underAssetsUnderIMAGEUnderPath );
+		}
+		catch ( ... )
+		{
+			throw ImageNotFound( );
+		}
+	}
+};
+extern ImageSuppoter const IMAGE;
 }
