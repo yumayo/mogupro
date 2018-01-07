@@ -31,6 +31,9 @@ void cBegin::setup( )
 	root->set_content_size( ci::app::getWindowSize( ) );
 	root->set_scale( ci::vec2( 1, -1 ) );
 	root->set_position( root->get_content_size( ) / 2.0F * ci::vec2( -1, 1 ) );
+
+	root->add_child( Node::Renderer::sprite::create( "IMAGE/logo/loading.png" ) )->set_position( root->get_content_size( ) * ci::vec2( 0.5F ) );
+
 	loadBar = root->add_child( Node::node::create( ) );
 	loadBar->set_position( root->get_content_size( ) * ci::vec2( 0.5F, 0.8F ) );
 	auto base = loadBar->add_child( Node::Renderer::rect::create( ci::vec2( 1000, 30 ) ) );

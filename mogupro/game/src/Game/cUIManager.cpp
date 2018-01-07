@@ -6,15 +6,18 @@
 #include <Game/cPlayerManager.h>
 #include <Game/cGameManager.h>
 #include <Resource/cImageManager.h>
+#include <Resource/cObjectManager.h>
+#include <Game/Weapons/SubWeapon/SubWeaponType.h>
+//Weapons::SubWeapon::SubWeaponType
 using namespace ci;
 namespace Game
 {
-class lambertCube : public Node::node
+class ItemDefault : public Node::node
 {
 public:
-	CREATE_H( lambertCube )
+	CREATE_H( ItemDefault )
 	{
-		CREATE( lambertCube );
+		CREATE( ItemDefault );
 	}
 	bool init( )
 	{
@@ -34,6 +37,73 @@ public:
 		gl::drawColorCube( vec3( 0 ), vec3( 1 ) );
 	}
 };
+class ItemQuarry : public Node::node 
+{
+public:
+	CREATE_H( ItemQuarry )
+	{
+		CREATE( ItemQuarry );
+	}
+	bool init( )
+	{
+		set_anchor_point_3d( vec3( 0.5F ) );
+		set_pivot_3d( vec3( 0.5F ) );
+		set_axis( vec3( 0, 1, -1 ) );
+
+		using namespace Node::Action;
+		run_action( repeat_forever::create( rotate_by::create( 1.0F, M_PI ) ) );
+
+		return true;
+	}
+	void render( ) override
+	{
+		gl::ScopedDepth scpDepth( true );
+		gl::ScopedColor col( Color( 1, 1, 1 ) );
+		gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().texture() ) );
+		gl::ScopedTextureBind texture( Resource::IMAGE["in_game/quarry.png"] );
+		gl::drawCube( vec3( 0 ), vec3( 1 ) );
+	}
+};
+class ItemLightBomb : public Node::node
+{
+public:
+	CREATE_H( ItemLightBomb )
+	{
+		CREATE( ItemLightBomb );
+	}
+	bool init( )
+	{
+		set_anchor_point_3d( vec3( 0.5F ) );
+		set_pivot_3d( vec3( 0.5F ) );
+		set_axis( vec3( 0, 1, -1 ) );
+
+		using namespace Node::Action;
+		run_action( repeat_forever::create( rotate_by::create( 1.0F, M_PI ) ) );
+
+		return true;
+	}
+	void render( ) override
+	{
+		gl::ScopedDepth scpDepth( true );
+		gl::ScopedColor col( Color( 1, 0, 0 ) );
+		gl::draw( Resource::cObjectManager::getInstance()->findObject( "sphere.obj" ) );
+	}
+};
+hardptr<Node::node> createItem( Weapons::SubWeapon::SubWeaponType type )
+{
+	switch ( type )
+	{
+	case Game::Weapons::SubWeapon::LIGHT_BOMB:
+		return ItemLightBomb::create( );
+		break;
+	case Game::Weapons::SubWeapon::QUARRY:
+		return ItemQuarry::create( );
+		break;
+	default:
+		return ItemDefault::create( );
+		break;
+	}
+}
 class cannonMeter : public Node::node
 {
 public:
@@ -310,11 +380,11 @@ void cUIManager::setItem( boost::optional<int> currentItem, boost::optional<int>
 	auto next = capsules->get_child_by_name( "next" );
 	if ( currentItem && current->get_children( ).empty( ) )
 	{
-		current->add_child( lambertCube::create( ) );
+		current->add_child( createItem( static_cast<Weapons::SubWeapon::SubWeaponType>( *currentItem ) ) );
 	}
 	else if ( nextItem && next->get_children( ).empty( ) )
 	{
-		next->add_child( lambertCube::create( ) );
+		next->add_child( createItem( static_cast<Weapons::SubWeapon::SubWeaponType>( *nextItem ) ) );
 	}
 	else if ( !nextItem && !next->get_children( ).empty( ) )
 	{
