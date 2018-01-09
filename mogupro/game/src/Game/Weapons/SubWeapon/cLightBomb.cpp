@@ -8,6 +8,9 @@
 #include"Sound/Wav.h"
 #include"Sound\Stereophonic.h"
 #include"Resource\cObjectManager.h"
+#include"Game/cGemManager.h"
+#include"Game\cPlayerManager.h"
+#include"Game\Gem\cFragmentGem.h"
 namespace Game
 {
 namespace Weapons
@@ -44,11 +47,28 @@ namespace Weapons
 			cClientAdapter::getInstance( )->sendDamage( playerid, 100.0F );
 		}
 
+		void cLightBomb::getGem()
+		{
+			for (int i = 0; i < Game::cGemManager::getInstance()->getGemStones().size(); i++) {
+				if (glm::distance2(mPos, Game::cGemManager::getInstance()->getGemStones()[i]->getPos()) < mExprosionLength*1.5f) {
+
+					auto gems = Game::cGemManager::getInstance()->breakGemStone(Game::cGemManager::getInstance()->getGemStones()[i]->getId());
+					
+					for (int j = 0; j < gems.size(); j++) {
+						Game::cPlayerManager::getInstance()->getPlayers()[mPlayerId]->gem_production_end[gems[j]->getId()];
+						Game::cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getGems(gems[j]->getId());
+					}
+
+					
+				}
+			}
+
+		}
+
 		void cLightBomb::hitObject()
 		{
 			if (!mIsHitObject) {
 				if (rb.isLanding()) {
-			
 					mIsHitObject = true;
 					createAroundLight();
 				}
@@ -113,29 +133,12 @@ namespace Weapons
 				////////アクティブプレイヤーのみ行います
 				if (mPlayerId == cPlayerManager::getInstance()->getActivePlayerId()) {
 					collisonToPlayer();
-
-					Game::cFieldManager::getInstance()->blockBreak(mPos, mExprosionLength/2.f);
+					Game::cFieldManager::getInstance()->blockBreak(mPos, mExprosionLength / 2.f);
 				}
+				getGem();
+				playSound();
+				createParticle();
 				mIsExprosion = true;
-
-				float gain = 0.6f - glm::distance2(cPlayerManager::getInstance()->getActivePlayer()->getPos(),
-					cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getPos()) / 10.f;
-				if (gain <= 0.0f) {
-					gain = 0.0f;
-				}
-			/*	Resource::cSoundManager::getInstance()->findSe("SubWeapon/bombexprotion.wav").setGain(gain);
-				Resource::cSoundManager::getInstance()->findSe("SubWeapon/bombexprotion.wav").play();*/
-				
-				Sound::StereophonicManager::getInstance()->add(Sound::Wav(ci::app::getAssetPath("SE/SubWeapon/bombexprotion2.wav").string()), mPos);
-
-				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
-					.scale(0.5f).
-					vanishTime(0.7f).
-					speed(0.85f).
-					textureType(Particle::ParticleTextureType::SPARK).
-					color(ci::ColorA::white()).
-					moveType(Particle::ParticleType::EXPROTION).count(30).isTrajectory(true).gravity(0.048f));
-
 			}
 		}
 		float cLightBomb::getDamage(const float distance, const float maxdamage)
@@ -219,6 +222,25 @@ namespace Weapons
 
 			}
 			
+		}
+		void cLightBomb::playSound()
+		{
+			float gain = 0.6f - glm::distance2(cPlayerManager::getInstance()->getActivePlayer()->getPos(),
+				cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getPos()) / 10.f;
+			if (gain <= 0.0f) {
+				gain = 0.0f;
+			}
+			Sound::StereophonicManager::getInstance()->add(Sound::Wav(ci::app::getAssetPath("SE/SubWeapon/bombexprotion2.wav").string()), mPos);
+		}
+		void cLightBomb::createParticle()
+		{
+			Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
+				.scale(0.5f).
+				vanishTime(0.7f).
+				speed(0.85f).
+				textureType(Particle::ParticleTextureType::SPARK).
+				color(ci::ColorA::white()).
+				moveType(Particle::ParticleType::EXPROTION).count(30).isTrajectory(true).gravity(0.048f));
 		}
 	}
 }

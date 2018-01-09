@@ -23,6 +23,7 @@ namespace Game
 				ci::gl::VboMeshRef mesh;
 			public://通信関係
 				void dmageToPlayer(const int playerid);
+				void getGem();
 			private:////着地関連
 				bool mIsHitObject = false;
 				void hitObject();
@@ -48,6 +49,8 @@ namespace Game
 			private:///爆発関連
 				void exprosion();
 				void collisonToPlayer();
+				void playSound();
+				void createParticle();
 				bool mIsExprosion = false;
 				float mExprosionLength;
 				float getDamage(const float distance, const float maxdamage);

@@ -42,6 +42,9 @@ void cSubWeaponManager::updateCollisionAfterUpdate(const float & deltaTime)
 	for (auto& itr : subweapons) {
 		itr.second->updateCollisionAfterUpdate(deltaTime);
 	}
+	for (auto& itr : usesubweapons) {
+		itr->updateCollisionAfterUpdate(deltaTime);
+	}
 }
 
 void cSubWeaponManager::HitDrillToGem(const int _objectid, const int _gemid)
