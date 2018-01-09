@@ -7,7 +7,7 @@
 #include <Game/cClientAdapter.h>
 #include <Game/cGemManager.h>
 #include <Node/renderer.hpp>
-
+#include <Game/cGameManager.h>
 void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
 	//生成
@@ -365,6 +365,15 @@ void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& pla
 	root->set_content_size( cinder::app::getWindowSize( ) );
 	root->set_scale( cinder::vec2( 1, -1 ) );
 	root->set_position( root->get_content_size( ) * cinder::vec2( -0.5F, 0.5F ) );
+
+	hintRoot = Node::node::create( );
+	hintRoot->set_content_size( cinder::app::getWindowSize( ) );
+	hintRoot->set_scale( cinder::vec2( 1, -1 ) );
+	hintRoot->set_position( hintRoot->get_content_size( ) * cinder::vec2( -0.5F, 0.5F ) );
+
+	hintRenderBase = hintRoot->add_child( Node::node::create( ) );
+	hintRenderBase->set_position( hintRoot->get_content_size( ) * ci::vec2( 0.5F, 0.8F ) );
+
 	for ( auto& it : players )
 	{
 		if ( getActivePlayerTeamId( ) != it->getWhichTeam( ) ) continue;
@@ -393,6 +402,9 @@ void Game::cPlayerManager::update(const float& delta_time)
 	}
 	killCamera(delta_time);
 	watchingCamera(delta_time);
+	hintNearBlock( );
+	hintNearGemStone( );
+	hintTransportGem( );
 	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), ci::vec2(active_player->getRotateX(), active_player->getRotateY()));
 }
 
@@ -425,4 +437,65 @@ void Game::cPlayerManager::draw2D( )
 	}
 
 	root->entry_render( ci::mat4( ) );
+
+	if ( cGameManager::getInstance( )->isInGame( ) )
+	{
+		hintRoot->entry_render( ci::mat4( ) );
+	}
+}
+
+void Game::cPlayerManager::hintNearBlock( )
+{
+	if ( mHintNearBlock = cFieldManager::getInstance( )->isBreakBlock( active_player->getPos( ) + ( glm::normalize( CAMERA->getCamera( ).getViewDirection( ) ) * ci::vec3( active_player->getStatus( ).drill_speed / 3 ) ), 1 ) )
+	{
+		if ( !mHintNearGemStone && !mHintTransportGem )
+		{
+			hintRenderBase->remove_all_children( );
+			auto l = hintRenderBase->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
+			l->set_text( u8"左クリックで地面を掘れるぞ" );
+		}
+	}
+}
+
+void Game::cPlayerManager::hintNearGemStone( )
+{
+	static int i = 0; i++; if ( i % 5 != 0 ) return;
+	bool isHit = false;
+	auto const& gems = cGemManager::getInstance( )->getGemStones( );
+	for ( auto& gem : gems )
+	{
+		auto pos = active_player->getPos( ) + glm::normalize( CAMERA->getCamera( ).getViewDirection( ) * ci::vec3( 1, 0, 1 ) ) * 3.0F;
+		if ( glm::distance( pos, gem->getPos( ) ) < 2.0F )
+		{
+			isHit = true;
+			break;
+		}
+	}
+	if ( mHintNearGemStone = isHit )
+	{
+		if ( !mHintTransportGem )
+		{
+			hintRenderBase->remove_all_children( );
+			auto l = hintRenderBase->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
+			l->set_text( u8"右クリックで宝石を採れるぞ" );
+		}
+	}
+}
+
+void Game::cPlayerManager::hintTransportGem( )
+{
+	if ( mHintTransportGem && active_player->getgems.empty( ) )
+	{
+		hintRenderBase->remove_all_children( );
+		auto l = hintRenderBase->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
+		l->set_text( u8"よくやった" );
+		l->run_action( Node::Action::sequence::create( Node::Action::delay::create( 1.5F ), Node::Action::call_func::create( [ this ] { mHintTransportGem = false; } ),
+													   Node::Action::remove_self::create( ) ) );
+	}
+	if ( mHintTransportGem = !active_player->getgems.empty( ) )
+	{
+		hintRenderBase->remove_all_children( );
+		auto l = hintRenderBase->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
+		l->set_text( u8"宝石を大砲に持って帰ろう" );
+	}
 }

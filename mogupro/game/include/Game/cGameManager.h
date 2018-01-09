@@ -67,6 +67,7 @@ private:
 	Sound::cIntroLoopableBGM introloopBGM;
 
 public:
+	bool isInGame( );
 	void addRedCannonPower( int value );
 	void addBlueCannonPower( int value );
 	int winTeam( );
