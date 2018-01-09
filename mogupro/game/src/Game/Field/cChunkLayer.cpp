@@ -166,6 +166,16 @@ bool cChunkLayer::isFieldEdge( const int& x, const  int& y, const int& z )
     return false;
 }
 
+bool cChunkLayer::isUnderCannon( const int & x, const int & y, const int & z )
+{
+    ivec3 cell = ( getChunkCell() * CHUNK_SIZE ) + ivec3( x, y, z );
+    if ( cell.x < 3 * CHUNK_SIZE || cell.x > 5 * CHUNK_SIZE )
+        return false;
+    if ( cell.z > 2 * CHUNK_SIZE && cell.z < ( CHUNK_RANGE_Z - 2 ) * CHUNK_SIZE )
+        return false;
+    return true;
+}
+
 void cChunkLayer::addFace( const std::array<GLfloat, 12>& block_face,
                            const std::array<GLfloat, 12>& block_normal,
                            const std::array<ci::vec2, 4> &texture_coords,
@@ -331,6 +341,9 @@ void cChunkLayer::createBlocks()
                                       z * BLOCK_SIZE ) + offset;
                 cBlockRef block;
                 block = std::make_shared<cBlock>( position, BLOCK_SIZE, id++ );
+
+                if ( isUnderCannon( x, y, z ) )
+                    block->setType( BlockType::UNBREAKING );
 
                 if ( isFieldEdge( x, y, z ) )
                     block->setType( BlockType::UNBREAKING );
