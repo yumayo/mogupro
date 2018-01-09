@@ -171,7 +171,7 @@ bool cChunkLayer::isUnderCannon( const int & x, const int & y, const int & z )
     ivec3 cell = ( getChunkCell() * CHUNK_SIZE ) + ivec3( x, y, z );
     if ( cell.x < 3 * CHUNK_SIZE || cell.x > 5 * CHUNK_SIZE )
         return false;
-    if ( cell.z > 2 * CHUNK_SIZE && cell.z < ( CHUNK_RANGE_Z - 2 ) * CHUNK_SIZE )
+    if ( cell.z > 2 * CHUNK_SIZE && cell.z + 1 < ( CHUNK_RANGE_Z - 2 ) * CHUNK_SIZE )
         return false;
     return true;
 }
