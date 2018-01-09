@@ -191,14 +191,6 @@ void cGameMain::draw( )
 		Game::cSubWeaponManager::getInstance()->draw();
 		Game::cCapsuleManager::getInstance()->draw();
         Resource::cFbxManager::getInstance()->testDraw( );
-		{
-			gl::ScopedColor col( ColorA(1, 1, 1, 1) );
-			auto ret = Collision::cCollisionManager::getInstance( )->simulation( rigid );
-			for ( int i = 0; i < ret.positions.size( ) - 1; ++i )
-			{
-				gl::drawLine( ret.positions[i], ret.positions[i + 1] );
-			}
-		}
 		GemManager->draw( );
 		skydome.draw( );
 		CAMERA->unBind3D( );
