@@ -71,5 +71,8 @@ namespace Game
 		const float          mVisibleRange = 30;
 		int                  mFragGemIDCount = 0;
 		ci::gl::GlslProgRef  mFragGemShader;
+
+	private:
+		void drawCannonPower( float red, float blue );
 	};
 }

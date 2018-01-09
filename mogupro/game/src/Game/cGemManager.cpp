@@ -4,6 +4,8 @@
 #include <CameraManager/cCameraManager.h>
 #include <cinder/Rand.h>
 #include <Resource\cSoundManager.h>
+#include <Game/Field/FieldData.h>
+#include <Game/cGameManager.h>
 namespace Game
 {
 
@@ -71,6 +73,15 @@ namespace Game
 
 			ci::gl::draw(mGemsVbo);
 			ci::gl::color(ci::Color(1, 1, 1));
+
+			auto result = cGameManager::getInstance( )->getResult( );
+			auto red = result.first;
+			auto blue = result.second;
+
+			float sum = red + blue;
+
+			drawCannonPower( red / sum, blue / sum);
+
 			ci::gl::popMatrices();
 		}
 
@@ -102,6 +113,7 @@ namespace Game
 				mFragmentGems[i]->draw();
 			}
 			ci::gl::color(ci::Color(1, 1, 1));
+
 			ci::gl::popMatrices();
 		}
 
@@ -390,5 +402,76 @@ namespace Game
 				break;
 			}
 		}
+	}
+	void cGemManager::drawCannonPower( float red, float blue )
+	{
+		using namespace cinder;
+
+		geom::Capsule capsule;
+		capsule.radius( 1.0F );
+
+		geom::Torus torus;
+
+		float length = Field::WORLD_SIZE.z - 7 - 7;
+
+		{
+			gl::color( Color( 1, 0, 0 ) );
+
+			auto begin = Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 0.0F ) + vec3( 0, 5, 7 );
+			capsule.set( begin, begin + vec3( 0, 0, length * red ) );
+			gl::draw( capsule );
+
+			torus.radius( 2.2F, 2.0F );
+			gl::pushModelView( );
+			gl::translate( Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 0.0F ) + vec3( 0, 5, 7 ) + vec3( 0, 0, -1 ) );
+			gl::rotate( M_PI * 0.5F, vec3( 1, 0, 0 ) );
+			gl::draw( torus );
+			gl::popModelView( );
+
+			torus.radius( 2.4F, 2.2F );
+			gl::pushModelView( );
+			gl::translate( Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 0.0F ) + vec3( 0, 5, 7 ) + vec3( 0, 0, 0 ) );
+			gl::rotate( M_PI * 0.5F, vec3( 1, 0, 0 ) );
+			gl::draw( torus );
+			gl::popModelView( );
+
+			torus.radius( 2.2F, 2.0F );
+			gl::pushModelView( );
+			gl::translate( Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 0.0F ) + vec3( 0, 5, 7 ) + vec3( 0, 0, 1 ) );
+			gl::rotate( M_PI * 0.5F, vec3( 1, 0, 0 ) );
+			gl::draw( torus );
+			gl::popModelView( );
+		}
+		
+		{
+			gl::color( Color( 0, 0, 1 ) );
+
+			auto begin = Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 1.0F ) + vec3( 0, 5, -7 );
+			capsule.set( begin, begin + vec3(0, 0, -length * blue) );
+			gl::draw( capsule );
+
+			torus.radius( 2.2F, 2.0F );
+			gl::pushModelView( );
+			gl::translate( Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 1.0F ) + vec3( 0, 5, -7 ) + vec3( 0, 0, 1 ) );
+			gl::rotate( M_PI * 0.5F, vec3( 1, 0, 0 ) );
+			gl::draw( torus );
+			gl::popModelView( );
+
+			torus.radius( 2.4F, 2.2F );
+			gl::pushModelView( );
+			gl::translate( Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 1.0F ) + vec3( 0, 5, -7 ) + vec3( 0, 0, 0 ) );
+			gl::rotate( M_PI * 0.5F, vec3( 1, 0, 0 ) );
+			gl::draw( torus );
+			gl::popModelView( );
+
+			torus.radius( 2.2F, 2.0F );
+			gl::pushModelView( );
+			gl::translate( Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 1.0F ) + vec3( 0, 5, -7 ) + vec3( 0, 0, -1 ) );
+			gl::rotate( M_PI * 0.5F, vec3( 1, 0, 0 ) );
+			gl::draw( torus );
+			gl::popModelView( );
+		}
+
+		gl::color( Color( 1, 1, 1 ) );
 	}
 }

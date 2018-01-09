@@ -10,6 +10,7 @@
 #include <Network.hpp>
 #include <Game/cGameManager.h>
 #include <Network/cMatchingMemberManager.h>
+#include <Resource/cImageManager.h>
 using namespace cinder;
 namespace Scene
 {
@@ -27,7 +28,7 @@ void cTitle::setup( )
 {
 	CAMERA->setup( );
 
-	mBackGround = Node::Renderer::sprite::create( "titleBack.png" );
+	mBackGround = Node::Renderer::sprite::create( Resource::IMAGE[ "title/background.png" ] );
 	mBackGround->set_scale( vec2( app::getWindowSize( ) ) / mBackGround->get_content_size( ) * vec2( 1, -1 ) );
 
 	mContentsRoot = Node::node::create( );
@@ -36,11 +37,11 @@ void cTitle::setup( )
 	mContentsRoot->set_scale( vec2( 1, -1 ) );
 	mContentsRoot->set_position( mContentsRoot->get_content_size( ) / 2.0F * vec2( -1, 1 ) );
 
-	auto logo = mContentsRoot->add_child( Node::Renderer::sprite::create( "titleLogo.png" ) );
+	auto logo = mContentsRoot->add_child( Node::Renderer::sprite::create( Resource::IMAGE["title/logo.png" ] ) );
 	logo->set_anchor_point( vec2( 0.0F ) );
 	logo->set_position( vec2( 0.0F ) );
 
-	auto pushanybutton = mContentsRoot->add_child( Node::Renderer::sprite::create( "pushanybutton.png" ) );
+	auto pushanybutton = mContentsRoot->add_child( Node::Renderer::sprite::create( Resource::IMAGE["title/pushanybutton.png" ] ) );
 	pushanybutton->set_anchor_point( vec2( 1, 1 ) );
 	pushanybutton->set_position( mContentsRoot->get_content_size( ) );
 
