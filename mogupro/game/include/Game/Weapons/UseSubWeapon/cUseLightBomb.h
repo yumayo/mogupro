@@ -17,6 +17,7 @@ public:
     ~cUseLightBomb( );
 	void setup(const int playerid) override;
 	void update(const float& delta_time) override;
+	void updateCollisionAfterUpdate(const float& delta_time) override;
 	void draw() override;
 	bool deleteThis() override;
 	void createSubWeapon() override;
@@ -31,6 +32,7 @@ private:
 	std::vector<ci::vec3>mLootPos;
 	std::vector<float>mColorT;
 	ci::vec3 speed;
+	ci::vec3 beginpos;
 	float deltaColor = 0.0f;
 	float sincolor = 0.0f;
 };

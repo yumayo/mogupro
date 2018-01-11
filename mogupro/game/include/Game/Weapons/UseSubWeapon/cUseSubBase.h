@@ -13,6 +13,7 @@ public:
 	virtual ~cUseSubBase();
 	virtual void setup(const int playerid) = 0;
 	virtual void update(const float& delta_time) = 0;
+	virtual void updateCollisionAfterUpdate(const float& delta_time) = 0;
 	virtual void draw() = 0;
 	virtual bool deleteThis();
 	virtual void createSubWeapon() = 0;

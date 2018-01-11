@@ -9,7 +9,8 @@ namespace Sound
 
 	Buffer::~Buffer()
 	{
-		alDeleteBuffers(1, &id_);
+		/*if(id_ != 0)
+		alDeleteBuffers(1, &id_);*/
 	}
 
 	ALuint Buffer::id() const { return id_; }

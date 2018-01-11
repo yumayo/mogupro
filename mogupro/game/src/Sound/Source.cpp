@@ -8,8 +8,9 @@ namespace Sound
 
 	Source::~Source()
 	{
-		unbindBuffer();
-		alDeleteSources(1, &id_);
+		/*unbindBuffer();
+		if (id_ != 0)
+		alDeleteSources(1, &id_);*/
 	}
 
 	ALuint Source::id() const { return id_; }

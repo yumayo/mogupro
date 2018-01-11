@@ -11,6 +11,8 @@
 #include"Resource\cSoundManager.h"
 #include"Particle\cParticleManager.h"
 #include"cinder\Rand.h"
+#include"Sound/Wav.h"
+#include"Sound\Stereophonic.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -134,8 +136,7 @@ namespace Game
 
 			Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(), getgemnum);
 			////////////
-			Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").setGain(0.4f);
-			Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").play();
+			Sound::StereophonicManager::getInstance()->add(Sound::Wav(ci::app::getAssetPath("SE/cannoncharge.wav").string()), mPos);
 			////////////
 			//sendCollectMaxGem();
 		}
