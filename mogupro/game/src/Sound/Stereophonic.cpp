@@ -29,7 +29,7 @@ namespace Sound
 			m.time -= deltaTime;
 		}
 
-		clearList();
+		//clearList();
 	}
 
 	void StereophonicManager::clearList()
@@ -38,6 +38,7 @@ namespace Sound
 		{
 			if (it->time < 0)
 			{
+				it->stop();
 				it = stereophonics.erase(it);
 				continue;
 			}
