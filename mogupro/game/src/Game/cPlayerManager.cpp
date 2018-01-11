@@ -8,6 +8,7 @@
 #include <Game/cGemManager.h>
 #include <Node/renderer.hpp>
 #include <Game/cGameManager.h>
+#include <Resource/cImageManager.h>
 void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
 	//¶¬
@@ -405,6 +406,7 @@ void Game::cPlayerManager::update(const float& delta_time)
 	hintNearBlock( );
 	hintNearGemStone( );
 	hintTransportGem( );
+	hintRoot->entry_update( delta_time );
 	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), ci::vec2(active_player->getRotateX(), active_player->getRotateY()));
 }
 
@@ -486,10 +488,12 @@ void Game::cPlayerManager::hintTransportGem( )
 {
 	if ( mHintTransportGem && active_player->getgems.empty( ) )
 	{
+		hintRoot->remove_child_by_name( "hintTargetCannon" );
 		hintRenderBase->remove_all_children( );
 		auto l = hintRenderBase->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
 		l->set_text( u8"‚æ‚­‚â‚Á‚½" );
-		l->run_action( Node::Action::sequence::create( Node::Action::delay::create( 1.5F ), Node::Action::call_func::create( [ this ] { mHintTransportGem = false; } ),
+		l->run_action( Node::Action::sequence::create( Node::Action::delay::create( 1.5F ),
+													   Node::Action::call_func::create( [ this ] { mHintTransportGem = false; } ),
 													   Node::Action::remove_self::create( ) ) );
 	}
 	if ( mHintTransportGem = !active_player->getgems.empty( ) )
@@ -497,5 +501,41 @@ void Game::cPlayerManager::hintTransportGem( )
 		hintRenderBase->remove_all_children( );
 		auto l = hintRenderBase->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
 		l->set_text( u8"•óÎ‚ð‘å–C‚ÉŽ‚Á‚Ä‹A‚ë‚¤" );
+
+		class cTargetCannon : public Node::Renderer::sprite
+		{
+		public:
+			CREATE_H( cTargetCannon )
+			{
+				CREATE( cTargetCannon );
+			}
+			bool init( )
+			{
+				return __super::init( Resource::IMAGE[ "in_game/allow.png" ] );
+			}
+			void update( float delta ) override
+			{
+				auto& camera = CAMERA->getCamera( );
+				auto& cannons = cStrategyManager::getInstance( )->getCannons( );
+				auto& cannon = cannons.at( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) );
+				auto targetPos = cannon->getGemStorePos( );
+				targetPos.y = Field::WORLD_SIZE.y;
+				auto screenPos = camera.worldToScreen( targetPos, ci::app::getWindowWidth( ), ci::app::getWindowHeight( ) );
+				screenPos = ci::clamp( screenPos, ci::vec2( 0, 0 ) + ci::vec2(200, 200), ci::vec2( ci::app::getWindowSize( ) ) - ci::vec2( 200, 200 ) );
+				set_position( screenPos );
+
+				ci::vec2 vec = screenPos - ci::app::getWindowCenter( );
+				float angle = atan2( vec.y, vec.x );
+				set_rotation( angle );
+
+				ci::vec3 targetVec = targetPos - cPlayerManager::getInstance( )->getActivePlayer( )->getPos( );
+				ci::vec3 cameraVec = camera.getViewDirection( );
+				set_visible( ci::dot( targetVec, cameraVec ) > 0.0F );
+			}
+		};
+
+		auto hintTargetCannon = hintRoot->add_child( cTargetCannon::create( ) );
+		hintTargetCannon->set_name( "hintTargetCannon" );
+		hintTargetCannon->set_schedule_update( );
 	}
 }
