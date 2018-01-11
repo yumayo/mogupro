@@ -22,6 +22,7 @@ public:
 
     void animationChange( const std::string& name );
     bool isCrrentAnimationEnd();
+    void setAnimationStopTime( const std::string& name, const float& stop_time);
     void animationTimeReturn( std::shared_ptr<Resource::Anim> anim );
     void animationTimeReset( std::shared_ptr<Resource::Anim> anim );
     void allReset();
