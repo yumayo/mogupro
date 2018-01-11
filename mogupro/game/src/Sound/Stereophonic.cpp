@@ -15,6 +15,8 @@ namespace Sound
 	{
 		for (auto& m : stereophonics)
 		{
+			if (m.time < 0)
+				continue;
 			ci::vec3 pos = CAMERA->getPos();
 			m.position(0,0,0);
 			ci::vec3 direction = CAMERA->getCameraLook();
@@ -38,6 +40,8 @@ namespace Sound
 		{
 			if (it->time < 0)
 			{
+				it->stop();
+				it->unbind();
 				it = stereophonics.erase(it);
 				continue;
 			}

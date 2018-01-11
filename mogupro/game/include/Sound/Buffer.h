@@ -30,6 +30,12 @@ namespace Sound
 
 		ALuint id() const;
 
+		void unbind()
+		{
+			if (id_ != 0)
+				alDeleteBuffers(1, &id_);
+		}
+
 	private:
 		ALuint id_;
 
