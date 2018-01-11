@@ -17,8 +17,12 @@ private:
 	void beginCreateObjects();
 	void createObjects();
 	void createTemplate();
+	void SavePointSymmetry();
 	std::vector<std::shared_ptr<Game::MapObjet::cMapObject>>mMapObjects;
 	std::map<std::string, ci::JsonTree> mJsonTemplate;
 	ci::vec3 jsonToVec3(Json::Value json);
+	ci::vec3 getPointSymmetry(const ci::vec3 pos);
+	int getSymmetryIndex(const int index);
+	ci::JsonTree Vec3fToJson(const ci::vec3 vec, const std::string key);
 };
 }
