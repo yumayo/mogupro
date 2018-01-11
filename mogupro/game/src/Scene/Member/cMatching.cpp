@@ -63,7 +63,7 @@ namespace Scene
 			mRoot->add_child(makeRoom);
 			{
 				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-				f->set_text(u8"対戦");
+				f->set_text(u8"部屋を作る");
 				f->set_scale(glm::vec2(1, -1));
 				makeRoom->add_child(f);
 			}
@@ -82,15 +82,21 @@ namespace Scene
 			mRoot->add_child(inRoom);
 			{
 				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-				f->set_text(u8"観戦");
+				f->set_text(u8"部屋に入る");
 				f->set_scale(glm::vec2(1, -1));
 				inRoom->add_child(f);
 			}
 			outRoomFunc.emplace_back(
 				[this] {
 				// とりあえずコントロールを押しながらで観戦者。
-				//if ( ENV->pressKey( cinder::app::KeyEvent::KEY_LCTRL ) )
-				cUDPClientManager::getInstance( )->send( new cReqInRoomWatching( 100 ) );
+				if ( ENV->pressKey( cinder::app::KeyEvent::KEY_LCTRL ) )
+				{
+					cUDPClientManager::getInstance( )->send( new cReqInRoomWatching( 100 ) );
+				}
+				else
+				{
+					cUDPClientManager::getInstance( )->send( new cReqInRoom( 100 ) );
+				}
 				mCanSend = false;
 				mWaitClassState = ClassState::CLIENT;
 				mSelectTag = 0;
@@ -283,8 +289,8 @@ namespace Scene
 				{
 					if (resInRoom->mFlag = false)
 					{
-						cUDPClientManager::getInstance()->send(new cReqInRoom(100));
-						mWaitClassState = ClassState::CLIENT;
+						mWaitClassState = ClassState::NOT;
+						mCanSend = true;
 						continue;
 					}
 
