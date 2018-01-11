@@ -54,8 +54,6 @@ void cMapObjectManager::beginCreateObjects()
 }
 void cMapObjectManager::createObjects()
 {
-	ci::vec3 worldsize = Game::Field::WORLD_SIZE;
-	ci::app::console() << worldsize << std::endl;
 	Json::Value objects = Resource::JSON["mapdata.json"];
 
 	for (int i = 0; i < objects.size(); i++) {

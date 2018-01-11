@@ -174,6 +174,7 @@ namespace Weapons
 			light = cLightManager::getInstance()->addPointLight(mPos, ci::vec3(0, 1, 0), 1.f);
 			mExprosionLength = 8.f*mScale.x;
 			mAroundLightLength = (mExprosionLength / 2.f) - 0.5f;
+			Sound::StereophonicManager::getInstance()->add(Sound::Wav(ci::app::getAssetPath("SE/SubWeapon/lightbombthrow.wav").string()), mPos);
 		
 		}
 		void cLightBomb::update(const float & delta_time)
