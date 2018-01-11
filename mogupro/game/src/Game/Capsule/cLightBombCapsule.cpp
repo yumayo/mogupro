@@ -16,7 +16,7 @@ cLightBombCapsule::~cLightBombCapsule( )
 void cLightBombCapsule::setup(const ci::vec3 pos, const Game::Weapons::SubWeapon::SubWeaponType type)
 {
 	mPos = pos;
-	mScale = ci::vec3(1.f);
+	mScale = ci::vec3(0.5f, 0.5f, 0.5f);
 	mType = type;
 	mAABB = ci::AxisAlignedBox(mPos - mScale / 2.f, mPos + mScale / 2.f);
 	mLightColorH = ci::randFloat(1.f);

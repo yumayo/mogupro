@@ -63,9 +63,6 @@ bool cUseQuarry::deleteThis() {
 
 	return mIsdelete;
 }
-void cUseQuarry::updateCollisionAfterUpdate(const float& delta_time) {
-
-}
 void cUseQuarry::createSubWeapon() {
 
 	Game::cClientAdapter::getInstance()->sendSetQuarry(mSetPos + ci::vec3(0, mScale.y / 2.f, 0));

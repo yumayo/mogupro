@@ -40,27 +40,22 @@ void cUseLightBomb::setup(const int playerid)
 
 void cUseLightBomb::update(const float & delta_time)
 {
-	
-	
-}
-void cUseLightBomb::updateCollisionAfterUpdate(const float & delta_time)
-{
+	//ci::app::console() << "ƒAƒvƒf" << std::endl;
 	if (mIsdelete)return;
-
 	deltaColor += delta_time;
-
+	collider.setPosition(cPlayerManager::getInstance()->getActivePlayer()->getPos());
 
 	setSpeed();
-	collider.setPosition(beginpos);
+
 	rigid.setSpeed(speed);
 
 	createLootPos();
 	if (!mLootPos.empty()) {
 		light->reAttachPosition(mLootPos.back());
 	}
+	
 
-
-	sincolor += delta_time;
+    sincolor += delta_time;
 
 	float h = std::fmodf(sincolor, 1.0f);
 
@@ -78,10 +73,9 @@ void cUseLightBomb::draw()
 	if (mIsdelete)return;
 
 	
-
+	ci::gl::ScopedLineWidth width(5.f);
 	for (int i = 0; i < mLootPos.size() - 1; ++i)
 	{
-		ci::gl::ScopedLineWidth width(10.f);
 		float h = mColorT[mLootPos.size() - 1 - i];
 		ci::Colorf hsv = ci::hsvToRgb(ci::vec3(h, 1.0f, 1.f));
 		ci::gl::ScopedColor col(ci::ColorA(hsv.r, hsv.g, hsv.b, 1));
@@ -96,11 +90,8 @@ void cUseLightBomb::createSubWeapon()
 {
 	ci::vec3 playerDir = cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getInstallationPosition();
 	playerDir = glm::normalize(playerDir);
-
 	ci::vec3 pos = cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getPos();
 	ci::vec3 tangent = glm::rotateY(playerDir, glm::pi<float>() * 0.5F);
-
-	pos += ci::vec3(-tangent.x, tangent.y, -tangent.z)/4.f;
 
 	ci::vec3 normalizedSpeed = playerDir * glm::angleAxis(glm::radians(50.0F), tangent);
 
@@ -116,8 +107,7 @@ void cUseLightBomb::setSpeed()
 	playerDir = glm::normalize(playerDir);
 	ci::vec3 pos = cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getPos();
 	ci::vec3 tangent = glm::rotateY(playerDir, glm::pi<float>() * 0.5F);
-	pos += ci::vec3(-tangent.x, tangent.y, -tangent.z) / 4.f;
-	beginpos = pos;
+
 	ci::vec3 normalizedSpeed = playerDir * glm::angleAxis(glm::radians(50.0F), tangent);
 
 	float power = 10.0F;
@@ -128,7 +118,7 @@ void cUseLightBomb::createLootPos()
 {
 	mLootPos.clear();
 	mColorT.clear();
-	auto ret = Collision::cCollisionManager::getInstance()->simulation(rigid, 30);
+	auto ret = Collision::cCollisionManager::getInstance()->simulation(rigid, 20);
 	for (int i = 0; i < ret.positions.size(); ++i)
 	{
 		mLootPos.push_back(ret.positions[i]);

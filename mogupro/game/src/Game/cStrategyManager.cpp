@@ -6,6 +6,7 @@
 #include<algorithm>
 #include"Game\cClientAdapter.h"
 #include"Game\cFieldManager.h"
+#include"Game/Strategy/cBomb.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -52,32 +53,63 @@ void cStrategyManager::setup()
 }
 void cStrategyManager::draw()
 {
-
+	for (auto it : drills) {
+		it.second->draw();
+	}
 	for (auto it :cannons) {
 		it->draw();
 	}
-
+	for (auto it : bombs) {
+		it.second->draw();
+	}
 }
 void cStrategyManager::update(const float & deltatime)
 {
 
-
+	for (auto& it : drills) {
+		it.second->update(deltatime);
+	}
 	for (auto& it : cannons) {
 		it->update(deltatime);
 	}
-
+	for (auto& it : bombs) {
+		it.second->update(deltatime);
+	}
 	
 	deleteObject();
 }
 
 void cStrategyManager::updateCollisionAfterUpdate(const float & deltaTime)
 {
-
+	for (auto& it : bombs) {
+		it.second->updateCollisionAfterUpdate(deltaTime);
+	}
+	for (auto& it : drills) {
+		it.second->updateCollisionAfterUpdate(deltaTime);
+	}
 }
 
 void cStrategyManager::deleteObject()
 {
+	for (auto itr = drills.begin();
+		itr != drills.end();) {
+		if (itr->second->DeleteThis()) {
+			itr = drills.erase(itr);
+		}
+		else {
+			itr++;
+		}
+	}
 
+	for (auto itr = bombs.begin();
+		itr != bombs.end();) {
+		if (itr->second->DeleteThis()) {
+			itr = bombs.erase(itr);
+		}
+		else {
+			itr++;
+		}
+	}
 }
 
 bool cStrategyManager::isAABB(const ci::AxisAlignedBox & a, const ci::AxisAlignedBox & b)
@@ -96,7 +128,30 @@ bool cStrategyManager::isAABB(const ci::AxisAlignedBox & a, const ci::AxisAligne
 		return true;
 }
 
+void cStrategyManager::HitDrillToGem(const int _objectid, const int _gemid)
+{
 
+	ci::app::console() << "‚¨‚Ü‚¦‚¶‚á‚È‚¢" << std::endl;
+
+	auto drill = drills[_objectid];
+
+	drill->HitGem(_gemid);
+
+
+}
+
+void cStrategyManager::CreateDrill(const ci::vec3 _pos, const int _id, const Strategy::cDrill::DrillType _type, const bool _ismyobject)
+{
+	drills.insert(std::make_pair(_id, std::make_shared<Game::Strategy::cDrill>(_pos, _id, _type, _ismyobject)));
+	drills[_id]->setup();
+}
+
+
+void cStrategyManager::CreateBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale, const int _id)
+{
+	bombs.insert(std::make_pair(_id, std::make_shared<Game::Strategy::cBomb>(_pos, _speed, _scale, true)));
+	bombs[_id]->setup();
+}
 
 std::vector<std::shared_ptr<Game::Strategy::cCannon>> cStrategyManager::getCannons()
 {

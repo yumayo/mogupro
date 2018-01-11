@@ -32,7 +32,7 @@
 #include <Resource/cFbxManager.h>
 #include <Math/float3.h>
 #include <Math/Quat.h>
-#include <Game/cMapObjectManager.h>
+
 static ci::vec3 testSoundPos;
 
 using namespace ci;
@@ -61,7 +61,6 @@ void cGameMain::setup( )
     CAMERA->setup( ); 
     Game::cFieldManager::getInstance( )->setup( );
     Game::cStrategyManager::getInstance( )->setup( );
-	Game::cMapObjectManager::getInstance()->setup();
 
 	const int active_player_id = Network::cMatchingMemberManager::getInstance( )->mPlayerID;
 
@@ -120,7 +119,6 @@ void cGameMain::shutDown( )
 	// ˆË‘¶‚µ‚Ä‚¢‚é‚Ì‚Å‚»‚ê‚æ‚è‘OB
 	Game::cSubWeaponManager::removeInstance( );
 	Game::cStrategyManager::removeInstance( );
-	Game::cMapObjectManager::getInstance()->removeInstance();
 	Game::cPlayerManager::removeInstance( );
 	Game::cShaderManager::removeInstance( );
 	Particle::cParticleManager::removeInstance( );
@@ -164,7 +162,6 @@ void cGameMain::update( float deltaTime )
         Game::cFieldManager::getInstance( )->update( deltaTime );
         Game::cPlayerManager::getInstance( )->update( deltaTime );
         Game::cStrategyManager::getInstance( )->update( deltaTime );
-		Game::cMapObjectManager::getInstance()->update(deltaTime);
 		Game::cCapsuleManager::getInstance()->update(deltaTime);
 		Game::cSubWeaponManager::getInstance()->update(deltaTime);
         Collision::cCollisionManager::getInstance( )->update( deltaTime );
@@ -191,7 +188,6 @@ void cGameMain::draw( )
 		Game::cFieldManager::getInstance( )->draw( );
 		Game::cShaderManager::getInstance( )->uniformUpdate( );
 		Game::cStrategyManager::getInstance( )->draw( );
-		Game::cMapObjectManager::getInstance()->draw();
 		Game::cSubWeaponManager::getInstance()->draw();
 		Game::cCapsuleManager::getInstance()->draw();
         Resource::cFbxManager::getInstance()->testDraw( );
@@ -223,7 +219,6 @@ void cGameMain::drawShadow( )
 	gl::enableDepthWrite( );
 	Game::cFieldManager::getInstance( )->draw( );
 	Game::cStrategyManager::getInstance( )->draw( );
-	Game::cMapObjectManager::getInstance()->draw();
 	Game::cPlayerManager::getInstance( )->draw( );
 }
 
