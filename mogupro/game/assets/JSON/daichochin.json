@@ -1,0 +1,23 @@
+{
+  "drawrate": 1,
+  "asset": "daichochin",
+  "PointLight": [
+    {
+      "pos": [ 0, 0.5, 0.15 ],
+      "radius": 0.2,
+      "radiusrate": 0.85,
+      "color": [ 1, 1, 0 ],
+      "isupdate": true,
+      "speed": 0.7
+    }
+  ],
+  "LineLight": [
+
+  ],
+  "AABB": [
+    {
+      "center": [ 0, 0.35, 0 ],
+      "scalerate": [ 0.4, 0.7, 0.4 ]
+    }
+  ]
+}

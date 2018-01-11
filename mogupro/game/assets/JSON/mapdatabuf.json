@@ -1,0 +1,140 @@
+[
+  {
+    "name": "daichochin",
+    "pos": [ 10.5, -0.8, 63 ],
+    "scale": [ 10, 10, 10 ],
+    "rotatey": 2
+  },
+  {
+    "name": "daichochin",
+    "pos": [ 21.5, -0.8, 63 ],
+    "scale": [ 10, 10, 10 ],
+    "rotatey": 2
+  },
+  {
+    "name": "daichochin",
+    "pos": [ 10.5, -0.8, 1 ],
+    "scale": [ 10, 10, 10 ],
+    "rotatey": 0
+  },
+  {
+    "name": "daichochin",
+    "pos": [ 21.5, -0.8, 1 ],
+    "scale": [ 10, 10, 10 ],
+    "rotatey": 0
+  },
+  {
+    "name": "house",
+    "pos": [ 1.5, 2.5, 10 ],
+    "scale": [ 1.5, 1, 1 ],
+    "rotatey": 1
+  },
+  {
+    "name": "house",
+    "pos": [ 1.5, 2.5, 20 ],
+    "scale": [ 1.5, 1, 1 ],
+    "rotatey": 1
+  },
+  {
+    "name": "house",
+    "pos": [ 1.5, 2.5, 30 ],
+    "scale": [ 1.5, 1, 1 ],
+    "rotatey": 1
+  },
+  {
+    "name": "house",
+    "pos": [ 1.5, 2.5, 40 ],
+    "scale": [ 1.5, 1, 1 ],
+    "rotatey": 1
+  },
+  {
+    "name": "house",
+    "pos": [ 1.5, 2.5, 50 ],
+    "scale": [ 1.5, 1, 1 ],
+    "rotatey": 1
+  },
+  {
+    "name": "house",
+    "pos": [ 30, 2.5, 10 ],
+    "scale": [ 1.5, 1, 1 ],
+    "rotatey": 3
+  },
+  {
+    "name": "house",
+    "pos": [ 30, 2.5, 20 ],
+    "scale": [ 1.5, 1, 1 ],
+    "rotatey": 3
+  },
+  {
+    "name": "house",
+    "pos": [ 30, 2.5, 30 ],
+    "scale": [ 1.5, 1, 1 ],
+    "rotatey": 3
+  },
+  {
+    "name": "house",
+    "pos": [ 30, 2.5, 40 ],
+    "scale": [ 1.5, 1, 1 ],
+    "rotatey": 3
+  },
+  {
+    "name": "house",
+    "pos": [ 30, 2.5, 50 ],
+    "scale": [ 1.5, 1, 1 ],
+    "rotatey": 3
+  },
+  {
+    "name": "lamp_red",
+    "pos": [ 10, -0.4, 22 ],
+    "scale": [ 1, 1, 1 ],
+    "rotatey": 0
+  },
+  {
+    "name": "lamp_red",
+    "pos": [ 10, -0.4, 28 ],
+    "scale": [ 1, 1, 1 ],
+    "rotatey": 0
+  },
+  {
+    "name": "lamp_red",
+    "pos": [ 22, -0.4, 22 ],
+    "scale": [ 1, 1, 1 ],
+    "rotatey": 0
+  },
+  {
+    "name": "lamp_red",
+    "pos": [ 22, -0.4, 28 ],
+    "scale": [ 1, 1, 1 ],
+    "rotatey": 0
+  },
+  {
+    "name": "lamp_blue",
+    "pos": [ 22, -0.4, 36 ],
+    "scale": [ 1, 1, 1 ],
+    "rotatey": 0
+  },
+  {
+    "name": "lamp_blue",
+    "pos": [ 22, -0.4, 42 ],
+    "scale": [ 1, 1, 1 ],
+    "rotatey": 0
+  },
+  {
+    "name": "lamp_blue",
+    "pos": [ 10, -0.4, 36 ],
+    "scale": [ 1, 1, 1 ],
+    "rotatey": 0
+  },
+  {
+    "name": "lamp_blue",
+    "pos": [ 10, -0.4, 42 ],
+    "scale": [ 1, 1, 1 ],
+    "rotatey": 0
+  },
+  {
+    "name": "kidobanya",
+    "pos": [ 20, -0.4, 40 ],
+    "scale": [ 1, 1, 1 ],
+    "rotatey": 0
+  }
+]
