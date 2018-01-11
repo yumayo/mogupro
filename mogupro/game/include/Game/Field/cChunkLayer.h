@@ -60,6 +60,7 @@ public:
     int getIndex( const  ci::ivec3& c );
     int getIndex( const int& x, const  int& y, const int& z );
     bool isFieldEdge( const int& x, const  int& y, const int& z );
+    bool isUnderCannon( const int& x, const int& y, const int& z );
 
 public: // スレッド用フラグ
 

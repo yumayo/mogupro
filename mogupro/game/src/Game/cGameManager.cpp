@@ -309,6 +309,10 @@ bool cGameManager::timeEmpty( )
 {
 	return shiftSeconds.find( state ) == shiftSeconds.end( );
 }
+bool cGameManager::isInGame( )
+{
+	return state == State::BATTLE;
+}
 void cGameManager::addRedCannonPower( int value )
 {
 	redCannonPower += value;

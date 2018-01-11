@@ -77,5 +77,14 @@ public:
 
 	hardptr<Node::node> root;
 	void draw2D( );
+
+	hardptr<Node::node> hintRoot;
+	softptr<Node::node> hintRenderBase;
+	bool mHintNearBlock = false;
+	void hintNearBlock( );
+	bool mHintNearGemStone = false;
+	void hintNearGemStone( );
+	bool mHintTransportGem = false;
+	void hintTransportGem( );
 };
 }
