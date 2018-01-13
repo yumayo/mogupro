@@ -307,8 +307,8 @@ namespace Scene
 				{
 					if (resMakeRoom->mFlag == false)
 					{
-						mWaitClassState = ClassState::NOT;
-						mCanSend = true;
+						cUDPClientManager::getInstance()->send(new cReqInRoom(100));
+						mWaitClassState = ClassState::CLIENT;
 						continue;
 					}
 

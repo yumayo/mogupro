@@ -118,9 +118,6 @@ namespace Scene
 
 		void cMatchingServer::checkReqMakeRoom()
 		{
-			if (mPhaseState != PhaseState::NOT_IN_ROOM)
-				return;
-
 			for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 			while (auto mReqMakeRoom = m->ReqMakeRoom.get())
 			{
