@@ -83,6 +83,13 @@ bool cAnimation::isCrrentAnimationEnd()
     return anim->animation_time > anim->animation_stop;
 }
 
+void cAnimation::setAnimationStopTime( const std::string& name, const float& stop_time )
+{
+    if ( mAnims.find( name ) == mAnims.end() )
+        return;
+    mAnims[name]->animation_stop = stop_time;
+}
+
 void cAnimation::animationTimeReturn( std::shared_ptr<Resource::Anim> anim )
 {
     anim->animation_time = anim->animation_start + anim->animation_time - anim->animation_stop;
