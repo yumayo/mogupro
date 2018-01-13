@@ -8,6 +8,7 @@
 #include <Game/cGemManager.h>
 #include <Particle/cParticleManager.h>
 #include <Game/cClientAdapter.h>
+#include <Math/Quat.h>
 static float EasingLinear(float t, float b, float e) {
 	return (e - b) * t + b;
 }
@@ -77,7 +78,9 @@ void Game::Weapon::LightSaber::ShockCollisionPlayers()
 			if (is_hit) break;
 		}
 		if (is_hit) {
-			CAMERA->shakeCamera(0.1f, 0.1f);
+			if (player_id == cPlayerManager::getInstance()->getActivePlayerId()) {
+				CAMERA->shakeCamera(0.1f, 0.1f);
+			}
 			if (charge_motion == ChargeMotion::charge_attack_1) {
 				cClientAdapter::getInstance( )->sendDamage( it->getPlayerId( ), attack * 0.7F );
 			}
@@ -190,6 +193,17 @@ void Game::Weapon::LightSaber::Attack(const float & delta_time)
 			light->reAttachPositionWithRadius(weapon_draw_pos, shock_wave_time);
 		}
 		weapon_draw_pos = player_pos + glm::normalize(ci::vec3(sin(rotate.x + player_rotate_x), sin(rotate.y), cos(rotate.x + player_rotate_x)));
+		/*auto weapos = ci::vec3(1, 0, 0);
+		auto quat = cPlayerManager::getInstance()->getPlayer(player_id)->getRotate();
+		math::Quat q = math::Quat(quat.x, quat.y, quat.z, quat.w);
+		q = math::Quat::RotateY(rotate.x);
+		quat.x = q.x;
+		quat.y = q.y;
+		quat.z = q.z;
+		quat.w = q.w;
+		weapos = quat * weapos;
+
+		weapon_draw_pos = player_pos + weapos;*/
 	}
 	else {
 		if (is_attack) {
@@ -203,6 +217,15 @@ void Game::Weapon::LightSaber::Attack(const float & delta_time)
 	
 	if (!is_attack)return;
 	weapon_draw_pos = player_pos + glm::normalize(ci::vec3(sin(rotate.x + player_rotate_x), sin(rotate.y), cos(rotate.x + player_rotate_x)));
+	/*auto weapos = ci::vec3(1, 0, 0);
+	auto quat = cPlayerManager::getInstance()->getPlayer(player_id)->getRotate();
+	math::Quat q = math::Quat::RotateX(rotate.x);
+	quat.x = q.x;
+	quat.y = q.y;
+	quat.z = q.z;
+	quat.w = q.w;
+	weapos = weapos * quat;
+	weapon_draw_pos = player_pos + weapos;*/
 	aabb = ci::AxisAlignedBox(weapon_draw_pos - ci::vec3(range / 2), weapon_draw_pos + ci::vec3(range / 2));
 	CollisionPlayers();
 	CollisionDrills();
@@ -246,14 +269,14 @@ void Game::Weapon::LightSaber::Operation(const float & delta_time)
 	weapon_pos = cPlayerManager::getInstance()->getPlayer(player_id)->getPos();
 	player_pos = cPlayerManager::getInstance()->getPlayer(player_id)->getPos();
 	weapon_vec = cPlayerManager::getInstance()->getPlayer(player_id)->getPos();
-	player_rotate_x = cPlayerManager::getInstance()->getPlayer(player_id)->getRotateY();
-	player_rotate_y = cPlayerManager::getInstance()->getPlayer(player_id)->getRotateX();
+	player_rotation = cPlayerManager::getInstance()->getPlayer(player_id)->getRotate();
+	player_rotate_x = std::fmod(cPlayerManager::getInstance()->getPlayer(player_id)->getRotateX(), M_PI * 2.0);
 	
 	if (push) {
 		is_push = true;
 	}
 	if (pull) {
-		is_push = false;;
+		is_push = false;
 	}
 
 	if (!is_attack) {
@@ -456,8 +479,6 @@ Game::Weapon::LightSaber::LightSaber(int player_id)
 	pull = false;
 	attack = 40;
 	range = 2;
-	player_rotate_x = 0;
-	player_rotate_y = 0;
 	is_attack = false;
 	is_push = false;
 	player_pos = ci::vec3(0);
@@ -584,6 +605,7 @@ void Game::Weapon::LightSaber::draw()
 		ci::gl::draw(mesh);
 		ci::gl::popModelView();
 	}
+	ci::gl::drawStrokedCube(aabb);
 	//ci::gl::drawVector(ray[0].getOrigin(), ray[0].getDirection());
 	//ci::gl::drawVector(ray[1].getOrigin(), ray[1].getDirection());
 	//ci::gl::drawVector(ray[2].getOrigin(), ray[2].getDirection());
