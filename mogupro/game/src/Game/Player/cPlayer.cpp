@@ -13,116 +13,45 @@
 #include <random>
 #include <Game/cPlayerManager.h>
 #include <Game/cLightManager.h>
+#include <Math/Quat.h>
+#include <Math/float4x4.h>
 #include <Game/cGameManager.h>
-void Game::Player::cPlayer::playerRotationY()
+
+void Game::Player::cPlayer::playerRotation()
 {
-	//プレイヤーの前方向
-	ci::vec3 rotateaxis = ci::vec3(0.0f, 0.0f, 1.0f);
-
-	//移動先のベクトル
-	auto xzVector = normalized_player_vec * ci::vec3( 1, 0, 1 );
-
-	ci::vec3 targetvec = ci::vec3(normalized_player_vec.x, 0, normalized_player_vec.z);
-
-	installation_position = xzVector * 10.0F;
-	ci::vec3 rotateaxis_x = normalized_player_vec * 10.0F;
-	//回転軸
-	ci::vec3 quataxis = glm::cross(rotateaxis, targetvec);
-
-	//同じベクトルを向いた状態だとクォータニオンが
-	//０になる。
-	//最初のベクトルとの外積を取っているので、０
-	//になるのはZと並行なベクトルの時だけ。
-	//なのでZが０の時と１の時だけ例外として角度
-	//を与えなければならない
-	if (quataxis == ci::vec3(0)) {
-		if ( normalized_player_vec.z > 0.0f) {
-			ci::gl::rotate(0, ci::vec3(0, 1, 0));
-			save_rotate_y = 0;
-		}
-		if ( normalized_player_vec.z < 0.0f) {
-			ci::gl::rotate(M_PI, ci::vec3(0, 1, 0));
-			save_rotate_y = M_PI;
-		}
-		return;
+	ci::vec3 playerYAxis;
+	ci::vec3 playerZAxis;
+	ci::vec3 playerXAxis;
+	if (drilling)
+	{
+		playerYAxis = glm::normalize(CAMERA->getCamera().getWorldUp());
+		playerZAxis = CAMERA->getCameraLook();
+		playerXAxis = glm::normalize(glm::cross(playerYAxis, playerZAxis));
+	}
+	else
+	{
+		playerYAxis = glm::normalize(CAMERA->getCamera().getWorldUp());
+		playerZAxis = normalized_player_vec;
+		playerZAxis.y = 0.0F;
+		playerXAxis = glm::normalize(glm::cross(playerYAxis, playerZAxis));
+		playerXAxis.y = 0.0F;
 	}
 
-	float rotation = atan2f( normalized_player_vec.x, normalized_player_vec.z);
+	playerYAxis = glm::normalize(glm::cross(playerXAxis, playerZAxis));
 
-	//回転
-	// 左回り
-	if (rotation > 0) {
-		ci::gl::rotate(rotation, quataxis);
-		save_rotate_y = rotation;
-	}
-	// 右回り
-	else if (rotation < 0) {
-		ci::gl::rotate(-rotation, quataxis);
-		save_rotate_y = rotation;
-	}
+	math::float3 x = { playerXAxis.x, playerXAxis.y, playerXAxis.z };
+	math::float3 y = { playerYAxis.x, playerYAxis.y, playerYAxis.z };
+	math::float3 z = { playerZAxis.x, playerZAxis.y, playerZAxis.z };
 
-	//ベクトルが出なければ
-	if (rotation <= 0.1f &&
-		rotation >= -0.1f) {
-		if (save_rotate_y > 0.1f)
-			ci::gl::rotate(save_rotate_y, ci::vec3(0, 1, 0));
-		if (save_rotate_y < -0.1f)
-			ci::gl::rotate(save_rotate_y, ci::vec3(0, 1, 0));
-	}
+	auto quat = math::Quat::LookAt(math::float3(0, 0, 1), z, math::float3(0, 1, 0), y * -1);
 
-}
+	rotate_x = quat.Angle();
+	
+	auto q = ci::quat(quat.w, quat.x, quat.y, quat.z);
 
-void Game::Player::cPlayer::playerRotationX()
-{
-	if (!drilling) return;
-	//プレイヤーの上方向
-	ci::vec3 rotateaxis = ci::vec3(0.0f, 1.0f, 0.0f);
+	rotation = q;
 
-	//移動先のベクトル
-	ci::vec3 yzVector = ci::vec3( 0, normalized_player_vec.y, normalized_player_vec.x + normalized_player_vec.z);
-	//回転軸
-	ci::vec3 quataxis = glm::cross(rotateaxis, yzVector );
-
-	//同じベクトルを向いた状態だとクォータニオンが
-	//０になる。
-	//最初のベクトルとの外積を取っているので、０
-	//になるのはZと並行なベクトルの時だけ。
-	//なのでZが０の時と１の時だけ例外として角度
-	//を与えなければならない
-	if (quataxis == ci::vec3(0)) {
-		if ( normalized_player_vec.z > 0.0f) {
-			ci::gl::rotate(0, ci::vec3(1, 0, 0));
-			save_rotate_x = 0;
-		}
-		if ( normalized_player_vec.z < 0.0f) {
-			ci::gl::rotate(M_PI, ci::vec3(1, 0, 0));
-			save_rotate_x = M_PI;
-		}
-		return;
-	}
-
-	float rotation = atan2f( normalized_player_vec.z, normalized_player_vec.y);
-
-	//回転
-	// 左回り
-	if (rotation > 0) {
-		ci::gl::rotate(rotation - M_PI / 2, quataxis);
-		save_rotate_x = rotation;
-	}
-	// 右回り
-	else if (rotation < 0) {
-		ci::gl::rotate(rotation + M_PI / 2, quataxis);
-		save_rotate_x = rotation;
-	}
-
-	//ベクトルが出なければ
-	if (rotation <= 0.1f &&
-		rotation >= -0.1f) {
-		if (save_rotate_x > 0.1f)
-			ci::gl::rotate(save_rotate_x - 90, ci::vec3(1, 0, 0));
-		if (save_rotate_x < -0.1f)
-			ci::gl::rotate(-save_rotate_x + 90, ci::vec3(1, 0, 0));
-	}
+	ci::gl::rotate(q);
 }
 
 void Game::Player::cPlayer::getGems(const int& _gemid)
@@ -133,7 +62,6 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 	if (getgems.size() > 1) {
 		//持っているジェムが複数あれば1個前のジェムのライトを消す
 		GemManager->getFragmentGem(gem_id_buf)->handle->color = ci::vec3(0);
-		GemManager->getFragmentGem(gem_id_buf)->setVisible(true);
 	}
 	//ランダムの生成
 	std::random_device rd;
@@ -179,8 +107,8 @@ void Game::Player::cPlayer::collisionGems()
 	if ( isWatching( ) ) return;
 
 	//自分のAABBを生成
-	ci::vec3 aabb_begin_pos = mPos - size * ci::vec3(4);
-	ci::vec3 aabb_end_pos = mPos + size * ci::vec3(4);
+	ci::vec3 aabb_begin_pos = mPos - size * ci::vec3(4000);
+	ci::vec3 aabb_end_pos = mPos + size * ci::vec3(4000);
 
 	ci::AxisAlignedBox player_aabb(aabb_begin_pos, aabb_end_pos);
 	//ci::AxisAlignedBox player_aabb(aabb_begin_pos, aabb_end_pos);
@@ -334,6 +262,9 @@ void Game::Player::cPlayer::gemsUpdate(const float& delta_time)
 		it->setPos(buf_pos);
 		//演出が終わったら
 		if (gem_production_end[it->getId()] == true) {
+			if (getgems.size() > 1) {
+				GemManager->getFragmentGem(gem_id_buf)->setVisible(false);
+			}
 			it->setPos(mCollider.getPosition() - (normalized_player_vec * ci::vec3(0.3f)) + ci::vec3(0,0.1f,0));
 		}
 	}
@@ -358,8 +289,6 @@ Game::Player::cPlayer::cPlayer(
 	size = DEFAULT_SIZE;
 	color = ci::vec4(1);
 	color = ci::ColorA8u(1, 0, 1, 1);
-	save_rotate_y = 0;
-	save_rotate_x = 0;
 	drill_sound = 0;
 	drilling = false;
 	jump_flag = false;
@@ -417,8 +346,8 @@ void Game::Player::cPlayer::receiveDamage(const float & attack, float player_id)
 	if (status.hp <= 0) {
 		is_dead = true;
 		respawn_count = 0;
-		cGameManager::getInstance( )->kill( player_id );
-		cGameManager::getInstance( )->death( this->player_id );
+		cGameManager::getInstance()->kill(player_id);
+		cGameManager::getInstance()->death(this->player_id);
 		dead();
 	}
 
@@ -491,10 +420,17 @@ void Game::Player::cPlayer::setup()
 		mRigidbody.gravityOn( );
 	}
 	mRigidbody.addWorld( );
-
-	//最初に角度を設定するためにほんの少し動かす
-	move(ci::vec3(0, 0, 0.01f));
-	mCollider.setPosition(mPos + ci::vec3(0, 0, 0.01f));
+	if (team == Team::Red) {
+		//最初に角度を設定するためにほんの少し動かす
+		move(ci::vec3(0, 0, 0.01f));
+		mCollider.setPosition(mPos + ci::vec3(0, 0, 0.01f));
+	}
+	else {
+		//最初に角度を設定するためにほんの少し動かす
+		move(ci::vec3(0, 0, 0.01f));
+		mCollider.setPosition(mPos + ci::vec3(0, 0, 0.01f));
+	}
+	
 	//プレイヤーの移動
 	mPos = mCollider.getPosition();
 
@@ -509,11 +445,10 @@ void Game::Player::cPlayer::setup()
 
 	main_weapon->setup();
 
-	animation.create("mogura", false, true);
-	animation.create("mogura_dig");
+	animation.create("mogura_walk", false, true);
 	animation.create("mogura_attack",true);
-	animation.animationChange("mogura");
-
+	animation.animationChange("mogura_walk");
+	animation.setAnimationStopTime("mogura_attack",0.5);
 	mesh = Resource::cObjectManager::getInstance()->findObject("montamogura/moguraHontai.obj");
 	TEX->set("mogura", "Fbx/UV_mogura_01.jpg");
 	
@@ -578,22 +513,9 @@ void Game::Player::cPlayer::draw()
 	}
 
 	ci::gl::translate(mPos);
-	playerRotationY();
-	playerRotationX();
-	/*if (active_user) {
-		playerRotationY();
-		playerRotationX();
-		
-	}
-	else {
-		ci::gl::rotate(save_rotate_y, ci::vec3(0, 1, 0));
-		if (drilling) {
-			ci::gl::rotate(save_rotate_x, ci::vec3(1, 0, 0));
-		}
-	}*/
-	//ci::gl::translate(-ci::vec3(0, 0.5f, 0));
-	ci::gl::scale(ci::vec3(0.65f, 0.65f, 0.65f));
+	playerRotation();
+	
+	ci::gl::scale(ci::vec3(0.25f, 0.25f, 0.25f));
 	animation.draw();
-	//ci::gl::draw(mesh);
 	ci::gl::popModelView();
 }

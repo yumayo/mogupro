@@ -407,7 +407,7 @@ void Game::cPlayerManager::update(const float& delta_time)
 	hintNearGemStone( );
 	hintTransportGem( );
 	hintRoot->entry_update( delta_time );
-	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), ci::vec2(active_player->getRotateX(), active_player->getRotateY()));
+	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), ci::vec2(0));
 }
 
 void Game::cPlayerManager::draw()

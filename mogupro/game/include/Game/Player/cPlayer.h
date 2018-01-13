@@ -90,9 +90,9 @@ namespace Game {
 			bool jump_flag;
 			//スタン時（動けない状態）
 			bool stan;
-			//クォータニオンの例外用の角度
-			float save_rotate_y;
-			float save_rotate_x;
+			//クォータニオン
+			ci::quat rotation;
+			float rotate_x = 0;
 
 			//プレイヤーからのカメラの位置
 			float player_far;
@@ -121,10 +121,7 @@ namespace Game {
 			// プレイヤーに常に付きまとうライト
 			Light::PointLightHandle light;
 
-			//Y軸回転
-			void playerRotationY();
-			//X軸回転
-			void playerRotationX();
+			
 
 			//掘削時のカメラの遠さ調整
 			void drillingCamera(const float& delta_time);
@@ -176,6 +173,11 @@ namespace Game {
 					vec.z <= -0.01f) {
 					normalized_player_vec = glm::normalize(vec);
 				}
+				mCollider.setPosition(pos);
+			}
+
+			//強制的にその座標にしたいときのセット
+			void settingPosition(const ci::vec3 pos) {
 				mCollider.setPosition(pos);
 			}
 			bool isWatching( )
@@ -261,16 +263,12 @@ namespace Game {
 				return active_user;
 			}
 
-			float getRotateY() {
-				return save_rotate_y;
-			}
 			float getRotateX() {
-				return save_rotate_x;
+				return rotate_x;
 			}
 
-			void setRotate(const float& x,const float& y) {
-				save_rotate_x = x;
-				save_rotate_y = y;
+			ci::quat getRotate() {
+				return rotation;
 			}
 			
 			//コリジョンの後に呼び出す
@@ -302,6 +300,8 @@ namespace Game {
 			void move(const ci::vec3& velocity);
 			void jump(bool flag);
 
+			//回転
+			void playerRotation();
 			void setup() override;
 			void update(const float& delta_time) override;
 			void draw() override;

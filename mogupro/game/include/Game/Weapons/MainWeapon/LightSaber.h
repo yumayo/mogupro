@@ -27,8 +27,8 @@ namespace Game {
 			ci::vec3 weapon_pos;
 			ci::vec3 weapon_vec;
 			int player_id;
-			float player_rotate_x;
-			float player_rotate_y;
+			ci::quat player_rotation;
+			float player_rotate_x = 0;
 			Motion motion;
 			ChargeMotion charge_motion;
 			float timer;
