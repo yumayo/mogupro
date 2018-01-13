@@ -7,6 +7,7 @@
 using namespace ci;
 namespace Game
 {
+const unsigned int MAX_LIGHT_NUM = 200U;
 void cShaderManager::setup( bool useShadow )
 {
 	mUseShadow = useShadow;
@@ -51,7 +52,7 @@ void cShaderManager::uniformUpdate( )
 			std::vector<vec3> positions;
 			std::vector<vec3> colors;
 			std::vector<float> radiuses;
-			int lightNum = std::min( lights.size( ), 100U );
+			int lightNum = std::min( lights.size( ), MAX_LIGHT_NUM );
 			for ( auto& light : lights )
 			{
 				positions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getPosition( ), 1 ) ) );
@@ -72,7 +73,7 @@ void cShaderManager::uniformUpdate( )
 			std::vector<vec3> endPositions;
 			std::vector<vec3> colors;
 			std::vector<float> radiuses;
-			int lightNum = std::min( lights.size( ), 100U );
+			int lightNum = std::min( lights.size( ), MAX_LIGHT_NUM );
 			for ( auto& light : lights )
 			{
 				beginPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getBeginPosition( ), 1 ) ) );
@@ -98,7 +99,7 @@ void cShaderManager::uniformUpdate( int chunkId )
 			std::vector<vec3> positions;
 			std::vector<vec3> colors;
 			std::vector<float> radiuses;
-			int lightNum = std::min( lights->size( ), 100U );
+			int lightNum = std::min( lights->size( ), MAX_LIGHT_NUM );
 			for ( auto& light : *lights )
 			{
 				positions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getPosition( ), 1 ) ) );
@@ -120,7 +121,7 @@ void cShaderManager::uniformUpdate( int chunkId )
 			std::vector<vec3> endPositions;
 			std::vector<vec3> colors;
 			std::vector<float> radiuses;
-			int lightNum = std::min( lights->size( ), 100U );
+			int lightNum = std::min( lights->size( ), MAX_LIGHT_NUM );
 			for ( auto& light : *lights )
 			{
 				beginPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getBeginPosition( ), 1 ) ) );

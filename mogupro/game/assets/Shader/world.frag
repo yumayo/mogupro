@@ -21,16 +21,16 @@ in vec4 vShadowPosition;
 in vec3 vShadowNormal;
 
 // ポイントライトに使うやつ
-uniform vec3 uModelViewPointLightPositions[100];
-uniform vec3 uModelViewPointLightColors[100];
-uniform float uModelViewPointLightRadiuses[100];
+uniform vec3 uModelViewPointLightPositions[200];
+uniform vec3 uModelViewPointLightColors[200];
+uniform float uModelViewPointLightRadiuses[200];
 uniform int uPointLineNum;
 
 // ラインライトに使うやつ
-uniform vec3 uModelViewLineLightPositionsA[100];
-uniform vec3 uModelViewLineLightPositionsB[100];
-uniform vec3 uModelViewLineLightColors[100];
-uniform float uModelViewLineLightRadiuses[100];
+uniform vec3 uModelViewLineLightPositionsA[200];
+uniform vec3 uModelViewLineLightPositionsB[200];
+uniform vec3 uModelViewLineLightColors[200];
+uniform float uModelViewLineLightRadiuses[200];
 uniform int uLineLightNum;
 
 float distancePointLine( vec3 P, vec3 A, vec3 B )
