@@ -19,6 +19,7 @@ public:
 	void BeginSetCapsels();
 private:
 	std::map<int,std::shared_ptr<Game::Capsule::cCapsuleBase>>mCapsules;
+	std::vector<ci::ColorA>colors;
 	int debugcount = 0;
 };
 }
