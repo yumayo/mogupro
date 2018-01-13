@@ -13,6 +13,7 @@ namespace Game
 				~cUseQuarry();
 				void setup(const int playerid) override;
 				void update(const float& delta_time) override;
+				void updateCollisionAfterUpdate(const float& delta_time) override;
 				void draw() override;
 				bool deleteThis() override;
 				void createSubWeapon() override;

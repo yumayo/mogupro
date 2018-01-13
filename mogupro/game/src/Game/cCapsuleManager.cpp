@@ -7,6 +7,7 @@
 #include<Game/Capsule/cQuarryCapsule.h>
 #include<cinder\Rand.h>
 #include<Resource\cSoundManager.h>
+#include"Particle\cParticleManager.h"
 //#include<Game/Weapons/SubWeapon/SubWeaponType.h>
 namespace Game
 {
@@ -16,11 +17,18 @@ cCapsuleManager::cCapsuleManager( )
 }
 cCapsuleManager::~cCapsuleManager( )
 {
-
+	colors.clear();
 }
 void cCapsuleManager::setup()
 {
 	BeginSetCapsels();
+
+	const float colorsize = 12.f;
+	for (float i = 0; i < colorsize; i++) {
+		float h = i / colorsize;
+		ci::Colorf hsv = ci::hsvToRgb(ci::vec3(h, 1.0f, 1.0f));
+		colors.push_back(ci::ColorA(hsv.r, hsv.g, hsv.b));
+	}
 	/*ci::vec3 pos = ci::vec3(1, Game::Field::CHUNK_RANGE_Y*Game::Field::CHUNK_SIZE*Game::Field::BLOCK_SIZE,1);
 	createCapsule(pos, Game::Weapons::SubWeapon::LIGHT_BOMB,debugcount);*/
 }

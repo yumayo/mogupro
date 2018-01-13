@@ -16,6 +16,13 @@ namespace Sound
 		Source(const Source&) = delete;
 		Source& operator=(const Source&) = delete;
 
+		void unbind()
+		{
+			unbindBuffer();
+			if (id_ != 0)
+				alDeleteSources(1, &id_);
+		}
+
 		ALuint id() const;
 		void bindBuffer(const Buffer& buffer) const;
 		void unbindBuffer() const;

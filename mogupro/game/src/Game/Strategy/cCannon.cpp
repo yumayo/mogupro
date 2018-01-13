@@ -11,6 +11,10 @@
 #include"Resource\cSoundManager.h"
 #include"Particle\cParticleManager.h"
 #include"cinder\Rand.h"
+#include"Sound/Wav.h"
+#include"Sound\Stereophonic.h"
+#include"Resource\cFbxManager.h"
+#include"Resource\TextureManager.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -33,10 +37,12 @@ namespace Game
 			if (team == Game::Player::Team::Red) {
 				direction = 1.f;
 				mColor = ci::ColorA(1, 0, 0, 1);
+				mCannonName = "cannon_red";
 			}
 			else {
 				direction = -1.f;
 				mColor = ci::ColorA(0, 0, 1, 1);
+				mCannonName = "cannon_blue";
 			}
 		}
 		cCannon::~cCannon()
@@ -48,28 +54,37 @@ namespace Game
 
 		void cCannon::draw()
 		{
-			float rate = mScale.x;
-			/////////////////土台
-			STRM->drawCube(mFoundationPos, mFoundationScale, vec3(0, 0, 0), ColorA(0.5, 0.5, 0.5, 1));
-			//////////////////
+			ci::gl::ScopedTextureBind tex(TEX->get("cannon"));
+			gl::pushModelView();
+			gl::translate(mPos);
+			gl::scale(ci::vec3(mScale.x));
+			gl::color(ColorA(1,1,1,1));
+			Resource::cFbxManager::getInstance()->draw(mCannonName);
+			gl::popModelView();
 
-			/////////////////キャノン
-			STRM->drawCube(mPos+vec3(0, rate*0.25f,direction*rate*0.4f),vec3(rate*0.3f,rate,rate*0.3f*direction), vec3(-30*direction, 0, 0), ColorA(0, 0, 0, 1));
-			//////////////////
 
-			/////////////////スフィア
-			ci::gl::pushModelView();
-			ci::gl::translate(mPos);
-			ci::gl::color(ColorA(1, 1, 1, 1));
-			ci::gl::scale(ci::vec3(mScale.x / 2.f));
-			ci::gl::draw(mesh);
-			ci::gl::popModelView();
-			//STRM->drawShere(mPos, ci::vec3(mScale.x / 2.f), vec3(0, 0, 0), ColorA(1, 1, 1, 1), 30);
-			/////////////////
+			//float rate = mScale.x;
+			///////////////////土台
+			//STRM->drawCube(mFoundationPos, mFoundationScale, vec3(0, 0, 0), ColorA(0.5, 0.5, 0.5, 1));
+			////////////////////
 
-			/////////////////本体
-			STRM->drawCube(mPos - ci::vec3(0, mScale.y / 4.f, 0), ci::vec3(mScale.x, mScale.y / 2.f, mScale.z), vec3(0, 0, 0), mColor);
-			/////////////////
+			///////////////////キャノン
+			//STRM->drawCube(mPos+vec3(0, rate*0.25f,direction*rate*0.4f),vec3(rate*0.3f,rate,rate*0.3f*direction), vec3(-30*direction, 0, 0), ColorA(0, 0, 0, 1));
+			////////////////////
+
+			///////////////////スフィア
+			//ci::gl::pushModelView();
+			//ci::gl::translate(mPos);
+			//ci::gl::color(ColorA(1, 1, 1, 1));
+			//ci::gl::scale(ci::vec3(mScale.x / 2.f));
+			//ci::gl::draw(mesh);
+			//ci::gl::popModelView();
+			////STRM->drawShere(mPos, ci::vec3(mScale.x / 2.f), vec3(0, 0, 0), ColorA(1, 1, 1, 1), 30);
+			///////////////////
+
+			///////////////////本体
+			//STRM->drawCube(mPos - ci::vec3(0, mScale.y / 4.f, 0), ci::vec3(mScale.x, mScale.y / 2.f, mScale.z), vec3(0, 0, 0), mColor);
+			///////////////////
 
 			////////////////AABBを描画
 			//STRM->drawCube(mPos, mScale, vec3(0, 0, 0), ColorA(0, 0, 0, 1));
@@ -90,6 +105,8 @@ namespace Game
 			light = cLightManager::getInstance()->addPointLight(mGemStorePos, ci::vec3(mColor.r, mColor.g, mColor.b) , lightradius);
 			mToPlayerAABB.set(mAABB.getPosition() - mAABB.getSize()*0.55f, mAABB.getPosition() + mAABB.getSize()*0.55f);
 			mesh = Resource::cObjectManager::getInstance()->findObject("sphere.obj");
+
+			TEX->set("cannon", "Fbx/" + mCannonName + ".png");
 		}
 
 		Game::Player::Team cCannon::getTeam()
@@ -134,8 +151,7 @@ namespace Game
 
 			Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(), getgemnum);
 			////////////
-			Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").setGain(0.4f);
-			Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").play();
+			Sound::StereophonicManager::getInstance()->add(Sound::Wav(ci::app::getAssetPath("SE/cannoncharge.wav").string()), mPos);
 			////////////
 			//sendCollectMaxGem();
 		}

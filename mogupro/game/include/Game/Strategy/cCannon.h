@@ -52,6 +52,7 @@ namespace Game
 			ci::vec3 mFoundationPos;
 			ci::vec3 mFoundationScale;
 			ci::vec3 mGemStorePos;
+			std::string mCannonName;
 			float lightradius = 2.0f;
 			float direction;
 			float mLightSinAngle = 0.0f;

@@ -42,11 +42,13 @@ void cSubWeaponManager::updateCollisionAfterUpdate(const float & deltaTime)
 	for (auto& itr : subweapons) {
 		itr.second->updateCollisionAfterUpdate(deltaTime);
 	}
+	for (auto& itr : usesubweapons) {
+		itr->updateCollisionAfterUpdate(deltaTime);
+	}
 }
 
 void cSubWeaponManager::HitDrillToGem(const int _objectid, const int _gemid)
 {
-	//ci::app::console() << "よぶよ" << std::endl;
 	auto quarry = std::static_pointer_cast<Game::Weapons::SubWeapon::cQuarry>(subweapons[_objectid]);
 	quarry->HitGem(_gemid);
 }
@@ -57,15 +59,9 @@ void cSubWeaponManager::drawCube(const ci::vec3 pos, const ci::vec3 size, const 
 }
 void cSubWeaponManager::createLightBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale, const int objectid, const int _playerid)
 {
-
-	
-	ci::app::console() << _playerid << _pos << objectid <<"ライトボムクリエイト"<< std::endl;
 	subweapons.insert(std::make_pair(objectid, std::make_shared<Game::Weapons::SubWeapon::cLightBomb>(_pos, _scale, _speed, _playerid,objectid)));
 	subweapons[objectid]->setup();
 	debugidcount++;
-	float gain = getGain(_playerid);
-	Resource::cSoundManager::getInstance()->findSe("SubWeapon/lightbombthrow.wav").setGain(gain);
-	Resource::cSoundManager::getInstance()->findSe("SubWeapon/lightbombthrow.wav").play();
 }
 
 void cSubWeaponManager::createQuarry(const ci::vec3 _pos, const int _objectid, const int playerid)

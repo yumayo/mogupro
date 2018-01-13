@@ -122,6 +122,12 @@ namespace Sound
 			return source->currentTime();
 		}
 
+		void unbind()
+		{
+			buffer->unbind();
+			source->unbind();
+		}
+
 		ci::vec3* sourcePos;
 		ci::vec3 currentSourcePos;
 

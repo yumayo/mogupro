@@ -448,6 +448,7 @@ void Game::cPlayerManager::draw2D( )
 
 void Game::cPlayerManager::hintNearBlock( )
 {
+	if ( hintRenderBase->get_child_by_name( u8"左クリックで地面を掘れるぞ" ) ) return;
 	if ( mHintNearBlock = cFieldManager::getInstance( )->isBreakBlock( active_player->getPos( ) + ( glm::normalize( CAMERA->getCamera( ).getViewDirection( ) ) * ci::vec3( active_player->getStatus( ).drill_speed / 3 ) ), 1 ) )
 	{
 		if ( !mHintNearGemStone && !mHintTransportGem )
@@ -455,12 +456,15 @@ void Game::cPlayerManager::hintNearBlock( )
 			hintRenderBase->remove_all_children( );
 			auto l = hintRenderBase->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
 			l->set_text( u8"左クリックで地面を掘れるぞ" );
+			l->set_name( u8"左クリックで地面を掘れるぞ" );
 		}
 	}
 }
 
 void Game::cPlayerManager::hintNearGemStone( )
 {
+	if ( hintRenderBase->get_child_by_name( u8"右クリックで宝石を採れるぞ" ) ) return;
+
 	static int i = 0; i++; if ( i % 5 != 0 ) return;
 	bool isHit = false;
 	auto const& gems = cGemManager::getInstance( )->getGemStones( );
@@ -480,27 +484,33 @@ void Game::cPlayerManager::hintNearGemStone( )
 			hintRenderBase->remove_all_children( );
 			auto l = hintRenderBase->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
 			l->set_text( u8"右クリックで宝石を採れるぞ" );
+			l->set_name( u8"右クリックで宝石を採れるぞ" );
 		}
 	}
 }
 
 void Game::cPlayerManager::hintTransportGem( )
 {
+	if ( hintRenderBase->get_child_by_name( u8"よくやった" ) ) return;
 	if ( mHintTransportGem && active_player->getgems.empty( ) )
 	{
 		hintRoot->remove_child_by_name( "hintTargetCannon" );
 		hintRenderBase->remove_all_children( );
 		auto l = hintRenderBase->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
 		l->set_text( u8"よくやった" );
+		l->set_name( u8"よくやった" );
 		l->run_action( Node::Action::sequence::create( Node::Action::delay::create( 1.5F ),
 													   Node::Action::call_func::create( [ this ] { mHintTransportGem = false; } ),
 													   Node::Action::remove_self::create( ) ) );
 	}
+
+	if ( hintRenderBase->get_child_by_name( u8"宝石を大砲に持って帰ろう" ) ) return;
 	if ( mHintTransportGem = !active_player->getgems.empty( ) )
 	{
 		hintRenderBase->remove_all_children( );
 		auto l = hintRenderBase->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
 		l->set_text( u8"宝石を大砲に持って帰ろう" );
+		l->set_name( u8"宝石を大砲に持って帰ろう" );
 
 		class cTargetCannon : public Node::Renderer::sprite
 		{
@@ -520,17 +530,21 @@ void Game::cPlayerManager::hintTransportGem( )
 				auto& cannon = cannons.at( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) );
 				auto targetPos = cannon->getGemStorePos( );
 				targetPos.y = Field::WORLD_SIZE.y;
+
+				ci::vec3 targetVec = targetPos - cPlayerManager::getInstance( )->getActivePlayer( )->getPos( );
+				targetVec = ci::normalize( targetVec );
+				ci::vec3 cameraVec = camera.getViewDirection( );
+				cameraVec = ci::normalize( cameraVec );
+
+				targetPos = targetVec + cPlayerManager::getInstance( )->getActivePlayer( )->getPos( );
+
 				auto screenPos = camera.worldToScreen( targetPos, ci::app::getWindowWidth( ), ci::app::getWindowHeight( ) );
-				screenPos = ci::clamp( screenPos, ci::vec2( 0, 0 ) + ci::vec2(200, 200), ci::vec2( ci::app::getWindowSize( ) ) - ci::vec2( 200, 200 ) );
+
 				set_position( screenPos );
 
 				ci::vec2 vec = screenPos - ci::app::getWindowCenter( );
 				float angle = atan2( vec.y, vec.x );
 				set_rotation( angle );
-
-				ci::vec3 targetVec = targetPos - cPlayerManager::getInstance( )->getActivePlayer( )->getPos( );
-				ci::vec3 cameraVec = camera.getViewDirection( );
-				set_visible( ci::dot( targetVec, cameraVec ) > 0.0F );
 			}
 		};
 
