@@ -517,10 +517,7 @@ void cFbxManager::testDraw()
     gl::translate( vec3( 0, 0, 1 ) );
     Resource::cFbxManager::getInstance()->draw( "Gemstone2" );
 
-    gl::translate( vec3( 0, 0, 5 ) );
-    gl::scale( vec3( 300 ) );
-    Resource::cFbxManager::getInstance()->draw( "cannon" );
-    gl::popModelView();
+	gl::popModelView();
 }
 
 void cFbxManager::draw( const std::string & name )
