@@ -40,9 +40,15 @@ namespace Game
 		void cFragmentGem::draw()
 		{
 			if (!mVisible) return;
+			gl::pushModelMatrix();
+			//gl::ScopedColor scoped_color(mColorA);
 			ci::gl::color(ci::Color(mColorA));
-			drawCube(vec3(mPosition), vec3(mScale));
+			gl::translate(mPosition);
+			gl::scale(vec3(1));
+			Resource::cFbxManager::getInstance()->draw("Gemstone");
+			//gl::drawCube(vec3(0), vec3(1));
 			color(ColorA(1,1,1,1));
+			gl::popModelMatrix();
 		}
 
 

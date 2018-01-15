@@ -7,6 +7,7 @@
 #include <Collision/cRigidBody.h>
 #include <Collision/cAABBCollider.h>
 #include <Game/Light/cPointLightParam.h>
+#include <Resource\/cFbxManager.h>
 
 namespace Game
 {
