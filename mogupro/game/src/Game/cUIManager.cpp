@@ -107,50 +107,27 @@ hardptr<Node::node> createItem( Weapons::SubWeapon::SubWeaponType type )
 class cannonMeter : public Node::node
 {
 public:
-	CREATE_H( cannonMeter, vec2 contentSize, Player::Team myTeam, Player::Team team )
+	CREATE_H( cannonMeter, vec2 contentSize, Player::Team playerTeam, Player::Team myTeam )
 	{
-		CREATE( cannonMeter, contentSize, myTeam, team );
+		CREATE( cannonMeter, contentSize, playerTeam, myTeam );
 	}
-	bool init( vec2 contentSize, Player::Team myTeam, Player::Team team )
+	bool init( vec2 contentSize, Player::Team playerTeam, Player::Team myTeam )
 	{
-		this->team = team;
+		this->myTeam = myTeam;
+		this->playerTeam = playerTeam;
 
 		auto gauge = Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( "gameMainUI/meter_gauge.png" ) );
-		this->set_scale( vec2( team == Player::Team::Red ? 1.0F : 0.75F ) );
+		this->set_scale( vec2( myTeam == playerTeam ? 1.0F : 0.75F ) );
 
 		auto rectSize = vec2( 82, 572 );
 
 		meter = this->add_child( Node::Renderer::rect::create( rectSize ) );
-		meter->set_color( team == Player::Team::Red ? ColorA( 0.8, 0.2, 0.2 ) : ColorA( 0.2, 0.2, 0.8 ) );
+		meter->set_color( myTeam == Player::Team::Red ? ColorA( 0.8, 0.2, 0.2 ) : ColorA( 0.2, 0.2, 0.8 ) );
 
 		this->set_content_size( gauge->get_content_size( ) );
-		this->set_anchor_point( vec2( team == Player::Team::Red ? 0 : 1, 1 ) );
+		this->set_anchor_point( vec2( myTeam == playerTeam ? 0 : 1, 1 ) );
 
-		switch ( myTeam )
-		{
-		case Game::Player::Red:
-			switch ( team )
-			{
-			case Game::Player::Red:
-				this->set_position( contentSize * vec2( 0.0F, 1.0F ) );
-				break;
-			case Game::Player::Blue:
-				this->set_position( contentSize * vec2( 1.0F, 1.0F ) );
-				break;
-			}
-			break;
-		case Game::Player::Blue:
-			switch ( team )
-			{
-			case Game::Player::Red:
-				this->set_position( contentSize * vec2( 1.0F, 1.0F ) );
-				break;
-			case Game::Player::Blue:
-				this->set_position( contentSize * vec2( 0.0F, 1.0F ) );
-				break;
-			}
-			break;
-		}
+		this->set_position( contentSize * vec2( myTeam == playerTeam ? 0 : 1, 1.0F ) );
 		
 		auto rectStartPos = vec2( 47, 86 );
 
@@ -166,11 +143,11 @@ public:
 		player1 = gauge->add_child( Node::node::create( ) );
 		player1->set_position( vec2( 134, 404 + 70 * 0 ) );
 		{
-			auto live = player1->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( team == Player::Team::Red ?
+			auto live = player1->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( myTeam == Player::Team::Red ?
 																														   "gameMainUI/live_red.png" : "gameMainUI/live_blue.png" ) ) );
 			live->set_anchor_point( vec2( 0, 0 ) );
 			live->set_name( "live" );
-			auto dead = player1->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( team == Player::Team::Red ?
+			auto dead = player1->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( myTeam == Player::Team::Red ?
 																														   "gameMainUI/dead_red.png" : "gameMainUI/dead_blue.png" ) ) );
 			dead->set_anchor_point( vec2( 0, 0 ) );
 			dead->set_name( "dead" );
@@ -182,11 +159,11 @@ public:
 		player2 = gauge->add_child( Node::node::create( ) );
 		player2->set_position( vec2( 134, 404 + 70 * 1 ) );
 		{
-			auto live = player2->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( team == Player::Team::Red ?
+			auto live = player2->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( myTeam == Player::Team::Red ?
 																														   "gameMainUI/live_red.png" : "gameMainUI/live_blue.png" ) ) );
 			live->set_anchor_point( vec2( 0, 0 ) );
 			live->set_name( "live" );
-			auto dead = player2->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( team == Player::Team::Red ?
+			auto dead = player2->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( myTeam == Player::Team::Red ?
 																														   "gameMainUI/dead_red.png" : "gameMainUI/dead_blue.png" ) ) );
 			dead->set_anchor_point( vec2( 0, 0 ) );
 			dead->set_name( "dead" );
@@ -198,11 +175,11 @@ public:
 		player3 = gauge->add_child( Node::node::create( ) );
 		player3->set_position( vec2( 134, 404 + 70 * 2 ) );
 		{
-			auto live = player3->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( team == Player::Team::Red ?
+			auto live = player3->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( myTeam == Player::Team::Red ?
 																														   "gameMainUI/live_red.png" : "gameMainUI/live_blue.png" ) ) );
 			live->set_anchor_point( vec2( 0, 0 ) );
 			live->set_name( "live" );
-			auto dead = player3->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( team == Player::Team::Red ?
+			auto dead = player3->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( myTeam == Player::Team::Red ?
 																														   "gameMainUI/dead_red.png" : "gameMainUI/dead_blue.png" ) ) );
 			dead->set_anchor_point( vec2( 0, 0 ) );
 			dead->set_name( "dead" );
@@ -214,14 +191,9 @@ public:
 		this->add_child( gauge );
 		gauge->set_position( gauge->get_content_size( ) * vec2( 0.5F, 0.5F ) );
 		gauge->set_pivot( vec2( 0, 0 ) );
-		gauge->set_scale( vec2( team == Player::Team::Red ? 1.0F : -1.0F, 1.0F ) );
+		gauge->set_scale( vec2( myTeam == playerTeam ? 1.0F : -1.0F, 1.0F ) );
 
 		return true;
-	}
-	void swap( Player::Team myTeam )
-	{
-		this->remove_all_children( );
-		init( this->get_content_size( ), myTeam, team == Player::Team::Red ? Player::Team::Blue : Player::Team::Red );
 	}
 	void addPower( int value )
 	{
@@ -238,7 +210,8 @@ public:
 		line->run_action( Node::Action::ease<EaseOutCubic>::create( Node::Action::rotate_to::create( 1.5F, cinder::toRadians( degree ) ) ) );
 	}
 	softptr<Node::node> meter;
-	Player::Team team;
+	Player::Team playerTeam;
+	Player::Team myTeam;
 	softptr<Node::node> line;
 	softptr<Node::node> player1;
 	softptr<Node::node> player2;
@@ -311,14 +284,12 @@ void cUIManager::awake( )
 	l->set_color( ColorA( 0, 0, 0 ) );
 
 	mSlot = mRoot->add_child( itemSlot::create( mRoot->get_content_size( ) ) );
-
-	mRedTeamCannonMeter = mRoot->add_child( cannonMeter::create( mRoot->get_content_size( ), Player::Team::Red, Player::Team::Red ) );
-	mBlueTeamCannonMeter = mRoot->add_child( cannonMeter::create( mRoot->get_content_size( ), Player::Team::Red, Player::Team::Blue ) );
 }
 void cUIManager::setup( )
 {
-	mRedTeamCannonMeter.dynamicptr<cannonMeter>( )->swap( (Player::Team)cPlayerManager::getInstance( )->getActivePlayerTeamId( ) );
-	mBlueTeamCannonMeter.dynamicptr<cannonMeter>( )->swap( ( Player::Team )cPlayerManager::getInstance( )->getActivePlayerTeamId( ) );
+	auto playerTeamId = ( Player::Team )cPlayerManager::getInstance( )->getActivePlayerTeamId( );
+	mRedTeamCannonMeter = mRoot->add_child( cannonMeter::create( mRoot->get_content_size( ), playerTeamId, Player::Team::Red ) );
+	mBlueTeamCannonMeter = mRoot->add_child( cannonMeter::create( mRoot->get_content_size( ), playerTeamId, Player::Team::Blue ) );
 }
 void cUIManager::update( float delta )
 {
