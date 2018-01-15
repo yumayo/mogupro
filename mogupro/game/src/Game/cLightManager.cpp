@@ -5,6 +5,11 @@
 #include <random>
 namespace Game
 {
+cLightManager::cLightManager( )
+	: mPointLightIdGenerator( 0, Light::MAX_POINT_LIGHT_NUM )
+	, mLineLightIdGenerator( 0, Light::MAX_LINE_LIGHT_NUM )
+{
+}
 void cLightManager::setup( )
 {
 }
@@ -58,7 +63,7 @@ boost::optional<std::set<Light::cPointLightParam const*> const&> cLightManager::
 }
 Light::PointLightHandle cLightManager::addPointLight( cinder::vec3 position, cinder::vec3 color, float radius )
 {
-	int id = mPointLightId += 1;
+	const int id = mPointLightIdGenerator.createId( );
 	auto handle = std::make_shared<Light::cPointLightParam>( id, position, color, radius );
 	mPointLights.insert( std::make_pair( id, handle.get( ) ) );
 	attachChunk( handle.get( ) );
@@ -66,6 +71,7 @@ Light::PointLightHandle cLightManager::addPointLight( cinder::vec3 position, cin
 }
 void cLightManager::removePointLight( int id, Light::cPointLightParam const* param )
 {
+	mPointLightIdGenerator.removeId( id );
 	detachChunk( param );
 	mPointLights.erase( id );
 }
@@ -103,7 +109,7 @@ boost::optional<std::set<Light::cLineLightParam const*>const&> cLightManager::ge
 }
 Light::LineLightHandle cLightManager::addLineLight( cinder::vec3 beginPosition, cinder::vec3 endPosition, cinder::vec3 color, float radius )
 {
-	int id = mLineLightId += 1;
+	const int id = mLineLightIdGenerator.createId( );
 	auto handle = std::make_shared<Light::cLineLightParam>( id, beginPosition, endPosition, color, radius );
 	mLineLights.insert( std::make_pair( id, handle.get( ) ) );
 	attachChunk( handle.get( ) );
@@ -111,6 +117,7 @@ Light::LineLightHandle cLightManager::addLineLight( cinder::vec3 beginPosition, 
 }
 void cLightManager::removeLineLight( int id, Light::cLineLightParam const* param )
 {
+	mLineLightIdGenerator.removeId( id );
 	detachChunk( mLineLights[id] );
 	mLineLights.erase( id );
 }

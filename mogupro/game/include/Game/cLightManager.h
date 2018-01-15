@@ -8,12 +8,14 @@
 #include <Game/Light/cPointLightParam.h>
 #include <Game/Light/cLineLightParam.h>
 #include <boost/optional.hpp>
+#include <Utility/cIdentifier.h>
+#include <Game/Light/LightDefine.h>
 namespace Game
 {
 class cLightManager : public Utility::cSingletonAble<cLightManager>
 {
 public:
-	cLightManager( ) = default;
+	cLightManager( );
 	~cLightManager( ) = default;
 	void setup( );
 	void update( );
@@ -28,7 +30,7 @@ private:
 	void attachChunk( Light::cPointLightParam const* param );
 	void detachChunk( Light::cPointLightParam const* param );
 private:
-	int mPointLightId = 0;
+	Utility::cIdentifier mPointLightIdGenerator;
 	std::map<int, Light::cPointLightParam const*> mPointLights;
 	std::map<int, std::set<Light::cPointLightParam const*>> mPointLightsMap;
 
@@ -42,7 +44,7 @@ private:
 	void attachChunk( Light::cLineLightParam const* param );
 	void detachChunk( Light::cLineLightParam const* param );
 private:
-	int mLineLightId = 0;
+	Utility::cIdentifier mLineLightIdGenerator;
 	std::map<int, Light::cLineLightParam const*> mLineLights;
 	std::map<int, std::set<Light::cLineLightParam const*>> mLineLightsMap;
 };

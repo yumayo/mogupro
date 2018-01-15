@@ -1,4 +1,4 @@
-#version 150 core
+#version 150
 
 uniform sampler2D uTex0;
 uniform vec4 uAmb;
@@ -21,16 +21,22 @@ in vec4 vShadowPosition;
 in vec3 vShadowNormal;
 
 // ポイントライトに使うやつ
-uniform vec3 uModelViewPointLightPositions[200];
-uniform vec3 uModelViewPointLightColors[200];
-uniform float uModelViewPointLightRadiuses[200];
-uniform int uPointLineNum;
+layout (std140) uniform PointLightParams
+{
+    vec4 useIndices[384 / 4];
+    vec4 modelViewPositions[384];
+    vec4 colorWithRadiuses[384];
+}uPointLight;
+uniform int uPointLightNum;
 
 // ラインライトに使うやつ
-uniform vec3 uModelViewLineLightPositionsA[200];
-uniform vec3 uModelViewLineLightPositionsB[200];
-uniform vec3 uModelViewLineLightColors[200];
-uniform float uModelViewLineLightRadiuses[200];
+layout (std140) uniform LineLightParams
+{
+    vec4 useIndices[32 / 4];
+    vec4 modelViewPositionsA[32];
+    vec4 modelViewPositionsB[32];
+    vec4 colorWithRadiuses[32];
+}uLineLight;
 uniform int uLineLightNum;
 
 float distancePointLine( vec3 P, vec3 A, vec3 B )
@@ -68,22 +74,24 @@ void main()
     oColor.rgb *= ( Diffuse * Shadow + Ambient );
 
     // ポイントライト
-    for(int i = 0; i < uPointLineNum; ++i)
+    for(int i = 0; i < uPointLightNum; ++i)
     {
-        float lightDistance = distance( vModelViewPosition.xyz, uModelViewPointLightPositions[i] );
-        if(lightDistance < uModelViewPointLightRadiuses[i])
+        int useId = int( uPointLight.useIndices[i / 4][i % 4] );
+        float d = distance( vModelViewPosition.xyz, uPointLight.modelViewPositions[useId].xyz );
+        if(d < uPointLight.colorWithRadiuses[useId].a)
         {
-            oColor.rgb += uModelViewPointLightColors[i] * (uModelViewPointLightRadiuses[i] - lightDistance) * ( 1.0 / uModelViewPointLightRadiuses[i] );
+            oColor.rgb += uPointLight.colorWithRadiuses[useId].xyz * (uPointLight.colorWithRadiuses[useId].a - d) * ( 1.0 / uPointLight.colorWithRadiuses[useId].a );
         }
     }
 
     // ラインライト
     for(int i = 0; i < uLineLightNum; ++i)
     {
-        float d = distancePointLine(vModelViewPosition.xyz, uModelViewLineLightPositionsA[i], uModelViewLineLightPositionsB[i] );
-        if(d < uModelViewLineLightRadiuses[i])
+        int useId = int( uLineLight.useIndices[i / 4][i % 4] );
+        float d = distancePointLine( vModelViewPosition.xyz, uLineLight.modelViewPositionsA[useId].xyz, uLineLight.modelViewPositionsB[useId].xyz );
+        if(d < uLineLight.colorWithRadiuses[useId].a)
         {
-            oColor.rgb += uModelViewLineLightColors[i] * (uModelViewLineLightRadiuses[i] - d) * ( 1.0 / uModelViewLineLightRadiuses[i] );
+            oColor.rgb += uLineLight.colorWithRadiuses[useId].xyz * (uLineLight.colorWithRadiuses[useId].a - d) * ( 1.0 / uLineLight.colorWithRadiuses[useId].a );
         }
     }
 }
