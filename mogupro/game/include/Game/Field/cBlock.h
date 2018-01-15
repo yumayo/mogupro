@@ -22,7 +22,6 @@ public: // Method
 
     void clear();
     void toBreak();
-    void toBreak();
     void toRevival();
     ci::vec3 getPosition();
     BlockType getType();
