@@ -73,6 +73,8 @@ namespace Game
 		ci::gl::GlslProgRef  mFragGemShader;
 
 	private:
+		void DistanceSortGemStone();
+		void IdSortGemStone();
 		void drawCannonPower( float red, float blue );
 	};
 }

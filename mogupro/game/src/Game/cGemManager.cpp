@@ -38,8 +38,13 @@ namespace Game
 		ci::gl::ScopedVao vaoScp(ctx->getDrawTextureVao());
 		ci::gl::ScopedBuffer vboScp(ctx->getDrawTextureVbo());
 
+		size_t VisibleRange = 5;
+
 		//原石
-		ci::gl::draw(mGemsVbo);
+		for (size_t i = 0; i < mGemStone.size(); i++)
+		{
+			mGemStone[i]->draw();
+		}
 
 		//欠片
 		for (size_t i = 0; i < mFragmentGems.size(); i++)
@@ -71,7 +76,10 @@ namespace Game
 			mVboShader->uniform("playerPos", Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 			ci::gl::clear(ci::ColorA(0, 0, 0, 0));
 
-			ci::gl::draw(mGemsVbo);
+			for (size_t i = 0; i < mGemStone.size(); i++)
+			{
+				mGemStone[i]->draw();
+			}
 			ci::gl::color(ci::Color(1, 1, 1));
 
 			auto result = cGameManager::getInstance( )->getResult( );
@@ -133,9 +141,10 @@ namespace Game
 
 	void cGemManager::update(float deltaTime)
 	{
+		DistanceSortGemStone();
 		//ジェム点滅用タイム
 		mTime += deltaTime * mLightingSpeed;
-
+		
 	};
 
 
@@ -218,6 +227,7 @@ namespace Game
 	void cGemManager::buildMesh()
 	{
 		mesh->clear();
+		IdSortGemStone();
 		for (size_t i = 0; i < mGemStone.size(); i++)
 		{
 			auto indices   = mGemStone[i]->getIndices();
@@ -403,6 +413,19 @@ namespace Game
 			}
 		}
 	}
+
+	void cGemManager::DistanceSortGemStone()
+	{
+			ci::vec3 pPos = Game::cPlayerManager::getInstance()->getActivePlayer()->getPos();
+			std::sort(mGemStone.begin(), mGemStone.end(), [&](const std::shared_ptr<Gem::cGemStone> a, const std::shared_ptr<Gem::cGemStone> b) { return glm::distance(pPos, a->getPos()) < glm::distance(pPos, b->getPos()); });
+
+	}
+
+	void cGemManager::IdSortGemStone()
+	{
+		std::sort(mGemStone.begin(), mGemStone.end(), [&](const std::shared_ptr<Gem::cGemStone> a, const std::shared_ptr<Gem::cGemStone> b) { return a->getId() < b->getId(); });
+	}
+
 	void cGemManager::drawCannonPower( float red, float blue )
 	{
 		using namespace cinder;

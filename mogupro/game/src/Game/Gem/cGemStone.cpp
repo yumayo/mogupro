@@ -26,6 +26,14 @@ namespace Game
 
 		void cGemStone::draw()
 		{
+			if (!mIsActive) return;
+			ci::gl::pushModelMatrix();
+			ci::gl::color(ci::Color(mColor));
+			ci::gl::translate(mPosition);
+			ci::gl::scale(ci::vec3(2));
+			Resource::cFbxManager::getInstance()->draw("Gemstone2");
+			ci::gl::color(ci::ColorA(1, 1, 1, 1));
+			ci::gl::popModelMatrix();
 		}
 
 
@@ -46,6 +54,11 @@ namespace Game
 			}
 		}
 
+		void  cGemStone::setIsActive(bool isActive)
+		{
+			mIsActive = isActive;
+		}
+
 		//---------------------------//
 		//        ïÛêŒÇè¡Ç∑         //
 		//---------------------------//
@@ -56,6 +69,7 @@ namespace Game
 			{
 				indices[i] = 0;
 			}
+			mIsActive = false;
 		}
 	}
 }

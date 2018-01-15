@@ -18,7 +18,7 @@ void main()
 	int x = 0;
 	int y = 0;
 
-	for(y = 0; y < 40; ++y)
+	for(y = 0; y < 20; ++y)
 	{
 		vec2 pos = TexCoord0 + vec2(m.x * y, m.y * y);
 		pos.y = 1 - pos.y;
@@ -34,6 +34,6 @@ void main()
 		calcColor += texture( uTex0, pos ) * uColor * bias;
 	}
 
-	calcColor.a = calcColor.a;
+	calcColor.a = calcColor.a / 2;
 	oColor = calcColor;
 }
