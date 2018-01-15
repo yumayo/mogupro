@@ -12,6 +12,7 @@
 #include <Network/cMatchingMemberManager.h>
 #include <Resource/cImageManager.h>
 #include <Scene/Member/Tutorial.h>
+#include <Game/Player/cPlayer.h>
 using namespace cinder;
 namespace Scene
 {
@@ -84,6 +85,16 @@ void cTitle::update( float deltaTime )
 		Network::cUDPClientManager::getInstance()->connectOfflineServer();
 		Game::cGameManager::getInstance()->setTime(0.0F);
 		cSceneManager::getInstance()->shift<Scene::Member::cTutorial>();
+	}
+	else if ( ENV->pushKey( cinder::app::KeyEvent::KEY_F10 ) )
+	{
+		Network::cUDPClientManager::getInstance( )->open( );
+		Network::cUDPServerManager::getInstance( )->open( );
+		Network::cUDPClientManager::getInstance( )->connectOfflineServer( );
+		Game::cGameManager::getInstance( )->setTime( 0.0F );
+		Network::cMatchingMemberManager::getInstance( )->mPlayerID = 4U;
+		Network::cMatchingMemberManager::getInstance( )->mPlayerTeamNum = Game::Player::Team::Blue;
+		cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
 	}
 	else if ( ENV->pushKey( ) )
 	{

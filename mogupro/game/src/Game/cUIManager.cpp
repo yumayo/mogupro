@@ -107,11 +107,11 @@ hardptr<Node::node> createItem( Weapons::SubWeapon::SubWeaponType type )
 class cannonMeter : public Node::node
 {
 public:
-	CREATE_H( cannonMeter, vec2 contentSize, Player::Team team )
+	CREATE_H( cannonMeter, vec2 contentSize, Player::Team myTeam, Player::Team team )
 	{
-		CREATE( cannonMeter, contentSize, team );
+		CREATE( cannonMeter, contentSize, myTeam, team );
 	}
-	bool init( vec2 contentSize, Player::Team team )
+	bool init( vec2 contentSize, Player::Team myTeam, Player::Team team )
 	{
 		this->team = team;
 
@@ -121,12 +121,36 @@ public:
 		auto rectSize = vec2( 82, 572 );
 
 		meter = this->add_child( Node::Renderer::rect::create( rectSize ) );
-		meter->set_color( ColorA( 0.8, 0.2, 0.2 ) );
+		meter->set_color( team == Player::Team::Red ? ColorA( 0.8, 0.2, 0.2 ) : ColorA( 0.2, 0.2, 0.8 ) );
 
 		this->set_content_size( gauge->get_content_size( ) );
 		this->set_anchor_point( vec2( team == Player::Team::Red ? 0 : 1, 1 ) );
 
-		this->set_position( contentSize * vec2( team == Player::Team::Red ? 0.0F : 1.0F, 1.0F ) );
+		switch ( myTeam )
+		{
+		case Game::Player::Red:
+			switch ( team )
+			{
+			case Game::Player::Red:
+				this->set_position( contentSize * vec2( 0.0F, 1.0F ) );
+				break;
+			case Game::Player::Blue:
+				this->set_position( contentSize * vec2( 1.0F, 1.0F ) );
+				break;
+			}
+			break;
+		case Game::Player::Blue:
+			switch ( team )
+			{
+			case Game::Player::Red:
+				this->set_position( contentSize * vec2( 1.0F, 1.0F ) );
+				break;
+			case Game::Player::Blue:
+				this->set_position( contentSize * vec2( 0.0F, 1.0F ) );
+				break;
+			}
+			break;
+		}
 		
 		auto rectStartPos = vec2( 47, 86 );
 
@@ -194,10 +218,10 @@ public:
 
 		return true;
 	}
-	void swap( )
+	void swap( Player::Team myTeam )
 	{
 		this->remove_all_children( );
-		init( this->get_content_size( ), team == Player::Team::Red ? Player::Team::Blue : Player::Team::Red );
+		init( this->get_content_size( ), myTeam, team == Player::Team::Red ? Player::Team::Blue : Player::Team::Red );
 	}
 	void addPower( int value )
 	{
@@ -288,16 +312,13 @@ void cUIManager::awake( )
 
 	mSlot = mRoot->add_child( itemSlot::create( mRoot->get_content_size( ) ) );
 
-	mRedTeamCannonMeter = mRoot->add_child( cannonMeter::create( mRoot->get_content_size( ), Player::Team::Red ) );
-	mBlueTeamCannonMeter = mRoot->add_child( cannonMeter::create( mRoot->get_content_size( ), Player::Team::Blue ) );
+	mRedTeamCannonMeter = mRoot->add_child( cannonMeter::create( mRoot->get_content_size( ), Player::Team::Red, Player::Team::Red ) );
+	mBlueTeamCannonMeter = mRoot->add_child( cannonMeter::create( mRoot->get_content_size( ), Player::Team::Red, Player::Team::Blue ) );
 }
 void cUIManager::setup( )
 {
-	if ( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) == Player::Blue )
-	{
-		mRedTeamCannonMeter.dynamicptr<cannonMeter>( )->swap( );
-		mBlueTeamCannonMeter.dynamicptr<cannonMeter>( )->swap( );
-	}
+	mRedTeamCannonMeter.dynamicptr<cannonMeter>( )->swap( (Player::Team)cPlayerManager::getInstance( )->getActivePlayerTeamId( ) );
+	mBlueTeamCannonMeter.dynamicptr<cannonMeter>( )->swap( ( Player::Team )cPlayerManager::getInstance( )->getActivePlayerTeamId( ) );
 }
 void cUIManager::update( float delta )
 {

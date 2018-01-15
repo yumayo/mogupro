@@ -107,8 +107,8 @@ void Game::Player::cPlayer::collisionGems()
 	if ( isWatching( ) ) return;
 
 	//é©ï™ÇÃAABBÇê∂ê¨
-	ci::vec3 aabb_begin_pos = mPos - size * ci::vec3(4000);
-	ci::vec3 aabb_end_pos = mPos + size * ci::vec3(4000);
+	ci::vec3 aabb_begin_pos = mPos - size * ci::vec3(5);
+	ci::vec3 aabb_end_pos = mPos + size * ci::vec3(5);
 
 	ci::AxisAlignedBox player_aabb(aabb_begin_pos, aabb_end_pos);
 	//ci::AxisAlignedBox player_aabb(aabb_begin_pos, aabb_end_pos);
