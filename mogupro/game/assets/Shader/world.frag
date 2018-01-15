@@ -32,10 +32,10 @@ uniform int uPointLightNum;
 // ラインライトに使うやつ
 layout (std140) uniform LineLightParams
 {
-    vec4 useIndices[32 / 4];
-    vec4 modelViewPositionsA[32];
-    vec4 modelViewPositionsB[32];
-    vec4 colorWithRadiuses[32];
+    vec4 useIndices[64 / 4];
+    vec4 modelViewPositionsA[64];
+    vec4 modelViewPositionsB[64];
+    vec4 colorWithRadiuses[64];
 }uLineLight;
 uniform int uLineLightNum;
 

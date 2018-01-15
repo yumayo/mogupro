@@ -135,26 +135,30 @@ void cCollisionManager::draw( )
     mDebugRay.clear( );
     if ( !mDebugDraw ) return;
 
-    cinder::gl::ScopedColor white( Color( 1, 1, 1 ) );
-    for ( auto const& rigidBody : mRigidBodys )
-    {
-        switch ( rigidBody->mCollider.getType( ) )
-        {
-        case cColliderBase::Type::AABB:
-        {
-            cAABBCollider const* aabbCo = dynamic_cast<cAABBCollider const*>( &rigidBody->mCollider );
-            cinder::gl::drawStrokedCube( rigidBody->mCollider.getPosition( ), aabbCo->getSize( ) );
-        }
-        break;
-        default:
-            break;
-        }
+	{
+		cinder::gl::ScopedColor green( Color( 0, 1, 0 ) );
+		for ( auto const& rigidBody : mRigidBodys )
+		{
+			switch ( rigidBody->mCollider.getType( ) )
+			{
+			case cColliderBase::Type::AABB:
+			{
+				cAABBCollider const* aabbCo = dynamic_cast<cAABBCollider const*>( &rigidBody->mCollider );
+				cinder::gl::drawStrokedCube( rigidBody->mCollider.getPosition( ), aabbCo->getSize( ) );
+			}
+			break;
+			default:
+				break;
+			}
+		}
     }
-    cinder::gl::ScopedColor red( Color( 1, 0, 0 ) );
-    for ( auto const& ray : mDebugRay )
-    {
-        cinder::gl::drawLine( ray.getOrigin( ), ray.getOrigin( ) + ray.getDirection( ) );
-    }
+	{
+		cinder::gl::ScopedColor red( Color( 1, 0, 0 ) );
+		for ( auto const& ray : mDebugRay )
+		{
+			cinder::gl::drawLine( ray.getOrigin( ), ray.getOrigin( ) + ray.getDirection( ) );
+		}
+	}
 }
 cinder::vec3 cCollisionManager::calcNearestPoint( cinder::Ray const & ray, unsigned int layer )
 {
