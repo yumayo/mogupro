@@ -56,6 +56,7 @@ public:
 	std::map<int, bool> mEmptyBlueTeamIds; // 2017/12/14 ŠÏíÒ‚ª“ü‚Á‚Ä‚«‚ÄIDŠÇ—‚ª–Ê“|‚É‚È‚Á‚½‚½‚ßB
     int mPlayerID = 0;
 	int mPlayerTeamNum = 0;
+	std::string mPlayerName = "moguraNull";
 private:
 	int teamCount[2];
 	int playerCount = 0;

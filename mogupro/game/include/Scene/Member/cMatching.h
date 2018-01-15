@@ -77,11 +77,11 @@ private:
 			mRoot->set_position(pos);
 			mRoot->run_action(ease<ci::EaseOutCirc>::create(
 				move_to::create(3.0F, ci::vec3(moveVec.x,moveVec.y,0))));
-			auto start = Node::Renderer::rect::create(ci::vec2(250, 80));
-			start->set_position(ci::vec2(0, 0));
-			start->set_color(ci::ColorA(0, 1, 0));
-			start->set_schedule_update();
-			mRoot->add_child(start);
+			auto plate = Node::Renderer::sprite::create("drillUI2.png");
+			plate->set_position(ci::vec2(0, 0));
+			plate->set_scale(glm::vec2(1.8f, 0.8f));
+			mRoot->add_child(plate);
+
 			auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
 			f->set_text(u8"" + name);
 			f->set_position(ci::vec2(0, 0));

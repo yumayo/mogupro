@@ -55,17 +55,18 @@ namespace Scene
 			backView->set_position(ci::vec2(0, 0));
 			backView->set_scale(ci::vec2(2.0f, -1.5f));
 			mRoot->add_child(backView);
-			auto makeRoom = Node::Renderer::rect::create(ci::vec2(300, 300));
-			makeRoom->set_position(ci::vec2(-250, 0));
-			makeRoom->set_color(ci::ColorA(1, 0, 0));
-			makeRoom->set_tag(0);
-			makeRoom->set_schedule_update();
-			mRoot->add_child(makeRoom);
+			
+			//‘Îíƒ{ƒ^ƒ“UI
+			auto fightPlate = Node::Renderer::sprite::create("greenUI.png");
+			fightPlate->set_schedule_update();
+			fightPlate->set_tag(0);
+			fightPlate->set_position(ci::vec2(-250, 0));
+			mRoot->add_child(fightPlate);
 			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf",50);
 				f->set_text(u8"‘Îí");
 				f->set_scale(glm::vec2(1, -1));
-				makeRoom->add_child(f);
+				fightPlate->add_child(f);
 			}
 			outRoomFunc.emplace_back(
 				[this] {
@@ -74,17 +75,17 @@ namespace Scene
 				mWaitClassState = ClassState::MASTER;
 			});
 
-			auto inRoom = Node::Renderer::rect::create(ci::vec2(300, 300));
-			inRoom->set_position(ci::vec2(250, 0));
-			inRoom->set_color(ci::ColorA(0, 1, 0));
-			inRoom->set_tag(1);
-			inRoom->set_schedule_update();
-			mRoot->add_child(inRoom);
+			//ŠÏíƒ{ƒ^ƒ“UI
+			auto lookPlate = Node::Renderer::sprite::create("redUI.png");
+			lookPlate->set_schedule_update();
+			lookPlate->set_tag(1);
+			lookPlate->set_position(ci::vec2(250, 0));
+			mRoot->add_child(lookPlate);
 			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 50);
 				f->set_text(u8"ŠÏí");
 				f->set_scale(glm::vec2(1, -1));
-				inRoom->add_child(f);
+				lookPlate->add_child(f);
 			}
 			outRoomFunc.emplace_back(
 				[this] {
@@ -117,19 +118,26 @@ namespace Scene
 			mMemberRoot->set_scale(ci::vec2(1, 1));
 			mMemberRoot->set_schedule_update();
 			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-				f->set_color(ci::ColorA(1, 0, 0));
-				f->set_position(ci::vec2(-350, 250));
-				f->set_text(u8"“ŒŒR");
+				auto lookPlate = Node::Renderer::sprite::create("westPlate.png");
+				lookPlate->set_position(ci::vec2(-350, 285));
+				mMemberRoot->add_child(lookPlate);
+
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 50);
+				f->set_color(ci::ColorA(0, 0, 0));
+				f->set_text(u8"“Œ ŒR");
 				f->set_scale(glm::vec2(1, -1));
-				mMemberRoot->add_child(f);
+				lookPlate->add_child(f);
 			}
 			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-				f->set_position(ci::vec2(350, 250));
-				f->set_text(u8"¼ŒR");
+				auto plate = Node::Renderer::sprite::create("eastPlate.png");
+				plate->set_position(ci::vec2(350, 285));
+				mMemberRoot->add_child(plate);
+
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 50);
+				f->set_color(ci::ColorA(0, 0, 0));
+				f->set_text(u8"¼ ŒR");
 				f->set_scale(glm::vec2(1, -1));
-				mMemberRoot->add_child(f);
+				plate->add_child(f);
 			}
 		}
 		void cMatching::setAnimation()
@@ -386,17 +394,16 @@ namespace Scene
 			if (mClassState != ClassState::MASTER)
 				return;
 
-			auto start = Node::Renderer::rect::create(ci::vec2(150, 150));
-			start->set_position(ci::vec2(500, -200));
-			start->set_color(ci::ColorA(0, 1, 0));
-			start->set_tag(0);
-			start->set_schedule_update();
-			mRoot->add_child(start);
+			auto startPlate = Node::Renderer::sprite::create("greenUI.png");
+			startPlate->set_schedule_update();
+			startPlate->set_tag(0);
+			startPlate->set_position(ci::vec2(500, -200));
+			mRoot->add_child(startPlate);
 			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 42);
 				f->set_text(u8"ƒQ[ƒ€ŠJn");
 				f->set_scale(glm::vec2(1, -1));
-				start->add_child(f);
+				startPlate->add_child(f);
 			}
 			mRoot->get_child_by_tag(mSelectTag)->run_action(
 				repeat_forever::create(
