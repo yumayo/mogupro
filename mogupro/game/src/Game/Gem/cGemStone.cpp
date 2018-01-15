@@ -1,5 +1,6 @@
 #include <Game/Gem/cGemStone.h>
 #include <Utility/cTimeMeasurement.h>
+#include <Game/cLightManager.h>
 
 namespace Game
 {
@@ -11,6 +12,7 @@ namespace Game
 		{
 			setColorAs();
 			setNomals();
+			mPointLightHandle = cLightManager::getInstance( )->addPointLight( mPosition, ci::vec3( mColor.r, mColor.g, mColor.b ), 2.0F );
 		};
 		cGemStone::~cGemStone()
 		{
@@ -57,6 +59,10 @@ namespace Game
 		void  cGemStone::setIsActive(bool isActive)
 		{
 			mIsActive = isActive;
+			if ( mIsActive == false )
+			{
+				mPointLightHandle->reAttachRadius( 0.0F );
+			}
 		}
 
 		//---------------------------//
@@ -69,7 +75,7 @@ namespace Game
 			{
 				indices[i] = 0;
 			}
-			mIsActive = false;
+			setIsActive( false );
 		}
 	}
 }

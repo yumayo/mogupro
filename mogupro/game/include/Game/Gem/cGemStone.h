@@ -7,6 +7,7 @@
 #include <Collision/cRigidBody.h>
 #include <Collision/cAABBCollider.h>
 #include <Resource\/cFbxManager.h>
+#include <Game/Light/cPointLightParam.h>
 
 namespace Game
 {
@@ -72,6 +73,7 @@ namespace Game
 			std::vector<ci::vec3>        nomals;
 			std::vector<ci::ColorA>      colorAs;
 			Collision::cAABBCollider     mAabb;
+			Light::PointLightHandle mPointLightHandle;
 	
 
 			uint32_t BOXINDICES[36] = 
