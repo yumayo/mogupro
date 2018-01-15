@@ -57,6 +57,15 @@ void RunEase::add( float & target, float end, float end_frame, EaseType ease_typ
     ease_accum.push_back( EaseOrigin( target, end, end_frame, ease_type ) );
 }
 
+void RunEase::endMove( float end )
+{
+    auto ease_begin = ease_accum.begin();
+    if ( ease_begin->isDone() == false )
+    {
+        ease_begin->setEnd( end );
+    }
+}
+
 void RunEase::addWait( float & target, float wait )
 {
     target_ = &target;
@@ -119,54 +128,68 @@ void cEase::update( const float& delta_time )
     }
 }
 
+
 void cEase::add( float & target, const float& end, float end_frame, EaseType ease_type )
 {
     ease[&target].add( target, end, end_frame, ease_type );
 }
-
 void cEase::add( ci::vec3 & target, const ci::vec3& end, float end_frame, EaseType ease_type )
 {
     ease[&target.x].add( target.x, end.x, end_frame, ease_type );
     ease[&target.y].add( target.y, end.y, end_frame, ease_type );
     ease[&target.z].add( target.z, end.z, end_frame, ease_type );
 }
-
 void cEase::add( ci::vec2 & target, const ci::vec2 & end, float end_frame, EaseType ease_type )
 {
     ease[&target.x].add( target.x, end.x, end_frame, ease_type );
     ease[&target.y].add( target.y, end.y, end_frame, ease_type );
 }
 
+
+void cEase::endMove( float & target, const float & end )
+{
+    ease[&target].endMove( end );
+}
+void cEase::endMove( ci::vec2 & target, const ci::vec2 & end )
+{
+    ease[&target.x].endMove( end.x );
+    ease[&target.y].endMove( end.y );
+}
+void cEase::endMove( ci::vec3 & target, const ci::vec3 & end )
+{
+    ease[&target.x].endMove( end.x );
+    ease[&target.y].endMove( end.y );
+    ease[&target.z].endMove( end.z );
+}
+
+
 void cEase::wait( float & target, float wait_count )
 {
     ease[&target].addWait( target, wait_count );
 }
-
 void cEase::wait( ci::vec3 & target, float wait_count )
 {
     ease[&target.x].addWait( target.x, wait_count );
     ease[&target.y].addWait( target.y, wait_count );
     ease[&target.z].addWait( target.z, wait_count );
 }
-
 void cEase::wait( ci::vec2 & target, float wait_count )
 {
     ease[&target.x].addWait( target.x, wait_count );
     ease[&target.y].addWait( target.y, wait_count );
 }
 
+
 void cEase::stop( float & target, const bool& is_enable )
 {
     ease[&target].setIsStop( is_enable );
 }
-
 void cEase::stop( ci::vec3 & target, const bool& is_enable )
 {
     ease[&target.x].setIsStop( is_enable );
     ease[&target.y].setIsStop( is_enable );
     ease[&target.z].setIsStop( is_enable );
 }
-
 void cEase::stop( ci::vec2 & target, const bool& is_enable )
 {
     ease[&target.x].setIsStop( is_enable );
@@ -178,43 +201,40 @@ void cEase::loop( float & target, const bool& is_enable )
 {
     ease[&target].setIsLoop( is_enable );
 }
-
 void cEase::loop( ci::vec3 & target, const bool& is_enable )
 {
     ease[&target.x].setIsLoop( is_enable );
     ease[&target.y].setIsLoop( is_enable );
     ease[&target.z].setIsLoop( is_enable );
 }
-
 void cEase::loop( ci::vec2 & target, const bool& is_enable )
 {
     ease[&target.x].setIsLoop( is_enable );
     ease[&target.y].setIsLoop( is_enable );
 }
 
+
 void cEase::kill( float & target )
 {
     ease[&target].clear();
 }
-
 void cEase::kill( ci::vec3 & target )
 {
     ease[&target.x].clear();
     ease[&target.y].clear();
     ease[&target.z].clear();
 }
-
 void cEase::kill( ci::vec2 & target )
 {
     ease[&target.x].clear();
     ease[&target.y].clear();
 }
 
+
 bool cEase::isEaseEnd( float & target )
 {
     return ease[&target].isEaseEnd();
 }
-
 bool cEase::isEaseEnd( ci::vec3 & target )
 {
     if ( ease.find( &target.x ) == ease.end() ||
@@ -226,6 +246,7 @@ bool cEase::isEaseEnd( ci::vec3 & target )
         && ease[&target.y].isEaseEnd()
         && ease[&target.z].isEaseEnd();
 }
+
 
 void cEase::allClear()
 {
