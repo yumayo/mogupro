@@ -148,15 +148,24 @@ void cEase::add( ci::vec2 & target, const ci::vec2 & end, float end_frame, EaseT
 
 void cEase::endMove( float & target, const float & end )
 {
+    if ( ease.find( &target ) == ease.end() )
+        return;
     ease[&target].endMove( end );
 }
 void cEase::endMove( ci::vec2 & target, const ci::vec2 & end )
 {
+    if ( ease.find( &target.x ) == ease.end() ||
+         ease.find( &target.y ) == ease.end() )
+        return;
     ease[&target.x].endMove( end.x );
     ease[&target.y].endMove( end.y );
 }
 void cEase::endMove( ci::vec3 & target, const ci::vec3 & end )
 {
+    if ( ease.find( &target.x ) == ease.end() ||
+         ease.find( &target.y ) == ease.end() ||
+         ease.find( &target.z ) == ease.end() )
+        return;
     ease[&target.x].endMove( end.x );
     ease[&target.y].endMove( end.y );
     ease[&target.z].endMove( end.z );

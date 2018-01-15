@@ -433,9 +433,10 @@ void cParticleHolder::update( const float& delta_time )
     // 吸収の終わりの位置を移動させる
     for ( auto& it : mParticles )
     {
-        if ( mParam.mConvergePoint != NULL )
-            Easing->endMove( it->mPosition,
-                             *mParam.mConvergePoint - mParam.mCurrentPosition.z );
+        if ( mParam.mPosition != NULL )
+            if ( mParam.mConvergePoint != NULL )
+                Easing->endMove( it->mPosition,
+                                 *mParam.mConvergePoint - mParam.mCurrentPosition );
     }
     // 軌跡の更新
     for ( auto& it = mTrajectoryParticles.begin(); it != mTrajectoryParticles.end(); )
