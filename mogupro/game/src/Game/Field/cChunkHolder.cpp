@@ -109,6 +109,8 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
 
                 if ( type.find( block->mType ) == false )
                     continue;
+                if ( block->mType == BlockType::HARD )
+                    block->isParticlePop = false;
 
                 auto layer = break_chunk_layer->getChunkLayer( ivec3( x, y, z ) );
                 layer = break_chunk_layer->breakBlock( block, layer );
