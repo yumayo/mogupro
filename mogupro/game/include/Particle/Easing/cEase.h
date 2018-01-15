@@ -27,6 +27,7 @@ public:
 
     float getBegin() { return begin_; }
     void setBegin( float begin ) { begin_ = begin; }
+    void setEnd( const float& end ) { end_ = end; }
 
 private:
 
@@ -52,6 +53,9 @@ public:
 
     // floatのイージングスタックを追加する関数
     void add( float& target, float end, float end_frame, EaseType ease_type );
+
+    // イージングが終わる位置を移動させる
+    void endMove( float end );
 
     // waitを追加する関数
     void addWait( float& target, float wait );
@@ -87,7 +91,7 @@ private:
                     終わりのfloatの値,
                     何フレームかけるか,
                     イージングの種類 enum EaseType );
-        
+
         Easing.wait( 動かすfloatの値,
                      止めているフレーム時間 );
     }
@@ -98,7 +102,7 @@ private:
 class cEase : public Utility::cSingletonAble<cEase>
 {
 public:
- 
+
     // イージングの更新
     void update( const float& delta_time );
 
@@ -122,6 +126,12 @@ public:
     // end_frame    何フレームで終わるか
     // ease_type    どのイージング関数を使うか
     void add( ci::vec2 & target, const ci::vec2& end, float end_frame, EaseType ease_type );
+
+
+    void endMove( float & target, const float & end );
+    void endMove( ci::vec2 & target, const ci::vec2& end );
+    void endMove( ci::vec3 & target, const ci::vec3& end );
+
 
     // イージングを止める処理を追加する関数
     // target       イージングを止めるfloatの値
