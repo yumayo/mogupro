@@ -253,8 +253,6 @@ public:
                  const bool& lighting = false,
                  const ci::ColorA& color = ci::ColorA( 1, 1, 1, 1 ) );
 
-    void move( ci::vec3& position );
-
 private:
 
     void builbordUpdate();
