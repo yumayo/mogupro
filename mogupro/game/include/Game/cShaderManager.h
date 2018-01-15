@@ -4,6 +4,7 @@
 #include <cinder/gl/Texture.h>
 #include <cinder/Camera.h>
 #include <cinder/gl/Fbo.h>
+#include <cinder/gl/Ubo.h>
 namespace Game
 {
 class cShaderManager : public Utility::cSingletonAble<cShaderManager>
@@ -21,6 +22,15 @@ private:
 	cinder::CameraOrtho mCamera;
 	cinder::gl::FboRef mFbo;
 	cinder::gl::GlslProgRef mGlsl;
+	cinder::gl::Texture2dRef mPointLightTex;
+	cinder::Surface32f mPointLightSurface;
+	cinder::gl::UboRef mPointLightUBO;
+	struct PointLightParams
+	{
+		cinder::vec3 uPointLightModelViewPositions[100];
+		cinder::vec3 uPointLightColors[100];
+		float uPointLightRadiuses[100];
+	};
 	bool mUseShadow = false;
 };
 }

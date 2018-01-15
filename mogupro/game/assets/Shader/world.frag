@@ -1,4 +1,4 @@
-#version 150 core
+#version 150
 
 uniform sampler2D uTex0;
 uniform vec4 uAmb;
@@ -21,16 +21,19 @@ in vec4 vShadowPosition;
 in vec3 vShadowNormal;
 
 // ポイントライトに使うやつ
-uniform vec3 uModelViewPointLightPositions[200];
-uniform vec3 uModelViewPointLightColors[200];
-uniform float uModelViewPointLightRadiuses[200];
-uniform int uPointLineNum;
+layout (std140) uniform PointLightParams
+{
+    vec3 uPointLightModelViewPositions[100];
+    vec3 uPointLightColors[100];
+    float uPointLightRadiuses[100];
+};
+uniform int uPointLightNum;
 
 // ラインライトに使うやつ
-uniform vec3 uModelViewLineLightPositionsA[200];
-uniform vec3 uModelViewLineLightPositionsB[200];
-uniform vec3 uModelViewLineLightColors[200];
-uniform float uModelViewLineLightRadiuses[200];
+uniform vec3 uModelViewLineLightPositionsA[100];
+uniform vec3 uModelViewLineLightPositionsB[100];
+uniform vec3 uModelViewLineLightColors[100];
+uniform float uModelViewLineLightRadiuses[100];
 uniform int uLineLightNum;
 
 float distancePointLine( vec3 P, vec3 A, vec3 B )
@@ -68,12 +71,12 @@ void main()
     oColor.rgb *= ( Diffuse * Shadow + Ambient );
 
     // ポイントライト
-    for(int i = 0; i < uPointLineNum; ++i)
+    for(int i = 0; i < uPointLightNum; ++i)
     {
-        float lightDistance = distance( vModelViewPosition.xyz, uModelViewPointLightPositions[i] );
-        if(lightDistance < uModelViewPointLightRadiuses[i])
+        float lightDistance = distance( vModelViewPosition.xyz, uPointLightModelViewPositions[i] );
+        if(lightDistance < 1)
         {
-            oColor.rgb += uModelViewPointLightColors[i] * (uModelViewPointLightRadiuses[i] - lightDistance) * ( 1.0 / uModelViewPointLightRadiuses[i] );
+            oColor.rgb = uPointLightColors[i];
         }
     }
 

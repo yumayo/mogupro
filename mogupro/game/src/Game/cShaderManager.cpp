@@ -7,7 +7,7 @@
 using namespace ci;
 namespace Game
 {
-const unsigned int MAX_LIGHT_NUM = 200U;
+const unsigned int MAX_LIGHT_NUM = 1U;
 void cShaderManager::setup( bool useShadow )
 {
 	mUseShadow = useShadow;
@@ -42,27 +42,36 @@ void cShaderManager::setup( bool useShadow )
 	vec3 pos( 80, 80, 80 );
 	mCamera.setOrtho( -size, size, -size, size, 0.25F, 512.0F );
 	mCamera.lookAt( pos + vec3( size, size, -size ), pos + vec3( 0, 0, 0 ) );
+
+	mPointLightSurface = Surface32f( 512, 1, true );
+	mPointLightTex = gl::Texture::create( mPointLightSurface );
+
+	PointLightParams params;
+	memset( &params, sizeof( PointLightParams ), 0 );
+	mPointLightUBO = gl::Ubo::create( sizeof( PointLightParams ), &params, GL_DYNAMIC_DRAW );
 }
 void cShaderManager::uniformUpdate( )
 {
 	{
 		// ポイントライトのデータを送ります。
 		auto lights = Game::cLightManager::getInstance( )->getPointLights( );
+		PointLightParams params;
+		memset( &params, sizeof( PointLightParams ), 0 );
 		{
-			std::vector<vec3> positions;
-			std::vector<vec3> colors;
-			std::vector<float> radiuses;
 			int lightNum = std::min( lights.size( ), MAX_LIGHT_NUM );
+			int i = 0;
 			for ( auto& light : lights )
 			{
-				positions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getPosition( ), 1 ) ) );
-				colors.emplace_back( light.second->color );
-				radiuses.emplace_back( light.second->getRadius( ) );
+				if ( i >= lightNum ) break;
+				if ( !light.second ) continue;
+				params.uPointLightModelViewPositions[i] = vec3( CAMERA->getCamera( ).getViewMatrix( ) * vec4( light.second->getPosition( ), 1 ) );
+				params.uPointLightColors[i] = light.second->color;
+				params.uPointLightRadiuses[i] = light.second->getRadius( );
+				i++;
 			}
-			mGlsl->uniform( "uPointLineNum", lightNum );
-			mGlsl->uniform( "uModelViewPointLightPositions", positions.data( ), lightNum );
-			mGlsl->uniform( "uModelViewPointLightColors", colors.data( ), lightNum );
-			mGlsl->uniform( "uModelViewPointLightRadiuses", radiuses.data( ), lightNum );
+			mGlsl->uniform( "uPointLightNum", lightNum );
+			mPointLightUBO->bufferSubData( 0, sizeof( PointLightParams ), &params );
+			mGlsl->uniformBlock( "PointLightParams", 0 );
 		}
 	}
 	{
@@ -94,22 +103,24 @@ void cShaderManager::uniformUpdate( int chunkId )
 	{
 		// ポイントライトのデータを送ります。
 		auto lights = Game::cLightManager::getInstance( )->getPointLights( chunkId );
+		PointLightParams params;
+		memset( &params, sizeof( PointLightParams ), 0 );
 		if ( lights )
 		{
-			std::vector<vec3> positions;
-			std::vector<vec3> colors;
-			std::vector<float> radiuses;
 			int lightNum = std::min( lights->size( ), MAX_LIGHT_NUM );
+			int i = 0;
 			for ( auto& light : *lights )
 			{
-				positions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getPosition( ), 1 ) ) );
-				colors.emplace_back( light->color );
-				radiuses.emplace_back( light->getRadius( ) );
+				if ( i >= lightNum ) break;
+				if ( !light ) continue;
+				params.uPointLightModelViewPositions[i] = vec3( CAMERA->getCamera( ).getViewMatrix( ) * vec4( light->getPosition( ), 1 ) );
+				params.uPointLightColors[i] = light->color;
+				params.uPointLightRadiuses[i] = light->getRadius( );
+				i++;
 			}
-			mGlsl->uniform( "uPointLineNum", lightNum );
-			mGlsl->uniform( "uModelViewPointLightPositions", positions.data( ), lightNum );
-			mGlsl->uniform( "uModelViewPointLightColors", colors.data( ), lightNum );
-			mGlsl->uniform( "uModelViewPointLightRadiuses", radiuses.data( ), lightNum );
+			mGlsl->uniform( "uPointLightNum", lightNum );
+			mPointLightUBO->bufferSubData( 0, sizeof( PointLightParams ), &params );
+			mGlsl->uniformBlock( "PointLightParams", 0 );
 		}
 	}
 	{
@@ -157,6 +168,8 @@ void cShaderManager::update( std::function<void( )> const& drawFunc )
 void cShaderManager::draw( std::function<void( )> const& render )
 {
 	gl::ScopedGlslProg scpGlsl( mGlsl );
+
+	mPointLightUBO->bindBufferBase( 0 );
 
 	mGlsl->uniform( "uAmb", vec4( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
 
