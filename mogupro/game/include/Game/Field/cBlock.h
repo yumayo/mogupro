@@ -28,12 +28,13 @@ public: // Method
     BlockType setType( const BlockType & type );
     int getIndex();
     bool isActive();
-    
+
 public: // Member
 
     int mId;
     Collision::cAABBCollider mCollider;
     BlockType mType;
+    bool isParticlePop;
 };
 }
 }

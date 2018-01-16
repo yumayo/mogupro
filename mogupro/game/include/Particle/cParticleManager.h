@@ -84,7 +84,7 @@ public:
     // パーティクル一つ一つの色
     ParticleParam& colors( const std::vector<ci::ColorA>& pop_colors );
     // 収束地点
-    ParticleParam& convergePoint( const ci::vec3& converge_point );
+    ParticleParam& convergePoint( ci::vec3& converge_point );
     // パーティクルが膨らむ時間
     ParticleParam& swellEndTime( const float& swell_end_time );
     // パーティクルが膨らんだ後イージングに移行するまで停止する時間
@@ -121,7 +121,7 @@ private:
     // Absorb用
     std::vector<EaseType> mEaseTypes;
     std::vector<ci::ColorA> mColors;
-    ci::vec3 mConvergePoint;
+    ci::vec3* mConvergePoint;
     float mSwellEndTime;
     float mSwellWaitTime;
 
@@ -252,8 +252,6 @@ public:
                  const float& speed = 0.1f,
                  const bool& lighting = false,
                  const ci::ColorA& color = ci::ColorA( 1, 1, 1, 1 ) );
-
-    void move( ci::vec3& position );
 
 private:
 

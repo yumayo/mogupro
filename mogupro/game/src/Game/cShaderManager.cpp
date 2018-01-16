@@ -41,99 +41,94 @@ void cShaderManager::setup( bool useShadow )
 	vec3 pos( 80, 80, 80 );
 	mCamera.setOrtho( -size, size, -size, size, 0.25F, 512.0F );
 	mCamera.lookAt( pos + vec3( size, size, -size ), pos + vec3( 0, 0, 0 ) );
+
+	mPointLightUBO = gl::Ubo::create( sizeof( mPointLightParams ), &mPointLightParams, GL_DYNAMIC_DRAW );
+	mLineLightUBO = gl::Ubo::create( sizeof( mLineLightParams ), &mLineLightParams, GL_DYNAMIC_DRAW );
 }
 void cShaderManager::uniformUpdate( )
 {
 	{
-		// ポイントライトのデータを送ります。
 		auto lights = Game::cLightManager::getInstance( )->getPointLights( );
+		memset( &mPointLightParams, 0, sizeof( mPointLightParams.useIndices ) );
+		int i = 0;
+		for ( auto& light : lights )
 		{
-			std::vector<vec3> positions;
-			std::vector<vec3> colors;
-			std::vector<float> radiuses;
-			int lightNum = std::min( lights.size( ), 100U );
-			for ( auto& light : lights )
+			if ( !light.second )
 			{
-				positions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getPosition( ), 1 ) ) );
-				colors.emplace_back( light.second->color );
-				radiuses.emplace_back( light.second->getRadius( ) );
+				continue;
 			}
-			mGlsl->uniform( "uPointLineNum", lightNum );
-			mGlsl->uniform( "uModelViewPointLightPositions", positions.data( ), lightNum );
-			mGlsl->uniform( "uModelViewPointLightColors", colors.data( ), lightNum );
-			mGlsl->uniform( "uModelViewPointLightRadiuses", radiuses.data( ), lightNum );
+			else
+			{
+				mPointLightParams.useIndices[i / 4][i % 4] = i;
+				i++;
+			}
 		}
+		mGlsl->uniform( "uPointLightNum", i );
+		mPointLightUBO->bufferSubData( 0, sizeof( mPointLightParams.useIndices ), &mPointLightParams );
+		mGlsl->uniformBlock( "PointLightParams", 0 );
 	}
 	{
-		// ラインライトの情報を送ります。
 		auto lights = Game::cLightManager::getInstance( )->getLineLights( );
+		memset( &mLineLightParams, 0, sizeof( mLineLightParams.useIndices ) );
+		int i = 0;
+		for ( auto& light : lights )
 		{
-			std::vector<vec3> beginPositions;
-			std::vector<vec3> endPositions;
-			std::vector<vec3> colors;
-			std::vector<float> radiuses;
-			int lightNum = std::min( lights.size( ), 100U );
-			for ( auto& light : lights )
+			if ( !light.second )
 			{
-				beginPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getBeginPosition( ), 1 ) ) );
-				endPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getEndPosition( ), 1 ) ) );
-				colors.emplace_back( light.second->color );
-				radiuses.emplace_back( light.second->getRadius( ) );
+				continue;
 			}
-			mGlsl->uniform( "uLineLightNum", lightNum );
-			mGlsl->uniform( "uModelViewLineLightPositionsA", beginPositions.data( ), lightNum );
-			mGlsl->uniform( "uModelViewLineLightPositionsB", endPositions.data( ), lightNum );
-			mGlsl->uniform( "uModelViewLineLightColors", colors.data( ), lightNum );
-			mGlsl->uniform( "uModelViewLineLightRadiuses", radiuses.data( ), lightNum );
+			else
+			{
+				mLineLightParams.useIndices[i / 4][i % 4] = i;
+				i++;
+			}
 		}
+		mGlsl->uniform( "uLineLightNum", i );
+		mLineLightUBO->bufferSubData( 0, sizeof( mLineLightParams ), &mLineLightParams );
+		mGlsl->uniformBlock( "LineLightParams", 1 );
 	}
 }
 void cShaderManager::uniformUpdate( int chunkId )
 {
+	if ( auto lights = Game::cLightManager::getInstance( )->getPointLights( chunkId ) )
 	{
-		// ポイントライトのデータを送ります。
-		auto lights = Game::cLightManager::getInstance( )->getPointLights( chunkId );
-		if ( lights )
+		memset( &mPointLightParams, 0, sizeof( mPointLightParams.useIndices ) );
+		int i = 0;
+		for ( auto& light : *lights )
 		{
-			std::vector<vec3> positions;
-			std::vector<vec3> colors;
-			std::vector<float> radiuses;
-			int lightNum = std::min( lights->size( ), 100U );
-			for ( auto& light : *lights )
+			if ( !light )
 			{
-				positions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getPosition( ), 1 ) ) );
-				colors.emplace_back( light->color );
-				radiuses.emplace_back( light->getRadius( ) );
+				continue;
 			}
-			mGlsl->uniform( "uPointLineNum", lightNum );
-			mGlsl->uniform( "uModelViewPointLightPositions", positions.data( ), lightNum );
-			mGlsl->uniform( "uModelViewPointLightColors", colors.data( ), lightNum );
-			mGlsl->uniform( "uModelViewPointLightRadiuses", radiuses.data( ), lightNum );
+			else
+			{
+				mPointLightParams.useIndices[i / 4][i % 4] = light->getId( );
+				i++;
+			}
 		}
+		mGlsl->uniform( "uPointLightNum", i );
+		mPointLightUBO->bufferSubData( 0, sizeof( mPointLightParams.useIndices ), &mPointLightParams );
+		mGlsl->uniformBlock( "PointLightParams", 0 );
 	}
+	if ( auto lights = Game::cLightManager::getInstance( )->getLineLights( chunkId ) )
 	{
-		// ラインライトの情報を送ります。
-		auto lights = Game::cLightManager::getInstance( )->getLineLights( chunkId );
-		if ( lights )
+		memset( &mLineLightParams, 0, sizeof( mLineLightParams.useIndices ) );
+		int i = 0;
+		for ( auto& light : *lights )
 		{
-			std::vector<vec3> beginPositions;
-			std::vector<vec3> endPositions;
-			std::vector<vec3> colors;
-			std::vector<float> radiuses;
-			int lightNum = std::min( lights->size( ), 100U );
-			for ( auto& light : *lights )
+			if ( !light )
 			{
-				beginPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getBeginPosition( ), 1 ) ) );
-				endPositions.emplace_back( vec3( CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light->getEndPosition( ), 1 ) ) );
-				colors.emplace_back( light->color );
-				radiuses.emplace_back( light->getRadius( ) );
+				continue;
 			}
-			mGlsl->uniform( "uLineLightNum", lightNum );
-			mGlsl->uniform( "uModelViewLineLightPositionsA", beginPositions.data( ), lightNum );
-			mGlsl->uniform( "uModelViewLineLightPositionsB", endPositions.data( ), lightNum );
-			mGlsl->uniform( "uModelViewLineLightColors", colors.data( ), lightNum );
-			mGlsl->uniform( "uModelViewLineLightRadiuses", radiuses.data( ), lightNum );
+			else
+			{
+				mLineLightParams.useIndices[i / 4][i % 4] = light->getId( );
+				i++;
+			}
 		}
+		mGlsl->uniform( "uLineLightNum", i );
+		mLineLightUBO->bufferSubData( 0, sizeof( mLineLightParams ), &mLineLightParams );
+		mGlsl->uniformBlock( "LineLightParams", 1 );
 	}
 }
 void cShaderManager::update( std::function<void( )> const& drawFunc )
@@ -157,10 +152,64 @@ void cShaderManager::draw( std::function<void( )> const& render )
 {
 	gl::ScopedGlslProg scpGlsl( mGlsl );
 
+	mPointLightUBO->bindBufferBase( 0 );
+	mLineLightUBO->bindBufferBase( 1 );
+
 	mGlsl->uniform( "uAmb", vec4( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
 
-	mGlsl->uniform( "uPointLightNum", 0 );
-	mGlsl->uniform( "uLineLightNum", 0 );
+	{
+		// ポイントライトのデータを送ります。
+		auto lights = Game::cLightManager::getInstance( )->getPointLights( );
+		memset( &mPointLightParams, 0, sizeof( mPointLightParams ) );
+		{
+			for ( auto& light : lights )
+			{
+				if ( !light.second )
+				{
+					continue;
+				}
+				else
+				{
+					int id = light.second->getId( );
+					mPointLightParams.modelViewPositions[id] = CAMERA->getCamera( ).getViewMatrix( ) * vec4( light.second->getPosition( ), 1 );
+					mPointLightParams.colorWithRadiuses[id].x = light.second->color.x;
+					mPointLightParams.colorWithRadiuses[id].y = light.second->color.y;
+					mPointLightParams.colorWithRadiuses[id].z = light.second->color.z;
+					mPointLightParams.colorWithRadiuses[id].w = light.second->getRadius( );
+				}
+			}
+			mGlsl->uniform( "uPointLightNum", 0 );
+			mPointLightUBO->bufferSubData( 0, sizeof( mPointLightParams ), &mPointLightParams );
+			mGlsl->uniformBlock( "PointLightParams", 0 );
+		}
+	}
+	{
+		// ラインライトの情報を送ります。
+		auto lights = Game::cLightManager::getInstance( )->getLineLights( );
+		memset( &mLineLightParams, 0, sizeof( mLineLightParams ) );
+		{
+			for ( auto& light : lights )
+			{
+				if ( !light.second )
+				{
+					continue;
+				}
+				else
+				{
+					int id = light.second->getId( );
+					mLineLightParams.modelViewPositionsA[id] = CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getBeginPosition( ), 1 );
+					mLineLightParams.modelViewPositionsB[id] = CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getEndPosition( ), 1 );
+					mLineLightParams.colorWithRadiuses[id].x = light.second->color.x;
+					mLineLightParams.colorWithRadiuses[id].y = light.second->color.y;
+					mLineLightParams.colorWithRadiuses[id].z = light.second->color.z;
+					mLineLightParams.colorWithRadiuses[id].a = light.second->getRadius( );
+				}
+			}
+			mGlsl->uniform( "uLineLightNum", 0 );
+			mLineLightUBO->bufferSubData( 0, sizeof( mLineLightParams ), &mLineLightParams.modelViewPositionsA );
+			mGlsl->uniformBlock( "LineLightParams", 1 );
+		}
+	}
 
 	if ( mUseShadow )
 	{

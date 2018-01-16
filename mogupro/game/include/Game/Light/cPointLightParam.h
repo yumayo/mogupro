@@ -18,6 +18,10 @@ public:
 	}
 	~cPointLightParam( );
 public:
+	inline int getId( ) const
+	{
+		return id;
+	}
 	void reAttachPosition( cinder::vec3 position );
 	void reAttachRadius( float radius );
 	void reAttachPositionWithRadius( cinder::vec3 position, float radius );

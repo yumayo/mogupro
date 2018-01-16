@@ -195,7 +195,6 @@ void cGameMain::draw( )
 		Game::cSubWeaponManager::getInstance()->draw();
 		Game::cCapsuleManager::getInstance()->draw();
         Resource::cFbxManager::getInstance()->testDraw( );
-		GemManager->draw( );
 		skydome.draw( );
 		CAMERA->unBind3D( );
 
@@ -208,6 +207,7 @@ void cGameMain::draw( )
 		CAMERA->bind3D( );
 		gl::enableDepthRead( );
 		gl::enableDepthWrite( );
+		GemManager->draw( );
 		Game::cPlayerManager::getInstance( )->draw( );
 
 		Particle::cParticleManager::getInstance( )->draw( );

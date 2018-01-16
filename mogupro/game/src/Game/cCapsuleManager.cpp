@@ -100,6 +100,26 @@ void cCapsuleManager::HitPlayer(const int playerid, const int capsuleid)
 		Resource::cSoundManager::getInstance()->findSe("SubWeapon/capsuleget.wav").setGain(0.6f);
 		Resource::cSoundManager::getInstance()->findSe("SubWeapon/capsuleget.wav").play();
 		
+
+		Particle::cParticleManager::getInstance()->create(Particle::ParticleParam()
+			.position(mCapsules[capsuleid]->getPos())
+			.moveType(Particle::ParticleType::ABSORB)
+			.textureType(Particle::ParticleTextureType::SPARK)
+			.colors(colors)
+			.convergePoint(Game::cPlayerManager::getInstance()->getActivePlayer()->getReferencePos())
+			.speed(0.5f)
+			.swellEndTime(0.1f)
+			.swellWaitTime(30.0f)
+			.easeTime(30.0f)
+			.count(colors.size())
+			.effectTime(0)
+			.vanishTime(5.0)
+			.randomEaseTypes({ EaseType::BackIn,EaseType::BackOut,EaseType::CircIn,EaseType::CircOut,EaseType::Linear,EaseType::CubicIn })
+		);
+
+
+
+
 		Game::cPlayerManager::getInstance()->getPlayers()[playerid]->useSubWeapon.addSubWeapon(mCapsules[capsuleid]->getType());
 	}
 }

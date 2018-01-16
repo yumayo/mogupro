@@ -78,7 +78,7 @@ ParticleParam::ParticleParam() :
     mIsLighting( false ),
     mIsTrajectory( false ),
     mIsCube( false ),
-    mConvergePoint( vec3( 0 ) ),
+    mConvergePoint( NULL ),
     mSwellEndTime( 0.0f ),
     mSwellWaitTime( 0.0f )
 {
@@ -196,9 +196,9 @@ ParticleParam & ParticleParam::colors( const std::vector<ci::ColorA>& pop_colors
     mColors = pop_colors;
     return *this;
 }
-ParticleParam & ParticleParam::convergePoint( const ci::vec3& converge_point )
+ParticleParam & ParticleParam::convergePoint( ci::vec3& converge_point )
 {
-    mConvergePoint = converge_point;
+    mConvergePoint = &converge_point;
     return *this;
 }
 ParticleParam & ParticleParam::swellEndTime( const float& swell_end_time )
@@ -374,7 +374,8 @@ cParticleHolder::~cParticleHolder()
 
 void cParticleHolder::update( const float& delta_time )
 {
-    float errRange = 5.0f;
+    // パーティクルの開始地点のずれを見つける
+    float errRange = 2.0f;
     if ( mParam.mPosition != NULL && mParam.mPosition != nullptr )
         if ( *mParam.mPosition != vec3( 0 ) &&
             ( mParam.mPosition->x < mParam.mCurrentPosition.x + errRange &&
@@ -399,31 +400,29 @@ void cParticleHolder::update( const float& delta_time )
             for ( int i = 0; i < mParam.mCount; i++ )
                 createParticle();
 
-
+    // 吸収
     if ( mParam.mMoveType == ParticleType::ABSORB )
     {
         if ( mIsSwellEnd == false && mParam.mSwellEndTime <= 0 )
         {
             mIsSwellEnd = true;
-            // パーティクルの更新
             for ( auto& it : mParticles )
             {
                 it->mVec = vec3( 0 );
-
                 Utility::RandomInt ri( 0, mParam.mEaseTypes.size() - 1 );
                 Utility::RandomFloat rf( 0.0f, mParam.mSwellWaitTime );
 
                 Easing->wait( it->mPosition, rf() );
                 Easing->add( it->mPosition.x,
-                             mParam.mConvergePoint.x - mParam.mCurrentPosition.x,
+                             mParam.mConvergePoint->x - mParam.mCurrentPosition.x,
                              mParam.mEaseTime,
                              mParam.mEaseTypes[ri()] );
                 Easing->add( it->mPosition.y,
-                             mParam.mConvergePoint.y - mParam.mCurrentPosition.y,
+                             mParam.mConvergePoint->y - mParam.mCurrentPosition.y,
                              mParam.mEaseTime,
                              mParam.mEaseTypes[ri()] );
                 Easing->add( it->mPosition.z,
-                             mParam.mConvergePoint.z - mParam.mCurrentPosition.z,
+                             mParam.mConvergePoint->z - mParam.mCurrentPosition.z,
                              mParam.mEaseTime,
                              mParam.mEaseTypes[ri()] );
             }
@@ -431,7 +430,14 @@ void cParticleHolder::update( const float& delta_time )
         mParam.mSwellEndTime -= delta_time;
     }
 
-
+    // 吸収の終わりの位置を移動させる
+    for ( auto& it : mParticles )
+    {
+        if ( mParam.mConvergePoint != NULL )
+            if ( it->mPosition != vec3(0) )
+                Easing->endMove( it->mPosition,
+                                 *mParam.mConvergePoint - mParam.mCurrentPosition );
+    }
     // 軌跡の更新
     for ( auto& it = mTrajectoryParticles.begin(); it != mTrajectoryParticles.end(); )
     {

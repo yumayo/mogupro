@@ -1,4 +1,4 @@
-#version 150 core
+#version 150
 
 uniform mat4 ciModelView;
 uniform mat4 ciModelMatrix;

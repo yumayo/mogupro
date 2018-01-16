@@ -19,6 +19,10 @@ public:
 	}
 	~cLineLightParam( );
 public:
+	inline int getId( ) const
+	{
+		return id;
+	}
 	void reAttachLine( cinder::vec3 beginPosition, cinder::vec3 endPosition );
 	void reAttachRadius( float radius );
 	void reAttachLineWithRadius( cinder::vec3 beginPosition, cinder::vec3 endPosition, float radius );
