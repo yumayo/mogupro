@@ -139,6 +139,7 @@ void cChunk::createBlocks()
             continue;
         layer.mIsLoaded = true;
         layer.createBlocks();
+        layer.createCollider();
         layer.mIsDone = true;
     }
 }

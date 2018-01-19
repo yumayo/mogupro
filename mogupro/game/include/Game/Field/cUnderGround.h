@@ -38,6 +38,7 @@ public: // Field ì‡Ç≈égÇ§ä÷êî
     cBlock* getBlock( const ci::vec3& position );
     void setBlock( const ci::vec3& position, cBlock* block );
     cChunkLayer* getChunkLayer( const ci::vec3& position );
+    void blockAllReset();
 
 private: // Method
 
