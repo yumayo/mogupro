@@ -17,6 +17,7 @@ public:
 	void draw( ) override;
 	void draw2D( ) override;
 	void resize( ) override;
+	std::string const& getName( ) { return typeid( *this ).name( ); }
 private:
 	hardptr<Node::node> root;
 	softptr<Node::node> loadBar;

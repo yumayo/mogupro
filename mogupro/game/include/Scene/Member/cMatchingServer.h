@@ -24,6 +24,7 @@ public:
 	void draw();
 	void draw2D();
 	void resize();
+	std::string const& getName( ) { return typeid( *this ).name( ); }
 private:
 	enum class PhaseState
 	{
