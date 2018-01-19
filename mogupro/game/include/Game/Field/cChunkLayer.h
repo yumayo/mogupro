@@ -1,5 +1,6 @@
 #pragma once
 #include <Game/Field/FieldData.h>
+#include <Collision/cAABBCollider.h>
 
 namespace Game
 {
@@ -33,11 +34,14 @@ public:
     int getHeight() { return mHeight; }
     ci::ivec3 getChunkCell();
     int getChunkLayerId() { return mLayerId; }
+    cinder::AxisAlignedBox getChunkLayerAABB() { return mChunkLayerAABB; }
 
     void addFace( const std::array<GLfloat, 12>& block_face,
                   const std::array<GLfloat, 12>& block_normal,
                   const std::array<ci::vec2, 4>& texture_coords,
                   const ci::vec3 & block_position );
+
+    void blockReset();
 
 public:
 
@@ -50,6 +54,7 @@ public:
     bool reLoading();
     bool createMainCall();
     void createBlocks();
+    void createCollider();
 
 public:
 
@@ -86,6 +91,7 @@ private:
     float mRevivalTime;
     std::unordered_map<int, float> mRevivalBlocks;
     int mLayerId;
+    cinder::AxisAlignedBox mChunkLayerAABB;
 
 private:
 

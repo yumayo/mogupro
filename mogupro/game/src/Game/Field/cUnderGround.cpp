@@ -187,6 +187,11 @@ cChunkLayer * cUnderGround::getChunkLayer( const ci::vec3 & position )
     return mChunkHolder->getChunk( chunk_cell )->getChunkLayer( height );
 }
 
+void cUnderGround::blockAllReset()
+{
+    mChunkHolder->blockAllReset();
+}
+
 bool cUnderGround::blockBreak( const ci::vec3& position, const float& radius, const cBreakBlockType& type )
 {
     cClientAdapter::getInstance()->sendBreakBlock( position, radius, type );
