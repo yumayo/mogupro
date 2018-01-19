@@ -74,17 +74,5 @@ public:
     void setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams);
     void update( const float& delta_time );
     void draw();
-
-	hardptr<Node::node> root;
-	void draw2D( );
-
-	hardptr<Node::node> hintRoot;
-	softptr<Node::node> hintRenderBase;
-	bool mHintNearBlock = false;
-	void hintNearBlock( );
-	bool mHintNearGemStone = false;
-	void hintNearGemStone( );
-	bool mHintTransportGem = false;
-	void hintTransportGem( );
 };
 }
