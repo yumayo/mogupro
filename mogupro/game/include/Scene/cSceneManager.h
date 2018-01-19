@@ -25,10 +25,7 @@ public:
 	{
 		for ( auto& scene : mSceneBases )
 		{
-			if ( scene )
-			{
-				scene->update( delta );
-			}
+			scene->update( delta );
 		}
 		mDontDestroyOnLoad->update( delta );
 	}
@@ -36,10 +33,7 @@ public:
 	{
 		for ( auto& scene : mSceneBases )
 		{
-			if ( scene )
-			{
-				scene->draw( );
-			}
+			scene->draw( );
 		}
 		mDontDestroyOnLoad->draw( );
 	}
@@ -47,10 +41,7 @@ public:
 	{
 		for ( auto& scene : mSceneBases )
 		{
-			if ( scene )
-			{
-				scene->draw2D( );
-			}
+			scene->draw2D( );
 		}
 		mDontDestroyOnLoad->draw2D( );
 	}
@@ -67,7 +58,7 @@ public:
 	{
 		for ( auto& scene : mSceneBases )
 		{
-			if ( scene && ( scene->getName( ) == typeid(TyScene).name( ) ) )
+			if ( scene->getName( ) == typeid(TyScene).name( ) )
 			{
 				return scene;
 			}
@@ -105,10 +96,7 @@ public:
 	{
 		for ( auto& scene : mSceneBases )
 		{
-			if ( scene )
-			{
-				scene->shutDown( );
-			}
+			scene->shutDown( );
 		}
 		ENV->flashInput( );
 
@@ -116,10 +104,7 @@ public:
 
 		for ( auto& scene : mSceneBases )
 		{
-			if ( scene )
-			{
-				scene->setup( );
-			}
+			scene->setup( );
 		}
 	}
 private:

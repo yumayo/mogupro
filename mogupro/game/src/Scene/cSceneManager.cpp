@@ -10,10 +10,7 @@ cSceneManager::~cSceneManager( )
 {
 	for ( auto& scene : mSceneBases )
 	{
-		if ( scene )
-		{
-			scene->shutDown( );
-		}
+		scene->shutDown( );
 	}
 	mDontDestroyOnLoad->shutDown( );
 }

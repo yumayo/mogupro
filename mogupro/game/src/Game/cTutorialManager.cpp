@@ -180,7 +180,7 @@ cTutorialManager::cTutorialManager( )
 		CAMERA->setCameraAngle( cinder::vec2( -glm::pi<float>( ) / 2.0F, -glm::pi<float>( ) ) );
 		if ( ENV->pushKey( ) )
 		{
-			cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( );
+			Scene::cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( );
 		}
 	} );
 }
