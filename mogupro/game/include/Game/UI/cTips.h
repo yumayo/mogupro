@@ -1,6 +1,7 @@
 #pragma once
 #include <Node/node.h>
 #include <Game/Player/cPlayer.h>
+#include <Utility/cStateMachineBehaviour.h>
 namespace Game
 {
 namespace UI
@@ -19,6 +20,7 @@ private:
 	bool mHintNearGemStone = false;
 	bool mHintNearBlock    = false;
 	softptr<Node::node> message;
+	Utility::cStateMachineBehaviour mStateMachine;
 };
 }
 }

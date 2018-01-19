@@ -50,75 +50,105 @@ bool cTips::init( cinder::vec2 baseContentSize, Player::Team team )
 	messageBox->set_position( baseContentSize * ci::vec2( 0.5F, 0.8F ) );
 	message = messageBox->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 48 ) );
 	set_schedule_update( );
-	return true;
-}
-void cTips::update( float delta )
-{
-	const auto act_p = cPlayerManager::getInstance()->getActivePlayer( );
 
-	//! 地面を掘る時のTIPS表示
-	if ( cFieldManager::getInstance( )->isBreakBlock( act_p->getPos( ) + ( glm::normalize( CAMERA->getCamera( ).getViewDirection( ) ) * ci::vec3( act_p->getStatus( ).drill_speed / 3 ) ), 1 ) )
+	using namespace Utility;
+
+	auto idle = std::make_shared<cStateNode>( );
+	auto nearBlock = std::make_shared<cStateNode>( );
+	auto nearGem = std::make_shared<cStateNode>( );
+	auto transGem = std::make_shared<cStateNode>( );
+	auto nice = std::make_shared<cStateNode>( );
+
+	idle->onStateIn = [ this ] ( Utility::softptr<cStateNode> n )
 	{
-		if ( !mHintNearBlock )
-		{
-			mHintNearBlock = true;
-			if ( !mHintNearGemStone && !mHintTransportGem )
-			{
-				message.dynamicptr<Node::Renderer::label>( )->set_text( u8"左クリックで地面を掘れるぞ" );
-			}
-		}
-	}
-	//! 宝石を採れる時のTIPS表示
-	static int i = 0; i++; 
-	if ( i % 5 != 0 )
+		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"" );
+	};
+	idle->join( std::make_shared<cStateAllow>( nearBlock, [ ] ( Utility::softptr<cStateNode> n )
+	{
+		return cFieldManager::getInstance( )->isBreakBlock( cPlayerManager::getInstance( )->getActivePlayer( )->getPos( ) + ( glm::normalize( CAMERA->getCamera( ).getViewDirection( ) ) * ci::vec3( cPlayerManager::getInstance( )->getActivePlayer( )->getStatus( ).drill_speed / 3 ) ), 1 );
+	} ) );
+
+	nearBlock->onStateIn = [ this ] ( Utility::softptr<cStateNode> n )
+	{
+		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"左クリックで地面を掘れるぞ" );
+	};
+	nearBlock->join( std::make_shared<cStateAllow>( nearGem, [ ] ( Utility::softptr<cStateNode> n ) 
 	{
 		bool isHit = false;
 		auto const& gems = cGemManager::getInstance( )->getGemStones( );
 		for ( auto& gem : gems )
 		{
-			auto pos = act_p->getPos( ) + glm::normalize( CAMERA->getCamera( ).getViewDirection( ) * ci::vec3( 1, 0, 1 ) ) * 3.0F;
+			auto pos = cPlayerManager::getInstance( )->getActivePlayer( )->getPos( ) + glm::normalize( CAMERA->getCamera( ).getViewDirection( ) * ci::vec3( 1, 0, 1 ) ) * 1.5F;
 			if ( glm::distance( pos, gem->getPos( ) ) < 2.0F )
 			{
 				isHit = true;
 				break;
 			}
 		}
-		if ( isHit )
+		return isHit;
+	} ) );
+
+	nearGem->onStateIn = [ this ] ( Utility::softptr<cStateNode> n )
+	{
+		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"右クリックで宝石を採れるぞ" );
+	};
+	nearGem->join( std::make_shared<cStateAllow>( nearBlock, [ ] ( Utility::softptr<cStateNode> n )
+	{ 
+		bool isHit = false;
+		auto const& gems = cGemManager::getInstance( )->getGemStones( );
+		for ( auto& gem : gems )
 		{
-			if ( !mHintNearGemStone && !mHintTransportGem )
+			auto pos = cPlayerManager::getInstance( )->getActivePlayer( )->getPos( ) + glm::normalize( CAMERA->getCamera( ).getViewDirection( ) * ci::vec3( 1, 0, 1 ) ) * 1.5F;
+			if ( glm::distance( pos, gem->getPos( ) ) < 2.0F )
 			{
-				mHintNearGemStone = true;
-				message.dynamicptr<Node::Renderer::label>( )->set_text( u8"右クリックで宝石を採れるぞ" );
+				isHit = true;
+				break;
 			}
 		}
-		else if( !mHintTransportGem )
-		{
-			mHintNearGemStone = false;
-			mHintNearBlock = false;
-		}
-	}
-	//! 宝石を大砲に持って帰った時のTIPS表示
-	if ( mHintTransportGem && act_p->getgems.empty( ) )
+		return !isHit;
+	} ) );
+	nearGem->join( std::make_shared<cStateAllow>( transGem, [ ] ( Utility::softptr<cStateNode> n )
+	{ 
+		return !cPlayerManager::getInstance( )->getActivePlayer( )->getgems.empty( );
+	} ) );
+
+	transGem->onStateIn = [ this ] ( Utility::softptr<cStateNode> n )
 	{
-		mHintTransportGem = false;
-		mHintNearBlock = false;
-		mHintNearGemStone = false;
+		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"宝石を大砲に持って帰ろう" );
+		auto hintTargetCannon = this->add_child( cTargetCannon::create( ) );
+		hintTargetCannon->set_name( "hintTargetCannon" );
+		hintTargetCannon->set_schedule_update( );
+	};
+	transGem->onStateOut = [ this ] ( Utility::softptr<cStateNode> n )
+	{
 		this->remove_child_by_name( "hintTargetCannon" );
-		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"よくやった" );
-		message->run_action( Node::Action::sequence::create( Node::Action::delay::create( 1.5F ) ) );
-	}
-	//! 宝石を大砲に持って帰る時のTIPS表示
-	if ( !act_p->getgems.empty( ) )
+	};
+	transGem->join( std::make_shared<cStateAllow>( nice, [ ] ( Utility::softptr<cStateNode> n ) 
 	{
-		if ( !mHintTransportGem )
-		{
-			mHintTransportGem = true;
-			message.dynamicptr<Node::Renderer::label>( )->set_text( u8"宝石を大砲に持って帰ろう" );
-			auto hintTargetCannon = this->add_child( cTargetCannon::create( ) );
-			hintTargetCannon->set_name( "hintTargetCannon" );
-			hintTargetCannon->set_schedule_update( );
-		}
-	}
+		return cPlayerManager::getInstance( )->getActivePlayer( )->getgems.empty( );
+	} ) );
+
+	nice->onStateIn = [ this ] ( Utility::softptr<cStateNode> n )
+	{
+		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"よくやった" );
+		message.dynamicptr<Node::Renderer::label>( )->run_action( Node::Action::sequence::create( Node::Action::delay::create( 1.5F ), Node::Action::call_func::create( [ this ] { message.dynamicptr<Node::Renderer::label>( )->set_name( "animationFinished" ); } ) ) );
+	};
+	nice->onStateOut = [ this ] ( Utility::softptr<cStateNode> n )
+	{
+		message.dynamicptr<Node::Renderer::label>( )->set_name( u8"" );
+	};
+	nice->join( std::make_shared<cStateAllow>( idle, [ this ] ( Utility::softptr<cStateNode> n ) 
+	{
+		return message.dynamicptr<Node::Renderer::label>( )->get_name( ) == "animationFinished";
+	} ) );
+
+	mStateMachine.init( idle );
+
+	return true;
+}
+void cTips::update( float delta )
+{
+	mStateMachine.update( );
 }
 }
 }
