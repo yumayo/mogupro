@@ -38,6 +38,7 @@ private:
 		cinder::vec4 modelViewPositionsB[Light::MAX_LINE_LIGHT_NUM];
 		cinder::vec4 colorWithRadiuses[Light::MAX_LINE_LIGHT_NUM];
 	}mLineLightParams;
-	bool mUseShadow = false;
+	bool mUseShadow = true;
+	bool mUseAllLight = true;
 };
 }
