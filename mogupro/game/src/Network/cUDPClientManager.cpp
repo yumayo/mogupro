@@ -62,7 +62,7 @@ void cUDPClientManager::updateSend( )
 	{
 		close( );
 		MES_ERR( "送信ハンドルが未定義です。",
-				 [ ] { cSceneManager::getInstance( )->change<Scene::Member::cTitle>( ); } );
+				 [ ] { Scene::cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( ); } );
 	}
 
 	auto& handle = mConnectServerHandle;
@@ -117,7 +117,7 @@ void cUDPClientManager::connection( )
         {
             close( );
             MES_ERR( "サーバーからの応答がありません。",
-                     [ ] { cSceneManager::getInstance( )->change<Scene::Member::cTitle>( ); } );
+                     [ ] { Scene::cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( ); } );
         }
     }
 }
@@ -135,7 +135,7 @@ void cUDPClientManager::ping( )
         {
             close();
             MES_ERR( "サーバーとの接続が切れました。",
-                     [ ] { cSceneManager::getInstance( )->change<Scene::Member::cTitle>( ); } );
+                     [ ] { Scene::cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( ); } );
         }
     }
 }

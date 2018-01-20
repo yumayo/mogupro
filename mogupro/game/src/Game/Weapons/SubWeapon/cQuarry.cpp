@@ -66,7 +66,8 @@ namespace Game
 				mDrillAABB.setSize(mDrillScale);
 				mSlopeAABB.setSize(slope.scale);
 
-				
+				mBreakType.add(Field::BlockType::NORMAL);
+				mBreakType.add(Field::BlockType::HARD);
 			}
 			void cQuarry::update(const float & delta_time)
 			{
@@ -74,7 +75,9 @@ namespace Game
 				{
 				case Game::Weapons::SubWeapon::cQuarry::DRILLMOVE:
 					Drillmove(delta_time);
-					Game::cFieldManager::getInstance()->blockBreak(mDrillPos, mDrillScale.x);
+					if (ismyobject) {
+						Game::cFieldManager::getInstance()->blockBreak(mDrillPos, mDrillScale.x, mBreakType);
+					}
 					collisionFieldGems();
 					updateSlope(delta_time);
 					mDrillrotate_y += 5.f*delta_time;

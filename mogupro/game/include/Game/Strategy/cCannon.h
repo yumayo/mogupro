@@ -17,7 +17,7 @@ namespace Game
 		class cCannon
 		{
 		public:
-			cCannon(const ci::vec3 pos, const ci::vec3 scale, const ci::vec3 Foundationpos, const ci::vec3 Foundationscale, const Game::Player::Team team);
+			cCannon(const ci::vec3 pos, const ci::vec3 scale, const ci::vec3 Foundationpos, const ci::vec3 Foundationscale, const ci::vec3 Foundationpos2, const ci::vec3 Foundationscale2,const ci::vec3 storepos,ci::vec3 hitpos, ci::vec3 hitscale,const Game::Player::Team team);
 			~cCannon();
 
 			static const int GEM_MAXNUM = 100;
@@ -37,13 +37,16 @@ namespace Game
 			std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>getStoregems();
 			bool getIsCollectMaxGem();
 			void setAddCanonPower(const int getgemnum);
+			int getGEmNum();
 		private:
 			void sendCollectMaxGem();
+			bool debugaabb = true;
 			ci::gl::VboMeshRef mesh;
 			Game::Light::PointLightHandle light;
 			std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>mGetgems;
 			Collision::cAABBCollider mAABB;
 			Collision::cAABBCollider mFoundatioAABB;
+			Collision::cAABBCollider mFoundatioAABB2;
 			Game::Player::Team mTeam;
 			ci::AxisAlignedBox mToPlayerAABB;
 			ci::vec3 mPos;
@@ -54,7 +57,7 @@ namespace Game
 			ci::vec3 mGemStorePos;
 			std::string mCannonName;
 			float lightradius = 2.0f;
-			float direction;
+			ci::vec3 mRotate;
 			float mLightSinAngle = 0.0f;
 			bool mIsCollectMaxNum = false;
 			int mGemCount = 0;

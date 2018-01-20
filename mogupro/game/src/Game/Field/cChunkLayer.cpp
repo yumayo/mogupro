@@ -76,6 +76,7 @@ void cChunkLayer::draw()
         ctx->setDefaultShaderVars();
         mVbo->drawImpl();
         //ctx->popVao();
+        gl::ScopedColor color( 1, 1, 1, 1 );
     }
     //gl::draw( mVbo );
 }
@@ -212,6 +213,26 @@ void cChunkLayer::addFace( const std::array<GLfloat, 12>& block_face,
         mIndicesIndex
     } );
     mIndicesIndex += 4;
+}
+
+void cChunkLayer::blockReset()
+{
+    for ( auto& it = mRevivalBlocks.begin(); it != mRevivalBlocks.end(); )
+    {
+        it->second = 0;
+        if ( it->second <= 0 )
+        {
+            mBlocks[it->first]->toRevival();
+            mIsRebuildMesh = true;
+            mRevivalBlocks.erase( it++ );
+        }
+        else
+        {
+            it++;
+        }
+    }
+    if ( mIsRebuildMesh )
+        reBuildStart();
 }
 
 cChunkLayer* cChunkLayer::breakBlock( ci::ivec3 c )
@@ -359,6 +380,22 @@ void cChunkLayer::createBlocks()
                 mBlocks[id] = block;
 
             }
+}
+
+void cChunkLayer::createCollider()
+{
+    if ( mHeight >= CHUNK_RANGE_Y )
+        return;
+
+    // サイズ
+    vec3 size = vec3( CHUNK_SIZE * BLOCK_SIZE );
+
+    // 中心位置
+    vec3 pos = getChunkCell() * CHUNK_SIZE;
+    pos *= BLOCK_SIZE;
+    pos += vec3( CHUNK_SIZE * BLOCK_SIZE ) / 2.0f;
+
+    mChunkLayerAABB = ci::AxisAlignedBox( pos - size / 2.0f, pos + size / 2.0f );
 }
 
 void cChunkLayer::clearMesh()

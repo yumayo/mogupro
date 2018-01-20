@@ -123,7 +123,7 @@ void cResultManager::update( float t )
 	root->entry_update( t );
 	if ( ENV->pushKey( ) )
 	{
-		cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( );
+		Scene::cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( );
 	}
 }
 void cResultManager::draw( )

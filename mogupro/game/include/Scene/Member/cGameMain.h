@@ -24,6 +24,7 @@ public:
     void drawShadow( );
     void draw2D( );
     void resize( );
+	std::string const& getName( ) { return typeid( *this ).name( ); }
 private:
     Game::SkyDome::cSkyDome skydome;
 	bool sendEndSetup;

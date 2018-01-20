@@ -55,6 +55,10 @@ std::vector<int> cFieldManager::getChunkId( const ci::vec3 & position, const flo
 {
     return mUnderGround->getChunkId( position, radius );
 }
+void cFieldManager::blockAllReset()
+{
+    mUnderGround->blockAllReset();
+}
 void cFieldManager::shutdown()
 {
     mUnderGround->shutdown();

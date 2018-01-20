@@ -26,7 +26,7 @@ public:
 void gameApp::setup( )
 {
 	ENV->setup( );
-    cSceneManager::getInstance( )->shift<Scene::Member::cBegin>( );
+    Scene::cSceneManager::getInstance( )->shift<Scene::Member::cBegin>( );
 }
 void gameApp::mouseDown( cinder::app::MouseEvent event )
 {
@@ -65,7 +65,7 @@ void gameApp::update( )
 
 	ENV->preUpdate( delta );
 
-    cSceneManager::getInstance( )->now( ).update( delta );
+	Scene::cSceneManager::getInstance( )->update( delta );
 	CAMERA->update( delta );
 
 	Utility::cScheduler::getInstance( )->update( delta );
@@ -75,11 +75,11 @@ void gameApp::draw( )
 	cinder::gl::clear( cinder::Color( 0, 0, 0 ) );
 
     CAMERA->bind3D( );
-    cSceneManager::getInstance( )->now( ).draw( );
+	Scene::cSceneManager::getInstance( )->draw( );
     CAMERA->unBind3D( );
 
     CAMERA->bind2D( );
-    cSceneManager::getInstance( )->now( ).draw2D( );
+	Scene::cSceneManager::getInstance( )->draw2D( );
     CAMERA->unBind2D( );
 
     ENV->flashInput( );
@@ -87,6 +87,6 @@ void gameApp::draw( )
 void gameApp::cleanup()
 {
 	ENV->cleanup( );
-    cSceneManager::getInstance()->now().shutDown();
+	Scene::cSceneManager::removeInstance( );
 }
 CINDER_APP( gameApp, cinder::app::RendererGl, [ ] ( cinder::app::App::AppBase::Settings* s ) { s->setWindowSize( 1600, 900 ); } )

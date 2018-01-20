@@ -47,6 +47,9 @@ public: //Player, Strategy が使う関数
     // radius   : 範囲の半径
     std::vector<int> getChunkId( const ci::vec3& position, const float& radius );
 
+    // ブロックのリセット
+    void blockAllReset();
+
     // シャットダウン
     void shutdown();
 

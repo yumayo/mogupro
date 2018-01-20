@@ -15,6 +15,8 @@
 #include"Sound\Stereophonic.h"
 #include"Resource\cFbxManager.h"
 #include"Resource\TextureManager.h"
+#include"Resource\cJsonManager.h"
+#include"Utility\cInput.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -26,21 +28,19 @@ namespace Game
 	namespace Strategy
 	{
 
-		cCannon::cCannon(const ci::vec3 pos, const ci::vec3 scale, const ci::vec3 Foundationpos, const ci::vec3 Foundationscale, const Game::Player::Team team)
-			: mAABB(pos, scale) , mFoundatioAABB(Foundationpos, Foundationscale) {
+		cCannon::cCannon(const ci::vec3 pos, const ci::vec3 scale, const ci::vec3 Foundationpos, const ci::vec3 Foundationscale, const ci::vec3 Foundationpos2, const ci::vec3 Foundationscale2, const ci::vec3 storepos, ci::vec3 hitpos, ci::vec3 hitscale, const Game::Player::Team team)
+			: mAABB(hitpos, hitscale), mFoundatioAABB(Foundationpos, Foundationscale), mFoundatioAABB2(Foundationpos2, Foundationscale2) {
 			mPos = pos;
 			mScale = scale;
 			mTeam = team;
 			mFoundationPos = Foundationpos;
 			mFoundationScale = Foundationscale;
-			mGemStorePos = mPos + ci::vec3(0,mScale.y/5.f,0);
+			mGemStorePos = storepos;
 			if (team == Game::Player::Team::Red) {
-				direction = 1.f;
 				mColor = ci::ColorA(1, 0, 0, 1);
 				mCannonName = "cannon_red";
 			}
 			else {
-				direction = -1.f;
 				mColor = ci::ColorA(0, 0, 1, 1);
 				mCannonName = "cannon_blue";
 			}
@@ -49,12 +49,23 @@ namespace Game
 		{
 			mAABB.removeWorld();
 			mFoundatioAABB.removeWorld();
+			mFoundatioAABB2.removeWorld();
 		    //rb.removeWorld();
 		}
 
 		void cCannon::draw()
 		{
-			ci::gl::ScopedTextureBind tex(TEX->get("cannon"));
+			
+			if (debugaabb) {
+				//STRM->drawCube(mGemStorePos, ci::vec3(1.5, 1.5, 1.5), vec3(0, 0, 0), ColorA(0, 0, 1, 1));
+			/*	STRM->drawCube(mAABB.getPosition(), mAABB.getSize(), vec3(0, 0, 0), ColorA(1, 1, 1, 1));
+				
+				STRM->drawCube(mFoundatioAABB.getPosition(), mFoundatioAABB.getSize(), vec3(0, 0, 0), ColorA(0, 1, 0, 1));
+				STRM->drawCube(mFoundatioAABB2.getPosition(), mFoundatioAABB2.getSize(), vec3(0, 0, 0), ColorA(0, 1, 1, 1));*/
+			}
+		
+
+			ci::gl::ScopedTextureBind tex(TEX->get(mCannonName));
 			gl::pushModelView();
 			gl::translate(mPos);
 			gl::scale(ci::vec3(mScale.x));
@@ -63,36 +74,13 @@ namespace Game
 			gl::popModelView();
 
 
-			//float rate = mScale.x;
-			///////////////////“y‘ä
-			//STRM->drawCube(mFoundationPos, mFoundationScale, vec3(0, 0, 0), ColorA(0.5, 0.5, 0.5, 1));
-			////////////////////
-
-			///////////////////ƒLƒƒƒmƒ“
-			//STRM->drawCube(mPos+vec3(0, rate*0.25f,direction*rate*0.4f),vec3(rate*0.3f,rate,rate*0.3f*direction), vec3(-30*direction, 0, 0), ColorA(0, 0, 0, 1));
-			////////////////////
-
-			///////////////////ƒXƒtƒBƒA
-			//ci::gl::pushModelView();
-			//ci::gl::translate(mPos);
-			//ci::gl::color(ColorA(1, 1, 1, 1));
-			//ci::gl::scale(ci::vec3(mScale.x / 2.f));
-			//ci::gl::draw(mesh);
-			//ci::gl::popModelView();
-			////STRM->drawShere(mPos, ci::vec3(mScale.x / 2.f), vec3(0, 0, 0), ColorA(1, 1, 1, 1), 30);
-			///////////////////
-
-			///////////////////–{‘Ì
-			//STRM->drawCube(mPos - ci::vec3(0, mScale.y / 4.f, 0), ci::vec3(mScale.x, mScale.y / 2.f, mScale.z), vec3(0, 0, 0), mColor);
-			///////////////////
-
-			////////////////AABB‚ð•`‰æ
-			//STRM->drawCube(mPos, mScale, vec3(0, 0, 0), ColorA(0, 0, 0, 1));
-			//////////////////
 		}
 
 		void cCannon::update(const float & delta_time)
 		{
+			if (ENV->pushKey(ci::app::KeyEvent::KEY_n)) {
+				debugaabb = (!debugaabb);
+			}
 			mLightSinAngle += delta_time*getSinspeed();
 			float max = lightradius*(0.8f + 0.2f*sin(mLightSinAngle));
 			light->reAttachRadius(max);
@@ -102,11 +90,12 @@ namespace Game
 		{
 			mAABB.addWorld();
 			mFoundatioAABB.addWorld();
+			mFoundatioAABB2.addWorld();
 			light = cLightManager::getInstance()->addPointLight(mGemStorePos, ci::vec3(mColor.r, mColor.g, mColor.b) , lightradius);
 			mToPlayerAABB.set(mAABB.getPosition() - mAABB.getSize()*0.55f, mAABB.getPosition() + mAABB.getSize()*0.55f);
 			mesh = Resource::cObjectManager::getInstance()->findObject("sphere.obj");
 
-			TEX->set("cannon", "Fbx/" + mCannonName + ".png");
+			TEX->set(mCannonName, "Fbx/" + mCannonName + ".png");
 		}
 
 		Game::Player::Team cCannon::getTeam()
@@ -141,7 +130,7 @@ namespace Game
 				.speed(0.5f)
 				.swellEndTime(0.1f)
 				.swellWaitTime(30.0f)
-				.easeTime(30.0f)
+				.easeTime(60.0f)
 				.count(color.size()*2)
 				.effectTime(0)
 				.vanishTime(5.0)
@@ -228,6 +217,11 @@ namespace Game
 			light->reAttachRadius(lightradius);
 			mGemCount += getgemnum;
 			if (mGemCount >= GEM_MAXNUM)mGemCount = GEM_MAXNUM;
+		}
+
+		int Game::Strategy::cCannon::getGEmNum()
+		{
+			return mGemCount;
 		}
 
 		void cCannon::sendCollectMaxGem()

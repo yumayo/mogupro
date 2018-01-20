@@ -125,6 +125,7 @@ std::array<ci::vec2, 4> getTexCoordsFromBlockType( const BlockType& type )
         case BlockType::UNBREAKING:
             return texture_coords1;
     }
+    return texture_coords0;
 }
 
 struct AdjacentBlockPositions

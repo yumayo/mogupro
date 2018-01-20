@@ -4,6 +4,8 @@
 #include<Game/cGemManager.h>
 #include<Node\node.h>
 #include<Node\action.hpp>
+#include<Game/Field/cBreakBlockType.h>
+
 namespace Game
 {
 namespace Weapons
@@ -66,7 +68,7 @@ private:
 	void drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color);
 	bool isretun = false;
 	DrillState changeState();
-
+	Game::Field::cBreakBlockType mBreakType;
 	
 	
 };

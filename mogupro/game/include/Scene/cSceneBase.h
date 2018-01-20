@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 //! @file cSceneBase
 //! @brief 全てのSceneに継承させる基盤クラスです
@@ -6,7 +7,6 @@
 //!       Scene切り替えは_isEnd で判断します
 //! @date 2017-10-12
 //! @author Taka Nomoto
-
 class cSceneBase
 {
 public:
@@ -26,6 +26,9 @@ public:
 	//!@ Look Me : Scene切り替え時にtrueにしてください
 	//もしもScene切り替え時のバグ出たらようで準備してます
 	bool isEnd() { return mIsEnd; }
+
+	// シーンの名前を定義します。
+	virtual std::string const& getName( ) = 0;
 protected:
 
 	bool mIsEnd;

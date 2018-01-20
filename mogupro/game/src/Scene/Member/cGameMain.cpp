@@ -232,8 +232,7 @@ void cGameMain::draw2D( )
     gl::enableFaceCulling( false );
     gl::disableDepthRead( );
     gl::disableDepthWrite( );
-	
-	Game::cPlayerManager::getInstance( )->draw2D( );
+
 	Game::cUIManager::getInstance( )->draw( );
 	Game::cGameManager::getInstance( )->draw( );
 	Game::cDebugManager::getInstance( )->draw2d( );

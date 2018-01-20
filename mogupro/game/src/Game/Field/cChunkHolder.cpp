@@ -212,31 +212,37 @@ std::vector<int> cChunkHolder::getChunkId( const ci::ivec3 & chunk_cell,
         return chunks_id;
 
     // position‚ÌˆÊ’u‚Ìƒ`ƒƒƒ“ƒN‚ðÅ‰‚É“o˜^‚·‚é
-    auto chunk_layer = getChunkLayer( chunk_cell );
-    chunks_id.push_back( chunk_layer->getChunkLayerId() );
+    auto first_chunk_layer = getChunkLayer( chunk_cell );
+    chunks_id.push_back( first_chunk_layer->getChunkLayerId() );
 
     if ( radius < BLOCK_SIZE )
         return chunks_id;
 
-    auto r = ivec3( int( radius / BLOCK_SIZE ) );
-    auto s = block_cell - r;
-    auto e = block_cell + r;
+    vec3 pos = vec3( chunk_cell * CHUNK_SIZE ) + vec3( block_cell );
+    pos *= BLOCK_SIZE;
+    vec3 size = vec3( radius );
+    ci::AxisAlignedBox targetAABB( pos - size, pos + size );
 
-    for ( int z = s.z; z <= e.z; z += r.z )
-        for ( int y = s.y; y <= e.y; y += r.y )
-            for ( int x = s.x; x <= e.x; x += r.x )
+    for ( int z = 0; z < CHUNK_RANGE_Z; z++ )
+    {
+        for ( int y = 0; y < CHUNK_RANGE_Y; y++ )
+        {
+            for ( int x = 0; x < CHUNK_RANGE_X; x++ )
             {
-                auto layer = chunk_layer->getChunkLayer( ivec3( x, y, z ) );
-                if ( layer == nullptr )
-                    continue;
+                auto layer = getChunkLayer( ivec3( x, y, z ) );
+                if ( targetAABB.intersects( layer->getChunkLayerAABB() ) )
+                {
+                    int id = layer->getChunkLayerId();
 
-                int id = layer->getChunkLayerId();
-                if ( std::any_of( chunks_id.begin(), chunks_id.end(),
-                                  [&]( int t ) { return t == id; } ) )
-                    continue;
+                    // Å‰‚É“o˜^‚µ‚½id‚Í“o˜^‚µ‚È‚¢
+                    if ( first_chunk_layer->getChunkLayerId() == id )
+                        continue;
 
-                chunks_id.emplace_back( id );
+                    chunks_id.emplace_back( id );
+                }
             }
+        }
+    }
 
     return chunks_id;
 }
@@ -277,6 +283,21 @@ bool cChunkHolder::cellIsOutOfBounds( const int & x, const int & y, const int & 
 int cChunkHolder::getHighestCell()
 {
     return CHUNK_RANGE_Y;
+}
+
+void cChunkHolder::blockAllReset()
+{
+    for ( int z = 0; z < CHUNK_RANGE_Z; z++ )
+    {
+        for ( int y = 0; y < CHUNK_RANGE_Y; y++ )
+        {
+            for ( int x = 0; x < CHUNK_RANGE_X; x++ )
+            {
+                auto layer = getChunkLayer( ivec3( x, y, z ) );
+                layer->blockReset();
+            }
+        }
+    }
 }
 
 void cChunkHolder::clear()

@@ -14,6 +14,7 @@ in vec3 vModelViewNormal;
 out vec4 oColor;
 
 // 影に使うやつ
+uniform bool uUseShadow;
 uniform vec3 uShadowCameraViewPos;
 uniform sampler2DShadow uShadowMap;
 in vec4 vShadowCoord;
@@ -71,7 +72,10 @@ void main()
 	{
 		Shadow = textureProj( uShadowMap, ShadowCoord, -0.00005 );
 	}
-    oColor.rgb *= ( Diffuse * Shadow + Ambient );
+    if(uUseShadow)
+    {
+        oColor.rgb *= ( Diffuse * Shadow + Ambient );
+    }
 
     // ポイントライト
     for(int i = 0; i < uPointLightNum; ++i)

@@ -113,7 +113,8 @@ void cCapsuleManager::HitPlayer(const int playerid, const int capsuleid)
 			.easeTime(30.0f)
 			.count(colors.size())
 			.effectTime(0)
-			.vanishTime(5.0)
+			.vanishTime(1.5)
+			.vanishTimeRange(0.0f)
 			.randomEaseTypes({ EaseType::BackIn,EaseType::BackOut,EaseType::CircIn,EaseType::CircOut,EaseType::Linear,EaseType::CubicIn })
 		);
 

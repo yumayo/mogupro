@@ -23,7 +23,7 @@ void cQuarryCapsule::setup(const ci::vec3 pos, const Game::Weapons::SubWeapon::S
 	float h = std::fmodf(mLightColorH, 1.0f);
 	ci::Colorf hsv = ci::hsvToRgb(ci::vec3(h, 1.0f, 1.0f));
 	mLightSinAngle = ci::randFloat(2.f*M_PI);
-	mLightRadius = mLightMaxRadius * ((1.f - mLightRate / 2.f) + mLightRate / 2.f*sin(mLightSinAngle));
+	mLightRadius = mLightMaxRadius * ((1.f - (mLightRate / 2.f)) + mLightRate / 2.f*sin(mLightSinAngle));
 	mLight = cLightManager::getInstance()->addPointLight(mPos, ci::vec3(hsv.r, hsv.g, hsv.b), mLightRadius);
 }
 
@@ -39,7 +39,7 @@ void cQuarryCapsule::update(const float & delta_time)
 		ci::Colorf hsv = ci::hsvToRgb(ci::vec3(h, 1.0f, 1.0f));
 		mLight->color = ci::vec3(hsv.r, hsv.g, hsv.b);
 		mLightSinAngle += delta_time;
-		mLightRadius = mLightMaxRadius * ((1.f - mLightRate / 2.f) + mLightRate / 2.f*sin(mLightSinAngle));
+		mLightRadius = mLightMaxRadius * ((1.f - (mLightRate / 2.f)) + mLightRate / 2.f*sin(mLightSinAngle));
 		mLight->reAttachRadius(mLightRadius);
 	}
 }

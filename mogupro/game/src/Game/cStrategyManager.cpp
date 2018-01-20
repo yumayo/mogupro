@@ -6,6 +6,7 @@
 #include<algorithm>
 #include"Game\cClientAdapter.h"
 #include"Game\cFieldManager.h"
+#include"Resource\cJsonManager.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -28,18 +29,32 @@ void cStrategyManager::setup()
 	float y_max = Field::CHUNK_RANGE_Y * Field::CHUNK_SIZE*Field::BLOCK_SIZE;
 	float z_max = Field::CHUNK_RANGE_Z * Field::CHUNK_SIZE*Field::BLOCK_SIZE;
 
+	Json::Value cannon=Resource::JSON["cannon.json"];
+	ci::vec3 reddrawpos = jsonToVec3(cannon["reddrawpos"]) + ci::vec3(Field::WORLD_SIZE.x/2.f, Field::WORLD_SIZE.y,0);
+	ci::vec3 bluedrawpos = jsonToVec3(cannon["bluedrawpos"]) + ci::vec3(Field::WORLD_SIZE.x / 2.f, Field::WORLD_SIZE.y, Field::WORLD_SIZE.z);
+	ci::vec3 scale = ci::vec3((x_max / cannon["scalerate"].asFloat()));
+	ci::vec3 hitscale = jsonToVec3(cannon["hitscale"]) * scale;
+	ci::vec3 redhitpos = jsonToVec3(cannon["redhitpos"])+reddrawpos;
+	ci::vec3 bluehitpos = jsonToVec3(cannon["bluehitpos"])+bluedrawpos;
+	ci::vec3 foundationscale = jsonToVec3(cannon["foundationscale"])*scale;
+	ci::vec3 foundationscale2 = jsonToVec3(cannon["foundationacale2"])*scale;
 
-	ci::vec3 scale = ci::vec3((x_max / 6.f));
-	ci::vec3 foundationscale = ci::vec3(scale.x*1.4f, scale.y*0.1f, scale.z*1.4f);
+	ci::vec3 redfoundationtrancepos = jsonToVec3(cannon["redfoundationpos1"]);
+	ci::vec3 redfoundationtrancepos2 = jsonToVec3(cannon["redfoundationpos2"]);
+	ci::vec3 bluefoundationtrancepos = jsonToVec3(cannon["bluefoundationpos1"]);
+	ci::vec3 bluefoundationtrancepos2 = jsonToVec3(cannon["bluefoundationpos2"]);
 	{
-		ci::vec3 pos = ci::vec3(x_max / 2.f, y_max + scale.y / 2.f- Field::BLOCK_SIZE/2.f+foundationscale.y, scale.z / 2.f - Field::BLOCK_SIZE / 2.f);
-		ci::vec3 foundationpos= ci::vec3(x_max / 2.f, y_max + foundationscale.y / 2.f - Field::BLOCK_SIZE / 2.f, foundationscale.z / 2.f - Field::BLOCK_SIZE / 2.f);
-		cannons.push_back(std::make_shared<Game::Strategy::cCannon>(pos,scale, foundationpos, foundationscale, Game::Player::Team::Red));
+		ci::vec3 pos = reddrawpos;
+		ci::vec3 foundationpos = reddrawpos + redfoundationtrancepos;
+		ci::vec3 foundationpos2 = reddrawpos + redfoundationtrancepos2;
+
+		cannons.push_back(std::make_shared<Game::Strategy::cCannon>(pos,scale, foundationpos, foundationscale, foundationpos2, foundationscale2,pos+ jsonToVec3(cannon["redstorepos"]), redhitpos,hitscale, Game::Player::Team::Red));
 	}
 	{
-		ci::vec3 pos = vec3(x_max / 2.f, y_max + scale.y / 2.f - Field::BLOCK_SIZE / 2.f + foundationscale.y, z_max - scale.z/2.f - Field::BLOCK_SIZE / 2.f);
-		ci::vec3 foundationpos = ci::vec3(x_max / 2.f, y_max + foundationscale.y / 2.f - Field::BLOCK_SIZE / 2.f, z_max -foundationscale.z / 2.f - Field::BLOCK_SIZE / 2.f);
-		cannons.push_back(std::make_shared<Game::Strategy::cCannon>(pos, scale, foundationpos, foundationscale, Game::Player::Team::Blue));
+		ci::vec3 pos = bluedrawpos;
+		ci::vec3 foundationpos = bluedrawpos + bluefoundationtrancepos;
+		ci::vec3 foundationpos2 = bluedrawpos + bluefoundationtrancepos2;
+		cannons.push_back(std::make_shared<Game::Strategy::cCannon>(pos, scale, foundationpos, foundationscale, foundationpos2, foundationscale2,pos+ jsonToVec3(cannon["bluestorepos"]),bluehitpos, hitscale, Game::Player::Team::Blue));
 	}
 
 
@@ -73,6 +88,16 @@ void cStrategyManager::update(const float & deltatime)
 void cStrategyManager::updateCollisionAfterUpdate(const float & deltaTime)
 {
 
+}
+
+ci::vec3 cStrategyManager::jsonToVec3(Json::Value json)
+{
+	ci::vec3 Vec3;
+	Vec3.x = json[0].asFloat();
+	Vec3.y = json[1].asFloat();
+	Vec3.z = json[2].asFloat();
+
+	return Vec3;
 }
 
 void cStrategyManager::deleteObject()

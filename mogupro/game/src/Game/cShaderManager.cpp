@@ -4,6 +4,7 @@
 #include <CameraManager/cCameraManager.h>
 #include <Game/cPlayerManager.h>
 #include <Game/cLightManager.h>
+#include <Game/cDebugManager.h>
 using namespace ci;
 namespace Game
 {
@@ -26,16 +27,8 @@ void cShaderManager::setup( bool useShadow )
 	fboFormat.attachment( GL_DEPTH_ATTACHMENT, mShadowTex );
 	mFbo = gl::Fbo::create( mShadowTex->getWidth( ), mShadowTex->getHeight( ), fboFormat );
 
-	if ( mUseShadow )
-	{
-		mGlsl = gl::GlslProg::create( app::loadAsset( "Shader/world.vert" ),
-									  app::loadAsset( "Shader/world.frag" ) );
-	}
-	else
-	{
-		mGlsl = gl::GlslProg::create( app::loadAsset( "Shader/worldNonShadow.vert" ),
-									  app::loadAsset( "Shader/worldNonShadow.frag" ) );
-	}
+	mGlsl = gl::GlslProg::create( app::loadAsset( "Shader/world.vert" ),
+									app::loadAsset( "Shader/world.frag" ) );
 
 	int size = 128;
 	vec3 pos( 80, 80, 80 );
@@ -44,48 +37,58 @@ void cShaderManager::setup( bool useShadow )
 
 	mPointLightUBO = gl::Ubo::create( sizeof( mPointLightParams ), &mPointLightParams, GL_DYNAMIC_DRAW );
 	mLineLightUBO = gl::Ubo::create( sizeof( mLineLightParams ), &mLineLightParams, GL_DYNAMIC_DRAW );
+
+	cDebugManager::getInstance( )->mParam->addParam( "UseShadow", &mUseShadow );
+	cDebugManager::getInstance( )->mParam->addParam( "UseAllLight", &mUseAllLight );
 }
 void cShaderManager::uniformUpdate( )
 {
+	if ( !mUseAllLight )
 	{
-		auto lights = Game::cLightManager::getInstance( )->getPointLights( );
-		memset( &mPointLightParams, 0, sizeof( mPointLightParams.useIndices ) );
-		int i = 0;
-		for ( auto& light : lights )
-		{
-			if ( !light.second )
-			{
-				continue;
-			}
-			else
-			{
-				mPointLightParams.useIndices[i / 4][i % 4] = i;
-				i++;
-			}
-		}
-		mGlsl->uniform( "uPointLightNum", i );
-		mPointLightUBO->bufferSubData( 0, sizeof( mPointLightParams.useIndices ), &mPointLightParams );
-		mGlsl->uniformBlock( "PointLightParams", 0 );
+		mGlsl->uniform( "uPointLightNum", 0 );
 	}
+	else
 	{
-		auto lights = Game::cLightManager::getInstance( )->getLineLights( );
-		memset( &mLineLightParams, 0, sizeof( mLineLightParams.useIndices ) );
-		int i = 0;
-		for ( auto& light : lights )
 		{
-			if ( !light.second )
+			auto lights = Game::cLightManager::getInstance( )->getPointLights( );
+			memset( &mPointLightParams, 0, sizeof( mPointLightParams.useIndices ) );
+			int i = 0;
+			for ( auto& light : lights )
 			{
-				continue;
+				if ( !light.second )
+				{
+					continue;
+				}
+				else
+				{
+					mPointLightParams.useIndices[i / 4][i % 4] = i;
+					i++;
+				}
 			}
-			else
-			{
-				mLineLightParams.useIndices[i / 4][i % 4] = i;
-				i++;
-			}
+			mGlsl->uniform( "uPointLightNum", i );
+			mPointLightUBO->bufferSubData( 0, sizeof( mPointLightParams.useIndices ), &mPointLightParams );
+			mGlsl->uniformBlock( "PointLightParams", 0 );
 		}
-		mGlsl->uniform( "uLineLightNum", i );
-		mLineLightUBO->bufferSubData( 0, sizeof( mLineLightParams ), &mLineLightParams );
-		mGlsl->uniformBlock( "LineLightParams", 1 );
+		{
+			auto lights = Game::cLightManager::getInstance( )->getLineLights( );
+			memset( &mLineLightParams, 0, sizeof( mLineLightParams.useIndices ) );
+			int i = 0;
+			for ( auto& light : lights )
+			{
+				if ( !light.second )
+				{
+					continue;
+				}
+				else
+				{
+					mLineLightParams.useIndices[i / 4][i % 4] = i;
+					i++;
+				}
+			}
+			mGlsl->uniform( "uLineLightNum", i );
+			mLineLightUBO->bufferSubData( 0, sizeof( mLineLightParams ), &mLineLightParams );
+			mGlsl->uniformBlock( "LineLightParams", 1 );
+		}
 	}
 }
 void cShaderManager::uniformUpdate( int chunkId )
@@ -211,20 +214,14 @@ void cShaderManager::draw( std::function<void( )> const& render )
 		}
 	}
 
-	if ( mUseShadow )
-	{
-		gl::ScopedTextureBind texScope( mShadowTex, (uint8_t)1 );
-		vec3 shadowCameraViewPos = vec3( CAMERA->getCamera( ).getViewMatrix( ) * vec4( mCamera.getEyePoint( ), 1.0f ) );
-		mat4 shadowView = mCamera.getProjectionMatrix( ) * mCamera.getViewMatrix( );
-		mGlsl->uniform( "uShadowMap", 1 );
-		mGlsl->uniform( "uShadowCameraViewPos", shadowCameraViewPos );
-		mGlsl->uniform( "uShadowView", shadowView );
+	gl::ScopedTextureBind texScope( mShadowTex, (uint8_t)1 );
+	vec3 shadowCameraViewPos = vec3( CAMERA->getCamera( ).getViewMatrix( ) * vec4( mCamera.getEyePoint( ), 1.0f ) );
+	mat4 shadowView = mCamera.getProjectionMatrix( ) * mCamera.getViewMatrix( );
+	mGlsl->uniform( "uShadowMap", 1 );
+	mGlsl->uniform( "uShadowCameraViewPos", shadowCameraViewPos );
+	mGlsl->uniform( "uShadowView", shadowView );
+	mGlsl->uniform( "uUseShadow", mUseShadow );
 
-		render( );
-	}
-	else
-	{
-		render( );
-	}
+	render( );
 }
 }

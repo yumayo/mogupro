@@ -1,0 +1,16 @@
+{
+  "scalerate": 7,
+  "redhitpos": [ 0.5, 0, 0 ],
+  "bluehitpos": [ 0.5, 0, 2.5 ],
+  "hitscale": [ 1.5, 1, 1 ],
+  "reddrawpos": [ -0.5, 3, 2.7 ],
+  "bluedrawpos": [ -0.5, 3, -5.4 ],
+  "foundationscale": [ 1.8, 0.1, 2.1 ],
+  "foundationacale2": [ 1.8, 0.1, 1.5 ],
+  "redfoundationpos1": [ 0.5, -2.85, 1.75 ],
+  "bluefoundationpos1": [ 0.5, -2.85, 0.5 ],
+  "redfoundationpos2": [ 0.5, -2.4, 0.35 ],
+  "bluefoundationpos2": [ 0.5, -2.4, 2.0 ],
+  "redstorepos": [ 0.5, -1.5, 1.5 ],
+  "bluestorepos": [ 0.5, -1.5, 0.95 ]
+}
