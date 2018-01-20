@@ -13,22 +13,22 @@ namespace Sound
 
 	void StereophonicManager::update(float deltaTime)
 	{
-		for (auto& m : stereophonics)
+		for (auto& m : stereophonicList)
 		{
-			if (m.time < 0)
+			if (m.second.time < 0)
 				continue;
 			ci::vec3 pos = CAMERA->getPos();
-			m.position(0,0,0);
+			m.second.position(0,0,0);
 			ci::vec3 direction = CAMERA->getCameraLook();
 			direction = glm::normalize(direction);
-			m.direction(direction.x, direction.y, direction.z);
-			if (m.sourcePos != NULL)
-				m.currentSourcePos = *m.sourcePos;
-			ci::vec3 soundPos = m.currentSourcePos - pos;
-			soundPos = glm::normalize(soundPos);
-			m.soundPosition(soundPos.x, soundPos.y, soundPos.z);
+			m.second.direction(direction.x, direction.y, direction.z);
+			if (m.second.sourcePos != NULL)
+				m.second.currentSourcePos = *m.second.sourcePos;
+			ci::vec3 soundPos = m.second.currentSourcePos - pos;
+			//soundPos = glm::normalize(soundPos);
+			m.second.soundPosition(soundPos.x / 10.0f, soundPos.y / 10.0f, soundPos.z / 10.0f);
 
-			m.time -= deltaTime;
+			m.second.time -= deltaTime;
 		}
 
 		clearList();
@@ -36,13 +36,13 @@ namespace Sound
 
 	void StereophonicManager::clearList()
 	{
-		for (auto it = stereophonics.begin(); it != stereophonics.end();)
+		for (auto it = stereophonicList.begin(); it != stereophonicList.end();)
 		{
-			if (it->time < 0)
+			if (it->second.time < 0)
 			{
-				it->stop();
-				it->unbind();
-				it = stereophonics.erase(it);
+				it->second.stop();
+				it->second.unbind();
+				it = stereophonicList.erase(it);
 				continue;
 			}
 			++it;
@@ -51,6 +51,6 @@ namespace Sound
 
 	void StereophonicManager::clear()
 	{
-		stereophonics.clear();
+		stereophonicList.clear();
 	}
 }

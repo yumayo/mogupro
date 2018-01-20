@@ -159,9 +159,9 @@ namespace Sound
 		void close();
 
 		template<class T>
-		void add(T type,ci::vec3& sourcePos)
+		void add(std::string str,T type,ci::vec3& sourcePos)
 		{
-			stereophonics.push_back(Stereophonic(type,sourcePos));
+			stereophonicList.insert(std::make_pair(str, Stereophonic(type, sourcePos)));
 		}
 		void update(float deltaTime);
 
@@ -169,8 +169,9 @@ namespace Sound
 
 		void clear();
 
+		std::map<std::string, Stereophonic> stereophonicList;
 
-		std::list<Stereophonic> stereophonics;
 	private:
+
 	};
 }
