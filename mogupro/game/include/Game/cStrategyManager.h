@@ -5,6 +5,7 @@
 #include"cinder\AxisAlignedBox.h"
 #include"Strategy\cCannon.h"
 #include<map>
+#include "cinder\Json.h"
 
 namespace Game
 {
@@ -24,6 +25,7 @@ public:
 	void drawShere(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color,int segment);
 private:
 	std::vector<std::shared_ptr<Game::Strategy::cCannon>>cannons;
+	ci::vec3 jsonToVec3(Json::Value json);
     void deleteObject();
 	int testcount = 0;
 };
