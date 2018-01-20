@@ -219,6 +219,11 @@ namespace Game
 			if (mGemCount >= GEM_MAXNUM)mGemCount = GEM_MAXNUM;
 		}
 
+		int Game::Strategy::cCannon::getGEmNum()
+		{
+			return mGemCount;
+		}
+
 		void cCannon::sendCollectMaxGem()
 		{
 			if (mGetgems.size() >= GEM_MAXNUM) {

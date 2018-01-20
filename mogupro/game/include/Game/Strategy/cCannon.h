@@ -37,6 +37,7 @@ namespace Game
 			std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>getStoregems();
 			bool getIsCollectMaxGem();
 			void setAddCanonPower(const int getgemnum);
+			int getGEmNum();
 		private:
 			void sendCollectMaxGem();
 			bool debugaabb = true;
