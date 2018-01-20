@@ -77,7 +77,6 @@ void cChunkLayer::draw()
         mVbo->drawImpl();
         //ctx->popVao();
         gl::ScopedColor color( 1, 1, 1, 1 );
-        gl::drawStrokedCube( mChunkLayerAABB );
     }
     //gl::draw( mVbo );
 }
