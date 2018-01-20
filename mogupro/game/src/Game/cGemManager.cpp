@@ -321,8 +321,7 @@ namespace Game
 					return addGems;
 				}
 
-				//ñÏñ{
-				//Sound::StereophonicManager::getInstance()->add(Sound::Wav(ci::app::getAssetPath("SE/Gem/stonebreak.wav").string()), mGemStone[i]->getCenterPos());
+				Sound::StereophonicManager::getInstance()->add("",Sound::Wav(ci::app::getAssetPath("SE/Gem/stonebreak.wav").string()), mGemStone[i]->getCenterPos());
 
 
 				//ê∂ê¨

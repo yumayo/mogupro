@@ -11,6 +11,7 @@
 #include "CameraManager\cCameraManager.h"
 #include <Resource/TextureManager.h>
 #include <Resource/cJsonManager.h>
+#include <Resource/cImageManager.h>
 #include <Log/Log.h>
 
 using namespace Network;
@@ -39,7 +40,6 @@ namespace Scene
 			registerFunc();
 			mTrimeshAnimationFbo = ci::gl::Fbo::create(ci::app::getWindowWidth(),
 				ci::app::getWindowHeight(), true);
-			Resource::TextureManager::getInstance()->set("nightSky.png", "nightSky.png");
 			sceneChange = false;
 			teamCount[0] = 0;
 			teamCount[1] = 0;
@@ -51,13 +51,13 @@ namespace Scene
 		{
 			mRoot = Node::node::create();
 			mRoot->set_schedule_update();
-			auto backView = Node::Renderer::sprite::create("nightSky.png");
+			auto backView = Node::Renderer::sprite::create(Resource::IMAGE["matching/nightSky.png"]);
 			backView->set_position(ci::vec2(0, 0));
 			backView->set_scale(ci::vec2(2.0f, -1.5f));
 			mRoot->add_child(backView);
 			
 			//対戦ボタンUI
-			auto fightPlate = Node::Renderer::sprite::create("greenUI.png");
+			auto fightPlate = Node::Renderer::sprite::create(Resource::IMAGE["matching/greenUI.png"]);
 			fightPlate->set_schedule_update();
 			fightPlate->set_tag(0);
 			fightPlate->set_position(ci::vec2(-250, 0));
@@ -76,7 +76,7 @@ namespace Scene
 			});
 
 			//観戦ボタンUI
-			auto lookPlate = Node::Renderer::sprite::create("redUI.png");
+			auto lookPlate = Node::Renderer::sprite::create(Resource::IMAGE["matching/redUI.png"]);
 			lookPlate->set_schedule_update();
 			lookPlate->set_tag(1);
 			lookPlate->set_position(ci::vec2(250, 0));
@@ -118,7 +118,7 @@ namespace Scene
 			mMemberRoot->set_scale(ci::vec2(1, 1));
 			mMemberRoot->set_schedule_update();
 			{
-				auto lookPlate = Node::Renderer::sprite::create("westPlate.png");
+				auto lookPlate = Node::Renderer::sprite::create(Resource::IMAGE["matching/westPlate.png"]);
 				lookPlate->set_position(ci::vec2(-350, 285));
 				mMemberRoot->add_child(lookPlate);
 
@@ -129,7 +129,7 @@ namespace Scene
 				lookPlate->add_child(f);
 			}
 			{
-				auto plate = Node::Renderer::sprite::create("eastPlate.png");
+				auto plate = Node::Renderer::sprite::create(Resource::IMAGE["matching/eastPlate.png"]);
 				plate->set_position(ci::vec2(350, 285));
 				mMemberRoot->add_child(plate);
 
@@ -379,7 +379,7 @@ namespace Scene
 		void cMatching::addInRoomUI()
 		{
 			mRoot->remove_all_children();
-			auto backView = Node::Renderer::sprite::create("nightSky.png");
+			auto backView = Node::Renderer::sprite::create(Resource::IMAGE["matching/nightSky.png"]);
 			backView->set_tag(1);
 			backView->set_position(ci::vec2(0, 0));
 			backView->set_scale(ci::vec2(1.0f, -1.0f));
@@ -389,7 +389,7 @@ namespace Scene
 			if (mClassState != ClassState::MASTER)
 				return;
 
-			auto startPlate = Node::Renderer::sprite::create("greenUI.png");
+			auto startPlate = Node::Renderer::sprite::create(Resource::IMAGE["matching/greenUI.png"]);
 			startPlate->set_schedule_update();
 			startPlate->set_tag(0);
 			startPlate->set_position(ci::vec2(500, -200));
