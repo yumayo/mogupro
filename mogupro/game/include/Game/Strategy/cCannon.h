@@ -38,6 +38,7 @@ namespace Game
 			bool getIsCollectMaxGem();
 			void setAddCanonPower(const int getgemnum);
 			int getGEmNum();
+			void setGemNum(const int gemnum);
 		private:
 			void sendCollectMaxGem();
 			bool debugaabb = true;
