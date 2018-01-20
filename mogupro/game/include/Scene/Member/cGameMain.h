@@ -8,6 +8,7 @@
 #include <Collision/cCollisionManager.h>
 #include <Collision/cAABBCollider.h>
 #include <Collision/cRigidBody.h>
+#include <Game/Light/cSpotLightParam.h>
 
 namespace Scene
 {
@@ -30,6 +31,7 @@ private:
 	bool sendEndSetup;
 	Collision::cAABBCollider collider;
 	Collision::cRigidBody rigid;
+	Game::Light::SpotLightHandle spotLight;
 };
 }
 }

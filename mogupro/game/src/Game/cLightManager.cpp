@@ -144,4 +144,54 @@ void cLightManager::detachChunk( Light::cLineLightParam const* param )
 	}
 }
 #pragma endregion
+#pragma region スポットライト
+std::map<int, Light::cSpotLightParam const*> const & cLightManager::getSpotLights( ) const
+{
+	return mSpotLights;
+}
+boost::optional<std::set<Light::cSpotLightParam const*>const&> cLightManager::getSpotLights( int chunkId ) const
+{
+	auto itr = mSpotLightsMap.find( chunkId );
+	if ( itr != mSpotLightsMap.end( ) )
+	{
+		return itr->second;
+	}
+	else
+	{
+		return boost::none;
+	}
+}
+Light::SpotLightHandle cLightManager::addSpotLight( cinder::vec3 position, cinder::vec3 direction, cinder::vec3 color, float radius )
+{
+	const int id = mSpotLightIdGenerator.createId( );
+	auto handle = std::make_shared<Light::cSpotLightParam>( id, position, direction, color, radius );
+	mSpotLights.insert( std::make_pair( id, handle.get( ) ) );
+	attachChunk( handle.get( ) );
+	return handle;
+}
+void cLightManager::removeSpotLight( int id, Light::cSpotLightParam const * param )
+{
+	mSpotLightIdGenerator.removeId( id );
+	detachChunk( mSpotLights[id] );
+	mSpotLights.erase( id );
+}
+void cLightManager::attachChunk( Light::cSpotLightParam const * param )
+{
+	auto length = glm::length( param->getDirection( ) );
+	auto center = param->getPosition( ) + param->getDirection( ) * 0.5F;
+	for ( int id : cFieldManager::getInstance( )->getChunkId( center, param->getRadius( ) * 2.0F + length * 0.5F ) )
+	{
+		mSpotLightsMap[id].insert( param );
+	}
+}
+void cLightManager::detachChunk( Light::cSpotLightParam const * param )
+{
+	auto length = glm::length( param->getDirection( ) );
+	auto center = param->getPosition( ) + param->getDirection( ) * 0.5F;
+	for ( int id : cFieldManager::getInstance( )->getChunkId( center, param->getRadius( ) * 2.0F + length * 0.5F ) )
+	{
+		mSpotLightsMap[id].erase( param );
+	}
+}
+#pragma endregion
 }
