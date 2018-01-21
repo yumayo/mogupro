@@ -8,6 +8,7 @@ namespace Game
 cLightManager::cLightManager( )
 	: mPointLightIdGenerator( 0, Light::MAX_POINT_LIGHT_NUM )
 	, mLineLightIdGenerator( 0, Light::MAX_LINE_LIGHT_NUM )
+	, mSpotLightIdGenerator( 0, Light::MAX_SPOT_LIGHT_NUM )
 {
 }
 void cLightManager::setup( )

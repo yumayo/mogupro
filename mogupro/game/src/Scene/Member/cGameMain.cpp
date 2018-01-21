@@ -106,9 +106,6 @@ void cGameMain::setup( )
 	ENV->disablePadAxis();
 	
 	Game::cUIManager::getInstance( )->disable( );
-
-	auto playerColor = Game::cPlayerManager::getInstance( )->getActivePlayerTeamId( ) == Game::Player::Team::Red ? vec3(1, 0, 0) : vec3(0, 0, 1);
-	spotLight = Game::cLightManager::getInstance( )->addSpotLight( vec3(0), vec3(0, 0, 1), playerColor, 3.0F );
 }
 
 void cGameMain::shutDown( )
@@ -181,8 +178,6 @@ void cGameMain::update( float deltaTime )
         Resource::cFbxManager::getInstance()->testUpdate( deltaTime );
 		GemManager->lateUpdate(deltaTime);
 		Game::cGameManager::getInstance( )->update( deltaTime );
-		spotLight->reAttachPositionWithDirection( Game::cPlayerManager::getInstance()->getActivePlayer()->getPos(),
-												  Game::cPlayerManager::getInstance( )->getActivePlayer( )->getPlayerVec() * 4.0F );
     }
 }
 

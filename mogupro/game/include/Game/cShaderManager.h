@@ -42,8 +42,8 @@ private:
 	struct
 	{
 		cinder::vec4 useIndices[Light::MAX_SPOT_LIGHT_NUM / 4U];
-		cinder::vec4 modelViewPositions[Light::MAX_SPOT_LIGHT_NUM];
-		cinder::vec4 directions[Light::MAX_SPOT_LIGHT_NUM];
+		cinder::vec4 modelViewPositionsA[Light::MAX_SPOT_LIGHT_NUM];
+		cinder::vec4 modelViewPositionsB[Light::MAX_SPOT_LIGHT_NUM];
 		cinder::vec4 colorWithRadiuses[Light::MAX_SPOT_LIGHT_NUM];
 	}mSpotLightParams;
 	bool mUseShadow = true;

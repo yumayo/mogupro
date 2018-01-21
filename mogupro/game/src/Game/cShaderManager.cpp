@@ -198,6 +198,7 @@ void cShaderManager::draw( std::function<void( )> const& render )
 
 	mPointLightUBO->bindBufferBase( 0 );
 	mLineLightUBO->bindBufferBase( 1 );
+	mSpotLightUBO->bindBufferBase( 2 );
 
 	mGlsl->uniform( "uAmb", vec4( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
 
@@ -268,8 +269,8 @@ void cShaderManager::draw( std::function<void( )> const& render )
 				else
 				{
 					int id = light.second->getId( );
-					mSpotLightParams.modelViewPositions[id] = CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getPosition( ), 1 );
-					mSpotLightParams.directions[id] = ci::vec4( light.second->getDirection( ), 1 );
+					mSpotLightParams.modelViewPositionsA[id] = CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getPosition( ), 1 );
+					mSpotLightParams.modelViewPositionsB[id] = CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getPosition( ) + light.second->getDirection( ), 1 );
 					mSpotLightParams.colorWithRadiuses[id].x = light.second->color.x;
 					mSpotLightParams.colorWithRadiuses[id].y = light.second->color.y;
 					mSpotLightParams.colorWithRadiuses[id].z = light.second->color.z;

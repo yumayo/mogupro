@@ -9,6 +9,7 @@
 #include<Game/Weapons/UseSubWeapon/cUseSubWeapon.h>
 #include <Game/Light/cPointLightParam.h>
 #include <Game/Animation/cAnimation.h>
+#include <Game/Light/cSpotLightParam.h>
 namespace Game {
 	namespace Gem {
 		class cFragmentGem;
@@ -121,7 +122,8 @@ namespace Game {
 			// プレイヤーに常に付きまとうライト
 			Light::PointLightHandle light;
 
-			
+			// プレイヤーのヘルメットから放たれるライト
+			Light::SpotLightHandle spotlight;
 
 			//掘削時のカメラの遠さ調整
 			void drillingCamera(const float& delta_time);
