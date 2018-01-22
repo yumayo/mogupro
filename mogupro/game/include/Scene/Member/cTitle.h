@@ -19,7 +19,7 @@ public:
     void update( float deltaTime );
     void draw( );
     void draw2D( );
-	std::string const& getName( ) { return typeid( *this ).name( ); }
+	inline std::string const getName( ) { return typeid( *this ).name( ); }
 };
 }
 }
