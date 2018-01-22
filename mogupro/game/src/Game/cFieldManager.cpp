@@ -63,4 +63,30 @@ void cFieldManager::shutdown()
 {
     mUnderGround->shutdown();
 }
+void cFieldManager::addToBreakType( const Field::BlockType & type )
+{
+    if ( mToBreakBlocksType.find( type ) == mToBreakBlocksType.end() )
+        return;
+    mToBreakBlocksType.insert( type );
+}
+void cFieldManager::clearToBreakType()
+{
+    mToBreakBlocksType.clear();
+}
+void cFieldManager::playBreakBlockSounds( const ci::vec3& position, const std::string& key )
+{
+    if ( mToBreakBlocksType.find( Field::BlockType::AIR ) == mToBreakBlocksType.end() )
+    {
+        // ‚±‚±‚Å—§‘Ì‰¹‹¿
+    }
+    if ( mToBreakBlocksType.find( Field::BlockType::NORMAL ) == mToBreakBlocksType.end() )
+    {
+
+    }
+    if ( mToBreakBlocksType.find( Field::BlockType::UNBREAKING ) == mToBreakBlocksType.end() )
+    {
+
+    }
+    clearToBreakType();
+}
 }
