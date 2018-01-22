@@ -2,6 +2,7 @@
 #include <Game/Field/cUnderGround.h>
 #include <Game/Field/cChunkMeshBuilder.h>
 #include <Utility/cString.h>
+#include <Game/cFieldManager.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -120,6 +121,8 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                 if ( std::any_of( build_chunk_layers.begin(), build_chunk_layers.end(),
                                   [&]( cChunkLayer* t ) { return t == layer; } ) )
                     continue;
+
+                cFieldManager::getInstance()->addToBreakType( block->mType );
 
                 build_chunk_layers.emplace_back( layer );
             }

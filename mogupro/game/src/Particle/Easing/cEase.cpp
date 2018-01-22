@@ -16,7 +16,7 @@ void EaseOrigin::setup( float begin, float end, float end_frame, EaseType type )
 
 void EaseOrigin::update( const float& delta_time )
 {
-    count_ += delta_time * 60;
+    count_ += delta_time * 60.0f;
 
     if ( count_ > end_frame_ )
         count_ = end_frame_;
