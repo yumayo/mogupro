@@ -33,6 +33,7 @@
 #include <Math/float3.h>
 #include <Math/Quat.h>
 #include <Game/cMapObjectManager.h>
+#include <Game/cLightManager.h>
 static ci::vec3 testSoundPos;
 
 using namespace ci;

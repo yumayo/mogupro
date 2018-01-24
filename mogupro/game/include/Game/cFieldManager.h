@@ -53,7 +53,17 @@ public: //Player, Strategy が使う関数
     // シャットダウン
     void shutdown();
 
+public:
+
+    void addToBreakType( const Field::BlockType& type );
+    void clearToBreakType();
+
+private:
+
+    void playBreakBlockSounds( const ci::vec3& position, const std::string& key );
+
 private: // Member
     std::shared_ptr<Field::cUnderGround> mUnderGround;
+    std::set<Field::BlockType> mToBreakBlocksType;
 };
 }

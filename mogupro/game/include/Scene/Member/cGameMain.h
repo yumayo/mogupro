@@ -8,7 +8,6 @@
 #include <Collision/cCollisionManager.h>
 #include <Collision/cAABBCollider.h>
 #include <Collision/cRigidBody.h>
-
 namespace Scene
 {
 namespace Member
@@ -24,7 +23,7 @@ public:
     void drawShadow( );
     void draw2D( );
     void resize( );
-	std::string const& getName( ) { return typeid( *this ).name( ); }
+	inline std::string const getName( ) { return typeid( *this ).name( ); }
 private:
     Game::SkyDome::cSkyDome skydome;
 	bool sendEndSetup;

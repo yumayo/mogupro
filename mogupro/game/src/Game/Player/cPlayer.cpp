@@ -326,6 +326,8 @@ Game::Player::cPlayer::cPlayer(
 		break;
 	}
 	light = cLightManager::getInstance( )->addPointLight( mPos, lightColor, isWatching( ) ? 0.0F : 1.0F );
+	auto pvec = glm::normalize( getPlayerVec( ) );
+	spotlight = cLightManager::getInstance( )->addSpotLight( mPos + pvec * 0.2F, pvec * 3.0F, lightColor, isWatching() ? 0.0F : 2.0F );
 }
 
 
@@ -482,7 +484,8 @@ void Game::Player::cPlayer::update(const float & delta_time)
 	}
 	light->color = lightColor;
 	light->reAttachPositionWithRadius( mPos, isWatching( ) ? 0.0F : 1 + 2 - ( status.hp / Player::MAX_HP ) * 2 );
-
+	auto pvec = glm::normalize( getPlayerVec( ) );
+	spotlight->reAttachPositionWithDirection( mPos + pvec * 0.1F, pvec * 3.0F );
 
 }
 

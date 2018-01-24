@@ -7,6 +7,7 @@
 #include <Utility/cUserPointer.hpp>
 #include <Game/Light/cPointLightParam.h>
 #include <Game/Light/cLineLightParam.h>
+#include <Game/Light/cSpotLightParam.h>
 #include <boost/optional.hpp>
 #include <Utility/cIdentifier.h>
 #include <Game/Light/LightDefine.h>
@@ -19,8 +20,8 @@ public:
 	~cLightManager( ) = default;
 	void setup( );
 	void update( );
-
-public: // ポイントライト
+	#pragma region ポイントライト
+public:
 	friend class Light::cPointLightParam;
 	std::map<int, Light::cPointLightParam const*>const& getPointLights( ) const;
 	boost::optional<std::set<Light::cPointLightParam const*>const&> getPointLights( int chunkId ) const;
@@ -33,8 +34,9 @@ private:
 	Utility::cIdentifier mPointLightIdGenerator;
 	std::map<int, Light::cPointLightParam const*> mPointLights;
 	std::map<int, std::set<Light::cPointLightParam const*>> mPointLightsMap;
-
-public: // ラインライト
+	#pragma endregion
+	#pragma region ラインライト
+public:
 	friend class Light::cLineLightParam;
 	std::map<int, Light::cLineLightParam const*>const& getLineLights( ) const;
 	boost::optional<std::set<Light::cLineLightParam const*>const&> getLineLights( int chunkId ) const;
@@ -47,5 +49,21 @@ private:
 	Utility::cIdentifier mLineLightIdGenerator;
 	std::map<int, Light::cLineLightParam const*> mLineLights;
 	std::map<int, std::set<Light::cLineLightParam const*>> mLineLightsMap;
+	#pragma endregion
+	#pragma region スポットライト
+public:
+	friend class Light::cSpotLightParam;
+	std::map<int, Light::cSpotLightParam const*>const& getSpotLights( ) const;
+	boost::optional<std::set<Light::cSpotLightParam const*>const&> getSpotLights( int chunkId ) const;
+	Light::SpotLightHandle addSpotLight( cinder::vec3 position, cinder::vec3 direction, cinder::vec3 color, float radius );
+private:
+	void removeSpotLight( int id, Light::cSpotLightParam const* param );
+	void attachChunk( Light::cSpotLightParam const* param );
+	void detachChunk( Light::cSpotLightParam const* param );
+private:
+	Utility::cIdentifier mSpotLightIdGenerator;
+	std::map<int, Light::cSpotLightParam const*> mSpotLights;
+	std::map<int, std::set<Light::cSpotLightParam const*>> mSpotLightsMap;
+	#pragma endregion
 };
 }

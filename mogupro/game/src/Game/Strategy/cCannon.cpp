@@ -140,7 +140,7 @@ namespace Game
 
 			Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(), getgemnum);
 			////////////
-			Sound::StereophonicManager::getInstance()->add(Sound::Wav(ci::app::getAssetPath("SE/cannoncharge.wav").string()), mPos);
+			Sound::StereophonicManager::getInstance()->add("",Sound::Wav(ci::app::getAssetPath("SE/cannoncharge.wav").string()), mPos);
 			////////////
 			//sendCollectMaxGem();
 		}
@@ -222,6 +222,11 @@ namespace Game
 		int Game::Strategy::cCannon::getGEmNum()
 		{
 			return mGemCount;
+		}
+
+		void Game::Strategy::cCannon::setGemNum(const int gemnum)
+		{
+			mGemCount = gemnum;
 		}
 
 		void cCannon::sendCollectMaxGem()

@@ -6,6 +6,7 @@
 #include <Resource\cSoundManager.h>
 #include <Game/Field/FieldData.h>
 #include <Game/cGameManager.h>
+#include <Sound/Stereophonic.h>
 namespace Game
 {
 
@@ -320,9 +321,7 @@ namespace Game
 					return addGems;
 				}
 
-				//âÛÇµÇΩÇ∆Ç´SE
-				auto& Se = Resource::cSoundManager::getInstance()->findSe("Gem/stonebreak.wav");
-				Se.play();
+				Sound::StereophonicManager::getInstance()->add("",Sound::Wav(ci::app::getAssetPath("SE/Gem/stonebreak.wav").string()), mGemStone[i]->getCenterPos());
 
 
 				//ê∂ê¨

@@ -37,6 +37,7 @@ void cShaderManager::setup( bool useShadow )
 
 	mPointLightUBO = gl::Ubo::create( sizeof( mPointLightParams ), &mPointLightParams, GL_DYNAMIC_DRAW );
 	mLineLightUBO = gl::Ubo::create( sizeof( mLineLightParams ), &mLineLightParams, GL_DYNAMIC_DRAW );
+	mSpotLightUBO = gl::Ubo::create( sizeof( mSpotLightParams ), &mSpotLightParams, GL_DYNAMIC_DRAW );
 
 	cDebugManager::getInstance( )->mParam->addParam( "UseShadow", &mUseShadow );
 	cDebugManager::getInstance( )->mParam->addParam( "UseAllLight", &mUseAllLight );
@@ -86,8 +87,28 @@ void cShaderManager::uniformUpdate( )
 				}
 			}
 			mGlsl->uniform( "uLineLightNum", i );
-			mLineLightUBO->bufferSubData( 0, sizeof( mLineLightParams ), &mLineLightParams );
+			mLineLightUBO->bufferSubData( 0, sizeof( mLineLightParams.useIndices ), &mLineLightParams );
 			mGlsl->uniformBlock( "LineLightParams", 1 );
+		}
+		{
+			auto lights = Game::cLightManager::getInstance( )->getSpotLights( );
+			memset( &mSpotLightParams, 0, sizeof( mSpotLightParams.useIndices ) );
+			int i = 0;
+			for ( auto& light : lights )
+			{
+				if ( !light.second )
+				{
+					continue;
+				}
+				else
+				{
+					mSpotLightParams.useIndices[i / 4][i % 4] = i;
+					i++;
+				}
+			}
+			mGlsl->uniform( "uSpotLightNum", i );
+			mSpotLightUBO->bufferSubData( 0, sizeof( mSpotLightParams.useIndices ), &mSpotLightParams );
+			mGlsl->uniformBlock( "SpotLightParams", 2 );
 		}
 	}
 }
@@ -130,8 +151,28 @@ void cShaderManager::uniformUpdate( int chunkId )
 			}
 		}
 		mGlsl->uniform( "uLineLightNum", i );
-		mLineLightUBO->bufferSubData( 0, sizeof( mLineLightParams ), &mLineLightParams );
+		mLineLightUBO->bufferSubData( 0, sizeof( mLineLightParams.useIndices ), &mLineLightParams );
 		mGlsl->uniformBlock( "LineLightParams", 1 );
+	}
+	if ( auto lights = Game::cLightManager::getInstance( )->getSpotLights( chunkId ) )
+	{
+		memset( &mSpotLightParams, 0, sizeof( mSpotLightParams.useIndices ) );
+		int i = 0;
+		for ( auto& light : *lights )
+		{
+			if ( !light )
+			{
+				continue;
+			}
+			else
+			{
+				mSpotLightParams.useIndices[i / 4][i % 4] = light->getId( );
+				i++;
+			}
+		}
+		mGlsl->uniform( "uSpotLightNum", i );
+		mSpotLightUBO->bufferSubData( 0, sizeof( mSpotLightParams.useIndices ), &mSpotLightParams );
+		mGlsl->uniformBlock( "SpotLightParams", 2 );
 	}
 }
 void cShaderManager::update( std::function<void( )> const& drawFunc )
@@ -157,6 +198,7 @@ void cShaderManager::draw( std::function<void( )> const& render )
 
 	mPointLightUBO->bindBufferBase( 0 );
 	mLineLightUBO->bindBufferBase( 1 );
+	mSpotLightUBO->bindBufferBase( 2 );
 
 	mGlsl->uniform( "uAmb", vec4( 99 / 255.0F, 161 / 255.0F, 255 / 255.0F, 1.0F ) );
 
@@ -209,8 +251,35 @@ void cShaderManager::draw( std::function<void( )> const& render )
 				}
 			}
 			mGlsl->uniform( "uLineLightNum", 0 );
-			mLineLightUBO->bufferSubData( 0, sizeof( mLineLightParams ), &mLineLightParams.modelViewPositionsA );
+			mLineLightUBO->bufferSubData( 0, sizeof( mLineLightParams ), &mLineLightParams );
 			mGlsl->uniformBlock( "LineLightParams", 1 );
+		}
+	}
+	{
+		// スポットライトの情報を送ります。
+		auto lights = Game::cLightManager::getInstance( )->getSpotLights( );
+		memset( &mSpotLightParams, 0, sizeof( mSpotLightParams ) );
+		{
+			for ( auto& light : lights )
+			{
+				if ( !light.second )
+				{
+					continue;
+				}
+				else
+				{
+					int id = light.second->getId( );
+					mSpotLightParams.modelViewPositionsA[id] = CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getPosition( ), 1 );
+					mSpotLightParams.modelViewPositionsB[id] = CAMERA->getCamera( ).getViewMatrix( ) * ci::vec4( light.second->getPosition( ) + light.second->getDirection( ), 1 );
+					mSpotLightParams.colorWithRadiuses[id].x = light.second->color.x;
+					mSpotLightParams.colorWithRadiuses[id].y = light.second->color.y;
+					mSpotLightParams.colorWithRadiuses[id].z = light.second->color.z;
+					mSpotLightParams.colorWithRadiuses[id].a = light.second->getRadius( );
+				}
+			}
+			mGlsl->uniform( "uSpotLightNum", 0 );
+			mSpotLightUBO->bufferSubData( 0, sizeof( mSpotLightParams ), &mSpotLightParams );
+			mGlsl->uniformBlock( "SpotLightParams", 2 );
 		}
 	}
 

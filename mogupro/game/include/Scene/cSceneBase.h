@@ -28,7 +28,7 @@ public:
 	bool isEnd() { return mIsEnd; }
 
 	// シーンの名前を定義します。
-	virtual std::string const& getName( ) = 0;
+	virtual inline std::string const getName( ) = 0;
 protected:
 
 	bool mIsEnd;

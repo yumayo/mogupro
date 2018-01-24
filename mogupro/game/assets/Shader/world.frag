@@ -40,12 +40,31 @@ layout (std140) uniform LineLightParams
 }uLineLight;
 uniform int uLineLightNum;
 
+// スポットライトに使うやつ
+layout (std140) uniform SpotLightParams
+{
+    vec4 useIndices[16 / 4];
+    vec4 modelViewPositionsA[16];
+    vec4 modelViewPositionsB[16];
+    vec4 colorWithRadiuses[16];
+}uSpotLight;
+uniform int uSpotLightNum;
+
 float distancePointLine( vec3 P, vec3 A, vec3 B )
 {
     vec3 a = B - A;
     vec3 b = P - A;
     float t = clamp(dot(a, b) / dot(a, a), 0.0, 1.0);
     return distance(P, A + a * t);
+}
+
+vec2 lerpPointSpot( vec3 P, vec3 A, vec3 B )
+{
+    vec3 a = B - A;
+    vec3 b = P - A;
+    float t = clamp(dot(a, b) / dot(a, a), 0.0, 1.0);
+    float d = distance(P, A + a * t);
+    return vec2(t, d);
 }
 
 void main()
@@ -96,6 +115,19 @@ void main()
         if(d < uLineLight.colorWithRadiuses[useId].a)
         {
             oColor.rgb += uLineLight.colorWithRadiuses[useId].xyz * (uLineLight.colorWithRadiuses[useId].a - d) * ( 1.0 / uLineLight.colorWithRadiuses[useId].a );
+        }
+    }
+
+    // スポットライト
+    for(int i = 0; i < uSpotLightNum; ++i)
+    {
+        int useId = int( uSpotLight.useIndices[i / 4][i % 4] );
+        vec2 tWithd = lerpPointSpot( vModelViewPosition.xyz, uSpotLight.modelViewPositionsA[useId].xyz, uSpotLight.modelViewPositionsB[useId].xyz );
+        float t = tWithd.x;
+        float d = tWithd.y;
+        if(d < t * uSpotLight.colorWithRadiuses[useId].a)
+        {
+            oColor.rgb += uSpotLight.colorWithRadiuses[useId].xyz * ( 1.0 - t);
         }
     }
 }
