@@ -17,6 +17,8 @@ public:
 	void useWeapon(const int playerid);
 	///サブウェポンを追加
 	void addSubWeapon(const Game::Weapons::SubWeapon::SubWeaponType type);
+	//サブウェポンを削除
+	void clearSubWeapon();
 	void setCanUseWeapon(const bool iscanuse);
 	int getItemNum();
 	bool canGetItem();

@@ -50,34 +50,7 @@ cTutorialManager::cTutorialManager( )
 
 		playBgm("ƒgƒƒsƒJƒ‹–³E.wav", 0.3f, 0.0f, 0.0f);
 	} );
-	addPreUpdate( State::LOAD, [ this ] ( float t )
-	{
-		if (!ui.ui_data["à–¾”Â"]->getActive())
-		{
-			next();
-			ENV->enableKeyButton();
-			ENV->enablePadAxis();
-			ENV->enablePadButton();
-			ENV->enableMouseButton();
-		}
-	} );
-	addPreUpdate( State::MY_TEAM, [ this ] ( float t )
-	{
-		next();
-	} );
-	addPreUpdate( State::ENEMY_TEAM, [ this ] ( float t )
-	{
-		next();
-		
-	} );
-	addPreUpdate( State::READY, [ this ] ( float t )
-	{
-		if ( shiftSeconds[State::READY] < 10 )
-		{
-			next( );
-			
-		}
-	} );
+
 	addPreUpdate( State::BATTLE, [ this ] ( float t )
 	{
 		if ( shiftSeconds[State::BATTLE] < 0 )
@@ -127,45 +100,8 @@ cTutorialManager::cTutorialManager( )
 	addUpdate( State::Description, [ this ] ( float t )
 	{
 	} );
-	addUpdate( State::LOAD, [ this ] ( float t )
-	{
 
-	} );
-	addUpdate( State::MY_TEAM, [ this ] ( float t )
-	{
-		switch ( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) )
-		{
-		case Player::Red:
-			CAMERA->refPosition = Field::CANNON_POINT[0];
-			CAMERA->setCameraAngle( cinder::vec2( -glm::pi<float>( ), 0 ) );
-			break;
-		case Player::Blue:
-			CAMERA->refPosition = Field::CANNON_POINT[1];
-			CAMERA->setCameraAngle( cinder::vec2( 0, 0 ) );
-			break;
-		default:
-			break;
-		}
-	} );
-	addUpdate( State::ENEMY_TEAM, [ this ] ( float t )
-	{
-		switch ( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) )
-		{
-		case Player::Red:
-			CAMERA->refPosition = Field::CANNON_POINT[1];
-			CAMERA->setCameraAngle( cinder::vec2( 0, 0 ) );
-			break;
-		case Player::Blue:
-			CAMERA->refPosition = Field::CANNON_POINT[0];
-			CAMERA->setCameraAngle( cinder::vec2( -glm::pi<float>( ), 0 ) );
-			break;
-		default:
-			break;
-		}
-	} );
-	addUpdate( State::READY, [ this ] ( float t )
-	{
-	} );
+
 	addUpdate( State::BATTLE, [ this ] ( float t )
 	{
 
@@ -178,10 +114,7 @@ cTutorialManager::cTutorialManager( )
 	{
 		CAMERA->refPosition = Game::Field::WORLD_SIZE * cinder::vec3( 0.5F, 2.5F, 0.5F );
 		CAMERA->setCameraAngle( cinder::vec2( -glm::pi<float>( ) / 2.0F, -glm::pi<float>( ) ) );
-		if ( ENV->pushKey( ) )
-		{
-			Scene::cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( );
-		}
+
 	} );
 }
 void cTutorialManager::setTime( float loadTime )
@@ -193,10 +126,6 @@ void cTutorialManager::setTime( float loadTime )
 	auto battleEnd = battle + 3.0F;
 	auto result = battleEnd + 3.0F;
 
-	shiftSeconds[State::LOAD] = loadTime;
-	shiftSeconds[State::MY_TEAM] = myTeam;
-	shiftSeconds[State::ENEMY_TEAM] = enemyTeam;
-	shiftSeconds[State::READY] = ready;
 	shiftSeconds[State::BATTLE] = battle;
 	shiftSeconds[State::BATTLE_END] = battleEnd;
 	shiftSeconds[State::RESULT] = result;
@@ -231,8 +160,7 @@ void cTutorialManager::draw( )
 void cTutorialManager::skipReady( )
 {
 	auto now = Network::cUDPClientManager::getInstance()->getServerTime( );
-	shiftSeconds[State::LOAD] = shiftSeconds[State::MY_TEAM] = shiftSeconds[State::ENEMY_TEAM] = shiftSeconds[State::READY] = now;
-	shiftSeconds[State::BATTLE] = shiftSeconds[State::READY] + 60.0F * 5.0F;
+	shiftSeconds[State::BATTLE] = 99.0F + 60.0F * 5.0F;
 	shiftSeconds[State::BATTLE_END] = shiftSeconds[State::BATTLE] + 3.0F;
 	shiftSeconds[State::RESULT] = shiftSeconds[State::BATTLE_END] + 3.0F;
 }
