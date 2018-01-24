@@ -125,6 +125,9 @@ namespace Game {
 			// プレイヤーのヘルメットから放たれるライト
 			Light::SpotLightHandle spotlight;
 
+			//プレイヤーのテクスチャを判断するstring
+			std::string tex_name;
+
 			//掘削時のカメラの遠さ調整
 			void drillingCamera(const float& delta_time);
 			void drill(const float& delta_time);
@@ -177,6 +180,11 @@ namespace Game {
 				}
 				mCollider.setPosition(pos);
 			}
+
+			float& getPlayerFar() {
+				return player_far;
+			}
+
 
 			//強制的にその座標にしたいときのセット
 			void settingPosition(const ci::vec3 pos) {

@@ -605,7 +605,6 @@ void Game::Weapon::LightSaber::draw()
 		ci::gl::draw(mesh);
 		ci::gl::popModelView();
 	}
-	ci::gl::drawStrokedCube(aabb);
 	//ci::gl::drawVector(ray[0].getOrigin(), ray[0].getDirection());
 	//ci::gl::drawVector(ray[1].getOrigin(), ray[1].getDirection());
 	//ci::gl::drawVector(ray[2].getOrigin(), ray[2].getDirection());

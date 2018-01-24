@@ -33,6 +33,13 @@ void cUseSubWeapon::addSubWeapon(const Game::Weapons::SubWeapon::SubWeaponType t
 	cGameManager::getInstance( )->appendItem( type );
 	mSubWeaponTypes.push_back(type);
 }
+void cUseSubWeapon::clearSubWeapon()
+{
+	mSubWeaponTypes.clear();
+	cGameManager::getInstance()->useItem();
+	cGameManager::getInstance()->useItem();
+	cGameManager::getInstance()->useItem();
+}
 void cUseSubWeapon::setCanUseWeapon(const bool iscanuse)
 {
 	mIsCanUse = iscanuse;

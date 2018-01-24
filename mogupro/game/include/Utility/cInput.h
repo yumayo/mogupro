@@ -91,12 +91,14 @@ private:
 	public:
 		void enable( )
 		{
+			if (enabled == true)return;
 			button = 1;
 			enabled = true;
 			back = front;
 		}
 		void disable( )
 		{
+			if (enabled == false)return;
 			button = 2;
 			enabled = false;
 			back = front;

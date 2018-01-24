@@ -452,7 +452,14 @@ void Game::Player::cPlayer::setup()
 	animation.animationChange("mogura_walk");
 	animation.setAnimationStopTime("mogura_attack",0.5);
 	mesh = Resource::cObjectManager::getInstance()->findObject("montamogura/moguraHontai.obj");
-	TEX->set("mogura", "Fbx/UV_mogura_01.jpg");
+	if (team == Team::Red) {
+		tex_name = "mogura_red";
+		TEX->set(tex_name, "Fbx/UV_mogura_red.jpg");
+	}
+	if (team == Team::Blue) {
+		tex_name = "mogura_blue";
+		TEX->set(tex_name, "Fbx/UV_mogura_blue.jpg");
+	}
 	
 }
 
@@ -499,7 +506,7 @@ void Game::Player::cPlayer::draw()
 
 	//€–S’†‚Í•`‰æ‚µ‚È‚¢
 	if (is_dead)return;
-	ci::gl::ScopedTextureBind tex(TEX->get("mogura"));
+	ci::gl::ScopedTextureBind tex(TEX->get(tex_name));
 
 	ci::gl::pushModelView();
 	main_weapon->draw();
