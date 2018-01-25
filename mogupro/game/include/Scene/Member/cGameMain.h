@@ -27,8 +27,7 @@ public:
 private:
     Game::SkyDome::cSkyDome skydome;
 	bool sendEndSetup;
-	Collision::cAABBCollider collider;
-	Collision::cRigidBody rigid;
+	float deltaTime = 0.0F;
 };
 }
 }

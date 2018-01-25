@@ -71,6 +71,8 @@ public:
 	}
 	//コリジョンの後に呼ぶアップデート
 	void playerCollisionAfterUpdate(const float& delta_time);
+	// カメラの更新後に呼ぶアップデート
+	void cameraAfterUpdate( const float& delta_time );
     void setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams);
     void update( const float& delta_time );
     void draw();

@@ -475,8 +475,11 @@ void Game::Player::cPlayer::update(const float & delta_time)
 	respawn(delta_time);
 	root->set_position_3d(mPos);
 	collisionGems();
+}
 
-	// ライトの更新。
+void Game::Player::cPlayer::cameraAfterUpdate( const float & delta_time )
+{
+	// プレイヤーは常に画面の中心にいるためカメラのアップデートよりも後に更新します。
 	cinder::vec3 lightColor;
 	switch ( team )
 	{
@@ -493,7 +496,6 @@ void Game::Player::cPlayer::update(const float & delta_time)
 	light->reAttachPositionWithRadius( mPos, isWatching( ) ? 0.0F : 1 + 2 - ( status.hp / Player::MAX_HP ) * 2 );
 	auto pvec = glm::normalize( getPlayerVec( ) );
 	spotlight->reAttachPositionWithDirection( mPos + pvec * 0.1F, pvec * 3.0F );
-
 }
 
 void Game::Player::cPlayer::draw()

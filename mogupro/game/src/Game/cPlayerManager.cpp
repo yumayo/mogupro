@@ -354,6 +354,13 @@ void Game::cPlayerManager::playerCollisionAfterUpdate(const float& delta_time)
 		}
 	}
 }
+void Game::cPlayerManager::cameraAfterUpdate( const float & delta_time )
+{
+	for ( auto& it : players )
+	{
+		it->cameraAfterUpdate( delta_time );
+	}
+}
 void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
 	playerInstance(positions, player_number, active_player_id, teams);
