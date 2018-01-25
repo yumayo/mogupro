@@ -1,21 +1,32 @@
 # 実際のプロジェクト
 mogupro/game/vc2017/*
+!mogupro/game/vc2017/*.rc
 !mogupro/game/vc2017/build/
 mogupro/game/vc2017/build/*
 !mogupro/game/vc2017/build/Win32/
 mogupro/game/vc2017/build/Win32/*
 !mogupro/game/vc2017/build/Win32/Debug/
 mogupro/game/vc2017/build/Win32/Debug/*
+!mogupro/game/vc2017/build/Win32/Debug/*.dll
 !mogupro/game/vc2017/build/Win32/Release/
 mogupro/game/vc2017/build/Win32/Release/*
-!mogupro/game/vc2017/*.rc
-!mogupro/game/vc2017/build/Win32/Debug/*.dll
 !mogupro/game/vc2017/build/Win32/Release/*.dll
+!mogupro/game/vc2017/build/Win32/FastRelease/
+mogupro/game/vc2017/build/Win32/FastRelease/*
+!mogupro/game/vc2017/build/Win32/FastRelease/*.dll
 
 # cinderのライブラリを除く
 # 別途でダウンロードしたzipを解凍してフォルダに入れてください。
 mogupro/librarys/cinder/*
 !mogupro/librarys/cinder/.gitkeep
+!mogupro/librarys/cinder/proj/
+mogupro/librarys/cinder/proj/*
+!mogupro/librarys/cinder/proj/vc2017/
+mogupro/librarys/cinder/proj/vc2017/*
+!mogupro/librarys/cinder/proj/vc2017/*.sln
+!mogupro/librarys/cinder/proj/vc2017/*.vcxproj
+!mogupro/librarys/cinder/proj/vc2017/*.vcxproj.filters
+!mogupro/librarys/cinder/proj/vc2017/*.vcxproj.user
 
 # boostのライブラリを除く
 # 別途でダウンロードしたzipを解凍してフォルダに入れてください。
