@@ -105,12 +105,11 @@
       "Size": [ 1700,1000],
       "Color" :  [0,0,0,1],
         "EaseIn": [
-            { "UIState": "Color","Change": [0,0,0,0],"EasingType": "ExpoIn","Frame": 1}
+            { "UIState": "Color","Change": [0,0,0,0],"EasingType": "Liner","Frame": 1}
         ],
 
       "EaseOut": [
-         { "UIState": "Color","Change": [0,0,0,1],"EasingType": "ExpoIn","Frame": 1},
-      { "UIState": "Color","Change": [0,0,0,0],"EasingType": "ExpoIn","Frame": 1}
+         { "UIState": "Color","Change": [0,0,0,1],"EasingType": "Liner","Frame": 1}
       ],
 
         "EaseUpdate": [
@@ -125,11 +124,11 @@
       "Size": [ 1700,1000],
       "Color" :  [1,1,1,1],
         "EaseIn": [
-            { "UIState": "Color","Change": [1,1,1,1],"EasingType": "ExpoIn","Frame": 1}
+            { "UIState": "Color","Change": [1,1,1,1],"EasingType": "Liner","Frame": 1}
         ],
 
       "EaseOut": [
-         { "UIState": "Color","Change": [1,1,1,1],"EasingType": "ExpoIn","Frame": 1}
+         { "UIState": "Color","Change": [1,1,1,1],"EasingType": "Liner","Frame": 1}
       ],
 
         "EaseUpdate": [
@@ -208,10 +207,10 @@
         ],
 
       "EaseOut": [
-          { "UIState": "Pos","Change": [-200, 100],"EasingType": "Liner","Frame": 0.2},
-            { "UIState": "Size","Change": [ 400, 200],"EasingType": "Liner","Frame": 0.2},
-            { "UIState": "Pos","Change": [-250, 150],"EasingType": "Liner","Frame": 0},
-            { "UIState": "Size","Change": [ 500,300],"EasingType": "Liner","Frame": 0}
+          { "UIState": "Pos","Change": [-200, 100],"EasingType": "Liner","Frame": 0.5},
+            { "UIState": "Size","Change": [ 400, 200],"EasingType": "Liner","Frame": 0.5},
+            { "UIState": "Pos","Change": [-250, 150],"EasingType": "Liner","Frame": 0.1},
+            { "UIState": "Size","Change": [ 500,300],"EasingType": "Liner","Frame": 0.1}
       ],
 
         "EaseUpdate": [
@@ -846,7 +845,7 @@
       "å@ÇÈê‡ñæÇQ": {
        "UIType": "FontUI",
       "FontPath": "",
-        "Pos": [ -420, -170 ],
+        "Pos": [ -370, -170 ],
         "Color": [ 0.3, 0.3, 0, 1 ],
       "Size": 10,
       "FontColor": [ 0.3, 0.3, 0, 1 ],
@@ -863,7 +862,7 @@
    "å@ÇÈê‡ñæÇR": {
         "UIType": "FontUI",
       "FontPath": "",
-        "Pos": [ -320, -230 ],
+        "Pos": [ -370, -230 ],
         "Color": [ 0.3, 0.3, 0, 1 ],
       "Size": 10,
     "FontColor": [ 0.3, 0.3, 0, 1 ],
@@ -1175,7 +1174,7 @@
         "Color": [ 0.3, 0.3, 0, 1 ],
       "Size": 10,
       "FontColor": [ 0.3, 0.3, 0, 1 ],
-      "FontScale" : 0.4,
+      "FontScale" : 0.5,
       "Text" : "",
 
 
