@@ -34,8 +34,6 @@
 #include <Math/Quat.h>
 #include <Game/cMapObjectManager.h>
 #include <Game/cLightManager.h>
-static ci::vec3 testSoundPos;
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -44,15 +42,10 @@ namespace Scene
 namespace Member
 {
 cGameMain::cGameMain( )
-	: collider( vec3( 0, 0, 0 ), vec3(0.1, 0.1, 0.1) )
-	, rigid( collider )
 {
 }
 void cGameMain::setup( )
 {
-	collider.addWorld( );
-	rigid.addWorld( );
-
 	Game::cUIManager::getInstance( )->awake( );
 	Game::cDebugManager::getInstance( )->setup( );
 	Sound::StereophonicManager::getInstance()->open();
@@ -141,6 +134,8 @@ void cGameMain::shutDown( )
 
 void cGameMain::update( float deltaTime )
 {
+	this->deltaTime = deltaTime;
+
     Network::cUDPClientManager::getInstance( )->update( deltaTime );
     Network::cUDPServerManager::getInstance( )->update( deltaTime );
     if ( Network::cUDPClientManager::getInstance( )->isConnected( ) )
@@ -154,14 +149,10 @@ void cGameMain::update( float deltaTime )
 		// 他のアップデートよりも先に行います。
 		Game::cGameManager::getInstance( )->preUpdate( deltaTime );
 
-		collider.setPosition( Game::Field::WORLD_SIZE * vec3(0.5F, 1, 0.5F) + vec3(0, 2, 0) );
-		rigid.setSpeed( vec3(0, 10, 5) );
-
 		Game::cDebugManager::getInstance( )->update( deltaTime );
         Game::cClientAdapter::getInstance( )->update( );
         Game::cServerAdapter::getInstance( )->update( );
 		Sound::StereophonicManager::getInstance( )->update( deltaTime );
-        Game::cUIManager::getInstance( )->update( deltaTime );
         Game::cFieldManager::getInstance( )->update( deltaTime );
         Game::cPlayerManager::getInstance( )->update( deltaTime );
         Game::cStrategyManager::getInstance( )->update( deltaTime );
@@ -172,17 +163,21 @@ void cGameMain::update( float deltaTime )
 		Game::cPlayerManager::getInstance()->playerCollisionAfterUpdate( deltaTime );
 		Game::cSubWeaponManager::getInstance()->updateCollisionAfterUpdate(deltaTime);
         GemManager->update(deltaTime);
-		Game::cLightManager::getInstance( )->update( );
+		
         Game::cShaderManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
         Particle::cParticleManager::getInstance()->update( deltaTime );
         Resource::cFbxManager::getInstance()->testUpdate( deltaTime );
 		GemManager->lateUpdate(deltaTime);
 		Game::cGameManager::getInstance( )->update( deltaTime );
+		Game::cLightManager::getInstance( )->update( );
     }
 }
-
 void cGameMain::draw( )
 {
+	// カメラよりも後じゃないと1フレームズレます。
+	Game::cUIManager::getInstance( )->update( deltaTime );
+	Game::cPlayerManager::getInstance( )->cameraAfterUpdate( deltaTime );
+
 	Game::cShaderManager::getInstance( )->draw( [ this ]
 	{
 		ci::gl::ScopedColor scpCol( ColorA( 1.0F, 1.0F, 1.0F, 1.0F ) );
@@ -216,7 +211,6 @@ void cGameMain::draw( )
 
 	Collision::cCollisionManager::getInstance( )->draw( );
 }
-
 void cGameMain::drawShadow( )
 {
 	ci::gl::ScopedColor scpCol( ColorA( 1.0F, 1.0F, 1.0F, 1.0F ) );
@@ -227,7 +221,6 @@ void cGameMain::drawShadow( )
 	Game::cMapObjectManager::getInstance()->draw();
 	Game::cPlayerManager::getInstance( )->draw( );
 }
-
 void cGameMain::draw2D( )
 {
     gl::enableFaceCulling( false );
@@ -238,12 +231,9 @@ void cGameMain::draw2D( )
 	Game::cGameManager::getInstance( )->draw( );
 	Game::cDebugManager::getInstance( )->draw2d( );
 }
-
 void cGameMain::resize( )
 {
 
 }
-
-
 }
 }

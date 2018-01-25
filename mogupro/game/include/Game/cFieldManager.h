@@ -58,7 +58,7 @@ public:
     void addToBreakType( const Field::BlockType& type );
     void clearToBreakType();
 
-private:
+public:
 
     void playBreakBlockSounds( const ci::vec3& position, const std::string& key );
 

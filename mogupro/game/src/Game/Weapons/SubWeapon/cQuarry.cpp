@@ -10,6 +10,8 @@
 #include"Game\cStrategyManager.h"
 #include"cinder\Rand.h"
 #include"Game/cPlayerManager.h"
+#include"Particle\cParticleManager.h"
+#include"Game/cStrategyManager.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -38,12 +40,51 @@ namespace Game
 				root->set_schedule_update();
 				root->set_position_3d(mDrillPos);
 				TEX->set("drill.png", "drill.png");
+				iseasingfinished = true;
+				nodescale = Node::node::create();
+				nodescale->set_schedule_update();
+				nodescale->set_position_3d(ci::vec3(0));
+			
+				nodescale->run_action(sequence::create(ease<EaseOutCubic>::create(move_to::create(2.f, ci::vec3(1.0f))), call_func::create([this]
+				{
+					mIsCreateEnd = true;
+				})));
+				nodeRotate = Node::node::create();
+				nodeRotate->set_schedule_update();
+				nodeRotate->set_position_3d(ci::vec3(0));
+
+				nodeRotate->run_action(sequence::create(ease<EaseOutCubic>::create(move_to::create(2.f, ci::vec3(M_PI*4.f, M_PI*4.f, -M_PI*4.f))), call_func::create([this]
+				{
+					mDrawRotate = ci::vec3(0);
+				})));
 			}
 			cQuarry::~cQuarry()
 			{
 				mMachineAABB.removeWorld();
 				mDrillAABB.removeWorld();
 				mSlopeAABB.removeWorld();
+
+				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam()
+					.position(mMachineAABB.getPosition()+ci::vec3(0,mScale.y/2.f,0))
+					.moveType(Particle::ParticleType::ABSORB)
+					.textureType(Particle::ParticleTextureType::SPARK)
+					.colors(gemcolors)
+					.convergePoint(Game::cStrategyManager::getInstance()->getCannons()[Game::cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam()]->getReStorePos())
+					.speed(1.5f)
+					.swellEndTime(0.1f)
+					.swellWaitTime(30.0f)
+					.easeTime(60.0f)
+					.count(gemcolors.size())
+					.effectTime(0)
+					.vanishTime(10.0)
+					.randomEaseTypes({ EaseType::BackIn,EaseType::BackOut,EaseType::CircIn,EaseType::CircOut,EaseType::Linear,EaseType::CubicIn })
+				);
+
+
+
+
+
+
 				int num = getgems.size();
 			
 				cGemManager::getInstance()->deleteFragmentGems(getgems);
@@ -73,8 +114,13 @@ namespace Game
 			{
 				switch (state)
 				{
+				case Game::Weapons::SubWeapon::cQuarry::DRILLCREATE:
+					updateCreate(delta_time);
+					break;
+
 				case Game::Weapons::SubWeapon::cQuarry::DRILLMOVE:
 					Drillmove(delta_time);
+					root->entry_update(delta_time);
 					if (ismyobject) {
 						Game::cFieldManager::getInstance()->blockBreak(mDrillPos, mDrillScale.x, mBreakType);
 					}
@@ -96,7 +142,7 @@ namespace Game
 
 				state = changeState();
 
-				root->entry_update(delta_time);
+				
 
 				moveGetGem(delta_time);
 				//ci::app::console() << mPos << std::endl;
@@ -112,8 +158,11 @@ namespace Game
 				////drawBasket();
 
 				drawMachine();
-				drawSlope();
-				drawDrill();
+				if (mIsCreateEnd) {
+					drawSlope();
+					drawDrill();
+				}
+				
 			}
 			bool cQuarry::deleteThis()
 			{
@@ -146,7 +195,8 @@ namespace Game
 						p.y = t;
 						getgems[index]->node->set_position_3d(p);
 					}), call_func::create([] {; })));
-
+					gemcolors.push_back(getgems[index]->getColorA());
+					gemcolors.push_back(getgems[index]->getColorA());
 					getgems[index]->setIsActive(false);
 				}
 
@@ -197,6 +247,13 @@ namespace Game
 			void cQuarry::setScale()
 			{
 				mScale = vec3(3, 3, 3);
+			}
+			void Weapons::SubWeapon::cQuarry::updateCreate(const float & deltatime)
+			{
+				mDrawRate = nodescale->get_position_3d();
+				mDrawRotate = nodeRotate->get_position_3d();
+				nodescale->entry_update(deltatime);
+				nodeRotate->entry_update(deltatime);
 			}
 			void cQuarry::drawCube(const ci::vec3 pos, const ci::vec3 size, const ci::vec3 rotate, const ci::ColorA color)
 			{
@@ -281,8 +338,12 @@ namespace Game
 			void cQuarry::drillReturn(float delttime)
 			{
 				mDrillPos.x = mPos.x;
-				mDrillPos.y += delttime*10.0f;
+				mDrillPos.y += delttime*5.0f;
 				mDrillPos.z = mPos.z;
+				float tranceSize = mScale.x / 20.f;
+				mDrawRandom = ci::vec3(ci::randFloat(-tranceSize, tranceSize),
+					ci::randFloat(-tranceSize, tranceSize),
+					ci::randFloat(-tranceSize, tranceSize));
 			}
 		
 			void cQuarry::drawDrill()
@@ -362,8 +423,14 @@ namespace Game
 			{
 				switch (state)
 				{
+				case Game::Weapons::SubWeapon::cQuarry::DRILLCREATE:
+					if (mIsCreateEnd) {
+						return DrillState::DRILLMOVE;
+					}
+					return DrillState::DRILLCREATE;
+
 				case Game::Weapons::SubWeapon::cQuarry::DRILLMOVE:
-					if ((mPos.y - mDrillPos.y) >= 60.f) {
+					if ((mPos.y - mDrillPos.y) >= Field::WORLD_SIZE.y) {
 						return DrillState::DRILLRETURN;
 					}
 					return DrillState::DRILLMOVE;
@@ -386,7 +453,7 @@ namespace Game
 			{
 				cinder::gl::ScopedTextureBind a(TEX->get("drill.png"));
 				gl::ScopedGlslProg shader(gl::getStockShader(gl::ShaderDef().texture()));
-				drawCube(mPos, vec3(mScale.x, mScale.y, mScale.z), vec3(0, 0, 0), ColorA(1, 1, 1, 1));
+				drawCube(mPos + mDrawRandom, mScale*mDrawRate,mDrawRotate, ColorA(1, 1, 1, 1));
 			}
 			ci::vec3 cQuarry::getNextEasingPos()
 			{

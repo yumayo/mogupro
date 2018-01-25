@@ -314,6 +314,7 @@ namespace Game {
 			void playerRotation();
 			void setup() override;
 			void update(const float& delta_time) override;
+			void cameraAfterUpdate( const float& delta_time );
 			void draw() override;
 		};
 	}

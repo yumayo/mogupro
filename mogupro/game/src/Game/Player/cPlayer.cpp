@@ -240,10 +240,11 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 			mRigidbody.gravityOff( );
 		}
 	}
-	if (drill_sound > 0.1f) {
+	if (drill_sound > 0.2f) {
 		if(Game::cFieldManager::getInstance()->isBreakBlock(mCollider.getPosition() + (glm::normalize(CAMERA->getCamera().getViewDirection()) * ci::vec3(status.drill_speed / 3)),1)) {
-			Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").setGain(0.2f);
-			Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").play();
+			//Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").setGain(0.2f);
+			//Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").play();
+            Game::cFieldManager::getInstance()->playBreakBlockSounds( mCollider.getPosition() ,"player" + std::to_string( player_id ));
 		}
 		drill_sound = 0;
 	}
@@ -475,8 +476,11 @@ void Game::Player::cPlayer::update(const float & delta_time)
 	respawn(delta_time);
 	root->set_position_3d(mPos);
 	collisionGems();
+}
 
-	// ライトの更新。
+void Game::Player::cPlayer::cameraAfterUpdate( const float & delta_time )
+{
+	// プレイヤーは常に画面の中心にいるためカメラのアップデートよりも後に更新します。
 	cinder::vec3 lightColor;
 	switch ( team )
 	{
@@ -493,7 +497,6 @@ void Game::Player::cPlayer::update(const float & delta_time)
 	light->reAttachPositionWithRadius( mPos, isWatching( ) ? 0.0F : 1 + 2 - ( status.hp / Player::MAX_HP ) * 2 );
 	auto pvec = glm::normalize( getPlayerVec( ) );
 	spotlight->reAttachPositionWithDirection( mPos + pvec * 0.1F, pvec * 3.0F );
-
 }
 
 void Game::Player::cPlayer::draw()
