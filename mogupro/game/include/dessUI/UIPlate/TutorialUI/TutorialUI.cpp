@@ -17,17 +17,17 @@ void TutorialUI::setup(const dess::SceneName & name)
 	UIPlate::setup(name);
 	textInit();
 
-	ENV->enableKeyButton();
-	ENV->enablePadAxis();
-	ENV->enablePadButton();
-	ENV->enableMouseButton();
+	ENV->disableKeyButton();
+	ENV->disablePadAxis();
+	ENV->disablePadButton();
+	ENV->disableMouseButton();
 }
 //ƒvƒŒƒCƒ„[‰Šú‰»
 void TutorialUI::playerInit()
 {
 	Game::cPlayerManager::getInstance()->getActivePlayer()->settingPosition(ci::vec3(Game::Field::WORLD_SIZE.x / 2, Game::Field::WORLD_SIZE.y + 0.5f, 17.0F));
 	Game::cPlayerManager::getInstance()->getActivePlayer()->move(ci::vec3(0, 0, 0.1f));
-	CAMERA->setCameraAngle(cinder::vec2(0, 0));
+	CAMERA->setCameraAngle(cinder::vec2(0, -0.3f));
 	Game::cFieldManager::getInstance()->blockAllReset();
 	Game::cPlayerManager::getInstance()->getActivePlayer()->useSubWeapon.clearSubWeapon();
 }
@@ -93,9 +93,9 @@ void TutorialUI::textInit()
 }
 void TutorialUI::tutorialMoveSetup(const float & delta_time)
 {
-	Game::cPlayerManager::getInstance()->getActivePlayer()->settingPosition(ci::vec3(Game::Field::WORLD_SIZE.x / 2, Game::Field::WORLD_SIZE.y + 0.5f, 17.0F));
-	ui_data["à–¾”Â‚Q"]->setActive(true);
-	ui_data["à–¾”Â‚Q"]->setActive(false);
+	playerInit();
+	ui_data["à–¾”Â"]->setActive(true);
+	ui_data["à–¾”Â"]->setActive(false);
 	ui_data["‘€ìà–¾"]->setActive(true);
 	ui_data["‘€ìà–¾"]->setActive(false);
 	ui_data["FadePlateIn"]->setActive(true);
@@ -116,7 +116,7 @@ void TutorialUI::tutorialMoveSetup(const float & delta_time)
 void TutorialUI::tutorialMoveUpdate(const float& delta_time)
 {
 
-	if (!turo_flags["‘€ìà–¾"] && !ui_data["à–¾”Â‚Q"]->getActive()) {
+	if (!turo_flags["‘€ìà–¾"] && !ui_data["à–¾”Â"]->getActive()) {
 		turo_flags["‘€ìà–¾"] = true;
 		ui_data["à–¾”Â‰Šú"]->setActive(true);
 		ui_data["à–¾”Â‰Šú"]->setActive(false);
