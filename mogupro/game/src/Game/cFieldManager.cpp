@@ -1,5 +1,6 @@
 #include <Game/cFieldManager.h>
 #include <cinder/gl/gl.h>
+#include"Sound\Stereophonic.h"
 using namespace ci;
 namespace Game
 {
@@ -75,17 +76,18 @@ void cFieldManager::clearToBreakType()
 }
 void cFieldManager::playBreakBlockSounds( const ci::vec3& position, const std::string& key )
 {
+    vec3 pos = position;
     if ( mToBreakBlocksType.find( Field::BlockType::AIR ) == mToBreakBlocksType.end() )
     {
-        // ‚±‚±‚Å—§‘Ì‰¹‹¿
+        //Sound::StereophonicManager::getInstance()->add( key, ci::app::getAssetPath( "SE/Player/drill.wav" ).string(), pos );
     }
     if ( mToBreakBlocksType.find( Field::BlockType::NORMAL ) == mToBreakBlocksType.end() )
     {
-
+        Sound::StereophonicManager::getInstance()->add( key, ci::app::getAssetPath( "SE/Player/drill.wav" ).string(), pos );
     }
     if ( mToBreakBlocksType.find( Field::BlockType::UNBREAKING ) == mToBreakBlocksType.end() )
     {
-
+        Sound::StereophonicManager::getInstance()->add( key, ci::app::getAssetPath( "SE/Player/kinnzoku.wav" ).string(), pos );
     }
     clearToBreakType();
 }

@@ -242,8 +242,9 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 	}
 	if (drill_sound > 0.1f) {
 		if(Game::cFieldManager::getInstance()->isBreakBlock(mCollider.getPosition() + (glm::normalize(CAMERA->getCamera().getViewDirection()) * ci::vec3(status.drill_speed / 3)),1)) {
-			Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").setGain(0.2f);
-			Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").play();
+			//Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").setGain(0.2f);
+			//Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").play();
+            Game::cFieldManager::getInstance()->playBreakBlockSounds( mCollider.getPosition() ,"player" + std::to_string( player_id ));
 		}
 		drill_sound = 0;
 	}
