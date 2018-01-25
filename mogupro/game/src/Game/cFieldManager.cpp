@@ -2,6 +2,8 @@
 #include <cinder/gl/gl.h>
 #include"Sound\Stereophonic.h"
 using namespace ci;
+using namespace ci::app;
+
 namespace Game
 {
 cFieldManager::cFieldManager()
@@ -66,7 +68,7 @@ void cFieldManager::shutdown()
 }
 void cFieldManager::addToBreakType( const Field::BlockType & type )
 {
-    if ( mToBreakBlocksType.find( type ) == mToBreakBlocksType.end() )
+    if ( mToBreakBlocksType.find( type ) != mToBreakBlocksType.end() )
         return;
     mToBreakBlocksType.insert( type );
 }
@@ -77,17 +79,17 @@ void cFieldManager::clearToBreakType()
 void cFieldManager::playBreakBlockSounds( const ci::vec3& position, const std::string& key )
 {
     vec3 pos = position;
-    if ( mToBreakBlocksType.find( Field::BlockType::AIR ) == mToBreakBlocksType.end() )
+    if ( mToBreakBlocksType.find( Field::BlockType::AIR ) != mToBreakBlocksType.end() )
     {
         //Sound::StereophonicManager::getInstance()->add( key, ci::app::getAssetPath( "SE/Player/drill.wav" ).string(), pos );
     }
-    if ( mToBreakBlocksType.find( Field::BlockType::NORMAL ) == mToBreakBlocksType.end() )
-    {
-        Sound::StereophonicManager::getInstance()->add( key, ci::app::getAssetPath( "SE/Player/drill.wav" ).string(), pos );
-    }
-    if ( mToBreakBlocksType.find( Field::BlockType::UNBREAKING ) == mToBreakBlocksType.end() )
+    if ( mToBreakBlocksType.find( Field::BlockType::UNBREAKING ) != mToBreakBlocksType.end() )
     {
         Sound::StereophonicManager::getInstance()->add( key, ci::app::getAssetPath( "SE/Player/kinnzoku.wav" ).string(), pos );
+    }
+    else if ( mToBreakBlocksType.find( Field::BlockType::NORMAL ) != mToBreakBlocksType.end() )
+    {
+        Sound::StereophonicManager::getInstance()->add( key, ci::app::getAssetPath( "SE/Player/drill.wav" ).string(), pos );
     }
     clearToBreakType();
 }

@@ -240,7 +240,7 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 			mRigidbody.gravityOff( );
 		}
 	}
-	if (drill_sound > 0.1f) {
+	if (drill_sound > 0.2f) {
 		if(Game::cFieldManager::getInstance()->isBreakBlock(mCollider.getPosition() + (glm::normalize(CAMERA->getCamera().getViewDirection()) * ci::vec3(status.drill_speed / 3)),1)) {
 			//Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").setGain(0.2f);
 			//Resource::cSoundManager::getInstance()->findSe("Player/drill.wav").play();

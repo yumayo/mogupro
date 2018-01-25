@@ -108,6 +108,8 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                     if ( isPointToSphere( block->getPosition(), sphere_pos, radius ) == false )
                         continue;
 
+                cFieldManager::getInstance()->addToBreakType( block->mType );
+                console() << (int)block->mType << std::endl;
                 if ( type.find( block->mType ) == false )
                     continue;
                 if ( type.find( BlockType::HARD ) )
@@ -122,7 +124,6 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                                   [&]( cChunkLayer* t ) { return t == layer; } ) )
                     continue;
 
-                cFieldManager::getInstance()->addToBreakType( block->mType );
 
                 build_chunk_layers.emplace_back( layer );
             }
@@ -192,8 +193,6 @@ bool cChunkHolder::isBreakBlock( const ci::ivec3 & chunk_cell,
                 if ( block == nullptr )
                     continue;
                 if ( block->isActive() == false )
-                    continue;
-                if ( block->getType() == BlockType::UNBREAKING )
                     continue;
                 if ( isPointToSphere( block->getPosition(), sphere_pos, radius ) == false )
                     continue;
