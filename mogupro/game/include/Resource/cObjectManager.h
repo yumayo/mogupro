@@ -23,4 +23,26 @@ private:
 	int mCurrentLoadIndex = 0;
 	std::vector<std::string> mFilePaths;
 };
+struct ObjectSuppoter
+{
+	class ObjectNotFound : public std::runtime_error
+	{
+	public:
+		ObjectNotFound( ) : std::runtime_error( "objファイルが見つかりません。" )
+		{
+		}
+	};
+	cinder::gl::VboMeshRef operator[]( std::string const& underAssetsUnderOBJUnderPath ) const
+	{
+		try
+		{
+			return cObjectManager::getInstance( )->findObject( underAssetsUnderOBJUnderPath );
+		}
+		catch ( ... )
+		{
+			throw ObjectNotFound( );
+		}
+	}
+};
+extern ObjectSuppoter const OBJ;
 }

@@ -52,4 +52,5 @@ int cObjectManager::currentNum( )
 {
 	return mCurrentLoadIndex;
 }
+ObjectSuppoter const OBJ;
 }
