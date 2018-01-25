@@ -7,6 +7,18 @@
 #include <Utility/TriMeshAnimation.h>
 #include <cinder/gl/Fbo.h>
 
+class DrillUI
+{
+public:
+
+	DrillUI();
+	DrillUI(ci::vec2 pos, ci::vec2 moveVec, std::string name);
+
+	void update(float deltaTime);
+	void draw();
+	hardptr<Node::node> mRoot;
+};
+
 namespace Scene
 {
 namespace Member
@@ -62,47 +74,6 @@ private:
 	bool mIsEndAnimation;
 
 	int teamCount[2];
-
-	class DrillUI
-	{
-	public:
-
-		DrillUI() { }
-
-		DrillUI(ci::vec2 pos, ci::vec2 moveVec, std::string name)
-		{
-			using namespace Node;
-			using namespace Node::Action;
-			mRoot = Node::node::create();
-			mRoot->set_schedule_update();
-			mRoot->set_position(pos);
-			mRoot->run_action(ease<ci::EaseOutCirc>::create(
-				move_to::create(3.0F, ci::vec3(moveVec.x,moveVec.y,0))));
-			auto plate = Node::Renderer::sprite::create(Resource::IMAGE["matching/drillUI2.png"]);
-			plate->set_position(ci::vec2(0, 0));
-			plate->set_scale(glm::vec2(1.8f, 0.8f));
-			mRoot->add_child(plate);
-
-			auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
-			f->set_text(u8"" + name);
-			f->set_position(ci::vec2(0, 0));
-			f->set_schedule_update();
-			f->set_scale(glm::vec2(1, -1));
-			mRoot->add_child(f);
-		}
-
-		void update(float deltaTime)
-		{
-			mRoot->entry_update(0.1f);
-		}
-
-		void draw()
-		{
-			mRoot->entry_render(cinder::mat4());
-		}
-		hardptr<Node::node> mRoot;
-	};
-
 	std::vector<DrillUI> drillUI1Ps;
 	std::vector<DrillUI> drillUI2Ps;
 	Utility::TriMeshAnimation mTrimeshAnimation;
