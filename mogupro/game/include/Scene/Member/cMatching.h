@@ -78,7 +78,7 @@ private:
 			mRoot->set_position(pos);
 			mRoot->run_action(ease<ci::EaseOutCirc>::create(
 				move_to::create(3.0F, ci::vec3(moveVec.x,moveVec.y,0))));
-			auto plate = Node::Renderer::sprite::create("drillUI2.png");
+			auto plate = Node::Renderer::sprite::create(Resource::IMAGE["matching/drillUI2.png"]);
 			plate->set_position(ci::vec2(0, 0));
 			plate->set_scale(glm::vec2(1.8f, 0.8f));
 			mRoot->add_child(plate);
