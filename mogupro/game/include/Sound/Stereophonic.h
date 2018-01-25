@@ -138,6 +138,26 @@ namespace Sound
 		float time;
 	};
 
+	class WavHolder
+	{
+	public:
+		void add(std::string str)
+		{
+			if (wavList.find(str) != wavList.end())
+				return;
+			wavList.insert(std::make_pair(str, Wav(str)));
+		}
+
+		Wav get(std::string str)
+		{
+			add(str);
+			return wavList.find(str)->second;
+		}
+
+	private:
+		std::map<std::string, Wav> wavList;
+	};
+
 	//! @fn    StereophonicManager
 	//! @brief —§‘Ì‰¹‹¿Ä¶‚ğ‚Ü‚Æ‚ß‚éClass‚Å‚·
 	//! @note  g‚¢•û‚É‚Â‚¢‚Ä
@@ -158,10 +178,11 @@ namespace Sound
 
 		void close();
 
-		template<class T>
-		void add(std::string str,T type,ci::vec3& sourcePos)
+		void add(std::string handleStr,std::string keyStr,ci::vec3& sourcePos)
 		{
-			stereophonicList.insert(std::make_pair(str, Stereophonic(type, sourcePos)));
+			if (stereophonicList.find(handleStr) != stereophonicList.end())
+				return;
+			stereophonicList.insert(std::make_pair(handleStr, Stereophonic(wavholder.get(keyStr), sourcePos)));
 		}
 		void update(float deltaTime);
 
@@ -172,6 +193,7 @@ namespace Sound
 		std::map<std::string, Stereophonic> stereophonicList;
 
 	private:
+		WavHolder wavholder;
 
 	};
 }

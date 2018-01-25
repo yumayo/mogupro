@@ -140,7 +140,7 @@ namespace Game
 
 			Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(), getgemnum);
 			////////////
-			Sound::StereophonicManager::getInstance()->add("",Sound::Wav(ci::app::getAssetPath("SE/cannoncharge.wav").string()), mPos);
+			Sound::StereophonicManager::getInstance()->add(mCannonName,ci::app::getAssetPath("SE/cannoncharge.wav").string(), mPos);
 			////////////
 			//sendCollectMaxGem();
 		}
