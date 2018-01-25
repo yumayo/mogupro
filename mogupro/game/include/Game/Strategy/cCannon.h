@@ -39,6 +39,7 @@ namespace Game
 			void setAddCanonPower(const int getgemnum);
 			int getGEmNum();
 			void setGemNum(const int gemnum);
+			ci::vec3& getReStorePos();
 		private:
 			void sendCollectMaxGem();
 			bool debugaabb = true;

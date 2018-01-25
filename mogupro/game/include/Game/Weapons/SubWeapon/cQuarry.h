@@ -26,15 +26,22 @@ public:
 	void HitGem(const int _gemid);
 private:
 	enum DrillState {
-		DRILLMOVE, DRILLRETURN, DRILLSTOP
+		DRILLMOVE, DRILLRETURN, DRILLSTOP, DRILLCREATE
 	};
-	DrillState state = DrillState::DRILLMOVE;
+	DrillState state = DrillState::DRILLCREATE;
 private://本体系
 	void drawBasket();
 	void drawMachine();
 	void setScale();
 	Collision::cAABBCollider mMachineAABB;
 	///machineのposはmPos
+private://組み立てる
+	void updateCreate(const float& deltatime);
+	bool mIsCreateEnd = false;
+	ci::vec3 mDrawRate = ci::vec3(0.0f);
+	ci::vec3 mDrawRotate = ci::vec3(0.0f);
+	Utility::hardptr<Node::node>nodescale;
+	Utility::hardptr<Node::node>nodeRotate;
 private://スロープ
 	struct Slope {
 		ci::vec3 pos;
@@ -60,7 +67,6 @@ private://先端のドリル
 	Utility::hardptr<Node::node> root;
 	bool iseasingfinished = true;
 	int easingcount = 0;
-
 private://ジェム関係
 	void moveGetGem(const float delttime);
 	std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>getgems;
@@ -69,8 +75,8 @@ private:
 	bool isretun = false;
 	DrillState changeState();
 	Game::Field::cBreakBlockType mBreakType;
-	
-	
+	std::vector<ci::ColorA>gemcolors;
+	ci::vec3 mDrawRandom = ci::vec3(0);
 };
 }
 }

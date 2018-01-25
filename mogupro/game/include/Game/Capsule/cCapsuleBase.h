@@ -35,8 +35,8 @@ protected:
 	bool mIsget = false;
 	float mLightColorH = 0.0f;
 	float mLightRadius = 1.0f;
-	float mLightMaxRadius = 3.f;
-	float mLightRate = 0.5f;
+	float mLightMaxRadius = 4.f;
+	float mLightRate = 0.2f;
 	float mLightSinAngle = 0.0f;
 private:
 

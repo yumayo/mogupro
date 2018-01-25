@@ -229,6 +229,11 @@ namespace Game
 			mGemCount = gemnum;
 		}
 
+		ci::vec3 & Game::Strategy::cCannon::getReStorePos()
+		{
+			return mGemStorePos;
+		}
+
 		void cCannon::sendCollectMaxGem()
 		{
 			if (mGetgems.size() >= GEM_MAXNUM) {
