@@ -25,6 +25,8 @@ std::string getTextureNameFromTextureType( const ParticleTextureType& type )
             return "spark";
         case ParticleTextureType::SPARK_PURE_WHITE:
             return "spark_white";
+        case ParticleTextureType::SMOKE:
+            return "smoke";
     }
     return "";
 }
