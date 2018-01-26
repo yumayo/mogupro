@@ -24,6 +24,7 @@ enum class ParticleTextureType
     SAND,
     SPARK,              // 火花
     SPARK_PURE_WHITE,   // 白い火花（着色用）
+    SMOKE,
 };
 
 class ParticleParam
