@@ -53,26 +53,26 @@ bool cTips::init( cinder::vec2 baseContentSize, Player::Team team )
 
 	using namespace Utility;
 
-	auto idle = std::make_shared<cStateNode>( );
-	auto nearBlock = std::make_shared<cStateNode>( );
-	auto nearGem = std::make_shared<cStateNode>( );
-	auto transGem = std::make_shared<cStateNode>( );
-	auto nice = std::make_shared<cStateNode>( );
+	auto idle = mStateMachine.generate( );
+	auto nearBlock = mStateMachine.generate( );
+	auto nearGem = mStateMachine.generate( );
+	auto transGem = mStateMachine.generate( );
+	auto nice = mStateMachine.generate( );
 
-	idle->onStateIn = [ this ] ( Utility::softptr<cStateNode> n )
+	idle->onStateIn = [ this ] ( auto n )
 	{
 		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"" );
 	};
-	idle->join( std::make_shared<cStateAllow>( nearBlock, [ ] ( Utility::softptr<cStateNode> n )
+	idle->join( nearBlock, [ ] ( auto n )
 	{
 		return cFieldManager::getInstance( )->isBreakBlock( cPlayerManager::getInstance( )->getActivePlayer( )->getPos( ) + ( glm::normalize( CAMERA->getCamera( ).getViewDirection( ) ) * ci::vec3( cPlayerManager::getInstance( )->getActivePlayer( )->getStatus( ).drill_speed / 3 ) ), 1 );
-	} ) );
+	} );
 
-	nearBlock->onStateIn = [ this ] ( Utility::softptr<cStateNode> n )
+	nearBlock->onStateIn = [ this ] ( auto n )
 	{
 		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"左クリックで地面を掘れるぞ" );
 	};
-	nearBlock->join( std::make_shared<cStateAllow>( nearGem, [ ] ( Utility::softptr<cStateNode> n ) 
+	nearBlock->join( nearGem, [ ] ( auto n ) 
 	{
 		bool isHit = false;
 		auto const& gems = cGemManager::getInstance( )->getGemStones( );
@@ -86,13 +86,13 @@ bool cTips::init( cinder::vec2 baseContentSize, Player::Team team )
 			}
 		}
 		return isHit;
-	} ) );
+	} );
 
-	nearGem->onStateIn = [ this ] ( Utility::softptr<cStateNode> n )
+	nearGem->onStateIn = [ this ] ( auto n )
 	{
 		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"右クリックで宝石を採れるぞ" );
 	};
-	nearGem->join( std::make_shared<cStateAllow>( nearBlock, [ ] ( Utility::softptr<cStateNode> n )
+	nearGem->join( nearBlock, [ ] ( auto n )
 	{ 
 		bool isHit = false;
 		auto const& gems = cGemManager::getInstance( )->getGemStones( );
@@ -106,43 +106,43 @@ bool cTips::init( cinder::vec2 baseContentSize, Player::Team team )
 			}
 		}
 		return !isHit;
-	} ) );
-	nearGem->join( std::make_shared<cStateAllow>( transGem, [ ] ( Utility::softptr<cStateNode> n )
+	} );
+	nearGem->join( transGem, [ ] ( auto n )
 	{ 
 		return !cPlayerManager::getInstance( )->getActivePlayer( )->getgems.empty( );
-	} ) );
+	} );
 
-	transGem->onStateIn = [ this ] ( Utility::softptr<cStateNode> n )
+	transGem->onStateIn = [ this ] ( auto n )
 	{
 		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"宝石を大砲に持って帰ろう" );
 		auto hintTargetCannon = this->add_child( cTargetCannon::create( ) );
 		hintTargetCannon->set_name( "hintTargetCannon" );
 		hintTargetCannon->set_schedule_update( );
 	};
-	transGem->onStateOut = [ this ] ( Utility::softptr<cStateNode> n )
+	transGem->onStateOut = [ this ] ( auto n )
 	{
 		this->remove_child_by_name( "hintTargetCannon" );
 	};
-	transGem->join( std::make_shared<cStateAllow>( nice, [ ] ( Utility::softptr<cStateNode> n ) 
+	transGem->join( nice, [ ] ( auto n ) 
 	{
 		return cPlayerManager::getInstance( )->getActivePlayer( )->getgems.empty( );
-	} ) );
+	} );
 
-	nice->onStateIn = [ this ] ( Utility::softptr<cStateNode> n )
+	nice->onStateIn = [ this ] ( auto n )
 	{
 		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"よくやった" );
 		message.dynamicptr<Node::Renderer::label>( )->run_action( Node::Action::sequence::create( Node::Action::delay::create( 1.5F ), Node::Action::call_func::create( [ this ] { message.dynamicptr<Node::Renderer::label>( )->set_name( "animationFinished" ); } ) ) );
 	};
-	nice->onStateOut = [ this ] ( Utility::softptr<cStateNode> n )
+	nice->onStateOut = [ this ] ( auto n )
 	{
 		message.dynamicptr<Node::Renderer::label>( )->set_name( u8"" );
 	};
-	nice->join( std::make_shared<cStateAllow>( idle, [ this ] ( Utility::softptr<cStateNode> n ) 
+	nice->join( idle, [ this ] ( auto n ) 
 	{
 		return message.dynamicptr<Node::Renderer::label>( )->get_name( ) == "animationFinished";
-	} ) );
+	} );
 
-	mStateMachine.init( idle );
+	mStateMachine.setEntryNode( idle );
 
 	return true;
 }

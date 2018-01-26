@@ -4,6 +4,7 @@
 #include <Game/Weapons/UseSubWeapon/cUseQuarry.h>
 #include<Game/cPlayerManager.h>
 #include<Resource\cSoundManager.h>
+#include <Game/Weapons/SubWeapon/cQuarryPlus.h>
 namespace Game
 {
 cSubWeaponManager::cSubWeaponManager( )
@@ -58,7 +59,7 @@ void cSubWeaponManager::updateCollisionAfterUpdate(const float & deltaTime)
 
 void cSubWeaponManager::HitDrillToGem(const int _objectid, const int _gemid)
 {
-	auto quarry = std::static_pointer_cast<Game::Weapons::SubWeapon::cQuarry>(subweapons[_objectid]);
+	auto quarry = std::static_pointer_cast<Game::Weapons::SubWeapon::cQuarryPlus>(subweapons[_objectid]);
 	quarry->HitGem(_gemid);
 }
 
@@ -76,7 +77,7 @@ void cSubWeaponManager::createLightBomb(const ci::vec3 _pos, const ci::vec3 _spe
 void cSubWeaponManager::createQuarry(const ci::vec3 _pos, const int _objectid, const int playerid)
 {
 	ci::app::console() << playerid << _pos << _objectid << "‚­‚ [‚è[" << std::endl;
-	subweapons.insert(std::make_pair(_objectid, std::make_shared<Game::Weapons::SubWeapon::cQuarry>(_pos, _objectid, playerid)));
+	subweapons.insert(std::make_pair(_objectid, std::make_shared<Game::Weapons::SubWeapon::cQuarryPlus>(_pos, _objectid, playerid)));
 	subweapons[_objectid]->setup();
 	debugidcount++;
 }

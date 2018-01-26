@@ -68,7 +68,7 @@ void cUseQuarry::updateCollisionAfterUpdate(const float& delta_time) {
 }
 void cUseQuarry::createSubWeapon() {
 
-	Game::cClientAdapter::getInstance()->sendSetQuarry(mSetPos + ci::vec3(0, mScale.y / 2.f, 0));
+	Game::cClientAdapter::getInstance()->sendSetQuarry(mSetPos);
 
 	//Game::cSubWeaponManager::getInstance()->createQuarry(mSetPos + ci::vec3(0, mScale.y / 2.f, 0), cSubWeaponManager::getInstance()->debugidcount,
 	//	cPlayerManager::getInstance()->getActivePlayerId());

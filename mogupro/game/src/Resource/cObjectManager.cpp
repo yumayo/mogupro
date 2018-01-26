@@ -11,17 +11,29 @@ cObjectManager::cObjectManager( )
     search.search( Utility::cString::getAssetPath( ) + "OBJ\\" );
     mFilePaths = search.unixNotationFullPaths( );
 }
-cinder::gl::VboMeshRef & cObjectManager::findObject( std::string const & underAssetsUnderSEUnderPath )
+cinder::gl::VboMeshRef cObjectManager::findObject( std::string const & underAssetsUnderSEUnderPath )
 {
     auto findItr = mObjects.find( underAssetsUnderSEUnderPath );
     if ( findItr != mObjects.end( ) )
     {
-        return findItr->second;
+        return findItr->second.vbo;
     }
     else
     {
         throw std::runtime_error( underAssetsUnderSEUnderPath + ": ファイルが存在しません。" );
     }
+}
+cinder::TriMeshRef cObjectManager::findMesh( std::string const & underAssetsUnderSEUnderPath )
+{
+	auto findItr = mObjects.find( underAssetsUnderSEUnderPath );
+	if ( findItr != mObjects.end( ) )
+	{
+		return findItr->second.mesh;
+	}
+	else
+	{
+		throw std::runtime_error( underAssetsUnderSEUnderPath + ": ファイルが存在しません。" );
+	}
 }
 void cObjectManager::loadOne( )
 {
@@ -37,7 +49,7 @@ void cObjectManager::loadOne( )
 		cinder::ObjLoader loader( cinder::app::loadAsset( "OBJ/" + unferObjName ) );
 		auto mesh = cinder::TriMesh::create( loader );
 		auto vbo = cinder::gl::VboMesh::create( *mesh );
-		mObjects.insert( std::make_pair( unferObjName, vbo ) );
+		mObjects.insert( std::make_pair( unferObjName, Mesh{ vbo, mesh } ) );
 	}
 }
 bool cObjectManager::isFinished( )
@@ -53,4 +65,5 @@ int cObjectManager::currentNum( )
 	return mCurrentLoadIndex;
 }
 ObjectSuppoter const OBJ;
+MeshSuppoter const MESH;
 }

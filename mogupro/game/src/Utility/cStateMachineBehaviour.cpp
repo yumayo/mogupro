@@ -1,12 +1,12 @@
 #include <Utility/cStateMachineBehaviour.h>
 namespace Utility
 {
-cStateAllow::cStateAllow( Utility::hardptr<cStateNode> nextNode, std::function<bool( Utility::softptr<cStateNode>n )> transitionInfo )
+const Utility::hardptr<cStateNode> cStateNode::none;
+cStateNode::cStateAllow::cStateAllow( Utility::softptr<cStateNode> nextNode, std::function<bool( Utility::softptr<cStateNode> )> transitionInfo )
 	: nextNode( nextNode )
 	, transitionInfo( transitionInfo )
 {
 }
-const Utility::hardptr<cStateNode> cStateNode::none;
 Utility::softptr<cStateNode> cStateNode::update( )
 {
 	for ( auto s : nextNodes )
@@ -18,11 +18,17 @@ Utility::softptr<cStateNode> cStateNode::update( )
 	}
 	return cStateNode::none;
 }
-void cStateNode::join( Utility::hardptr<cStateAllow> allow )
+void cStateNode::join( Utility::hardptr<cStateNode> nextNode, std::function<bool( Utility::softptr<cStateNode> )> transitionInfo )
 {
-	nextNodes.insert( allow );
+	nextNodes.insert( std::make_shared<cStateAllow>( nextNode, transitionInfo ) );
 }
-void cStateMachineBehaviour::init( Utility::hardptr<cStateNode> entry )
+Utility::softptr<cStateNode> cStateMachineBehaviour::generate( std::string const& name )
+{
+	auto itr = nodes.emplace( nodes.cend( ), std::make_shared<cStateNode>( ) );
+	( *itr )->name = name;
+	return *itr;
+}
+void cStateMachineBehaviour::setEntryNode( Utility::softptr<cStateNode> entry )
 {
 	this->entry = entry;
 	this->current = entry;
@@ -37,5 +43,9 @@ void cStateMachineBehaviour::update( )
 		current = node;
 		if ( current->onStateIn ) current->onStateIn( node );
 	}
+}
+bool cStateMachineBehaviour::isCurrentState( std::string const& stateName ) const
+{
+	return current->name == stateName;
 }
 }
