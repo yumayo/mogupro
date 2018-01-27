@@ -17,7 +17,7 @@ public:
     void create( const std::string& name,
                  const bool &is_just_once = false,
                  const bool &is_idle_animation = false );
-    void update();
+    void update(const float& delta_time = 0.016f);
     void draw();
 
     void animationChange( const std::string& name );
