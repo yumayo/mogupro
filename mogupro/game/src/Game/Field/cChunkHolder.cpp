@@ -109,7 +109,6 @@ bool cChunkHolder::breakBlock( const ci::ivec3 & chunk_cell,
                         continue;
 
                 cFieldManager::getInstance()->addToBreakType( block->mType );
-                console() << (int)block->mType << std::endl;
                 if ( type.find( block->mType ) == false )
                     continue;
                 if ( type.find( BlockType::HARD ) )
