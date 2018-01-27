@@ -6,7 +6,7 @@
 #include <Resource/TextureManager.h>
 #include <Game/cGemManager.h>
 #include <Game/Field/cBreakBlockType.h>
-#include <Game/Weapons/WeaponFactory.h>
+#include <Game/Weapons/cWeaponFactory.h>
 #include <assert.h>
 #include <Resource/cSoundManager.h>
 #include <Particle/cParticleManager.h>
@@ -303,7 +303,7 @@ Game::Player::cPlayer::cPlayer(
 	status.drill_speed = DEFAULT_SPEED*1.2f;
 	status.respawn_time = DEFAULT_RESPAWN_TIME;
 	//武器の初期化
-	main_weapon = Weapon::cWeaponFactory::getInstance()->InstanceMainWeapon(static_cast<Weapon::MAIN_WEAPON>(main_weapon_id), id);
+	main_weapon = Weapons::cWeaponFactory::getInstance()->InstanceMainWeapon(static_cast<Weapons::MAIN_WEAPON>(main_weapon_id), id);
 	assert(main_weapon != NULL && "メイン武器の種類のenumが正しく入っていません。");
 
 	//設置位置

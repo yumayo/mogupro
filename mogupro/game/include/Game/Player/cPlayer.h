@@ -5,8 +5,8 @@
 #include <Collision/cRigidBody.h>
 #include <Node/action.hpp>
 #include <Node/node.h>
-#include <Game/Weapons/WeaponBase.h>
-#include<Game/Weapons/UseSubWeapon/cUseSubWeapon.h>
+#include <Game/Weapons/cWeaponBase.h>
+#include <Game/Weapons/UseSubWeapon/cUseSubWeapon.h>
 #include <Game/Light/cPointLightParam.h>
 #include <Game/Animation/cAnimation.h>
 #include <Game/Light/cSpotLightParam.h>
@@ -79,7 +79,7 @@ namespace Game {
 			Animation::cAnimation animation;
 
 			//ƒƒCƒ“•Ší
-			std::unique_ptr<Weapon::WeaponBase> main_weapon;
+			std::unique_ptr<Weapons::cWeaponBase> main_weapon;
 
 			//‰½P‚©
 			int player_id;
@@ -244,7 +244,7 @@ namespace Game {
 			ci::AxisAlignedBox getAABB() {
 				return aabb;
 			}
-			Weapon::WeaponBase* getMainWeapon() {
+			Weapons::cWeaponBase* getMainWeapon() {
 				return main_weapon.get();
 			}
 			
