@@ -231,7 +231,7 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 	animation.setAnimationIncrementTime(0.016);
 	//Œ@‚ç‚ê‚Ä‚È‚¯‚ê‚Îˆ—‚µ‚È‚¢
 	if (!drilling)return;
-	animation.setAnimationIncrementTime(0.3);
+	animation.setAnimationIncrementTime(0.1);
 	if (Game::Field::WORLD_SIZE.y > mCollider.getPosition().y) {
 		if ( isWatching( ) )
 			;
@@ -467,7 +467,7 @@ void Game::Player::cPlayer::setup()
 #include <Game/cClientAdapter.h>
 void Game::Player::cPlayer::update(const float & delta_time)
 {
-	animation.update();
+	animation.update( delta_time );
 	no_damage_blind++;
 	no_damage_count += delta_time;
 	drill(delta_time);
