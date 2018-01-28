@@ -5,12 +5,19 @@
 #include <Collision/cRigidBody.h>
 #include <Node/action.hpp>
 #include <Node/node.h>
-#include <Game/Weapons/cWeaponBase.h>
 #include <Game/Weapons/UseSubWeapon/cUseSubWeapon.h>
 #include <Game/Light/cPointLightParam.h>
 #include <Game/Animation/cAnimation.h>
 #include <Game/Light/cSpotLightParam.h>
 namespace Game {
+namespace Weapons
+{
+namespace MainWeapon
+{
+class cBase;
+}
+}
+
 	namespace Gem {
 		class cFragmentGem;
 	}
@@ -79,7 +86,7 @@ namespace Game {
 			Animation::cAnimation animation;
 
 			//メイン武器
-			std::unique_ptr<Weapons::cWeaponBase> main_weapon;
+			std::shared_ptr<Weapons::MainWeapon::cBase> main_weapon;
 
 			//何Pか
 			int player_id;
@@ -93,7 +100,6 @@ namespace Game {
 			bool stan;
 			//クォータニオン
 			ci::quat rotation;
-			float rotate_x = 0;
 
 			//プレイヤーからのカメラの位置
 			float player_far;
@@ -124,9 +130,6 @@ namespace Game {
 
 			// プレイヤーのヘルメットから放たれるライト
 			Light::SpotLightHandle spotlight;
-
-			//プレイヤーのテクスチャを判断するstring
-			std::string tex_name;
 
 			//掘削時のカメラの遠さ調整
 			void drillingCamera(const float& delta_time);
@@ -244,9 +247,7 @@ namespace Game {
 			ci::AxisAlignedBox getAABB() {
 				return aabb;
 			}
-			Weapons::cWeaponBase* getMainWeapon() {
-				return main_weapon.get();
-			}
+			Game::Weapons::MainWeapon::cBase* getMainWeapon( );
 			
 			float getSpeed() {
 				return status.speed;
@@ -271,10 +272,6 @@ namespace Game {
 
 			bool getActiveUser() {
 				return active_user;
-			}
-
-			float getRotateX() {
-				return rotate_x;
 			}
 
 			ci::quat getRotate() {
@@ -311,7 +308,9 @@ namespace Game {
 			void jump(bool flag);
 
 			//回転
-			void playerRotation();
+			void updatePlayerRotation();
+			cinder::mat4 getWorldMatrixWeapon( ) const;
+
 			void setup() override;
 			void update(const float& delta_time) override;
 			void cameraAfterUpdate( const float& delta_time );

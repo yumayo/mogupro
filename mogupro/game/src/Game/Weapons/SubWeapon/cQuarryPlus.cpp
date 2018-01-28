@@ -78,10 +78,10 @@ void cQuarryPlus::setup( )
 	mBreakType.add( Field::BlockType::NORMAL );
 	mBreakType.add( Field::BlockType::HARD );
 
-	auto drillBuild = mStateMachine.generate( "build" );
-	auto drillMove = mStateMachine.generate( );
-	auto drillReturn = mStateMachine.generate( );
-	auto drillStop = mStateMachine.generate( "stop" );
+	STATE_GENERATE( mStateMachine, drillBuild );
+	STATE_GENERATE( mStateMachine, drillMove );
+	STATE_GENERATE( mStateMachine, drillReturn );
+	STATE_GENERATE( mStateMachine, drillStop );
 
 	auto build = root->add_child( node::create( ) );
 
@@ -151,7 +151,7 @@ void cQuarryPlus::update( const float & delta_time )
 {
 	mDeltaSecond = delta_time;
 	root->entry_update( mDeltaSecond );
-	mStateMachine.update( );
+	mStateMachine.update( delta_time );
 	for ( int i = 0; i < int( getgems.size( ) ); i++ )
 	{
 		if ( getgems[i]->getPos( ).y < mPos.y + mScale.y / 2.f + 1.f ) {
@@ -186,7 +186,7 @@ void cQuarryPlus::draw( )
 		}
 	}
 
-	if ( !mStateMachine.isCurrentState( "build" ) )
+	if ( !mStateMachine.isCurrentState( "drillBuild" ) )
 	{
 		// ƒhƒŠƒ‹–_
 		{
@@ -210,7 +210,7 @@ void cQuarryPlus::draw( )
 }
 bool cQuarryPlus::deleteThis( )
 {
-	return mStateMachine.isCurrentState( "stop" );
+	return mStateMachine.isCurrentState( "drillStop" );
 }
 void cQuarryPlus::HitGem( const int gemId )
 {

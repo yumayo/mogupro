@@ -1,26 +1,27 @@
 #include <Utility/cStateMachineBehaviour.h>
+#include <boost/none.hpp>
 namespace Utility
 {
-const Utility::hardptr<cStateNode> cStateNode::none;
-cStateNode::cStateAllow::cStateAllow( Utility::softptr<cStateNode> nextNode, std::function<bool( Utility::softptr<cStateNode> )> transitionInfo )
+cStateAllow::cStateAllow( Utility::softptr<cStateNode> nextNode, std::function<bool( Utility::softptr<cStateNode> )> transitionInfo, std::function<boost::any( Utility::softptr<cStateNode> )> message )
 	: nextNode( nextNode )
 	, transitionInfo( transitionInfo )
+	, message( message )
 {
 }
-Utility::softptr<cStateNode> cStateNode::update( )
+Utility::softptr<cStateAllow> cStateNode::update( float delta )
 {
 	for ( auto s : nextNodes )
 	{
 		if ( s->transitionInfo( shared_from_this( ) ) )
 		{
-			return s->nextNode;
+			return s;
 		}
 	}
-	return cStateNode::none;
+	return nullptr;
 }
-void cStateNode::join( Utility::hardptr<cStateNode> nextNode, std::function<bool( Utility::softptr<cStateNode> )> transitionInfo )
+void cStateNode::join( Utility::hardptr<cStateNode> nextNode, std::function<bool( Utility::softptr<cStateNode> )> transitionInfo, std::function<boost::any( Utility::softptr<cStateNode> )> message )
 {
-	nextNodes.insert( std::make_shared<cStateAllow>( nextNode, transitionInfo ) );
+	nextNodes.emplace_back( std::make_shared<cStateAllow>( nextNode, transitionInfo, message ) );
 }
 Utility::softptr<cStateNode> cStateMachineBehaviour::generate( std::string const& name )
 {
@@ -32,20 +33,28 @@ void cStateMachineBehaviour::setEntryNode( Utility::softptr<cStateNode> entry )
 {
 	this->entry = entry;
 	this->current = entry;
+	if ( current->onStateIn ) current->onStateIn( boost::none );
 }
-void cStateMachineBehaviour::update( )
+void cStateMachineBehaviour::update( float delta )
 {
+	current->time += delta;
 	if( current->onStateStay ) current->onStateStay( current );
-	auto const node = current->update( );
-	if ( node != cStateNode::none )
+	auto const allow = current->update( delta );
+	if ( allow )
 	{
-		if ( current->onStateOut ) current->onStateOut( node );
-		current = node;
-		if ( current->onStateIn ) current->onStateIn( node );
+		if ( current->onStateOut ) current->onStateOut( );
+		current->time = 0.0F;
+		auto prevNode = current;
+		current = allow->nextNode;
+		if ( current->onStateIn ) current->onStateIn( allow->message ? allow->message( prevNode ) : boost::none );
 	}
 }
 bool cStateMachineBehaviour::isCurrentState( std::string const& stateName ) const
 {
 	return current->name == stateName;
+}
+std::string const & cStateMachineBehaviour::getCurrentStateName( ) const
+{
+	return current->name;
 }
 }

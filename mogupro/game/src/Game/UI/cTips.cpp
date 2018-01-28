@@ -53,11 +53,11 @@ bool cTips::init( cinder::vec2 baseContentSize, Player::Team team )
 
 	using namespace Utility;
 
-	auto idle = mStateMachine.generate( );
-	auto nearBlock = mStateMachine.generate( );
-	auto nearGem = mStateMachine.generate( );
-	auto transGem = mStateMachine.generate( );
-	auto nice = mStateMachine.generate( );
+	STATE_GENERATE( mStateMachine, idle );
+	STATE_GENERATE( mStateMachine, nearBlock );
+	STATE_GENERATE( mStateMachine, nearGem );
+	STATE_GENERATE( mStateMachine, transGem );
+	STATE_GENERATE( mStateMachine, nice );
 
 	idle->onStateIn = [ this ] ( auto n )
 	{
@@ -112,14 +112,14 @@ bool cTips::init( cinder::vec2 baseContentSize, Player::Team team )
 		return !cPlayerManager::getInstance( )->getActivePlayer( )->getgems.empty( );
 	} );
 
-	transGem->onStateIn = [ this ] ( auto n )
+	transGem->onStateIn = [ this ] ( auto m )
 	{
 		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"•óÎ‚ð‘å–C‚ÉŽ‚Á‚Ä‹A‚ë‚¤" );
 		auto hintTargetCannon = this->add_child( cTargetCannon::create( ) );
 		hintTargetCannon->set_name( "hintTargetCannon" );
 		hintTargetCannon->set_schedule_update( );
 	};
-	transGem->onStateOut = [ this ] ( auto n )
+	transGem->onStateOut = [ this ] ( )
 	{
 		this->remove_child_by_name( "hintTargetCannon" );
 	};
@@ -128,12 +128,12 @@ bool cTips::init( cinder::vec2 baseContentSize, Player::Team team )
 		return cPlayerManager::getInstance( )->getActivePlayer( )->getgems.empty( );
 	} );
 
-	nice->onStateIn = [ this ] ( auto n )
+	nice->onStateIn = [ this ] ( auto m )
 	{
 		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"‚æ‚­‚â‚Á‚½" );
 		message.dynamicptr<Node::Renderer::label>( )->run_action( Node::Action::sequence::create( Node::Action::delay::create( 1.5F ), Node::Action::call_func::create( [ this ] { message.dynamicptr<Node::Renderer::label>( )->set_name( "animationFinished" ); } ) ) );
 	};
-	nice->onStateOut = [ this ] ( auto n )
+	nice->onStateOut = [ this ] ( )
 	{
 		message.dynamicptr<Node::Renderer::label>( )->set_name( u8"" );
 	};
@@ -148,7 +148,7 @@ bool cTips::init( cinder::vec2 baseContentSize, Player::Team team )
 }
 void cTips::update( float delta )
 {
-	mStateMachine.update( );
+	mStateMachine.update( delta );
 }
 }
 }
