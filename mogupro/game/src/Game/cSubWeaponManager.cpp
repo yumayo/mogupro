@@ -20,13 +20,13 @@ void cSubWeaponManager::setup()
 }
 void cSubWeaponManager::draw()
 {
-	for (auto itr : usesubweapons) {
+	for (auto& itr : usesubweapons) {
 		itr->draw();
 	}
-	for (auto itr : subweapons) {
+	for (auto& itr : subweapons) {
 		itr.second->draw();
 	}
-	for (auto itr : weaponcapsels) {
+	for (auto& itr : weaponcapsels) {
 		itr.second->draw();
 	}
 }
@@ -108,7 +108,7 @@ void cSubWeaponManager::createWeaponCapsel(const ci::vec3 pos, const ci::vec3 sp
 }
 void cSubWeaponManager::deleteWeapons()
 {
-	for (auto itr = usesubweapons.begin();
+	for (auto& itr = usesubweapons.begin();
 		itr != usesubweapons.end();) {
 		if ((*itr)->deleteThis()) {
 			itr = usesubweapons.erase(itr);
@@ -118,7 +118,7 @@ void cSubWeaponManager::deleteWeapons()
 		}
 	}
 
-	for (auto itr = subweapons.begin();
+	for (auto& itr = subweapons.begin();
 		itr != subweapons.end();) {
 		if (itr->second->deleteThis()) {
 			itr = subweapons.erase(itr);
@@ -127,7 +127,7 @@ void cSubWeaponManager::deleteWeapons()
 			itr++;
 		}
 	}
-	for (auto itr = weaponcapsels.begin();
+	for (auto& itr = weaponcapsels.begin();
 		itr != weaponcapsels.end();) {
 		if (itr->second->deleteThis()) {
 			itr = weaponcapsels.erase(itr);

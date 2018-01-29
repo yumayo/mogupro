@@ -68,7 +68,7 @@ void cStrategyManager::setup()
 void cStrategyManager::draw()
 {
 
-	for (auto it :cannons) {
+	for (auto& it :cannons) {
 		it->draw();
 	}
 

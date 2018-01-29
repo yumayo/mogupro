@@ -34,18 +34,18 @@ void cCapsuleManager::setup()
 }
 void cCapsuleManager::draw()
 {
-	for (auto itr : mCapsules) {
-		if (glm::distance2(Game::cPlayerManager::getInstance()->getActivePlayer()->getPos(), itr.second->getPos()) < 30.f) {
-			if (itr.second->getCanAction()) {
+	for (auto& itr : mCapsules) {
+		if (itr.second->getCanAction()) {
+			itr.second->draw();
+			continue;
+		}
+		else
+		{
+			if (itr.second->getIsget()) {
 				itr.second->draw();
+				continue;
 			}
-			else
-			{
-				if (itr.second->getIsget()) {
-					itr.second->draw();
-				}
-			}
-		}	
+		}
 	}
 }
 void cCapsuleManager::update(const float & deltatime)
@@ -70,7 +70,7 @@ void cCapsuleManager::update(const float & deltatime)
 }
 void cCapsuleManager::deleteCapsule()
 {
-	for (auto itr = mCapsules.begin();
+	for (auto& itr = mCapsules.begin();
 		itr != mCapsules.end();) {
 		if (itr->second->deleteThis()) {
 			itr = mCapsules.erase(itr);
