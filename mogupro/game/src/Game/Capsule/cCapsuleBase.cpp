@@ -40,6 +40,16 @@ void cCapsuleBase::setScale(const ci::vec3 scale)
 	mScale = scale;
 }
 
+bool cCapsuleBase::getCanAction()
+{
+	return canAction;
+}
+
+void cCapsuleBase::setCanAction(const bool is)
+{
+	canAction = is;
+}
+
 ci::AxisAlignedBox cCapsuleBase::getAABB()
 {
 	return mAABB;

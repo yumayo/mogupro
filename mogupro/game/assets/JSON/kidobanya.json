@@ -7,7 +7,7 @@
       "radius": 0.7,
       "radiusrate": 0.85,
       "color": [ 1, 1, 0 ],
-      "isupdate": true,
+      "isupdate": false,
       "speed": 0.7
     },
     {
@@ -15,7 +15,7 @@
       "radius": 0.3,
       "radiusrate": 0.85,
       "color": [ 1, 1, 1 ],
-      "isupdate": true,
+      "isupdate": false,
       "speed": 0.7
     }
   ],

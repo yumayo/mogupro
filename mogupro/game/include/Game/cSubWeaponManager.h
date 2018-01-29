@@ -10,6 +10,8 @@
 #include<Game/Weapons/UseSubWeapon/cUseSubBase.h>
 #include<Game/Weapons/SubWeapon/SubWeaponType.h>
 #include<Game/Weapons/SubWeapon/cQuarry.h>
+#include<Game/Weapons/SubWeapon/cWeaponCapsule.h>
+#include <Game/Weapons/UseSubWeapon/cUseWeaponCapsel.h>
 namespace Game
 {
 class cSubWeaponManager : public Utility::cSingletonAble<cSubWeaponManager>
@@ -30,11 +32,14 @@ public:
 	void createLightBomb(const ci::vec3 _pos, const ci::vec3 _speed, const ci::vec3 _scale,const int objectid, const int _playerid);
 	void createQuarry(const ci::vec3 _pos, const int _objectid, const int playerid);
 	void createUseSubWeapon(const Game::Weapons::SubWeapon::SubWeaponType type, const int playerid);
+	void createWeaponCapsel(const ci::vec3 pos, const ci::vec3 speed,int playerid,const int objectid, const Game::Weapons::SubWeapon::SubWeaponType type);
 	void deleteWeapons();
 	int debugidcount = 0;
+	int debugcapselcount = 0;
 private:
 	std::map<int, std::shared_ptr<Game::Weapons::SubWeapon::cSubWeaponBase>>subweapons;
-	std::list<std::shared_ptr<Game::Weapons::UseSubWeapon::cUseSubBase>>usesubweapons;
+	std::map<int, std::shared_ptr<Game::Weapons::SubWeapon::cWeaponCapsule>>weaponcapsels;
+	std::list<std::shared_ptr<Game::Weapons::UseSubWeapon::cUseWeaponCapsel>>usesubweapons;
 	float getGain(const int playerid);
 	
 };

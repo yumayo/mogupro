@@ -26,6 +26,9 @@ void cSubWeaponManager::draw()
 	for (auto itr : subweapons) {
 		itr.second->draw();
 	}
+	for (auto itr : weaponcapsels) {
+		itr.second->draw();
+	}
 }
 void cSubWeaponManager::update(const float & deltatime)
 {
@@ -33,6 +36,9 @@ void cSubWeaponManager::update(const float & deltatime)
 		itr->update(deltatime);
 	}
 	for (auto& itr : subweapons) {
+		itr.second->update(deltatime);
+	}
+	for (auto& itr : weaponcapsels) {
 		itr.second->update(deltatime);
 	}
 	deleteWeapons();
@@ -44,6 +50,9 @@ void cSubWeaponManager::updateCollisionAfterUpdate(const float & deltaTime)
 	}
 	for (auto& itr : usesubweapons) {
 		itr->updateCollisionAfterUpdate(deltaTime);
+	}
+	for (auto& itr : weaponcapsels) {
+		itr.second->updateCollisionAfterUpdate(deltaTime);
 	}
 }
 
@@ -74,19 +83,28 @@ void cSubWeaponManager::createQuarry(const ci::vec3 _pos, const int _objectid, c
 
 void cSubWeaponManager::createUseSubWeapon(const Game::Weapons::SubWeapon::SubWeaponType type, const int playerid)
 {
-	switch (type)
-	{
-	case Game::Weapons::SubWeapon::SubWeaponType::LIGHT_BOMB:
-		usesubweapons.push_back(std::make_shared<Game::Weapons::UseSubWeapon::cUseLightBomb>());
-		usesubweapons.back()->setup(playerid);
-		return;
-	case Game::Weapons::SubWeapon::SubWeaponType::QUARRY:
-		usesubweapons.push_back(std::make_shared<Game::Weapons::UseSubWeapon::cUseQuarry>());
-		usesubweapons.back()->setup(playerid);
-		return;
-	default:
-		return;
-	}
+
+	usesubweapons.push_back(std::make_shared<Game::Weapons::UseSubWeapon::cUseWeaponCapsel>());
+	usesubweapons.back()->setup(playerid,type);
+	//switch (type)
+	//{
+	//case Game::Weapons::SubWeapon::SubWeaponType::LIGHT_BOMB:
+	//	usesubweapons.push_back(std::make_shared<Game::Weapons::UseSubWeapon::cUseLightBomb>());
+	//	usesubweapons.back()->setup(playerid);
+	//	return;
+	//case Game::Weapons::SubWeapon::SubWeaponType::QUARRY:
+	//	usesubweapons.push_back(std::make_shared<Game::Weapons::UseSubWeapon::cUseQuarry>());
+	//	usesubweapons.back()->setup(playerid);
+	//	return;
+	//default:
+	//	return;
+	//}
+}
+void cSubWeaponManager::createWeaponCapsel(const ci::vec3 pos, const ci::vec3 speed, int playerid, const int objectid, const Game::Weapons::SubWeapon::SubWeaponType type)
+{
+	weaponcapsels.insert(std::make_pair(objectid, std::make_shared<Game::Weapons::SubWeapon::cWeaponCapsule>(pos, speed, playerid, objectid, type)));
+	weaponcapsels[objectid]->setup();
+	debugcapselcount++;
 }
 void cSubWeaponManager::deleteWeapons()
 {
@@ -104,6 +122,15 @@ void cSubWeaponManager::deleteWeapons()
 		itr != subweapons.end();) {
 		if (itr->second->deleteThis()) {
 			itr = subweapons.erase(itr);
+		}
+		else {
+			itr++;
+		}
+	}
+	for (auto itr = weaponcapsels.begin();
+		itr != weaponcapsels.end();) {
+		if (itr->second->deleteThis()) {
+			itr = weaponcapsels.erase(itr);
 		}
 		else {
 			itr++;

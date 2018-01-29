@@ -22,6 +22,8 @@ public:
 	ci::vec3 getScale();                                                                                       
 	void setPos(const ci::vec3 pos);
 	void setScale(const ci::vec3 scale);
+	bool getCanAction();
+	void setCanAction(const bool is);
 	ci::AxisAlignedBox getAABB();
 	bool getIsget();
 	void setIsget(const bool isget);
@@ -38,6 +40,7 @@ protected:
 	float mLightMaxRadius = 4.f;
 	float mLightRate = 0.2f;
 	float mLightSinAngle = 0.0f;
+	bool canAction = false;
 private:
 
 };
