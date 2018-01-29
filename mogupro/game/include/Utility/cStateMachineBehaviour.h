@@ -30,7 +30,7 @@ public:
 	//! 現在のステートが選択されていたら毎フレーム呼ばれます。
 	std::function<void( Utility::softptr<cStateNode> self )> onStateStay;
 	//! ノードが呼ばれ続ける限り時間が増えていきます。
-	float time;
+	float time = 0.0F;
 	//! ノードが遷移されるような状態であれば遷移先を返します。default: none
 	Utility::softptr<cStateAllow> update( float delta );
 	//! このノードに繋げる矢印を指定します。

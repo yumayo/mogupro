@@ -15,7 +15,7 @@ enum WeaponType
 class cFactory
 {
 public:
-	static std::shared_ptr<cBase> create( WeaponType type, Player::cPlayer const& player )
+	static std::shared_ptr<cBase> create( WeaponType type, Player::cPlayer& player )
 	{
 		switch ( type )
 		{

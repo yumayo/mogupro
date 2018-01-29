@@ -35,4 +35,48 @@ private:
 	int mSeCurrentLoadIndex = 0;
 	int mBgmCurrentLoadIndex = 0;
 };
+struct SeSuppoter
+{
+	class SeNotFound : public std::runtime_error
+	{
+	public:
+		SeNotFound( ) : std::runtime_error( "seファイルが見つかりません。" )
+		{
+		}
+	};
+	Sound::cSE& operator[]( std::string const& underAssetsUnderIMAGEUnderPath ) const
+	{
+		try
+		{
+			return cSoundManager::getInstance( )->findSe( underAssetsUnderIMAGEUnderPath );
+		}
+		catch ( ... )
+		{
+			throw SeNotFound( );
+		}
+	}
+};
+extern SeSuppoter const SE;
+struct BgmSuppoter
+{
+	class BgmNotFound : public std::runtime_error
+	{
+	public:
+		BgmNotFound( ) : std::runtime_error( "bgmファイルが見つかりません。" )
+		{
+		}
+	};
+	Sound::cBGM& operator[]( std::string const& underAssetsUnderIMAGEUnderPath ) const
+	{
+		try
+		{
+			return cSoundManager::getInstance( )->findBgm( underAssetsUnderIMAGEUnderPath );
+		}
+		catch ( ... )
+		{
+			throw BgmNotFound( );
+		}
+	}
+};
+extern BgmSuppoter const BGM;
 }

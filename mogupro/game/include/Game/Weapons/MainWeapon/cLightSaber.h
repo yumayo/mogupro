@@ -10,7 +10,7 @@ namespace MainWeapon
 class cLightSaber : public cBase
 {
 public:
-	cLightSaber( Player::cPlayer const& player );
+	cLightSaber( Player::cPlayer& player );
 public: //! override functions
 	void setup( ) override;
 	void update( const float& delta_time ) override;
@@ -19,6 +19,7 @@ public: //! override functions
 private:
 	Utility::cStateMachineBehaviour stateMachine;
 	std::function<void( )> drawFunc;
+	cinder::vec3 pos;
 };
 }
 }

@@ -37,16 +37,23 @@ void cStateMachineBehaviour::setEntryNode( Utility::softptr<cStateNode> entry )
 }
 void cStateMachineBehaviour::update( float delta )
 {
-	current->time += delta;
-	if( current->onStateStay ) current->onStateStay( current );
-	auto const allow = current->update( delta );
-	if ( allow )
+	for ( ;;)
 	{
-		if ( current->onStateOut ) current->onStateOut( );
-		current->time = 0.0F;
-		auto prevNode = current;
-		current = allow->nextNode;
-		if ( current->onStateIn ) current->onStateIn( allow->message ? allow->message( prevNode ) : boost::none );
+		current->time += delta;
+		if ( current->onStateStay ) current->onStateStay( current );
+		auto const allow = current->update( delta );
+		if ( allow )
+		{
+			if ( current->onStateOut ) current->onStateOut( );
+			current->time = 0.0F;
+			auto prevNode = current;
+			current = allow->nextNode;
+			if ( current->onStateIn ) current->onStateIn( allow->message ? allow->message( prevNode ) : boost::none );
+		}
+		else
+		{
+			break;
+		}
 	}
 }
 bool cStateMachineBehaviour::isCurrentState( std::string const& stateName ) const
