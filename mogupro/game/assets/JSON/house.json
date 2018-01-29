@@ -7,7 +7,7 @@
       "radius": 0.5,
       "radiusrate": 0.85,
       "color": [ 1, 1, 0 ],
-      "isupdate": false,
+      "isupdate": true,
       "speed": 0.7
     },
     {
@@ -15,7 +15,7 @@
       "radius": 0.5,
       "radiusrate": 0.85,
       "color": [ 1, 1, 0 ],
-      "isupdate": false,
+      "isupdate": true,
       "speed": 0.7
     },
     {
@@ -23,7 +23,7 @@
       "radius": 0.5,
       "radiusrate": 0.85,
       "color": [ 1, 1, 0 ],
-      "isupdate": false,
+      "isupdate": true,
       "speed": 0.7
     },
     {
@@ -31,7 +31,7 @@
       "radius": 0.5,
       "radiusrate": 0.85,
       "color": [ 1, 1, 0 ],
-      "isupdate": false,
+      "isupdate": true,
       "speed": 0.7
     }
   ],

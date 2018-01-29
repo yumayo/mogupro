@@ -152,6 +152,8 @@ namespace Weapons
 			if (mIsContraction)return;
 			if (mIsHitObject) {
 				mIsContraction = true;
+				//Resource::cSoundManager::getInstance()->findSe("SubWeapon/frontexprotion.wav").setGain(0.4f);
+				//Resource::cSoundManager::getInstance()->findSe("SubWeapon/frontexprotion.wav").play();
 				Sound::StereophonicManager::getInstance()->add("frontexprotion2" + std::to_string(mObjectId),ci::app::getAssetPath("SE/SubWeapon/frontexprotion2.wav").string(), mPos);
 				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
 					.scale(1.3f).vanishBeginTime(0.f).vanishTime(24.f/60.f).vanishTimeRange(0.0f).
@@ -172,7 +174,7 @@ namespace Weapons
 			light = cLightManager::getInstance()->addPointLight(mPos, ci::vec3(0, 1, 0), 1.f);
 			mExprosionLength = 8.f*mScale.x;
 			mAroundLightLength = (mExprosionLength / 2.f) - 0.5f;
-		
+			Sound::StereophonicManager::getInstance()->add("lightbombthrow" + std::to_string(mObjectId),ci::app::getAssetPath("SE/SubWeapon/lightbombthrow.wav").string(), mPos);
 		
 		}
 		void cLightBomb::update(const float & delta_time)

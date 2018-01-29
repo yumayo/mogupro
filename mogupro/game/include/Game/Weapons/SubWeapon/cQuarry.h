@@ -34,7 +34,6 @@ private://–{‘ÌŒn
 	void drawMachine();
 	void setScale();
 	Collision::cAABBCollider mMachineAABB;
-	void quarryBreak();
 	///machine‚Ìpos‚ÍmPos
 private://‘g‚Ý—§‚Ä‚é
 	void updateCreate(const float& deltatime);
