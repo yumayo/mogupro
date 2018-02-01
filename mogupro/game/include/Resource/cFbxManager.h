@@ -93,6 +93,8 @@ public:
 
     void createAnimation( Anim &anim );
 
+    std::vector<ci::TriMesh> getModelTriMesh();
+
 private:
 
     void drawFbx( FbxNode *node, FbxTime &time );
@@ -106,8 +108,12 @@ private:
                                    Mesh& src_mesh,
                                    FbxAMatrix &parent_matrix,
                                    FbxTime& time );
+    void triMeshConstruction( FbxNode *node, FbxTime &time ,std::vector<ci::TriMesh>& mesh_constr);
 
     void setAnimation( const int index, Anim &anim );
+
+
+private:
 
     FbxScene* scene;
     FbxNode* root_node;
@@ -133,16 +139,19 @@ public:
     void create( std::string const& name, const std::string &fullpath );
     void createAnimation( const std::string &name,
                           Anim &anim );
-	void loadOne( );
-	bool isFinished( );
-	int maxNum( );
-	int currentNum( );
+    void loadOne();
+    bool isFinished();
+    int maxNum();
+    int currentNum();
+
+    std::vector<ci::TriMesh> getTriMesh( const std::string& name );
+
 private:
 
     // FBXèÓïÒ
     FbxManager* manager;
     std::unordered_map<std::string, std::shared_ptr<cFbx>> models;
-	std::vector<std::string> mFilePaths;
-	int mCurrentLoadIndex = 0;
+    std::vector<std::string> mFilePaths;
+    int mCurrentLoadIndex = 0;
 };
 }

@@ -142,6 +142,7 @@ void cFbx::draw()
 {
     draw( 0.0 );
 }
+
 void cFbx::draw( const double & animation_time )
 {
     gl::pushModelView();
@@ -155,6 +156,7 @@ void cFbx::draw( const double & animation_time )
 
     gl::popModelView();
 }
+
 void cFbx::createAnimation( Anim & anim )
 {
     anim.animation_stack_count = 0;
@@ -167,6 +169,7 @@ void cFbx::createAnimation( Anim & anim )
     console() << "Pose:" << scene->GetPoseCount() << std::endl;
 
 }
+
 void cFbx::drawFbx( FbxNode * node, FbxTime & time )
 {
     // TIPS:見えているノードのみ描画(物理演算用の描画をスキップ)
@@ -217,6 +220,7 @@ void cFbx::drawFbx( FbxNode * node, FbxTime & time )
         drawFbx( child, time );
     }
 }
+
 Mesh cFbx::createMesh( FbxMesh * mesh )
 {
     Mesh mesh_info;
@@ -312,6 +316,7 @@ Mesh cFbx::createMesh( FbxMesh * mesh )
 
     return mesh_info;
 }
+
 Skin cFbx::createSkin( FbxMesh * mesh )
 {
     Skin skin_info;
@@ -480,6 +485,19 @@ ci::TriMesh cFbx::getDeformedTriMesh( FbxMesh * mesh, const Mesh & src_mesh, Fbx
 
     return dst_mesh;
 }
+
+std::vector<ci::TriMesh> cFbx::getModelTriMesh()
+{
+    std::vector<ci::TriMesh> trimesh;
+    FbxTime time;
+    time.SetSecondDouble( 0 );
+
+    // モデルのTriMeshをすべて取得
+    triMeshConstruction( root_node, time, trimesh );
+
+    return trimesh;
+}
+
 const ci::TriMesh & cFbx::getTriMesh( FbxMesh * mesh, Mesh & src_mesh, FbxAMatrix & parent_matrix, FbxTime & time )
 {
     if ( src_mesh.skin.has_skins )
@@ -490,6 +508,51 @@ const ci::TriMesh & cFbx::getTriMesh( FbxMesh * mesh, Mesh & src_mesh, FbxAMatri
     else
     {
         return src_mesh.tri_mesh;
+    }
+}
+
+void cFbx::triMeshConstruction( FbxNode * node,
+                                FbxTime & time,
+                                std::vector<ci::TriMesh>& mesh_constr )
+{
+    // TIPS:見えているノードのみ描画(物理演算用の描画をスキップ)
+    if ( node->GetVisibility() )
+    {
+        // 行列
+        FbxAMatrix matrix;// = node->EvaluateGlobalTransform( time );
+        matrix.SetIdentity();
+
+        // １つのノードに複数の属性が関連づけられる
+        int attr_count = node->GetNodeAttributeCount();
+        for ( int i = 0; i < attr_count; ++i )
+        {
+            FbxNodeAttribute* attr = node->GetNodeAttributeByIndex( i );
+            switch ( attr->GetAttributeType() )
+            {
+                case FbxNodeAttribute::eMesh:
+                {
+                    // 描画に使うメッシュとマテリアルを特定
+                    FbxMesh* mesh = static_cast<FbxMesh*>( attr );
+                    auto& mesh_info = meshes.at( mesh->GetName() );
+
+                    // スケルタルアニメーションを適用
+                    const auto& tri_mesh = getTriMesh( mesh, mesh_info, matrix, time );
+                    mesh_constr.push_back( tri_mesh );
+                }
+                break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    // 子供のノードを再帰で描画
+    int childCount = node->GetChildCount();
+    for ( int i = 0; i < childCount; ++i )
+    {
+        FbxNode* child = node->GetChild( i );
+        triMeshConstruction( node, time, mesh_constr );
     }
 }
 
@@ -613,5 +676,13 @@ int cFbxManager::maxNum()
 int cFbxManager::currentNum()
 {
     return mCurrentLoadIndex;
+}
+std::vector<ci::TriMesh> cFbxManager::getTriMesh( const std::string & name )
+{
+    if ( models.find( name ) == models.end() )
+    {
+        assert(!"Not find name ,getTriMesh");
+    }
+    return models[name]->getModelTriMesh();
 }
 }
