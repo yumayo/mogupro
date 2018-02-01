@@ -45,10 +45,10 @@ void cStateMachineBehaviour::update( float delta )
 		if ( allow )
 		{
 			if ( current->onStateOut ) current->onStateOut( );
-			current->time = 0.0F;
 			auto prevNode = current;
 			current = allow->nextNode;
 			if ( current->onStateIn ) current->onStateIn( allow->message ? allow->message( prevNode ) : boost::none );
+			prevNode->time = 0.0F;
 		}
 		else
 		{

@@ -553,7 +553,7 @@ bool node::is_running_action( ) const
 cinder::mat3 node::get_world_matrix( ) const
 {
     std::vector<mat3> mats;
-    auto p = _parent;
+	auto p = shared_from_this( );
     while ( p )
     {
         auto m = translate( mat3( ), p->get_position( ) );
@@ -561,8 +561,8 @@ cinder::mat3 node::get_world_matrix( ) const
         m = rotate( m, p->get_rotation( ) );
         m = translate( m, -p->get_content_size( ) * p->get_anchor_point( ) );
         m = translate( m, p->get_content_size( ) * p->get_pivot( ) );
-        mats.emplace_back( std::move( m ) );
-        p = p->_parent;
+        mats.emplace_back( m );
+        p = p->_parent.lock( );
     }
     mat3 result;
     for ( auto itr = mats.rbegin( ); itr != mats.rend( ); ++itr )
@@ -574,16 +574,11 @@ cinder::mat3 node::get_world_matrix( ) const
 cinder::mat4 node::get_world_matrix_3d( ) const
 {
     std::vector<mat4> mats;
-    auto p = _parent;
+	auto p = shared_from_this( );
     while ( p )
     {
-        auto m = translate( mat4( ), p->get_position_3d( ) );
-        m = scale( m, p->get_scale_3d( ) );
-        m = rotate( m, get_rotation( ), get_axis( ) );
-        m = translate( m, -p->get_content_size_3d( ) * p->get_anchor_point_3d( ) );
-        m = translate( m, p->get_content_size_3d( ) * p->get_pivot_3d( ) );
-        mats.emplace_back( std::move( m ) );
-        p = p->_parent;
+        mats.emplace_back( p->get_local_matrix_3d( ) );
+        p = p->_parent.lock( );
     }
     mat4 result;
     for ( auto itr = mats.rbegin( ); itr != mats.rend( ); ++itr )
@@ -591,5 +586,39 @@ cinder::mat4 node::get_world_matrix_3d( ) const
         result *= *itr;
     }
     return result;
+}
+cinder::mat4 node::get_local_matrix_3d( ) const
+{
+	auto p = shared_from_this( );
+	auto m = glm::translate( mat4( ), p->get_position_3d( ) );
+	m = glm::scale( m, p->get_scale_3d( ) );
+	m = glm::rotate( m, p->get_rotation( ), p->get_axis( ) );
+	m = glm::translate( m, -p->get_content_size_3d( ) * p->get_anchor_point_3d( ) );
+	m = glm::translate( m, p->get_content_size_3d( ) * p->get_pivot_3d( ) );
+	return m;
+}
+void node::set_matrix_3d( cinder::mat4 const & value )
+{
+	auto q = glm::toQuat( value );
+
+	float angle = glm::angle( q );
+
+	vec3 axis = glm::axis( q );
+
+	// https://www21.atwiki.jp/opengl/pages/138.html
+	vec3 scale;
+	scale.x = glm::sqrt( value[0][0] * value[0][0] + value[1][0] * value[1][0] + value[2][0] * value[2][0] );
+	scale.y = glm::sqrt( value[0][1] * value[0][1] + value[1][1] * value[1][1] + value[2][1] * value[2][1] );
+	scale.z = glm::sqrt( value[0][2] * value[0][2] + value[1][2] * value[1][2] + value[2][2] * value[2][2] );
+
+	vec3 position;
+	position.x = value[3][0];
+	position.y = value[3][1];
+	position.z = value[3][2];
+
+	set_axis( axis );
+	set_rotation( angle );
+	set_scale_3d( scale );
+	set_position_3d( position );
 }
 }
