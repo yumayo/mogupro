@@ -6,6 +6,7 @@
 #include <Game/cFieldManager.h>
 #include <Game/cSubWeaponManager.h>
 #include <Game/cGameManager.h>
+#include <Game/Weapons/MainWeapon/cBase.h>
 using namespace cinder;
 using namespace Network;
 using namespace Network::Packet;
@@ -69,21 +70,15 @@ void cClientAdapter::recvAllPlayers( )
 		// TODO:プレイヤーをリスポーンさせる。
 		packet->playerId;
 	}
-
-	for ( auto& player : cPlayerManager::getInstance( )->getPlayers( ) )
-	{
-		player->getMainWeapon( )->pushCall( false );
-		player->getMainWeapon( )->pullCall( false );
-	}
 	while ( auto packet = m->EvePlayerAttack.get( ) )
 	{
 		switch ( packet->call )
 		{
 		case 1:
-			cPlayerManager::getInstance( )->getPlayer( packet->playerId )->getMainWeapon( )->pushCall( true );
+			cPlayerManager::getInstance( )->getPlayer( packet->playerId )->getMainWeapon( )->pushCall( );
 			break;
 		case 2:
-			cPlayerManager::getInstance( )->getPlayer( packet->playerId )->getMainWeapon( )->pullCall( true );
+			cPlayerManager::getInstance( )->getPlayer( packet->playerId )->getMainWeapon( )->pullCall( );
 			break;
 		default:
 			break;
