@@ -40,14 +40,14 @@ void cAnimation::create( const std::string & name,
 
     mAnims.insert( std::make_pair( name, std::move( anim ) ) );
 }
-void cAnimation::update()
+void cAnimation::update( const float& delta_time )
 {
     if ( mAnims.find( mActiveName ) == mAnims.end() )
         return;
 
     auto anim = getActiveAnimation();
     // アニメーション経過時間を進める
-    anim->animation_time += mAnimationIncrementTime;
+    anim->animation_time += mAnimationIncrementTime * (delta_time * 60);
 
     if ( isCrrentAnimationEnd() )
     {

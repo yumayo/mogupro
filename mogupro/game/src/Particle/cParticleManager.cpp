@@ -7,6 +7,8 @@
 #include <cinder/ip/Fill.h>
 #include <cinder/ip/Blend.h>
 #include <Particle/Easing/cEase.h>
+#include <Math/float4x4.h>
+#include <Math/Quat.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -25,6 +27,8 @@ std::string getTextureNameFromTextureType( const ParticleTextureType& type )
             return "spark";
         case ParticleTextureType::SPARK_PURE_WHITE:
             return "spark_white";
+        case ParticleTextureType::SMOKE:
+            return "smoke";
     }
     return "";
 }
@@ -434,7 +438,7 @@ void cParticleHolder::update( const float& delta_time )
     for ( auto& it : mParticles )
     {
         if ( mParam.mConvergePoint != NULL )
-            if ( it->mPosition != vec3(0) )
+            if ( it->mPosition != vec3( 0 ) )
                 Easing->endMove( it->mPosition,
                                  *mParam.mConvergePoint - mParam.mCurrentPosition );
     }
@@ -789,16 +793,31 @@ void cParticleManager::create( ci::vec3 & position,
     //mParticleHolders.emplace_back( std::make_shared<cParticleHolder>( position, type, texture_type, scale, time, count, speed, lighting, color ) );
 }
 
+
+
 void cParticleManager::builbordUpdate()
 {
     vec3 up_vec;
     vec3 right_vec;
+
     auto camera = CameraManager::cCameraManager::getInstance()->getCamera();
     camera.getBillboardVectors( &right_vec, &up_vec );
 
-    vec3 toword_vec = glm::cross( right_vec, up_vec );
-    toword_vec = glm::normalize( toword_vec );
+    vec3 toward_vec = glm::cross( right_vec, up_vec );
+    toward_vec = glm::normalize( toward_vec );
 
-    mBuilbordRotate = glm::quat( vec3( 0, 0, 1 ), toword_vec );
+    up_vec = glm::normalize( glm::cross( toward_vec, right_vec ) );
+
+    ::math::float3 x = { right_vec.x, right_vec.y, right_vec.z };
+    ::math::float3 y = { up_vec.x, up_vec.y, up_vec.z };
+    ::math::float3 z = { toward_vec.x, toward_vec.y, toward_vec.z };
+
+    auto mathQuat = ::math::Quat::LookAt( ::math::float3( 0, 0, 1 ),
+                                          z,
+                                          ::math::float3( 0, 1, 0 ),
+                                          y * -1 );
+
+    auto quat = ci::quat( mathQuat.w, mathQuat.x, mathQuat.y, mathQuat.z );
+    mBuilbordRotate = quat;
 }
 }
