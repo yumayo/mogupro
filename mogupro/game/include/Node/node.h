@@ -258,7 +258,9 @@ public:
     void remove_action_by_name( std::string const& name );
     bool is_running_action( ) const;
 public:
-    cinder::mat3 get_world_matrix( )const;
+    cinder::mat3 get_world_matrix( ) const;
     cinder::mat4 get_world_matrix_3d( )const;
+	cinder::mat4 get_local_matrix_3d( ) const;
+	void set_matrix_3d( cinder::mat4 const& value );
 };
 }
