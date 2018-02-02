@@ -119,6 +119,7 @@ namespace Scene
 
 			for(int i = 0; i < 50;++i)
 			stars.push_back(Star());
+			wantWatching = false;
 		}
 
 		void cMatching::registerFunc()
@@ -169,6 +170,7 @@ namespace Scene
 				mCanSend = false;
 				mWaitClassState = ClassState::CLIENT;
 				mSelectTag = 0;
+				wantWatching = true;
 			});
 			mRoot->get_child_by_tag(mSelectTag)->run_action(
 				repeat_forever::create(
@@ -424,14 +426,17 @@ namespace Scene
 					mTeamNum = resWantTeamIn->mTeamNum;
 				Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum = mTeamNum;
 				mCanSend = true;
-				if (resWantTeamIn->mTeamNum == 0)
-					drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * teamCount[0]),
-						ci::vec2(-200, 200 - 200 * teamCount[0]), "You"));
-				
-				else if(resWantTeamIn->mTeamNum == 1)
-					drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * teamCount[1]),
-						ci::vec2(200, 200 - 200 * teamCount[1]), "You"));
-				teamCount[mTeamNum]++;
+				if (wantWatching == false)
+				{
+					if (resWantTeamIn->mTeamNum == 0)
+						drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * teamCount[0]),
+							ci::vec2(-200, 200 - 200 * teamCount[0]), "You"));
+
+					else if (resWantTeamIn->mTeamNum == 1)
+						drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * teamCount[1]),
+							ci::vec2(200, 200 - 200 * teamCount[1]), "You"));
+					teamCount[mTeamNum]++;
+				}
 			}
 			//TODO : ŽQ‰Á‚µ‚½ê‡‚ÆTeam‚ª•ÏX‚³‚ê‚½ê‡‚Í•ª‚¯‚é‚×‚«
 			int count = 0;
@@ -439,19 +444,19 @@ namespace Scene
 			{
 				cMatchingMemberManager::getInstance()->addPlayerDatas(
 					eveTeamMember->mNameStr, eveTeamMember->mTeamNum, eveTeamMember->mPlayerID, cNetworkHandle("", 0));
-				if (eveTeamMember->mTeamNum == 0)
-					drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * teamCount[0]),
-						ci::vec2(-200, 200 - 200 * teamCount[0]), eveTeamMember->mNameStr));
-				else if (eveTeamMember->mTeamNum == 1)
-					drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * teamCount[1]),
-						ci::vec2(200, 200 - 200 * teamCount[1]), eveTeamMember->mNameStr));
-				teamCount[eveTeamMember->mTeamNum]++;
-				Log::cLogManager::getInstance()->writeLog("TeamNum", "TeamNum0 : " + std::to_string(teamCount[0]));
-				Log::cLogManager::getInstance()->writeLog("TeamNum", "TeamNum1 : " + std::to_string(teamCount[1]));
-				++ count;
+				
+				if (eveTeamMember->mPlayerID != 3 && eveTeamMember->mPlayerID != 7)
+				{
+					if (eveTeamMember->mTeamNum == 0)
+						drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 200 - 200 * teamCount[0]),
+							ci::vec2(-200, 200 - 200 * teamCount[0]), eveTeamMember->mNameStr));
+					else if (eveTeamMember->mTeamNum == 1)
+						drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 200 - 200 * teamCount[1]),
+							ci::vec2(200, 200 - 200 * teamCount[1]), eveTeamMember->mNameStr));
+					teamCount[eveTeamMember->mTeamNum]++;
+					++count;
+				}	
 			}
-			
-			Log::cLogManager::getInstance()->writeLog("Matching", "Matching : " + std::to_string(count));
 		}
 
 		void cMatching::addInRoomUI()

@@ -92,6 +92,7 @@ private:
 	bool sceneChange;
 
 	std::vector<Star> stars;
+	bool wantWatching;
 };
 }
 }
