@@ -19,6 +19,17 @@ public:
 	hardptr<Node::node> mRoot;
 };
 
+class Star
+{
+public:
+	Star();
+	void update(float deltaTime);
+	void draw();
+	hardptr<Node::node> mRoot;
+	float time;
+	float value;
+};
+
 namespace Scene
 {
 namespace Member
@@ -79,6 +90,8 @@ private:
 	Utility::TriMeshAnimation mTrimeshAnimation;
 	ci::gl::FboRef mTrimeshAnimationFbo;
 	bool sceneChange;
+
+	std::vector<Star> stars;
 };
 }
 }

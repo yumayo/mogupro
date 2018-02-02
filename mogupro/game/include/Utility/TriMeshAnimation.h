@@ -11,7 +11,7 @@ namespace Utility
 		//cutSize -> ï™äÑêî
 		void make(ci::vec2 windowSize, ci::vec2 cutSize);
 		
-		void update();
+		void update(float deltaTime);
 
 		void draw();
 
@@ -24,6 +24,8 @@ namespace Utility
 		std::vector<ci::vec2> texCoords;
 		std::vector<uint32_t> indices;
 		std::vector<ci::vec3> vectors;
+		float gravityValue = 0.0f;
+		float gravityTime = 0.0f;
 		std::vector<ci::vec2> rotate;
 		int indexCount;
 		ci::vec2 windowSize;

@@ -13,6 +13,7 @@
 #include <Resource/cJsonManager.h>
 #include <Resource/cImageManager.h>
 #include <Log/Log.h>
+#include <cinder/Rand.h>
 
 using namespace Network;
 using namespace Network::Packet::Event;
@@ -46,10 +47,46 @@ DrillUI::DrillUI(ci::vec2 pos, ci::vec2 moveVec, std::string name)
 
 void DrillUI::update(float deltaTime)
 {
-	mRoot->entry_update(0.1f);
+	mRoot->entry_update(deltaTime);
 }
 
 void DrillUI::draw()
+{
+	mRoot->entry_render(cinder::mat4());
+}
+
+Star::Star()
+{
+	time = ci::randFloat(0.0f, 1.0f);
+	value = ci::randFloat(1.4f,-1.4f);
+
+	using namespace Node;
+	using namespace Node::Action;
+	mRoot = Node::node::create();
+	mRoot->set_schedule_update();
+	mRoot->set_position(ci::vec2(ci::randFloat(-800,800), ci::randFloat(-450,450)));
+
+	auto star = Node::Renderer::sprite::create(Resource::IMAGE["matching/star.png"]);
+	star->set_schedule_update();
+	star->set_tag(0);
+	star->set_position(ci::vec2(0, 0));
+	mRoot->add_child(star);
+
+	mRoot->get_child_by_tag(0)->run_action(
+		repeat_forever::create(
+			sequence::create(
+				ease<ci::EaseInOutCirc>::create(scale_by::create(time, ci::vec2(-value))),
+				ease<ci::EaseInOutCirc>::create(scale_by::create(time, ci::vec2(value)))
+			)
+		)
+	);
+
+}
+void Star::update(float deltaTime)
+{
+	mRoot->entry_update(deltaTime);
+}
+void Star::draw()
 {
 	mRoot->entry_render(cinder::mat4());
 }
@@ -79,6 +116,9 @@ namespace Scene
 			teamCount[1] = 0;
 			Log::cLogManager::getInstance()->add("Matching");
 			Log::cLogManager::getInstance()->add("TeamNum");
+
+			for(int i = 0; i < 50;++i)
+			stars.push_back(Star());
 		}
 
 		void cMatching::registerFunc()
@@ -152,13 +192,13 @@ namespace Scene
 			mMemberRoot->set_scale(ci::vec2(1, 1));
 			mMemberRoot->set_schedule_update();
 			{
-				auto lookPlate = Node::Renderer::sprite::create(Resource::IMAGE["matching/westPlate.png"]);
+				auto lookPlate = Node::Renderer::sprite::create(Resource::IMAGE["matching/eastPlate.png"]);
 				lookPlate->set_position(ci::vec2(-350, 285));
 				mMemberRoot->add_child(lookPlate);
 
 				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 50);
-				f->set_color(ci::ColorA(0, 0, 0));
-				f->set_text(u8"“Œ ŒR");
+				f->set_color(ci::ColorA(1, 0, 0));
+				f->set_text(u8"ÔŒR");
 				f->set_scale(glm::vec2(1, -1));
 				lookPlate->add_child(f);
 			}
@@ -168,8 +208,8 @@ namespace Scene
 				mMemberRoot->add_child(plate);
 
 				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 50);
-				f->set_color(ci::ColorA(0, 0, 0));
-				f->set_text(u8"¼ ŒR");
+				f->set_color(ci::ColorA(0, 0, 1));
+				f->set_text(u8"ÂŒR");
 				f->set_scale(glm::vec2(1, -1));
 				plate->add_child(f);
 			}
@@ -237,12 +277,16 @@ namespace Scene
 			mPrevSelectTag = mSelectTag;
 			mRoot->entry_update(deltaTime);
 			mMemberRoot->entry_update(deltaTime);
+			
+			for (auto& m : stars)
+				m.update(deltaTime);
+
 			for (auto& m : drillUI1Ps)
 				m.update(deltaTime);
 			for (auto& m : drillUI2Ps)
 				m.update(deltaTime);
 			if (mBeginAnimation == true)
-				mTrimeshAnimation.update();
+				mTrimeshAnimation.update(deltaTime);
 			Network::cUDPClientManager::getInstance()->update(deltaTime);
 			if (cUDPClientManager::getInstance()->isConnected() == false)return;
 			makeRoom();
@@ -455,6 +499,8 @@ namespace Scene
 			if (mBeginAnimation != true)
 			{
 				mRoot->entry_render(cinder::mat4());
+				for (auto& m : stars)
+					m.draw();
 				for (auto& m : drillUI1Ps)
 					m.draw();
 				for (auto& m : drillUI2Ps)
