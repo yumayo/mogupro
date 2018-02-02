@@ -141,18 +141,7 @@ namespace Sound
 	class WavHolder
 	{
 	public:
-		void add(std::string str)
-		{
-			if (wavList.find(str) != wavList.end())
-				return;
-			wavList.insert(std::make_pair(str, Wav(str)));
-		}
-
-		Wav get(std::string str)
-		{
-			add(str);
-			return wavList.find(str)->second;
-		}
+		Wav get(std::string str);
 
 	private:
 		std::map<std::string, Wav> wavList;

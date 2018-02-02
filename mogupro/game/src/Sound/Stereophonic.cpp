@@ -3,6 +3,17 @@
 #include <CameraManager/cCameraManager.h>
 namespace Sound
 {
+	Wav WavHolder::get(std::string str)
+	{
+		auto itr = wavList.find(str);
+		if (itr == wavList.end())
+		{
+			wavList.insert(std::make_pair(str, Wav(str)));
+			itr = wavList.find(str);
+		}
+		return itr->second;
+	}
+
 	void StereophonicManager::open()
 	{
 	}
