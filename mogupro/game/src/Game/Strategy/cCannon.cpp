@@ -78,12 +78,9 @@ namespace Game
 
 		void cCannon::update(const float & delta_time)
 		{
-			if (ENV->pushKey(ci::app::KeyEvent::KEY_n)) {
+			/*if (ENV->pushKey(ci::app::KeyEvent::KEY_n)) {
 				debugaabb = (!debugaabb);
-			}
-			mLightSinAngle += delta_time*getSinspeed();
-			float max = lightradius*(0.8f + 0.2f*sin(mLightSinAngle));
-			light->reAttachRadius(max);
+			}*/
 		}
 
 		void cCannon::setup()

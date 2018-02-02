@@ -100,4 +100,6 @@ int cSoundManager::currentNum( )
 {
 	return mSeCurrentLoadIndex + mBgmCurrentLoadIndex;
 }
+SeSuppoter const SE;
+BgmSuppoter const BGM;
 }

@@ -6,7 +6,7 @@
 #include <Resource/TextureManager.h>
 #include <Game/cGemManager.h>
 #include <Game/Field/cBreakBlockType.h>
-#include <Game/Weapons/WeaponFactory.h>
+#include <Game/Weapons/MainWeapon/cFactory.h>
 #include <assert.h>
 #include <Resource/cSoundManager.h>
 #include <Particle/cParticleManager.h>
@@ -16,8 +16,8 @@
 #include <Math/Quat.h>
 #include <Math/float4x4.h>
 #include <Game/cGameManager.h>
-
-void Game::Player::cPlayer::playerRotation()
+#include <Resource/cImageManager.h>
+void Game::Player::cPlayer::updatePlayerRotation()
 {
 	ci::vec3 playerYAxis;
 	ci::vec3 playerZAxis;
@@ -45,13 +45,18 @@ void Game::Player::cPlayer::playerRotation()
 
 	auto quat = math::Quat::LookAt(math::float3(0, 0, 1), z, math::float3(0, 1, 0), y * -1);
 
-	rotate_x = quat.Angle();
-	
 	auto q = ci::quat(quat.w, quat.x, quat.y, quat.z);
 
 	rotation = q;
+}
 
-	ci::gl::rotate(q);
+cinder::mat4 Game::Player::cPlayer::getWorldMatrixWeapon( ) const
+{
+	auto m = ci::mat4( );
+	m *= glm::translate( mPos );
+	m *= glm::toMat4( rotation );
+	m *= glm::translate( glm::vec3( -0.2F, 0.2F, 0.2F ) );
+	return m;
 }
 
 void Game::Player::cPlayer::getGems(const int& _gemid)
@@ -255,6 +260,11 @@ void Game::Player::cPlayer::drill(const float& delta_time)
 
 }
 
+Game::Weapons::MainWeapon::cBase * Game::Player::cPlayer::getMainWeapon( )
+{
+	return main_weapon.get( );
+}
+
 void Game::Player::cPlayer::gemsUpdate(const float& delta_time)
 {
 	for (auto& it : getgems) {
@@ -303,7 +313,8 @@ Game::Player::cPlayer::cPlayer(
 	status.drill_speed = DEFAULT_SPEED*1.2f;
 	status.respawn_time = DEFAULT_RESPAWN_TIME;
 	//武器の初期化
-	main_weapon = Weapon::cWeaponFactory::getInstance()->InstanceMainWeapon(static_cast<Weapon::MAIN_WEAPON>(main_weapon_id), id);
+	//! main_weapon_idは無視します。
+	main_weapon = Weapons::MainWeapon::cFactory::create( Weapons::MainWeapon::LIGHT_SABER, *this );
 	assert(main_weapon != NULL && "メイン武器の種類のenumが正しく入っていません。");
 
 	//設置位置
@@ -453,15 +464,19 @@ void Game::Player::cPlayer::setup()
 	animation.animationChange("mogura_walk");
 	animation.setAnimationStopTime("mogura_attack",0.5);
 	mesh = Resource::cObjectManager::getInstance()->findObject("montamogura/moguraHontai.obj");
-	if (team == Team::Red) {
-		tex_name = "mogura_red";
-		TEX->set(tex_name, "Fbx/UV_mogura_red.jpg");
-	}
-	if (team == Team::Blue) {
-		tex_name = "mogura_blue";
-		TEX->set(tex_name, "Fbx/UV_mogura_blue.jpg");
-	}
 	
+	switch ( team )
+	{
+	case Game::Player::Red:
+		texture = Resource::IMAGE ["in_game/UV_mogura_red.jpg" ];
+		break;
+	case Game::Player::Blue:
+		texture = Resource::IMAGE["in_game/UV_mogura_blue.jpg"];
+		break;
+	default:
+		assert( !"チームが不正です。" );
+		break;
+	}
 }
 
 #include <Game/cClientAdapter.h>
@@ -476,6 +491,7 @@ void Game::Player::cPlayer::update(const float & delta_time)
 	respawn(delta_time);
 	root->set_position_3d(mPos);
 	collisionGems();
+	updatePlayerRotation( );
 }
 
 void Game::Player::cPlayer::cameraAfterUpdate( const float & delta_time )
@@ -509,10 +525,8 @@ void Game::Player::cPlayer::draw()
 
 	//死亡中は描画しない
 	if (is_dead)return;
-	ci::gl::ScopedTextureBind tex(TEX->get(tex_name));
 
 	ci::gl::pushModelView();
-	main_weapon->draw();
 	if (active_user&&
 		(CAMERA->getCameraMode() != CameraManager::CAMERA_MODE::TPS)) {
 		return;
@@ -525,10 +539,22 @@ void Game::Player::cPlayer::draw()
 		}
 	}
 
-	ci::gl::translate(mPos);
-	playerRotation();
-	
-	ci::gl::scale(ci::vec3(0.25f, 0.25f, 0.25f));
-	animation.draw();
+	// 武器の描画
+	{
+		ci::gl::pushModelView( );
+		ci::gl::setModelMatrix( getWorldMatrixWeapon( ) );
+		main_weapon->draw( );
+		ci::gl::popModelView( );
+	}
+
+	// プレイヤー自体の描画
+	{
+		ci::gl::ScopedTextureBind tex( texture );
+		ci::gl::translate( mPos );
+		ci::gl::rotate( rotation );
+		ci::gl::scale( ci::vec3( 0.25f, 0.25f, 0.25f ) );
+		animation.draw( );
+	}
+
 	ci::gl::popModelView();
 }

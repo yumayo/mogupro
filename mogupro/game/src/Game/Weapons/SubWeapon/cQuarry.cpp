@@ -29,10 +29,10 @@ namespace Game
 				ismyobject = (Game::cPlayerManager::getInstance()->getActivePlayerId() == playerid);
 				mObjectId = _objectid;
 				mPlayerId = playerid;
-				mDrillScale = ci::vec3(1, 1, 1);
+				mDrillScale = ci::vec3(1);
 				setScale();
 				mPos = pos;////machine–{‘Ì
-				mBeginDrillPos= mPos - ci::vec3(0, mScale.y / 2.f, 0) - ci::vec3(0, mDrillScale.y / 2.f, 0);
+				mBeginDrillPos = mPos - ci::vec3(0, mScale.y / 2.f, 0) - ci::vec3(0, mDrillScale.y / 2.f, 0);
 				mDrillPos = mBeginDrillPos;
 				slope.pos = mPos;
 				createSlope();
@@ -64,38 +64,6 @@ namespace Game
 				mDrillAABB.removeWorld();
 				mSlopeAABB.removeWorld();
 
-				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam()
-					.position(mMachineAABB.getPosition()+ci::vec3(0,mScale.y/2.f,0))
-					.moveType(Particle::ParticleType::ABSORB)
-					.textureType(Particle::ParticleTextureType::SPARK)
-					.colors(gemcolors)
-					.convergePoint(Game::cStrategyManager::getInstance()->getCannons()[Game::cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam()]->getReStorePos())
-					.speed(1.5f)
-					.swellEndTime(0.1f)
-					.swellWaitTime(30.0f)
-					.easeTime(60.0f)
-					.count(gemcolors.size())
-					.effectTime(0)
-					.vanishTime(10.0)
-					.randomEaseTypes({ EaseType::BackIn,EaseType::BackOut,EaseType::CircIn,EaseType::CircOut,EaseType::Linear,EaseType::CubicIn })
-				);
-
-
-
-
-
-
-				int num = getgems.size();
-			
-				cGemManager::getInstance()->deleteFragmentGems(getgems);
-				getgems.clear();
-
-			/*	for (auto& it : getgems) {
-					ci::vec3 randpos = ci::randVec3()*(mScale.x/4.f);
-					it->setPos(Game::cStrategyManager::getInstance()->getCannons()[int(cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam())]->getGemStorePos()+randpos);
-				}*/
-
-				Game::cStrategyManager::getInstance()->getCannons()[int(cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam())]->receiveQuarryGem(num,mPlayerId,ismyobject);
 			}
 			void cQuarry::setup()
 			{
@@ -153,7 +121,7 @@ namespace Game
 			}
 			void cQuarry::draw()
 			{
-				ci::gl::ScopedGlslProg glsl(ci::gl::getStockShader(ci::gl::ShaderDef().color()));
+				// ci::gl::ScopedGlslProg glsl(ci::gl::getStockShader(ci::gl::ShaderDef().color()));
 
 				////drawBasket();
 
@@ -247,6 +215,31 @@ namespace Game
 			void cQuarry::setScale()
 			{
 				mScale = vec3(3, 3, 3);
+			}
+			void Weapons::SubWeapon::cQuarry::quarryBreak()
+			{
+				Particle::cParticleManager::getInstance()->create(Particle::ParticleParam()
+					.position(mMachineAABB.getPosition() + ci::vec3(0, mScale.y / 2.f, 0))
+					.moveType(Particle::ParticleType::ABSORB)
+					.textureType(Particle::ParticleTextureType::SPARK)
+					.colors(gemcolors)
+					.convergePoint(Game::cStrategyManager::getInstance()->getCannons()[Game::cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam()]->getReStorePos())
+					.speed(1.5f)
+					.swellEndTime(0.1f)
+					.swellWaitTime(30.0f)
+					.easeTime(60.0f)
+					.count(gemcolors.size())
+					.effectTime(0)
+					.vanishTime(10.0)
+					.randomEaseTypes({ EaseType::BackIn,EaseType::BackOut,EaseType::CircIn,EaseType::CircOut,EaseType::Linear,EaseType::CubicIn })
+				);
+
+				int num = getgems.size();
+
+				cGemManager::getInstance()->deleteFragmentGems(getgems);
+				getgems.clear();
+
+				Game::cStrategyManager::getInstance()->getCannons()[int(cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam())]->receiveQuarryGem(num, mPlayerId, ismyobject);
 			}
 			void Weapons::SubWeapon::cQuarry::updateCreate(const float & deltatime)
 			{
@@ -437,7 +430,7 @@ namespace Game
 
 				case Game::Weapons::SubWeapon::cQuarry::DRILLRETURN:
 					if ((mPos.y - mDrillPos.y) <= 0.5f) {
-						//ˆÊ’u’²®
+						quarryBreak();
 						return DrillState::DRILLSTOP;
 					}
 					return DrillState::DRILLRETURN;
@@ -452,7 +445,7 @@ namespace Game
 			void cQuarry::drawMachine()
 			{
 				cinder::gl::ScopedTextureBind a(TEX->get("drill.png"));
-				gl::ScopedGlslProg shader(gl::getStockShader(gl::ShaderDef().texture()));
+				// gl::ScopedGlslProg shader(gl::getStockShader(gl::ShaderDef().texture()));
 				drawCube(mPos + mDrawRandom, mScale*mDrawRate,mDrawRotate, ColorA(1, 1, 1, 1));
 			}
 			ci::vec3 cQuarry::getNextEasingPos()

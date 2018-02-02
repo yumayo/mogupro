@@ -35,22 +35,42 @@ void cCapsuleManager::setup()
 void cCapsuleManager::draw()
 {
 	for (auto& itr : mCapsules) {
-		if (glm::distance2(Game::cPlayerManager::getInstance()->getActivePlayer()->getPos(), itr.second->getPos()) < 30.f) {
+		if (itr.second->getCanAction()) {
 			itr.second->draw();
-		}	
+			continue;
+		}
+		else
+		{
+			if (itr.second->getIsget()) {
+				itr.second->draw();
+				continue;
+			}
+		}
 	}
 }
 void cCapsuleManager::update(const float & deltatime)
 {
 	for (auto& itr : mCapsules) {
-		itr.second->update(deltatime);
+
+		itr.second->setCanAction(glm::distance2(Game::cPlayerManager::getInstance()->getActivePlayer()->getPos(), itr.second->getPos()) < 30.f);
+
+		if (itr.second->getCanAction()) {
+			itr.second->update(deltatime);
+		}
+		else
+		{
+			if (itr.second->getIsget()) {
+				itr.second->update(deltatime);
+			}
+		}
+		
 	}
 	deleteCapsule();
 	CollisionToPlayer();
 }
 void cCapsuleManager::deleteCapsule()
 {
-	for (auto itr = mCapsules.begin();
+	for (auto& itr = mCapsules.begin();
 		itr != mCapsules.end();) {
 		if (itr->second->deleteThis()) {
 			itr = mCapsules.erase(itr);
