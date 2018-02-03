@@ -31,6 +31,7 @@ namespace Game
 			int       getId()		  { return mId; }
 			vec3      getPos()	      { return mPosition; }
 			vec3      getScale()      { return mScale; }
+			//vec3      getRotate()     { return mRotate;  }
 			ColorA    getColorA()     { return mColorA; }
 			GemType   getType()       { return mType; }
 			bool      isActive()      { return mIsActive; }
@@ -41,6 +42,7 @@ namespace Game
 
 			void      setPos(vec3 position)             { mPosition = position; }
 			void      setScale(vec3 scale)              { mScale = scale; }
+			//void      setRotate(vec3 rotate)            { mRotate = rotate; }
 			void      setColor(ColorA colorA)           { mColorA = colorA; }
 			void      setIsActive(bool isActive = true) { mIsActive = isActive; }
 			void      setVisible(bool visible);
@@ -51,12 +53,16 @@ namespace Game
 
 
 			hardptr<Node::node> node;
+			hardptr<Node::node> popNode;
 			Game::Light::PointLightHandle handle;
 		private:
 
 			int         mId;
 			vec3        mPosition;
 			vec3        mScale;
+			vec3        mRotate;
+			float       mRotateSpeed;
+			//float       mAngle;
 			vec3        mSpeed;
 			ColorA      mColorA;
 			bool        mIsActive;
