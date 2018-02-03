@@ -9,11 +9,11 @@ namespace Event
 void cEvePlayers::packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data )
 {
 	cImporter imp( data );
-	for ( int i = 0; i < transferredBytes / ( sizeof( ubyte1 ) + sizeof( cinder::vec3 ) + sizeof( cinder::vec2 ) ); ++i )
+	for ( int i = 0; i < transferredBytes / ( sizeof( ubyte1 ) + sizeof( cinder::vec3 ) + sizeof( cinder::quat ) ); ++i )
 	{
 		ubyte1 playerId;
 		cinder::vec3 position;
-		cinder::vec2 rotation;
+		cinder::quat rotation;
 		imp >> playerId >> position >> rotation;
 		mPlayerFormats.emplace_back( playerId, position, rotation );
 	}

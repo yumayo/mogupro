@@ -9,6 +9,8 @@ private:
 	float mFps;
 	float mDelta;
 	cinder::vec3 mPlayerPosition;
+	int send_player;
+	int resieve_player;
 public:
 	cinder::params::InterfaceGlRef mParam;
 public:

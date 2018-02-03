@@ -23,14 +23,19 @@ private:
 	int buf_scene;
 	float cannon_far = 20.0f;
 	float player_far = 5.0f;
+	bool tutorial_stan;
 	ci::vec2 camera_angle_buf = cinder::vec2(-M_PI/2, 0);
 public:
 	TutorialUI(){
 	}
+	bool getTutorialStan() { return tutorial_stan; }
 	//プレイヤー初期化
 	void playerInit();
 	//テキスト初期化
 	void textInit();
+	//次へボタン
+	void enableNextButton();
+	void disableNextButton();
 
 	//移動
 	void tutorialMoveSetup(const float& delta_time);

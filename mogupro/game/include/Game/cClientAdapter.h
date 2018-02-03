@@ -45,7 +45,7 @@ public:
     // 掘削機を設置したら呼んでください。
     void sendSetQuarry( cinder::vec3 const& position );
     // プレイヤーの位置情報をサーバーに送りますので呼んでください。
-    void sendPlayer( cinder::vec3 const& position, cinder::vec2 const& rotation );
+    void sendPlayer( cinder::vec3 const& position, cinder::quat const& rotation );
     // プレイヤーがジェムを取得したら呼んでください。
     void sendGetGemPlayer( Network::ubyte2 gemId );
     // 掘削機がジェムを取得したら呼んでください。

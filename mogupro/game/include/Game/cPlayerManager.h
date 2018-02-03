@@ -15,6 +15,9 @@ private:
     int active_player_id;
     int active_player_team_id;
 
+	int debug_send_count = 0;
+	int debug_recieve_count = 0;
+
 	int watching_target_player_id = -1;
 
     bool mouse_on = false;
@@ -29,6 +32,14 @@ private:
 	void killCamera( const float & delta_time );
 	void watchingCamera(const float & delta_time);
 public:
+
+	int getDebugRecieveCount() {
+		return debug_recieve_count;
+	}
+	int getDebugSendCount() {
+		return debug_send_count;
+	}
+
     int getActivePlayerId( )
     {
         return active_player_id;

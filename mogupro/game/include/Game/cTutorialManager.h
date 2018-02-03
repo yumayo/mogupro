@@ -29,6 +29,7 @@ public:
 	void update( float delta );
 	void draw( );
 	void draw2D();
+	bool getTutorialStan() { return ui.getTutorialStan(); }
 private:
 	void skipReady( );
 	void addPreUpdate( State state, std::function<void( float )> method );

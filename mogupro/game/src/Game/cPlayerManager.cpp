@@ -9,6 +9,7 @@
 #include <Node/renderer.hpp>
 #include <Game/cGameManager.h>
 #include <Resource/cImageManager.h>
+#include <Network/cUDPClientManager.h>
 void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
 	//生成
@@ -40,11 +41,11 @@ void Game::cPlayerManager::playerAttack(const float & delta_time)
 	if (active_player->isDead())return;
 
 	//メイン攻撃 R2 or 右クリック
-	if (ENV->pushKey(ci::app::MouseEvent::RIGHT_DOWN) || ENV->isPadPush(ENV->BUTTON_8))
+	if (ENV->pushKey(ci::app::MouseEvent::RIGHT_DOWN) || ENV->isPadPush(ENV->BUTTON_10))
 	{
 		cClientAdapter::getInstance()->sendPlayerAttack(active_player_id, 1);
 	}
-	if (ENV->pullKey(ci::app::MouseEvent::RIGHT_DOWN) || ENV->isPadPull(ENV->BUTTON_8))
+	if (ENV->pullKey(ci::app::MouseEvent::RIGHT_DOWN) || ENV->isPadPull(ENV->BUTTON_10))
 	{
 		cClientAdapter::getInstance()->sendPlayerAttack(active_player_id, 2);
 	}
@@ -122,8 +123,8 @@ ci::vec3 Game::cPlayerManager::playerNormalMovePad(const float & delta_time)
 {
 	ci::vec3 pad_velocity = ci::vec3(0);
 
-	float x_axis = -50 * ENV->getPadAxis(0) * delta_time * active_player->getSpeed();
-	float z_axis = -50 * ENV->getPadAxis(1) * delta_time * active_player->getSpeed();
+	float x_axis = -20 * ENV->getPadAxis(0) * delta_time * active_player->getSpeed();
+	float z_axis = -20 * ENV->getPadAxis(1) * delta_time * active_player->getSpeed();
 
 	pad_velocity += ci::vec3(z_axis*sin(CAMERA->getCameraAngle().x), 0.0f, z_axis*cos(CAMERA->getCameraAngle().x));
 	pad_velocity += ci::vec3(x_axis*cos(CAMERA->getCameraAngle().x), 0.0f, -x_axis*sin(CAMERA->getCameraAngle().x));
@@ -143,7 +144,7 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 		}
 	}
 	if (!active_player->isDead()) {
-		CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
+		CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
 	}
 	// ターゲットがいたらプレイヤーは動けません。
 	if ( watching_target_player_id != -1 ) return;
@@ -151,7 +152,7 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	//プレイヤーが死んでいたらカメラ以外操作不能
 	if (active_player->isDead())return;
 
-	CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(2)*(-0.07f), ENV->getPadAxis(3)*(-0.07f)));
+	CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.07f), ENV->getPadAxis(3)*(-0.07f)));
 	
 	//大砲にジェムを入れる
 	auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];
@@ -193,7 +194,7 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 		}
 
 		//サブ武器 R1
-		if ( ENV->isPadPush( ENV->BUTTON_7 ) ) {
+		if ( ENV->isPadPush( ENV->BUTTON_6 ) ) {
 			active_player->useSubWeapon.useWeapon( active_player_id );
 		}
 
@@ -213,6 +214,8 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 	
 
 }
+
+
 void Game::cPlayerManager::keyMove(const float & delta_time)
 {
 	if ( active_player->isWatching( ) )
@@ -240,9 +243,14 @@ void Game::cPlayerManager::keyMove(const float & delta_time)
 		active_player->setSpeed( 10.0f );
 	}
 
+	if (ENV->pushKey(ci::app::KeyEvent::KEY_7))debug_send_count++;
+	if (ENV->pushKey(ci::app::KeyEvent::KEY_8))debug_send_count--;
+	if (ENV->pushKey(ci::app::KeyEvent::KEY_b))debug_recieve_count++;
+	if (ENV->pushKey(ci::app::KeyEvent::KEY_n))debug_recieve_count--;
+
 	//G-BACK ふぅうううううはははははは
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_l)) {
-		active_player->receiveDamage(10.0f, 5);
+		getPlayer(debug_recieve_count)->receiveDamage(10.0f, debug_send_count);
 	}
 	
 	if (!active_player->isDead()) {
@@ -377,7 +385,13 @@ void Game::cPlayerManager::update(const float& delta_time)
 	}
 	killCamera(delta_time);
 	watchingCamera(delta_time);
-	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), ci::vec2(0));
+	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), active_player->getRotate());
+	
+	auto packet = new Network::Packet::Request::cReqPlayer();
+	packet->mFormat.playerId = 1;
+	packet->mFormat.position = players[1]->getPos();
+	packet->mFormat.rotation = active_player->getRotate();
+	Network::cUDPClientManager::getInstance()->send(packet);
 }
 
 void Game::cPlayerManager::draw()

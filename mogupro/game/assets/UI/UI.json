@@ -151,7 +151,7 @@
             { "UIState": "Color","Change": [1,1,1,1],"EasingType": "CircOut","Frame": 0.5}
         ],
         "EaseOut": [
-            { "UIState": "Color","Change": [1,1,1,0],"EasingType": "CircOut","Frame": 0.5}
+            
         ],
         "EaseUpdate": []
     },
@@ -171,7 +171,7 @@
             { "UIState": "Color","Change": [1,1,1,1],"EasingType": "CircOut","Frame": 0.5}
         ],
         "EaseOut": [
-            { "UIState": "Color","Change": [1,1,1,0],"EasingType": "CircOut","Frame": 0.5}
+            
         ],
         "EaseUpdate": []
     },
@@ -188,7 +188,27 @@
 
 
         "EaseIn": [
-           
+           { "UIState": "Color","Change": [1,1,1,0],"EasingType": "CircOut","Frame": 0.5}
+        ],
+        "EaseOut": [
+            
+        ],
+        "EaseUpdate": []
+    },
+
+    "移動説明４": {
+       "UIType": "FontUI",
+      "FontPath": "",
+        "Pos": [ -320, -170 ],
+        "Color": [ 0.3, 0.3, 0, 1 ],
+      "Size": 10,
+      "FontColor": [ 0.3, 0.3, 0, 1 ],
+      "FontScale" : 0.6,
+      "Text" : "",
+
+
+        "EaseIn": [
+            
         ],
         "EaseOut": [
             
@@ -484,8 +504,135 @@
       "EaseCollision": []
     },
     
-    
-    "コントローラ左": {
+    "リング": {
+      "UIType": "CollisionUI",
+      "TexturePath": "Tutorial/ring.png",
+        "Pos": [ 160, 185 ],
+      "Size": [ 50,50],
+      "Color" :  [1,0,0,1],
+        "EaseIn": [
+           { "UIState": "Color","Change": [1,0,0,1],"EasingType": "CircOut","Frame": 0.5}
+        ],
+
+      "EaseOut": [
+         { "UIState": "Color","Change": [1,0,0,0],"EasingType": "CircOut","Frame": 0.5}
+      ],
+
+        "EaseUpdate": [
+         { "UIState": "Pos","Change": [ 135, 210 ],"EasingType": "Liner","Frame": 0.5},
+        { "UIState": "Size","Change": [ 100,100 ],"EasingType": "Liner","Frame": 0.5}, 
+        { "UIState": "Color","Change": [1,0,0,0],"EasingType": "Liner","Frame": 0.5},
+        { "UIState": "Pos","Change": [ 160, 185 ],"EasingType": "Liner","Frame": 0.01},
+        { "UIState": "Size","Change": [ 50,50 ],"EasingType": "Liner","Frame": 0.01}, 
+        { "UIState": "Color","Change": [1,0,0,1],"EasingType": "Liner","Frame": 0.01}
+        ],
+      "EaseCollision": []
+    },
+    "スティック設置": {
+      "UIType": "CollisionUI",
+      "TexturePath": "Tutorial/stick.png",
+         "Pos": [ -235, 253 ],
+        "Size": [ 107, 93 ],
+      "Color" :  [1,1,1,1],
+        "EaseIn": [
+           { "UIState": "Color","Change": [1,1,1,1],"EasingType": "CircOut","Frame": 0.5}
+        ],
+
+      "EaseOut": [
+         { "UIState": "Color","Change": [1,1,1,0],"EasingType": "CircOut","Frame": 0.5}
+      ],
+
+        "EaseUpdate": [
+        ],
+      "EaseCollision": []
+    },
+     "ボタンA": {
+      "UIType": "CollisionUI",
+      "TexturePath": "Tutorial/buttona.png",
+        "Pos": [ 100, 100 ],
+      "Size": [ 100,100],
+      "Color" :  [1,1,1,1],
+        "EaseIn": [
+           { "UIState": "Color","Change": [1,1,1,1],"EasingType": "CircOut","Frame": 0.5}
+        ],
+
+      "EaseOut": [
+         { "UIState": "Color","Change": [1,1,1,0],"EasingType": "CircOut","Frame": 0.5}
+      ],
+
+        "EaseUpdate": [
+        ],
+      "EaseCollision": []
+    },
+      "ボタンB": {
+      "UIType": "CollisionUI",
+      "TexturePath": "Tutorial/buttonb.png",
+       "Pos": [ 430, -320 ],
+      "Size": [ 50,50],
+      "Color" :  [1,1,1,1],
+        "EaseIn": [
+           { "UIState": "Color","Change": [1,1,1,1],"EasingType": "CircOut","Frame": 0.5}
+        ],
+
+      "EaseOut": [
+         { "UIState": "Color","Change": [1,1,1,0],"EasingType": "CircOut","Frame": 0.2},
+        { "UIState": "Pos","Change": [395, -285],"EasingType": "Liner","Frame": 0.2},
+        { "UIState": "Size","Change": [120, 120],"EasingType": "Liner","Frame": 0.2},
+         { "UIState": "Pos","Change": [ 430, -320 ],"EasingType": "SineOut","Frame": 0.01},
+        { "UIState": "Size","Change": [ 50,50],"EasingType": "SineOut","Frame": 0.01}
+      ],
+
+        "EaseUpdate": [
+        
+        { "UIState": "Pos","Change": [420, -310],"EasingType": "Liner","Frame": 0.2},
+        { "UIState": "Size","Change": [70, 70],"EasingType": "Liner","Frame": 0.2},
+        { "UIState": "Pos","Change": [ 430, -320 ],"EasingType": "Liner","Frame": 0.2},
+        { "UIState": "Size","Change": [ 50,50],"EasingType": "Liner","Frame": 0.2}
+        ],
+      "EaseCollision": []
+    },
+     "次へ": {
+      "UIType": "CollisionUI",
+      "TexturePath": "Tutorial/right2.png",
+        "Pos": [ 500, -300 ],
+      "Size": [ 100,100],
+      "Color" :  [1,1,1,1],
+        "EaseIn": [
+           { "UIState": "Color","Change": [1,1,1,1],"EasingType": "CircOut","Frame": 0.5}
+        ],
+
+      "EaseOut": [
+         { "UIState": "Color","Change": [1,1,1,0],"EasingType": "CircOut","Frame": 0.5},
+        { "UIState": "Pos","Change": [500, -300],"EasingType": "CircOut","Frame": 0.01}
+      ],
+
+        "EaseUpdate": [
+        { "UIState": "Pos","Change": [520, -300],"EasingType": "Liner","Frame": 0.2},
+        { "UIState": "Pos","Change": [500, -300],"EasingType": "Liner","Frame": 0.2}
+        ],
+      "EaseCollision": []
+    },
+    "次へ説明": {
+       "UIType": "FontUI",
+      "FontPath": "",
+        "Pos": [ 550, -350 ],
+        "Color": [ 1, 1, 1, 1 ],
+      "Size": 10,
+      "FontColor": [ 1, 1, 1, 1 ],
+      "FontScale" : 0.4,
+      "Text" : "",
+
+
+        "EaseIn": [
+            { "UIState": "Color","Change": [1,1,1,1],"EasingType": "CircOut","Frame": 0.5}
+        ],
+        "EaseOut": [
+            { "UIState": "Color","Change": [1,1,1,0],"EasingType": "CircOut","Frame": 0.5}
+        ],
+        "EaseUpdate": []
+    },
+     
+     "コントローラ左": {
       "UIType": "CollisionUI",
       "TexturePath": "Tutorial/contl.png",
         "Pos": [ -350, 350 ],
@@ -611,7 +758,7 @@
             { "UIState": "Color","Change": [1,1,1,1],"EasingType": "CircOut","Frame": 0.5}
         ],
         "EaseOut": [
-            { "UIState": "Color","Change": [1,1,1,0],"EasingType": "CircOut","Frame": 0.5}
+            
         ],
         "EaseUpdate": []
     },
@@ -630,7 +777,7 @@
             { "UIState": "Color","Change": [1,1,1,1],"EasingType": "CircOut","Frame": 0.5}
         ],
         "EaseOut": [
-            { "UIState": "Color","Change": [1,1,1,0],"EasingType": "CircOut","Frame": 0.5}
+           
         ],
         "EaseUpdate": []
     },
