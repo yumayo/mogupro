@@ -102,7 +102,7 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 		Node::Action::scale_to::create(1, ci::vec3(0.1f)),
 		Node::Action::call_func::create([this, _gemid]() {
 		gem_production_end[_gemid] = true;
-		Sound::StereophonicManager::getInstance()->add("gem1" + std::to_string(player_id), ci::app::getAssetPath("Player/gem.wav").string(), mPos);
+		Sound::StereophonicManager::getInstance()->add("gem1" + std::to_string(player_id), ci::app::getAssetPath("SE/Player/gem.wav").string(), mPos);
 	})));
 	
 	gem_id_buf = _gemid;
