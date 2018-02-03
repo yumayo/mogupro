@@ -22,8 +22,8 @@
 #include <Game/cLightManager.h>
 #include <Game/cUIManager.h>
 #include <Particle/cParticleManager.h>
-#include<Game/cCapsuleManager.h>
-#include<Game/cSubWeaponManager.h>
+#include <Game/cCapsuleManager.h>
+#include <Game/cSubWeaponManager.h>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time.hpp>
 #include <Game/cGameManager.h>
@@ -85,7 +85,7 @@ void cGameMain::setup( )
 						   Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Z),Game::Field::BLOCK_SIZE,0.5,100,seed);
     Collision::cCollisionManager::getInstance( )->setup( );
 	Game::cLightManager::getInstance( )->setup( );
-	Game::cShaderManager::getInstance( )->setup( true );
+	Game::cShaderManager::getInstance( )->setup( );
 	Game::cCapsuleManager::getInstance()->setup();
 	Game::cSubWeaponManager::getInstance()->setup();
 	Game::cUIManager::getInstance( )->setup( );

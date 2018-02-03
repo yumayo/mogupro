@@ -8,9 +8,10 @@
 using namespace ci;
 namespace Game
 {
-void cShaderManager::setup( bool useShadow )
+void cShaderManager::setup( )
 {
-	mUseShadow = useShadow;
+	mUseShadow = false;
+	mUseAllLight = false;
 
 	int scale = 4096;
 	gl::Texture2d::Format depthFormat;
