@@ -14,6 +14,7 @@
 #include <Resource/cImageManager.h>
 #include <Log/Log.h>
 #include <cinder/Rand.h>
+#include <Scene/Member/cTitle.h>
 
 using namespace Network;
 using namespace Network::Packet::Event;
@@ -97,6 +98,7 @@ namespace Scene
 	{
 		void cMatching::setup()
 		{
+			
 			Network::cUDPClientManager::getInstance()->open();
 			cUDPClientManager::getInstance()->connect( Resource::JSON["server.json"]["ip"].asString( ) );
 			mClassState = ClassState::NOT;
@@ -124,13 +126,16 @@ namespace Scene
 
 		void cMatching::registerFunc()
 		{
-			mRoot = Node::node::create();
-			mRoot->set_schedule_update();
+			mBackRoot = Node::node::create();
+			mBackRoot->set_schedule_update();
 			auto backView = Node::Renderer::sprite::create(Resource::IMAGE["matching/nightSky.png"]);
 			backView->set_position(ci::vec2(0, 0));
 			backView->set_scale(ci::vec2(2.0f, -1.5f));
-			mRoot->add_child(backView);
+			mBackRoot->add_child(backView);
 			
+			mRoot = Node::node::create();
+			mRoot->set_schedule_update();
+
 			//対戦ボタンUI
 			auto fightPlate = Node::Renderer::sprite::create(Resource::IMAGE["matching/greenUI.png"]);
 			fightPlate->set_schedule_update();
@@ -150,27 +155,24 @@ namespace Scene
 				mWaitClassState = ClassState::MASTER;
 			});
 
-			//観戦ボタンUI
+			//タイトルに戻るボタンUI
 			auto lookPlate = Node::Renderer::sprite::create(Resource::IMAGE["matching/redUI.png"]);
 			lookPlate->set_schedule_update();
 			lookPlate->set_tag(1);
 			lookPlate->set_position(ci::vec2(250, 0));
 			mRoot->add_child(lookPlate);
 			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 50);
-				f->set_text(u8"観戦");
+				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 30);
+				f->set_text(u8"タイトルに戻る");
 				f->set_scale(glm::vec2(1, -1));
 				lookPlate->add_child(f);
 			}
+
 			outRoomFunc.emplace_back(
-				[this] {
-				// とりあえずコントロールを押しながらで観戦者。
-				//if ( ENV->pressKey( cinder::app::KeyEvent::KEY_LCTRL ) )
-				cUDPClientManager::getInstance( )->send( new cReqInRoomWatching( 100 ) );
-				mCanSend = false;
-				mWaitClassState = ClassState::CLIENT;
-				mSelectTag = 0;
-				wantWatching = true;
+				[this] 
+			{
+				sceneChange = true;
+				sceneType = SceneType::TITLE;
 			});
 			mRoot->get_child_by_tag(mSelectTag)->run_action(
 				repeat_forever::create(
@@ -263,6 +265,7 @@ namespace Scene
 				call_func::create([this]
 			{
 				sceneChange = true;
+				sceneType = SceneType::TITLE;
 			})));
 			mMemberRoot->add_child(m);
 		}
@@ -296,7 +299,10 @@ namespace Scene
 			updateBoxFunc();
 			if (sceneChange == true)
 			{
-				cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
+				if(sceneType == SceneType::TITLE)
+					cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
+				else if(sceneType == SceneType::GAME_MAIN)
+					cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
 			}
 
 		}
@@ -358,6 +364,14 @@ namespace Scene
 					outRoomFunc[mSelectTag]();
 				}
 
+				if (ENV->pressKey(ci::app::KeyEvent::KEY_a) && ENV->pressKey(ci::app::KeyEvent::KEY_s) && mCanSend)
+				{
+					cUDPClientManager::getInstance()->send(new cReqInRoomWatching(100));
+					mCanSend = false;
+					mWaitClassState = ClassState::CLIENT;
+					mSelectTag = 0;
+					wantWatching = true;
+				}
 			}
 			else if (mWaitClassState == ClassState::CLIENT)
 			{
@@ -503,9 +517,11 @@ namespace Scene
 			ci::gl::clear(ci::ColorA(0, 0, 0, 1));
 			if (mBeginAnimation != true)
 			{
-				mRoot->entry_render(cinder::mat4());
+				mBackRoot->entry_render(cinder::mat4());
 				for (auto& m : stars)
 					m.draw();
+				mRoot->entry_render(cinder::mat4());
+				
 				for (auto& m : drillUI1Ps)
 					m.draw();
 				for (auto& m : drillUI2Ps)
