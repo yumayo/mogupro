@@ -50,13 +50,19 @@ namespace Utility
 
 		for (int i = 0; i < (int)indices.size() / 3; ++i)
 		{
-			vectors.push_back(ci::vec3(ci::randFloat(-1.5f, 1.5f), ci::randFloat(-1.5f, 1.5f), ci::randFloat(1.5f, - 1.5f)));
+			vectors.push_back(ci::vec3(ci::randFloat(-10.5f, 10.5f), 
+				              ci::randFloat(12.0f,16.0f) ,
+				              ci::randFloat(1.5f, -1.5f)));
 			rotate.push_back(ci::vec2(ci::randFloat(-0.5f, 0.5f), ci::randFloat(-0.5f, 0.5f)));
 		}
+
+		gravityValue = 35.5f;
 	}
 
-	void TriMeshAnimation::update()
+	void TriMeshAnimation::update(float deltaTime)
 	{
+		gravityTime += deltaTime;
+
 		for (int i = 0; i < (int)indices.size() / 3; ++i)
 		{
 			posAs[i] = glm::rotateX(posAs[i], rotate[i].x);
@@ -67,7 +73,7 @@ namespace Utility
 			posBs[i] = glm::rotateZ(posBs[i], rotate[i].y);
 			posCs[i] = glm::rotateZ(posCs[i], rotate[i].y);
 
-			centers[i] += vectors[i];
+			centers[i] += vectors[i] - ci::vec3(0,gravityValue * gravityTime,0);
 		}
 
 		for (int i = 0; i < (int)indices.size() / 3; ++i)
