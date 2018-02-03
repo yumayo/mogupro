@@ -265,7 +265,7 @@ namespace Scene
 				call_func::create([this]
 			{
 				sceneChange = true;
-				sceneType = SceneType::TITLE;
+				sceneType = SceneType::GAME_MAIN;
 			})));
 			mMemberRoot->add_child(m);
 		}
