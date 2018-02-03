@@ -129,7 +129,7 @@ void cWeaponCapsule::createSubWeapon()
 		Game::cClientAdapter::getInstance()->sendLightBomb(mPos, mSpeed);
 		break;
 	case Game::Weapons::SubWeapon::SubWeaponType::QUARRY:
-		Game::cClientAdapter::getInstance()->sendSetQuarry(mPos + ci::vec3(0, 1.5, 0));
+		Game::cClientAdapter::getInstance()->sendSetQuarry(mPos/* + ci::vec3(0, 1.5, 0)*/);
 		break;
 	default:
 		break;

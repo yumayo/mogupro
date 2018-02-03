@@ -267,6 +267,9 @@ void Game::cPlayerManager::keyMove(const float & delta_time)
 		if ( ENV->pushKey( ci::app::KeyEvent::KEY_h ) ) {
 			active_player->useSubWeapon.addSubWeapon( Game::Weapons::SubWeapon::LIGHT_BOMB );
 		}
+		if ( ENV->pushKey( ci::app::KeyEvent::KEY_j ) ) {
+			active_player->useSubWeapon.addSubWeapon( Game::Weapons::SubWeapon::QUARRY );
+		}
 		/////////////////アイテムを使う
 		if ( ENV->pushKey( ci::app::KeyEvent::KEY_g ) ) {
 			active_player->useSubWeapon.useWeapon( active_player_id );

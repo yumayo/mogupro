@@ -30,17 +30,15 @@ private:
 	Utility::cStateMachineBehaviour mStateMachine;
 
 	Utility::hardptr<Node::node> root;
+
+	softptr<Node::node> vboBase;
+	softptr<Node::node> vboAntennaRod;
+	softptr<Node::node> vboAntennaReciever;
+	softptr<Node::node> vboDrill;
+	softptr<Node::node> vboCone;
+	softptr<Node::node> vboLeg;
 	
 	float mDeltaSecond = 0.0F;
-
-	//
-	//! メッシュ達
-	cinder::gl::VboMeshRef mVboAntennaReciever;
-	cinder::gl::VboMeshRef mVboAntennaRod;
-	cinder::gl::VboMeshRef mVboBase;
-	cinder::gl::VboMeshRef mVboCone;
-	cinder::gl::VboMeshRef mVboDrill;
-	cinder::gl::VboMeshRef mVboLeg;
 	
 	//
 	//本体系

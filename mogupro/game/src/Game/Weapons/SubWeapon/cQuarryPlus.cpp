@@ -24,6 +24,31 @@ namespace Weapons
 {
 namespace SubWeapon
 {
+class obj3d : public Node::node
+{
+public:
+	CREATE_H( obj3d, std::string const& objName )
+	{
+		CREATE( obj3d, objName );
+	}
+	bool init( std::string const& objName )
+	{
+		_triMesh = Resource::MESH[objName];
+		_vboMesh = Resource::OBJ[objName];
+
+		auto aabb = _triMesh->calcBoundingBox( );
+		set_content_size_3d( aabb.getSize( ) );
+
+		return true;
+	}
+	void render( ) override
+	{
+		cinder::gl::draw( _vboMesh );
+	}
+protected:
+	cinder::TriMeshRef _triMesh;
+	cinder::gl::VboMeshRef _vboMesh;
+};
 cQuarryPlus::cQuarryPlus( const ci::vec3 pos, const int objectId, const int playerId )
 	: mMachineAABB( pos, ci::vec3( 1 ) )
 {
@@ -68,30 +93,41 @@ void cQuarryPlus::setup( )
 	mMachineAABB.addWorld( );
 	mMachineAABB.setSize( mScale );
 
-	mVboAntennaReciever = Resource::OBJ["quarry_plus/antenna_reciever.obj"];
-	mVboAntennaRod      = Resource::OBJ["quarry_plus/antenna_rod.obj"];
-	mVboBase            = Resource::OBJ["quarry_plus/base.obj"];
-	mVboCone            = Resource::OBJ["quarry_plus/cone.obj"];
-	mVboDrill           = Resource::OBJ["quarry_plus/drill.obj"];
-	mVboLeg             = Resource::OBJ["quarry_plus/leg.obj"];
+	vboBase            = root->add_child( obj3d::create( "quarry_plus/base.obj" ) );
+	vboAntennaRod      = vboBase->add_child( obj3d::create( "quarry_plus/antenna_rod.obj" ) );
+	vboAntennaReciever = vboAntennaRod->add_child( obj3d::create( "quarry_plus/antenna_reciever.obj" ) );
+	vboDrill           = vboBase->add_child( obj3d::create( "quarry_plus/drill.obj" ) );
+	vboCone            = vboDrill->add_child( obj3d::create( "quarry_plus/cone.obj" ) );
+	vboLeg             = vboBase->add_child( obj3d::create( "quarry_plus/leg.obj" ) );
 
 	mBreakType.add( Field::BlockType::NORMAL );
 	mBreakType.add( Field::BlockType::HARD );
 
-	STATE_GENERATE( mStateMachine, drillBuild );
+	STATE_GENERATE( mStateMachine, drillBuildScaleup );
+	STATE_GENERATE( mStateMachine, drillBuildLeg );
+	STATE_GENERATE( mStateMachine, drillBuildAntenna );
 	STATE_GENERATE( mStateMachine, drillMove );
 	STATE_GENERATE( mStateMachine, drillReturn );
 	STATE_GENERATE( mStateMachine, drillStop );
 
 	auto build = root->add_child( node::create( ) );
 
-	drillBuild->join( drillMove, [ this ] ( auto n )
+	drillBuildScaleup->join( drillBuildLeg, [ this ] ( auto n )
 	{
 		return true;
 	} );
-	drillBuild->onStateStay = [ this ] ( auto n )
+	drillBuildScaleup->onStateIn = [ this ] ( auto m )
 	{
+
 	};
+	drillBuildLeg->join( drillBuildAntenna, [ this ] ( auto n )
+	{
+		return true;
+	} );
+	drillBuildAntenna->join( drillMove, [ this ] ( auto n )
+	{
+		return true;
+	} );
 	drillMove->join( drillReturn, [ this ] ( auto n )
 	{
 		return mDrillPos.y < 0.0F;
@@ -145,7 +181,7 @@ void cQuarryPlus::setup( )
 		mDrillPos.z = mPos.z;
 	};
 
-	mStateMachine.setEntryNode( drillBuild );
+	mStateMachine.setEntryNode( drillBuildScaleup );
 }
 void cQuarryPlus::update( const float & delta_time )
 {
@@ -154,7 +190,8 @@ void cQuarryPlus::update( const float & delta_time )
 	mStateMachine.update( delta_time );
 	for ( int i = 0; i < int( getgems.size( ) ); i++ )
 	{
-		if ( getgems[i]->getPos( ).y < mPos.y + mScale.y / 2.f + 1.f ) {
+		if ( getgems[i]->getPos( ).y < mPos.y + mScale.y / 2.f + 1.f )
+		{
 			getgems[i]->node->entry_update( mDeltaSecond );
 			vec3 p = getgems[i]->node->get_position_3d( );
 
@@ -175,16 +212,7 @@ void cQuarryPlus::updateCollisionAfterUpdate( const float & delta_time )
 }
 void cQuarryPlus::draw( )
 {
-	{
-		cinder::gl::ScopedTextureBind a( Resource::IMAGE["in_game/quarry.png"] );
-		{
-			gl::pushModelMatrix( );
-			gl::translate( mPos );
-			gl::scale( mScale );
-			gl::draw( mVboBase );
-			gl::popModelMatrix( );
-		}
-	}
+	root->entry_render( mat4( ) );
 
 	if ( !mStateMachine.isCurrentState( "drillBuild" ) )
 	{
