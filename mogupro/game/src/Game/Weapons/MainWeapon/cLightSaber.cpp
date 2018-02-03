@@ -546,7 +546,7 @@ void cLightSaber::update( const float& delta_time )
 			{
 				if ( b->attackSphere.intersects( gem_ref->getAabb( ).createAABB( gem_ref->getCenterPos( ) ) ) )
 				{
-					b->hitListPlayer.emplace_back( gem_ref->getId( ) );
+					b->hitListGem.emplace_back( gem_ref->getId( ) );
 					for ( auto& f_gem_ref : cGemManager::getInstance( )->breakGemStone( gem_ref->getId( ) ) )
 					{
 						player.getGems( f_gem_ref->getId( ) );
