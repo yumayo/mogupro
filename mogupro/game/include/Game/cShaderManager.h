@@ -13,7 +13,7 @@ class cShaderManager : public Utility::cSingletonAble<cShaderManager>
 public:
 	cShaderManager( ) { }
 	~cShaderManager( ) { }
-	void setup( bool useShadow );
+	void setup( );
 	void uniformUpdate( );
 	void uniformUpdate( int chunkId );
 	void update( std::function<void( )> const& drawFunc );

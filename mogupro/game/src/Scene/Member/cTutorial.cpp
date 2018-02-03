@@ -81,7 +81,7 @@ namespace Scene
 					Game::Field::CHUNK_SIZE * Game::Field::CHUNK_RANGE_Z), Game::Field::BLOCK_SIZE, 0.5, 100, seed);
 			Collision::cCollisionManager::getInstance()->setup();
 			Game::cLightManager::getInstance()->setup();
-			Game::cShaderManager::getInstance()->setup(true);
+			Game::cShaderManager::getInstance()->setup();
 			Game::cCapsuleManager::getInstance()->setup();
 			Game::cSubWeaponManager::getInstance()->setup();
 			Game::cUIManager::getInstance()->setup();
