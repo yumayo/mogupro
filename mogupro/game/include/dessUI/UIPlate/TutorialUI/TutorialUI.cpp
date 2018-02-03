@@ -16,11 +16,11 @@ void TutorialUI::setup(const dess::SceneName & name)
 	buf_scene = static_cast<int>(TUTORIAL::NONE);
 	UIPlate::setup(name);
 	textInit();
-
-	ENV->disableKeyButton();
-	ENV->disablePadAxis();
-	ENV->disablePadButton();
-	ENV->disableMouseButton();
+	tutorial_stan = true;
+	ENV->enableKeyButton();
+	ENV->enablePadAxis();
+	ENV->enablePadButton();
+	ENV->enableMouseButton();
 }
 //ƒvƒŒƒCƒ„[‰Šú‰»
 void TutorialUI::playerInit()
@@ -72,6 +72,9 @@ void TutorialUI::textInit()
 	ui_data["ƒAƒCƒeƒ€à–¾‚T"]->fontSetText(u8"ƒAƒCƒeƒ€‚ðŽg—p‚µ‚Ä‚­‚¾‚³‚¢B");
 	
 	ui_data["ÅŒãà–¾"]->fontSetText(u8"‘€ìà–¾‚ÍˆÈã‚É‚È‚è‚Ü‚·B\n‚±‚ÌƒQ[ƒ€‚ÍAu‘å–C‚ÌƒQ[ƒW‚ª–žƒ^ƒ“‚É\n‚È‚Á‚½•û‚ªŸ‚¿v‚Å‚·‚Ì‚ÅAÏ‹É“I‚É\nƒWƒFƒ€‚ðW‚ß‚Ä‚¢‚«‚Ü‚µ‚å‚¤B");
+
+	ui_data["ŽŸ‚Öà–¾"]->fontSetText(u8"");
+	ui_data["ˆÚ“®à–¾‚S"]->fontSetText(u8"uAvƒ{ƒ^ƒ“‚ÅƒWƒƒƒ“ƒv‚ð\n‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B");
 	//•¶Žš‚ðXV
 	//‚©‚È‚èd‚¢‚Ì‚Å•K‚¸‚PƒtƒŒ[ƒ€‚¾‚¯ŒÄ‚Ô
 	for (auto it = ui_objects.begin(); it != ui_objects.end(); it++) {
@@ -91,6 +94,14 @@ void TutorialUI::textInit()
 		}
 	}
 }
+void TutorialUI::enableNextButton() {
+	ui_data["ƒ{ƒ^ƒ“B"]->setActive(true);
+	ui_data["ŽŸ‚Ö"]->setActive(true);
+}
+void TutorialUI::disableNextButton() {
+	ui_data["ƒ{ƒ^ƒ“B"]->setActive(false);
+	ui_data["ŽŸ‚Ö"]->setActive(false);
+}
 void TutorialUI::tutorialMoveSetup(const float & delta_time)
 {
 	playerInit();
@@ -108,10 +119,11 @@ void TutorialUI::tutorialMoveSetup(const float & delta_time)
 	turo_flags["‰º"] = false;
 	turo_flags["¶"] = false;
 	turo_flags["‰E"] = false;
+	turo_flags["ˆÚ“®‚QŒÂ–Ú"] = false;
 
 	//ƒJƒEƒ“ƒg‚Ì‰Šú‰»
 	tuto_counts["ˆÚ“®à–¾‚ÌŽžŠÔ"] = 0.0f;
-
+	tuto_counts["ˆÚ“®à–¾‚ÌŽžŠÔ‚Q"] = 0.0f;
 }
 void TutorialUI::tutorialMoveUpdate(const float& delta_time)
 {
@@ -123,7 +135,7 @@ void TutorialUI::tutorialMoveUpdate(const float& delta_time)
 		ui_data["ˆÚ“®à–¾‰Šú"]->setActive(true);
 		ui_data["ˆÚ“®à–¾‰Šú"]->setActive(false);
 	}
-	if (turo_flags["‘€ìà–¾"] && !turo_flags["ˆÚ“®"] && !ui_data["à–¾”Â‰Šú"]->getActive()) {
+	if (turo_flags["‘€ìà–¾"] && !turo_flags["ˆÚ“®"] && !ui_data["à–¾”Â‰Šú"]->getActive() && !turo_flags["ˆÚ“®‚QŒÂ–Ú"]) {
 
 		ui_data["ˆÚ“®”Â"]->setActive(true);
 		ui_data["ˆÚ“®à–¾"]->setActive(true);
@@ -143,17 +155,18 @@ void TutorialUI::tutorialMoveUpdate(const float& delta_time)
 
 		tuto_counts["ˆÚ“®à–¾‚ÌŽžŠÔ"] += delta_time;
 	}
-	if (tuto_counts["ˆÚ“®à–¾‚ÌŽžŠÔ"] > 7.0f) {
-		turo_flags["ˆÚ“®"] = true;
+	if (tuto_counts["ˆÚ“®à–¾‚ÌŽžŠÔ"] > 3.0f && turo_flags["ˆÚ“®‚QŒÂ–Ú"] == false) {
+		enableNextButton();
+	}
 
-		ui_data["ˆÚ“®”Â"]->setActive(false);
+	if (tuto_counts["ˆÚ“®à–¾‚ÌŽžŠÔ"] > 3.0f
+		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
+			|| ENV->isPadPush(ENV->BUTTON_2))
+		&& turo_flags["ˆÚ“®‚QŒÂ–Ú"] == false) {
+		disableNextButton();
+		turo_flags["ˆÚ“®‚QŒÂ–Ú"] = true;
 		ui_data["ˆÚ“®à–¾"]->setActive(false);
 		ui_data["ˆÚ“®à–¾‚Q"]->setActive(false);
-		ENV->enableKeyButton();
-		ENV->enablePadAxis();
-		ENV->enablePadButton();
-		ENV->enableMouseButton();
-		ui_data["ƒRƒ“ƒgƒ[ƒ‰¶"]->setActive(false);
 		ui_data["ƒXƒeƒBƒbƒN¶"]->setActive(false);
 		/*ui_data["W"]->setActive(true);
 		ui_data["A"]->setActive(true);
@@ -164,12 +177,38 @@ void TutorialUI::tutorialMoveUpdate(const float& delta_time)
 		ui_data["down"]->setActive(false);
 		ui_data["left"]->setActive(false);
 		ui_data["right"]->setActive(false);
+		
 
+		ui_data["ƒXƒeƒBƒbƒNÝ’u"]->setActive(true);
+		ui_data["ˆÚ“®à–¾‚S"]->setActive(true);
+		ui_data["ƒŠƒ“ƒO"]->setActive(true);
+	}
+	if (turo_flags["ˆÚ“®‚QŒÂ–Ú"]) {
+		tuto_counts["ˆÚ“®à–¾‚ÌŽžŠÔ‚Q"] += delta_time;
+	}
+	if (tuto_counts["ˆÚ“®à–¾‚ÌŽžŠÔ‚Q"] > 3.0f && turo_flags["ˆÚ“®"] == false) {
+		enableNextButton();
+	}
+
+	if (tuto_counts["ˆÚ“®à–¾‚ÌŽžŠÔ‚Q"] > 3.0f
+		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
+			|| ENV->isPadPush(ENV->BUTTON_2))) {
+		disableNextButton();
+		turo_flags["ˆÚ“®"] = true;
+
+		ui_data["ˆÚ“®”Â"]->setActive(false);
+	
+		ui_data["ƒRƒ“ƒgƒ[ƒ‰¶"]->setActive(false);
+		
+		ui_data["ƒXƒeƒBƒbƒN‰E"]->setActive(false);
+		ui_data["ˆÚ“®à–¾‚S"]->setActive(false);
+		ui_data["ƒŠƒ“ƒO"]->setActive(false);
 	}
 
 	if (ui_data["ˆÚ“®”Â"]->getActive() == false && turo_flags["ˆÚ“®"] == true
 		&& turo_flags["ˆÚ“®I—¹"] == false) {
-		
+		ui_data["ƒXƒeƒBƒbƒNÝ’u"]->setActive(false);
+		tutorial_stan = false;
 		ui_data["à–¾”Â‚Q"]->setActive(true);
 		ui_data["ˆÚ“®à–¾‚R"]->setActive(true);
 		auto player_vec = Game::cPlayerManager::getInstance()->getActivePlayer()->getPlayerVec();
@@ -192,10 +231,7 @@ void TutorialUI::tutorialMoveUpdate(const float& delta_time)
 	}
 	if (!ui_data["FadePlateIn"]->getActive()) {
 		now_scene = TUTORIAL::EYE;
-		ENV->disableKeyButton();
-		ENV->disablePadAxis();
-		ENV->disablePadButton();
-		ENV->disableMouseButton();
+		tutorial_stan = true;
 	}
 }
 void TutorialUI::tutorialEyeSetup(const float & delta_time)
@@ -237,14 +273,17 @@ void TutorialUI::tutorialEyeUpdate(const float & delta_time)
 
 		tuto_counts["Ž‹“_à–¾"] += delta_time;
 	}
+	if (tuto_counts["Ž‹“_à–¾"] > 3.0f && turo_flags["Ž‹“_"] == false) {
+		enableNextButton();
+	}
 
-
-	if (tuto_counts["Ž‹“_à–¾"] > 7) {
+	if (tuto_counts["Ž‹“_à–¾"] > 3.0f
+		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
+			|| ENV->isPadPush(ENV->BUTTON_2))
+		&& turo_flags["Ž‹“_"] == false) {
+		disableNextButton();
 		turo_flags["Ž‹“_"] = true;
-		ENV->enableKeyButton();
-		ENV->enablePadAxis();
-		ENV->enablePadButton();
-		ENV->enableMouseButton();
+		tutorial_stan = false;
 		ui_data["ˆÚ“®”Â"]->setActive(false);
 		ui_data["Ž‹“_à–¾‚Q"]->setActive(false);
 		ui_data["Ž‹“_à–¾‚R"]->setActive(false);
@@ -284,10 +323,7 @@ void TutorialUI::tutorialEyeUpdate(const float & delta_time)
 	}
 	if (!ui_data["FadePlateIn"]->getActive()) {
 		now_scene = TUTORIAL::DRILL;
-		ENV->disableKeyButton();
-		ENV->disablePadAxis();
-		ENV->disablePadButton();
-		ENV->disableMouseButton();
+		tutorial_stan = true;
 	}
 
 
@@ -325,10 +361,15 @@ void TutorialUI::tutorialDrillUpdate(const float & delta_time){
 
 		tuto_counts["Œ@‚éà–¾‚PŒÂ–Ú"] += delta_time;
 	}
+	if (tuto_counts["Œ@‚éà–¾‚PŒÂ–Ú"] > 3.0f && turo_flags["Œ@‚é‚QŒÂ–Ú"] == false) {
+		enableNextButton();
+	}
 
-
-	if (tuto_counts["Œ@‚éà–¾‚PŒÂ–Ú"] > 7
+	if (tuto_counts["Œ@‚éà–¾‚PŒÂ–Ú"] > 3.0f
+		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
+			|| ENV->isPadPush(ENV->BUTTON_2))
 		&& turo_flags["Œ@‚é‚QŒÂ–Ú"] == false) {
+		disableNextButton();
 		turo_flags["Œ@‚é‚QŒÂ–Ú"] = true;
 		ui_data["Œ@‚éà–¾‚Q"]->setActive(false);
 		ui_data["ƒRƒ“ƒgƒ[ƒ‰LR"]->setActive(false);
@@ -349,13 +390,15 @@ void TutorialUI::tutorialDrillUpdate(const float & delta_time){
 	if (turo_flags["Œ@‚é‚QŒÂ–Ú"]) {
 		tuto_counts["Œ@‚éà–¾‚QŒÂ–Ú"] += delta_time;
 	}
-
-	if (tuto_counts["Œ@‚éà–¾‚QŒÂ–Ú"] > 5) {
+	if (tuto_counts["Œ@‚éà–¾‚QŒÂ–Ú"] > 3.0f && turo_flags["Œ@‚é"] == false) {
+		enableNextButton();
+	}
+	if (tuto_counts["Œ@‚éà–¾‚QŒÂ–Ú"] > 3.0f
+		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
+			|| ENV->isPadPush(ENV->BUTTON_2))) {
+		disableNextButton();
 		turo_flags["Œ@‚é"] = true;
-		ENV->enableKeyButton();
-		ENV->enablePadAxis();
-		ENV->enablePadButton();
-		ENV->enableMouseButton();
+		tutorial_stan = false;
 		ui_data["ˆÚ“®”Â"]->setActive(false);
 
 		ui_data["Œ@‚éà–¾‚S"]->setActive(false);
@@ -388,10 +431,7 @@ void TutorialUI::tutorialDrillUpdate(const float & delta_time){
 	}
 	if (!ui_data["FadePlateIn"]->getActive()) {
 		now_scene = TUTORIAL::GEM;
-		ENV->disableKeyButton();
-		ENV->disablePadAxis();
-		ENV->disablePadButton();
-		ENV->disableMouseButton();
+		tutorial_stan = true;
 	}
 }
 
@@ -425,10 +465,15 @@ void TutorialUI::tutorialGemUpdate(const float & delta_time) {
 
 		tuto_counts["ƒWƒFƒ€à–¾‚PŒÂ–Ú"] += delta_time;
 	}
+	if (tuto_counts["ƒWƒFƒ€à–¾‚PŒÂ–Ú"] > 3.0f && turo_flags["ƒWƒFƒ€‚QŒÂ–Ú"] == false) {
+		enableNextButton();
+	}
 
-
-	if (tuto_counts["ƒWƒFƒ€à–¾‚PŒÂ–Ú"] > 10
+	if (tuto_counts["ƒWƒFƒ€à–¾‚PŒÂ–Ú"] > 3.0f
+		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
+			|| ENV->isPadPush(ENV->BUTTON_2))
 		&& turo_flags["ƒWƒFƒ€‚QŒÂ–Ú"] == false) {
+		disableNextButton();
 		turo_flags["ƒWƒFƒ€‚QŒÂ–Ú"] = true;
 		ui_data["ƒWƒFƒ€à–¾‚Q"]->setActive(false);
 		ui_data["ƒWƒFƒ€à–¾‚R"]->setActive(false);
@@ -447,8 +492,13 @@ void TutorialUI::tutorialGemUpdate(const float & delta_time) {
 	if (turo_flags["ƒWƒFƒ€‚QŒÂ–Ú"]) {
 		tuto_counts["ƒWƒFƒ€à–¾‚QŒÂ–Ú"] += delta_time;
 	}
-
-	if (tuto_counts["ƒWƒFƒ€à–¾‚QŒÂ–Ú"] > 10) {
+	if (tuto_counts["ƒWƒFƒ€à–¾‚QŒÂ–Ú"] > 3.0f && turo_flags["ƒWƒFƒ€"] == false) {
+		enableNextButton();
+	}
+	if (tuto_counts["ƒWƒFƒ€à–¾‚QŒÂ–Ú"] > 3.0f
+		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
+			|| ENV->isPadPush(ENV->BUTTON_2))) {
+		disableNextButton();
 		turo_flags["ƒWƒFƒ€"] = true;
 
 		ui_data["ˆÚ“®”Â"]->setActive(false);
@@ -462,11 +512,7 @@ void TutorialUI::tutorialGemUpdate(const float & delta_time) {
 
 	if (ui_data["ˆÚ“®”Â"]->getActive() == false && turo_flags["ƒWƒFƒ€"] == true
 		&& turo_flags["ƒWƒFƒ€I—¹"] == false) {
-		
-		ENV->enableKeyButton();
-		ENV->enablePadAxis();
-		ENV->enablePadButton();
-		ENV->enableMouseButton();
+		tutorial_stan = false;
 
 		ui_data["à–¾”Â‚Q"]->setActive(true);
 		ui_data["ƒWƒFƒ€à–¾‚U"]->setActive(true);
@@ -482,10 +528,7 @@ void TutorialUI::tutorialGemUpdate(const float & delta_time) {
 	}
 	if (!ui_data["FadePlateIn"]->getActive()) {
 		now_scene = TUTORIAL::DELIVERY;
-		ENV->disableKeyButton();
-		ENV->disablePadAxis();
-		ENV->disablePadButton();
-		ENV->disableMouseButton();
+		tutorial_stan = true;
 	}
 }
 
@@ -496,7 +539,7 @@ void TutorialUI::tutorialAttackSetup(const float & delta_time)
 	auto packet = new Network::Packet::Request::cReqPlayer();
 	packet->mFormat.playerId = 5;
 	packet->mFormat.position = ci::vec3(Game::Field::WORLD_SIZE.x / 2, Game::Field::WORLD_SIZE.y + 0.5f, 20.0F);
-	packet->mFormat.rotation = ci::vec2(0);
+	packet->mFormat.rotation = ci::quat();
 	Network::cUDPClientManager::getInstance()->send(packet);
 
 	ui_data["à–¾”Â"]->setActive(true);
@@ -527,14 +570,16 @@ void TutorialUI::tutorialAttackUpdate(const float & delta_time)
 
 		tuto_counts["UŒ‚à–¾"] += delta_time;
 	}
+	if (tuto_counts["UŒ‚à–¾"] > 3.0f && turo_flags["UŒ‚"] == false) {
+		enableNextButton();
+	}
 
-
-	if (tuto_counts["UŒ‚à–¾"] > 10) {
+	if (tuto_counts["UŒ‚à–¾"] > 3.0f
+		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
+			|| ENV->isPadPush(ENV->BUTTON_2))) {
+		disableNextButton();
 		turo_flags["UŒ‚"] = true;
-		ENV->enableKeyButton();
-		ENV->enablePadAxis();
-		ENV->enablePadButton();
-		ENV->enableMouseButton();
+		tutorial_stan = false;
 		ui_data["ˆÚ“®”Â"]->setActive(false);
 		ui_data["UŒ‚à–¾‚Q"]->setActive(false);
 
@@ -564,10 +609,7 @@ void TutorialUI::tutorialAttackUpdate(const float & delta_time)
 	}
 	if (!ui_data["FadePlateIn"]->getActive()) {
 		now_scene = TUTORIAL::ITEM;
-		ENV->disableKeyButton();
-		ENV->disablePadAxis();
-		ENV->disablePadButton();
-		ENV->disableMouseButton();
+		tutorial_stan = true;
 	}
 }
 
@@ -614,14 +656,16 @@ void TutorialUI::tutorialDeliveryUpdate(const float & delta_time)
 
 		tuto_counts["”[•ià–¾"] += delta_time;
 	}
+	if (tuto_counts["”[•ià–¾"] > 3.0f && turo_flags["”[•i"] == false) {
+		enableNextButton();
+	}
 
-
-	if (tuto_counts["”[•ià–¾"] > 10) {
+	if (tuto_counts["”[•ià–¾"] > 3.0f
+		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
+			|| ENV->isPadPush(ENV->BUTTON_2))) {
+		disableNextButton();
 		turo_flags["”[•i"] = true;
-		ENV->enableKeyButton();
-		ENV->enablePadAxis();
-		ENV->enablePadButton();
-		ENV->enableMouseButton();
+		tutorial_stan = false;
 		ui_data["ˆÚ“®”Â"]->setActive(false);
 		ui_data["”[•ià–¾‚Q"]->setActive(false);
 		
@@ -651,10 +695,7 @@ void TutorialUI::tutorialDeliveryUpdate(const float & delta_time)
 	}
 	if (!ui_data["FadePlateIn"]->getActive()) {
 		now_scene = TUTORIAL::ATTACK;
-		ENV->disableKeyButton();
-		ENV->disablePadAxis();
-		ENV->disablePadButton();
-		ENV->disableMouseButton();
+		tutorial_stan = true;
 	}
 }
 
@@ -663,7 +704,7 @@ void TutorialUI::tutorialItemSetup(const float & delta_time) {
 	auto packet = new Network::Packet::Request::cReqPlayer();
 	packet->mFormat.playerId = 5;
 	packet->mFormat.position = ci::vec3(Game::Field::WORLD_SIZE.x / 2 - 0.5F, Game::Field::WORLD_SIZE.y + 1.0F, Game::Field::WORLD_SIZE.z - 8.0F );
-	packet->mFormat.rotation = ci::vec2(0);
+	packet->mFormat.rotation = ci::quat();
 	Network::cUDPClientManager::getInstance()->send(packet);
 
 	auto item_pos1 = ci::vec3(Game::Field::WORLD_SIZE.x / 2+2, Game::Field::WORLD_SIZE.y + 0.5f, 20.0F);
@@ -698,10 +739,15 @@ void TutorialUI::tutorialItemUpdate(const float & delta_time) {
 
 		tuto_counts["ƒAƒCƒeƒ€à–¾‚PŒÂ–Ú"] += delta_time;
 	}
+	if (tuto_counts["ƒAƒCƒeƒ€à–¾‚PŒÂ–Ú"] > 3.0f && turo_flags["ƒAƒCƒeƒ€‚QŒÂ–Ú"] == false) {
+		enableNextButton();
+	}
 
-
-	if (tuto_counts["ƒAƒCƒeƒ€à–¾‚PŒÂ–Ú"] > 7
+	if (tuto_counts["ƒAƒCƒeƒ€à–¾‚PŒÂ–Ú"] > 3.0f
+		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
+			|| ENV->isPadPush(ENV->BUTTON_2))
 		&& turo_flags["ƒAƒCƒeƒ€‚QŒÂ–Ú"] == false) {
+		disableNextButton();
 		turo_flags["ƒAƒCƒeƒ€‚QŒÂ–Ú"] = true;
 		ui_data["ƒAƒCƒeƒ€à–¾‚Q"]->setActive(false);
 
@@ -718,8 +764,12 @@ void TutorialUI::tutorialItemUpdate(const float & delta_time) {
 	if (turo_flags["ƒAƒCƒeƒ€‚QŒÂ–Ú"]) {
 		tuto_counts["ƒAƒCƒeƒ€à–¾‚QŒÂ–Ú"] += delta_time;
 	}
-
-	if (tuto_counts["ƒAƒCƒeƒ€à–¾‚QŒÂ–Ú"] > 5) {
+	if (tuto_counts["ƒAƒCƒeƒ€à–¾‚QŒÂ–Ú"] > 3.0f && turo_flags["ƒAƒCƒeƒ€"] == false) {
+		enableNextButton();
+	}
+	if (tuto_counts["ƒAƒCƒeƒ€à–¾‚QŒÂ–Ú"] > 3.0f
+		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
+			|| ENV->isPadPush(ENV->BUTTON_2))) {
 		turo_flags["ƒAƒCƒeƒ€"] = true;
 		
 		ui_data["ˆÚ“®”Â"]->setActive(false);
@@ -734,10 +784,7 @@ void TutorialUI::tutorialItemUpdate(const float & delta_time) {
 
 	if (ui_data["ˆÚ“®”Â"]->getActive() == false && turo_flags["ƒAƒCƒeƒ€"] == true
 		&& turo_flags["ƒAƒCƒeƒ€I—¹"] == false) {
-		ENV->enableKeyButton();
-		ENV->enablePadAxis();
-		ENV->enablePadButton();
-		ENV->enableMouseButton();
+		tutorial_stan = false;
 		ui_data["à–¾”Â‚Q"]->setActive(true);
 		ui_data["ƒAƒCƒeƒ€à–¾‚S"]->setActive(true);
 
@@ -760,10 +807,7 @@ void TutorialUI::tutorialItemUpdate(const float & delta_time) {
 	}
 	if (!ui_data["FadePlateIn"]->getActive()) {
 		now_scene = TUTORIAL::END;
-		ENV->disableKeyButton();
-		ENV->disablePadAxis();
-		ENV->disablePadButton();
-		ENV->disableMouseButton();
+		tutorial_stan = true;
 	}
 }
 void TutorialUI::tutorialEndSetup(const float & delta_time) {

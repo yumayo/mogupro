@@ -12,6 +12,8 @@ void cDebugManager::setup( )
 	mParam->addParam( "FPS", &mFps, true );
 	mParam->addParam( "delta", &mDelta, true );
 	mParam->addParam( "playerPosition", &mPlayerPosition, true );
+	mParam->addParam("sendPlayer", &send_player, true);
+	mParam->addParam("recievePlayer", &resieve_player, true);
 }
 void cDebugManager::update( float delta )
 {
@@ -35,6 +37,8 @@ void cDebugManager::update( float delta )
 
 	//
 	mPlayerPosition = cPlayerManager::getInstance( )->getActivePlayer( )->getPos( );
+	send_player = cPlayerManager::getInstance()->getDebugSendCount();
+	resieve_player = cPlayerManager::getInstance()->getDebugRecieveCount();
 }
 void cDebugManager::draw2d( )
 {

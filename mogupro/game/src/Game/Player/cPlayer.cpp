@@ -17,6 +17,8 @@
 #include <Math/float4x4.h>
 #include <Game/cGameManager.h>
 #include <Resource/cImageManager.h>
+#include <Sound/Wav.h>
+#include <Sound/Stereophonic.h>
 void Game::Player::cPlayer::updatePlayerRotation()
 {
 	ci::vec3 playerYAxis;
@@ -100,8 +102,7 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 		Node::Action::scale_to::create(1, ci::vec3(0.1f)),
 		Node::Action::call_func::create([this, _gemid]() {
 		gem_production_end[_gemid] = true;
-		Resource::cSoundManager::getInstance()->findSe("Player/gem.wav").setGain(0.2f);
-		Resource::cSoundManager::getInstance()->findSe("Player/gem.wav").play();
+		Sound::StereophonicManager::getInstance()->add("gem1" + std::to_string(player_id), ci::app::getAssetPath("Player/gem.wav").string(), mPos);
 	})));
 	
 	gem_id_buf = _gemid;
@@ -175,10 +176,9 @@ void Game::Player::cPlayer::dead()
 		textureType(Particle::ParticleTextureType::SPARK).
 		color(ci::ColorA::white()).
 		moveType(Particle::ParticleType::EXPROTION).count(30).isTrajectory(false));
-	Resource::cSoundManager::getInstance()->findSe("Player/launcher1.wav").setGain(0.2f);
-	Resource::cSoundManager::getInstance()->findSe("Player/rare.wav").setGain(0.2f);
-	Resource::cSoundManager::getInstance()->findSe("Player/launcher1.wav").play();
-	Resource::cSoundManager::getInstance()->findSe("Player/rare.wav").play();
+	Sound::StereophonicManager::getInstance()->add("launcher1" + std::to_string(player_id), ci::app::getAssetPath("SE/Player/launcher1.wav").string(), mPos);
+	Sound::StereophonicManager::getInstance()->add("rare" + std::to_string(player_id), ci::app::getAssetPath("SE/Player/rare.wav").string(), mPos);
+
 }
 
 void Game::Player::cPlayer::respawn(const float & delta_time)
@@ -372,8 +372,7 @@ void Game::Player::cPlayer::receiveDamage(const float & attack, float player_id)
 		textureType(Particle::ParticleTextureType::SPARK).
 		color(ci::ColorA::white()).
 		moveType(Particle::ParticleType::EXPROTION).count(6).isTrajectory(false));
-	Resource::cSoundManager::getInstance()->findSe("Player/damage6.wav").setGain(0.2f);
-	Resource::cSoundManager::getInstance()->findSe("Player/damage6.wav").play();
+	Sound::StereophonicManager::getInstance()->add("damage6" + std::to_string(this->player_id), ci::app::getAssetPath("SE/Player/damage6.wav").string(), mPos);
 }
 
 void Game::Player::cPlayer::weaponUpdae(const float & delta_time)
@@ -410,8 +409,7 @@ void Game::Player::cPlayer::jump(bool flag)
 
 	if (jump_flag == true) {
 		if (mRigidbody.isLanding()) {
-			Resource::cSoundManager::getInstance()->findSe("Player/onground.wav").setGain(0.2f);
-			Resource::cSoundManager::getInstance()->findSe("Player/onground.wav").play();
+			Sound::StereophonicManager::getInstance()->add("onground" + std::to_string(player_id), ci::app::getAssetPath("SE/Player/onground.wav").string(), mPos);
 			mRigidbody.addSpeed( ci::vec3( 0, status.jump_force, 0 ) );
 			jump_flag = false;
 		}

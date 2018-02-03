@@ -51,7 +51,7 @@ void cClientAdapter::recvAllPlayers( )
 		mPlayerSeq = packet->getSequenceId( );
         for ( auto& o : packet->mPlayerFormats )
         {
-			Game::cPlayerManager::getInstance( )->getPlayer( o.playerId )->setPos( o.position );
+			Game::cPlayerManager::getInstance( )->getPlayer( o.playerId )->setPos( o.position,o.rotation );
 			//Game::cPlayerManager::getInstance( )->getPlayer( o.playerId )->setRotate(o.rotation.x, o.rotation.x);
         }
     }
@@ -180,7 +180,7 @@ void cClientAdapter::sendSetQuarry( cinder::vec3 const & position )
     packet->mPlayerId = cPlayerManager::getInstance( )->getActivePlayerId( );
     cUDPClientManager::getInstance( )->send( packet );
 }
-void cClientAdapter::sendPlayer( cinder::vec3 const & position, cinder::vec2 const & rotation )
+void cClientAdapter::sendPlayer( cinder::vec3 const & position, cinder::quat const & rotation )
 {
     auto packet = new cReqPlayer( );
     packet->mFormat.playerId = cPlayerManager::getInstance( )->getActivePlayerId( );

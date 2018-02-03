@@ -170,6 +170,24 @@ class cBase;
 			ci::vec3 getPos() override {
 				return mCollider.getPosition();
 			}
+			void setRotate(const ci::quat quatanion) {
+				rotation = quatanion;
+			}
+
+			void setPos(const ci::vec3 pos, const ci::quat quatanion) {
+				if (active_user) {
+					return;
+				}
+				rotation = quatanion;
+				auto vec = pos - mCollider.getPosition();
+				if (vec.x >= 0.01f ||
+					vec.x <= -0.01f ||
+					vec.z >= 0.01f ||
+					vec.z <= -0.01f) {
+					normalized_player_vec = glm::normalize(vec);
+				}
+				mCollider.setPosition(pos);
+			}
 			void setPos(const ci::vec3 pos) {
 				if (active_user) {
 					return;
@@ -187,7 +205,9 @@ class cBase;
 			float& getPlayerFar() {
 				return player_far;
 			}
-
+			void setActivePlayer(const bool& flag) {
+				active_user = flag;
+			}
 
 			//強制的にその座標にしたいときのセット
 			void settingPosition(const ci::vec3 pos) {
