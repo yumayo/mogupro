@@ -71,6 +71,7 @@ private:
 	PhaseState mPhaseState;
 
 	bool mCanSend;
+	hardptr<Node::node> mBackRoot;
 	hardptr<Node::node> mRoot;
 	hardptr<Node::node> mMemberRoot;
 	bool mAddMember;
@@ -93,6 +94,15 @@ private:
 
 	std::vector<Star> stars;
 	bool wantWatching;
+
+	enum class SceneType
+	{
+		TITLE,
+		GAME_MAIN
+	};
+	SceneType sceneType;
+
 };
+
 }
 }
