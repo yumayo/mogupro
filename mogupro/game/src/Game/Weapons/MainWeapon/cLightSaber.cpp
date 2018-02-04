@@ -200,44 +200,47 @@ void cLightSaber::setup( )
 				gl::draw( attackSphere );
 			};
 
-			auto mat = tumeRoot->get_world_matrix_3d( );
-			auto centerMat = glm::translate( mat, center );
-			center = vec3( centerMat[3][0], centerMat[3][1], centerMat[3][2] );
-			attackSphere.center( center );
-
-			ci::Sphere s( center, radius );
-
-			for ( auto& p : cPlayerManager::getInstance( )->getPlayers( ) )
+			if ( player.getActiveUser( ) )
 			{
-				if ( p.get( ) == &player ) continue;
-				if ( p->getWhichTeam( ) == player.getWhichTeam( ) ) continue;
-				if ( p->isWatching( ) ) continue;
-				if ( s.intersects( p->getAABB( ) ) )
-				{
-					cClientAdapter::getInstance( )->sendDamage( p->getPlayerId( ), 40.0F );
-				}
-			}
+				auto mat = tumeRoot->get_world_matrix_3d( );
+				auto centerMat = glm::translate( mat, center );
+				center = vec3( centerMat[3][0], centerMat[3][1], centerMat[3][2] );
+				attackSphere.center( center );
 
-			ci::Sphere s_plus( vec3( mat[3][0], mat[3][1], mat[3][2] ), 0.5F );
-			for ( auto& gem_ref : cGemManager::getInstance( )->getGemStones( ) )
-			{
-				if ( !gem_ref->isActive( ) ) continue;
-				auto gemAABB = gem_ref->getAabb( ).createAABB( gem_ref->getCenterPos( ) );
-				if ( s.intersects( gemAABB ) || 
-					 s_plus.intersects( gemAABB ) )
+				ci::Sphere s( center, radius );
+
+				for ( auto& p : cPlayerManager::getInstance( )->getPlayers( ) )
 				{
-					for ( auto& f_gem_ref : cGemManager::getInstance( )->breakGemStone( gem_ref->getId( ) ) )
+					if ( p->getPlayerId( ) == player.getPlayerId( ) ) continue;
+					if ( p->getWhichTeam( ) == player.getWhichTeam( ) ) continue;
+					if ( p->isWatching( ) ) continue;
+					if ( s.intersects( p->getAABB( ) ) )
 					{
-						player.getGems( f_gem_ref->getId( ) );
+						cClientAdapter::getInstance( )->sendDamage( p->getPlayerId( ), 40.0F );
 					}
 				}
+
+				ci::Sphere s_plus( vec3( mat[3][0], mat[3][1], mat[3][2] ), 0.5F );
+				for ( auto& gem_ref : cGemManager::getInstance( )->getGemStones( ) )
+				{
+					if ( !gem_ref->isActive( ) ) continue;
+					auto gemAABB = gem_ref->getAabb( ).createAABB( gem_ref->getCenterPos( ) );
+					if ( s.intersects( gemAABB ) ||
+						 s_plus.intersects( gemAABB ) )
+					{
+						for ( auto& f_gem_ref : cGemManager::getInstance( )->breakGemStone( gem_ref->getId( ) ) )
+						{
+							player.getGems( f_gem_ref->getId( ) );
+						}
+					}
+				}
+
+				Resource::SE["Player/aura1.wav"].setLooping( false );
+				Resource::SE["Player/aura1.wav"].stop( );
+
+				Resource::SE["Player/swing2.wav"].setGain( 0.2f );
+				Resource::SE["Player/swing2.wav"].play( );
 			}
-
-			Resource::SE["Player/aura1.wav"].setLooping( false );
-			Resource::SE["Player/aura1.wav"].stop( );
-
-			Resource::SE["Player/swing2.wav"].setGain( 0.2f );
-			Resource::SE["Player/swing2.wav"].play( );
 
 			player.getPlayerAnimation( ).animationChange( "mogura_attack" );
 
@@ -271,39 +274,42 @@ void cLightSaber::setup( )
 				gl::draw( attackSphere );
 			};
 
-			auto mat = tumeRoot->get_world_matrix_3d( );
-			auto centerMat = glm::translate( mat, center );
-			center = vec3( centerMat[3][0], centerMat[3][1], centerMat[3][2] );
-			attackSphere.center( center );
+			if ( player.getActiveUser( ) )
+			{
+				auto mat = tumeRoot->get_world_matrix_3d( );
+				auto centerMat = glm::translate( mat, center );
+				center = vec3( centerMat[3][0], centerMat[3][1], centerMat[3][2] );
+				attackSphere.center( center );
 
-			ci::Sphere s( center, radius );
-			for ( auto& p : cPlayerManager::getInstance( )->getPlayers( ) )
-			{
-				if ( p.get( ) == &player ) continue;
-				if ( p->getWhichTeam( ) == player.getWhichTeam( ) ) continue;
-				if ( p->isWatching( ) ) continue;
-				if ( s.intersects( p->getAABB( ) ) )
+				ci::Sphere s( center, radius );
+				for ( auto& p : cPlayerManager::getInstance( )->getPlayers( ) )
 				{
-					cClientAdapter::getInstance( )->sendDamage( p->getPlayerId( ), 50.0F );
-				}
-			}
-			ci::Sphere s_plus( vec3( mat[3][0], mat[3][1], mat[3][2] ), 0.5F );
-			for ( auto& gem_ref : cGemManager::getInstance( )->getGemStones( ) )
-			{
-				if ( !gem_ref->isActive( ) ) continue;
-				auto gemAABB = gem_ref->getAabb( ).createAABB( gem_ref->getCenterPos( ) );
-				if ( s.intersects( gemAABB ) ||
-					 s_plus.intersects( gemAABB ) )
-				{
-					for ( auto& f_gem_ref : cGemManager::getInstance( )->breakGemStone( gem_ref->getId( ) ) )
+					if ( p->getPlayerId( ) == player.getPlayerId( ) ) continue;
+					if ( p->getWhichTeam( ) == player.getWhichTeam( ) ) continue;
+					if ( p->isWatching( ) ) continue;
+					if ( s.intersects( p->getAABB( ) ) )
 					{
-						player.getGems( f_gem_ref->getId( ) );
+						cClientAdapter::getInstance( )->sendDamage( p->getPlayerId( ), 50.0F );
 					}
 				}
-			}
+				ci::Sphere s_plus( vec3( mat[3][0], mat[3][1], mat[3][2] ), 0.5F );
+				for ( auto& gem_ref : cGemManager::getInstance( )->getGemStones( ) )
+				{
+					if ( !gem_ref->isActive( ) ) continue;
+					auto gemAABB = gem_ref->getAabb( ).createAABB( gem_ref->getCenterPos( ) );
+					if ( s.intersects( gemAABB ) ||
+						 s_plus.intersects( gemAABB ) )
+					{
+						for ( auto& f_gem_ref : cGemManager::getInstance( )->breakGemStone( gem_ref->getId( ) ) )
+						{
+							player.getGems( f_gem_ref->getId( ) );
+						}
+					}
+				}
 
-			Resource::SE["Player/swing2.wav"].setGain( 0.2f );
-			Resource::SE["Player/swing2.wav"].play( );
+				Resource::SE["Player/swing2.wav"].setGain( 0.2f );
+				Resource::SE["Player/swing2.wav"].play( );
+			}
 
 			player.getPlayerAnimation( ).animationChange( "mogura_attack" );
 
@@ -497,59 +503,62 @@ void cLightSaber::update( const float& delta_time )
 	tumeRoot->entry_update( delta_time );
 	tumeBulletRoot->entry_update( delta_time );
 
-	// 爪Bulletとの当たり判定
-	for ( auto& b_holder : tumeBulletRoot->get_children( ) )
+	if ( player.getActiveUser( ) )
 	{
-		auto b = std::dynamic_pointer_cast<tumeBulletNode>( b_holder->get_children( ).front( ) );
-
-		// 爪Bulletとプレイヤーの当たり判定
-		for ( auto& p : cPlayerManager::getInstance( )->getPlayers( ) )
+		// 爪Bulletとの当たり判定
+		for ( auto& b_holder : tumeBulletRoot->get_children( ) )
 		{
-			if ( p.get( ) == &player ) continue;
-			if ( p->getWhichTeam( ) == player.getWhichTeam( ) ) continue;
-			if ( p->isWatching( ) ) continue;
+			auto b = std::dynamic_pointer_cast<tumeBulletNode>( b_holder->get_children( ).front( ) );
 
-			bool collision = false;
-			for ( auto l : b->hitListPlayer )
+			// 爪Bulletとプレイヤーの当たり判定
+			for ( auto& p : cPlayerManager::getInstance( )->getPlayers( ) )
 			{
-				if ( l == p->getPlayerId( ) )
-				{
-					collision = true;
-					break;
-				}
-			}
-			if ( collision == false )
-			{
-				if ( b->attackSphere.intersects( p->getAABB( ) ) )
-				{
-					b->hitListPlayer.emplace_back( p->getPlayerId( ) );
-					cClientAdapter::getInstance( )->sendDamage( p->getPlayerId( ), b->power * 50.0F );
-				}
-			}
-		}
+				if ( p->getPlayerId( ) == player.getPlayerId( ) ) continue;
+				if ( p->getWhichTeam( ) == player.getWhichTeam( ) ) continue;
+				if ( p->isWatching( ) ) continue;
 
-		// 爪Bulletとジェムとの当たり判定
-		for ( auto& gem_ref : cGemManager::getInstance( )->getGemStones( ) )
-		{
-			if ( !gem_ref->isActive( ) ) continue;
-
-			bool collision = false;
-			for ( auto l : b->hitListGem )
-			{
-				if ( l == gem_ref->getId( ) )
+				bool collision = false;
+				for ( auto l : b->hitListPlayer )
 				{
-					collision = true;
-					break;
-				}
-			}
-			if ( collision == false )
-			{
-				if ( b->attackSphere.intersects( gem_ref->getAabb( ).createAABB( gem_ref->getCenterPos( ) ) ) )
-				{
-					b->hitListGem.emplace_back( gem_ref->getId( ) );
-					for ( auto& f_gem_ref : cGemManager::getInstance( )->breakGemStone( gem_ref->getId( ) ) )
+					if ( l == p->getPlayerId( ) )
 					{
-						player.getGems( f_gem_ref->getId( ) );
+						collision = true;
+						break;
+					}
+				}
+				if ( collision == false )
+				{
+					if ( b->attackSphere.intersects( p->getAABB( ) ) )
+					{
+						b->hitListPlayer.emplace_back( p->getPlayerId( ) );
+						cClientAdapter::getInstance( )->sendDamage( p->getPlayerId( ), b->power * 50.0F );
+					}
+				}
+			}
+
+			// 爪Bulletとジェムとの当たり判定
+			for ( auto& gem_ref : cGemManager::getInstance( )->getGemStones( ) )
+			{
+				if ( !gem_ref->isActive( ) ) continue;
+
+				bool collision = false;
+				for ( auto l : b->hitListGem )
+				{
+					if ( l == gem_ref->getId( ) )
+					{
+						collision = true;
+						break;
+					}
+				}
+				if ( collision == false )
+				{
+					if ( b->attackSphere.intersects( gem_ref->getAabb( ).createAABB( gem_ref->getCenterPos( ) ) ) )
+					{
+						b->hitListGem.emplace_back( gem_ref->getId( ) );
+						for ( auto& f_gem_ref : cGemManager::getInstance( )->breakGemStone( gem_ref->getId( ) ) )
+						{
+							player.getGems( f_gem_ref->getId( ) );
+						}
 					}
 				}
 			}
