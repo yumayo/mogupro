@@ -11,7 +11,7 @@ class cGameManager : public Utility::cSingletonAble<cGameManager>
 {
 public:
 	cGameManager( );
-	~cGameManager( );
+	~cGameManager( ) = default;
 public:
 	void setTime( float allUserloadFinishedTime );
 	std::string getLeftBattleTime( );

@@ -14,7 +14,7 @@
 #include <Resource/cSoundManager.h>
 #include <Game/cPlayerManager.h>
 #include <Sound/Wav.h>
-#include <Game/cResultManager.h>
+#include <Scene/Member/cResult.h>
 using namespace cinder;
 using namespace Node::Action;
 namespace Game
@@ -216,18 +216,10 @@ cGameManager::cGameManager( )
 		ENV->enablePadButton( );
 		ENV->enablePadAxis( );
 		root->get_child_by_name( "battle_end_fader" )->run_action( Node::Action::sequence::create( Node::Action::fade_out::create( 1.0F ), Node::Action::remove_self::create( ) ) );
-		cResultManager::getInstance( )->setup( );
-	};
-	result->onStateStay = [ this ] ( auto n )
-	{
-		cResultManager::getInstance( )->update( delta );
+		Scene::cSceneManager::getInstance()->add<Scene::Member::cResult>( );
 	};
 
 	sMac.setEntryNode( load );
-}
-cGameManager::~cGameManager( )
-{
-	cResultManager::removeInstance( );
 }
 void cGameManager::setTime( float allUserloadFinishedTime )
 {
@@ -253,10 +245,6 @@ void cGameManager::update( float delta )
 void cGameManager::draw( )
 {
 	root->entry_render( cinder::mat4( ) );
-	if ( sMac.isCurrentState( "result" ) )
-	{
-		cResultManager::getInstance( )->draw( );
-	}
 }
 bool cGameManager::isInGame( )
 {

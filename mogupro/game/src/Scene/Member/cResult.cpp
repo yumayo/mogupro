@@ -1,4 +1,4 @@
-#include <Game/cResultManager.h>
+#include <Scene/Member/cResult.h>
 #include <Game/cGameManager.h>
 #include <Node/renderer.hpp>
 #include <Game/Player/cPlayer.h>
@@ -11,24 +11,21 @@
 #include <Game/cPlayerManager.h>
 using namespace Node::Renderer;
 using namespace cinder;
-namespace Game
+namespace Scene
 {
-cResultManager::cResultManager( )
+namespace Member
+{
+using namespace cinder;
+void cResult::setup( )
 {
 	root = Node::node::create( );
 	root->set_schedule_update( );
-	root->set_content_size( cinder::app::getWindowSize( ) - ivec2( 100, 100 ) );
-	root->set_scale( cinder::vec2( 1, -1 ) );
-	root->set_position( root->get_content_size( ) * cinder::vec2( -0.5F, 0.5F ) );
-}
-cResultManager::~cResultManager( )
-{
+	root->set_content_size( app::getWindowSize( ) - ivec2( 100, 100 ) );
+	root->set_scale( vec2( 1, -1 ) );
+	root->set_position( root->get_content_size( ) * vec2( -0.5F, 0.5F ) );
 
-}
-void cResultManager::setup( )
-{
 	ColorA winTeamColor, loseTeamColor;
-	switch ( cGameManager::getInstance( )->winTeam( ) )
+	switch ( Game::cGameManager::getInstance( )->winTeam( ) )
 	{
 	case Game::Player::Red:
 		winTeamColor = ColorA( 1, 0, 0 );
@@ -47,10 +44,10 @@ void cResultManager::setup( )
 	win->set_position( root->get_content_size( ) * vec2( 1, 0 ) );
 	win->set_anchor_point( vec2( 1, 0 ) );
 	win->set_pivot( vec2( 0, 0 ) );
-	auto winOffset = cGameManager::getInstance( )->winTeam( ) == Player::Red ? 0 : 4;
-	auto winKillData = cGameManager::getInstance( )->winTeam( ) == Player::Red ? cGameManager::getInstance( )->redTeamKillNum( ) : cGameManager::getInstance( )->blueTeamKillNum( );
-	auto winDeathData = cGameManager::getInstance( )->winTeam( ) == Player::Red ? cGameManager::getInstance( )->redTeamDeathNum( ) : cGameManager::getInstance( )->blueTeamDeathNum( );
-	auto winAppendGemData = cGameManager::getInstance( )->winTeam( ) == Player::Red ? cGameManager::getInstance( )->redTeamAppendGemNum( ) : cGameManager::getInstance( )->blueTeamAppendGemNum( );
+	auto winOffset = Game::cGameManager::getInstance( )->winTeam( ) == Game::Player::Red ? 0 : 4;
+	auto winKillData = Game::cGameManager::getInstance( )->winTeam( ) == Game::Player::Red ? Game::cGameManager::getInstance( )->redTeamKillNum( ) : Game::cGameManager::getInstance( )->blueTeamKillNum( );
+	auto winDeathData = Game::cGameManager::getInstance( )->winTeam( ) == Game::Player::Red ? Game::cGameManager::getInstance( )->redTeamDeathNum( ) : Game::cGameManager::getInstance( )->blueTeamDeathNum( );
+	auto winAppendGemData = Game::cGameManager::getInstance( )->winTeam( ) == Game::Player::Red ? Game::cGameManager::getInstance( )->redTeamAppendGemNum( ) : Game::cGameManager::getInstance( )->blueTeamAppendGemNum( );
 	for ( int i = 0; i < 3; ++i )
 	{
 		auto scr = win->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( u8"result/bar.png" ) ) );
@@ -84,10 +81,10 @@ void cResultManager::setup( )
 	lose->set_color( loseTeamColor );
 	lose->set_anchor_point( vec2( 1, 1 ) );
 	lose->set_pivot( vec2( 0, 0 ) );
-	auto loseOffset = cGameManager::getInstance( )->winTeam( ) == Player::Red ? 4 : 0;
-	auto loseKillData = cGameManager::getInstance( )->winTeam() == Player::Red ? cGameManager::getInstance( )->blueTeamKillNum( ) : cGameManager::getInstance( )->redTeamKillNum( );
-	auto loseDeathData = cGameManager::getInstance( )->winTeam( ) == Player::Red ? cGameManager::getInstance( )->blueTeamDeathNum( ) : cGameManager::getInstance( )->redTeamDeathNum( );
-	auto loseAppendGemData = cGameManager::getInstance( )->winTeam( ) == Player::Red ? cGameManager::getInstance( )->blueTeamAppendGemNum( ) : cGameManager::getInstance( )->redTeamAppendGemNum( );
+	auto loseOffset = Game::cGameManager::getInstance( )->winTeam( ) == Game::Player::Red ? 4 : 0;
+	auto loseKillData = Game::cGameManager::getInstance( )->winTeam( ) == Game::Player::Red ? Game::cGameManager::getInstance( )->blueTeamKillNum( ) : Game::cGameManager::getInstance( )->redTeamKillNum( );
+	auto loseDeathData = Game::cGameManager::getInstance( )->winTeam( ) == Game::Player::Red ? Game::cGameManager::getInstance( )->blueTeamDeathNum( ) : Game::cGameManager::getInstance( )->redTeamDeathNum( );
+	auto loseAppendGemData = Game::cGameManager::getInstance( )->winTeam( ) == Game::Player::Red ? Game::cGameManager::getInstance( )->blueTeamAppendGemNum( ) : Game::cGameManager::getInstance( )->redTeamAppendGemNum( );
 	for ( int i = 0; i < 3; ++i )
 	{
 		auto scr = lose->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( u8"result/bar.png" ) ) );
@@ -116,18 +113,28 @@ void cResultManager::setup( )
 		name->set_position( vec2( 93, 12 ) );
 	}
 }
-void cResultManager::update( float t )
+void cResult::shutDown( )
+{
+}
+void cResult::resize( )
+{
+}
+void cResult::update( float deltaTime )
 {
 	CAMERA->refPosition = Game::Field::WORLD_SIZE * cinder::vec3( 0.5F, 2.5F, 0.5F );
 	CAMERA->setCameraAngle( cinder::vec2( -glm::pi<float>( ) / 2.0F, -glm::pi<float>( ) ) );
-	root->entry_update( t );
+	root->entry_update( deltaTime );
 	if ( ENV->pushKey( ) )
 	{
 		Scene::cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( );
 	}
 }
-void cResultManager::draw( )
+void cResult::draw( )
+{
+}
+void cResult::draw2D( )
 {
 	root->entry_render( ci::mat4( ) );
+}
 }
 }
