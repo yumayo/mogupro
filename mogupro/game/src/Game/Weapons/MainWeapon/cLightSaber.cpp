@@ -228,10 +228,7 @@ void cLightSaber::setup( )
 					if ( s.intersects( gemAABB ) ||
 						 s_plus.intersects( gemAABB ) )
 					{
-						for ( auto& f_gem_ref : cGemManager::getInstance( )->breakGemStone( gem_ref->getId( ) ) )
-						{
-							player.getGems( f_gem_ref->getId( ) );
-						}
+						cClientAdapter::getInstance( )->sendGetGemPlayer( gem_ref->getId( ) );
 					}
 				}
 
@@ -300,10 +297,7 @@ void cLightSaber::setup( )
 					if ( s.intersects( gemAABB ) ||
 						 s_plus.intersects( gemAABB ) )
 					{
-						for ( auto& f_gem_ref : cGemManager::getInstance( )->breakGemStone( gem_ref->getId( ) ) )
-						{
-							player.getGems( f_gem_ref->getId( ) );
-						}
+						cClientAdapter::getInstance( )->sendGetGemPlayer( gem_ref->getId( ) );
 					}
 				}
 
@@ -555,10 +549,7 @@ void cLightSaber::update( const float& delta_time )
 					if ( b->attackSphere.intersects( gem_ref->getAabb( ).createAABB( gem_ref->getCenterPos( ) ) ) )
 					{
 						b->hitListGem.emplace_back( gem_ref->getId( ) );
-						for ( auto& f_gem_ref : cGemManager::getInstance( )->breakGemStone( gem_ref->getId( ) ) )
-						{
-							player.getGems( f_gem_ref->getId( ) );
-						}
+						cClientAdapter::getInstance( )->sendGetGemPlayer( gem_ref->getId( ) );
 					}
 				}
 			}

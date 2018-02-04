@@ -109,9 +109,10 @@ void cClientAdapter::recvAllGems( )
     }
     while ( auto packet = m->EveGetJemPlayer.get( ) )
     {
-		// TODO: プレイヤーが宝石を取得する。
-		packet->mGemId;
-		packet->mPlayerId;
+		for ( auto& gem : cGemManager::getInstance( )->breakGemStone( packet->mGemId ) )
+		{
+			cPlayerManager::getInstance( )->getPlayer(packet->mPlayerId)->getGems( gem->getId() );
+		}
     }
 }
 void cClientAdapter::recvAllBreakBlocks( )
