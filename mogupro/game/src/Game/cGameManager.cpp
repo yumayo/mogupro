@@ -151,7 +151,7 @@ cGameManager::cGameManager( )
 	};
 	battle->join( battle_end, [ this ] ( auto n )
 	{
-		return n->time > 60.0F * 5.0F;
+		return ( n->time > 60.0F * 5.0F ) || redCannonPower >= 100 || blueCannonPower >= 100;
 	} );
 	battle->onStateIn = [ this ] ( auto m )
 	{
@@ -178,6 +178,7 @@ cGameManager::cGameManager( )
 	};
 	battle->onStateOut = [ this ] ( )
 	{
+		ENV->setMouseControl( false );
 		ENV->disableMouseButton( );
 		ENV->disableKeyButton( );
 		ENV->disablePadButton( );
@@ -185,28 +186,35 @@ cGameManager::cGameManager( )
 	};
 	battle_end->join( result, [ this ] ( auto n )
 	{
-		return n->time > 1.0F;
+		return n->time > 3.0F;
 	} );
 	battle_end->onStateIn = [ this ] ( auto m )
 	{
-		auto n = root->add_child( Node::Renderer::rect::create( cinder::app::getWindowSize( ) ) );
-		n->set_color( cinder::ColorA( 0, 0, 0, 0 ) );
-		n->set_position( root->get_content_size( ) / 2.0F );
-		n->set_name( "battle_end_fader" );
-		n->run_action( Node::Action::fade_in::create( 1.0F ) );
+		{
+			auto n = root->add_child( Node::Renderer::rect::create( cinder::app::getWindowSize( ) ) );
+			n->set_color( cinder::ColorA( 0, 0, 0, 0 ) );
+			n->set_position( root->get_content_size( ) / 2.0F );
+			n->set_name( "battle_end_fader" );
+			n->run_action( sequence::create( delay::create( 2.0F ), fade_in::create( 1.0F ) ) );
+		}
+		{
+			auto finish = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 128 ) );
+			finish->set_text( u8"FINISH!!" );
+			finish->set_position( root->get_content_size( ) / 2.0F );
+			finish->run_action( sequence::create( delay::create( 1.0F ), fade_out::create( 1.0F ), remove_self::create( ) ) );
+		}
 	};
-	battle->onStateOut = [ this ] ( )
+	battle_end->onStateOut = [ this ] ( )
 	{
-		ENV->setMouseControl( false );
-		ENV->enableKeyButton( );
-		ENV->enableMouseButton( );
-		ENV->enablePadButton( );
-		ENV->enablePadAxis( );
 		introloopBGM.stop( );
 		cUIManager::getInstance( )->disable( );
 	};
 	result->onStateIn = [ this ] ( auto m )
 	{
+		ENV->enableKeyButton( );
+		ENV->enableMouseButton( );
+		ENV->enablePadButton( );
+		ENV->enablePadAxis( );
 		root->get_child_by_name( "battle_end_fader" )->run_action( Node::Action::sequence::create( Node::Action::fade_out::create( 1.0F ), Node::Action::remove_self::create( ) ) );
 		cResultManager::getInstance( )->setup( );
 	};
