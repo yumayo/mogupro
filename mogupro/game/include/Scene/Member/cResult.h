@@ -21,6 +21,7 @@ public:
 private:
 	hardptr<Node::node> root;
 	hardptr<Node::node> createScoreBoard( int team, bool win, std::vector<std::string> playerNameData, std::vector<int> pointData, std::vector<int> killData, std::vector<int> deathData );
+	void drawCannonPower( float red, float blue );
 };
 }
 }

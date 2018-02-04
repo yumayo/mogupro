@@ -48,6 +48,8 @@ void cShaderManager::uniformUpdate( )
 	if ( !mUseAllLight )
 	{
 		mGlsl->uniform( "uPointLightNum", 0 );
+		mGlsl->uniform( "uLineLightNum", 0 );
+		mGlsl->uniform( "uSpotLightNum", 0 );
 	}
 	else
 	{

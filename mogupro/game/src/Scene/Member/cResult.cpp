@@ -77,6 +77,11 @@ void cResult::update( float deltaTime )
 }
 void cResult::draw( )
 {
+	auto result = Game::cGameManager::getInstance( )->getResult( );
+	auto red = result.first;
+	auto blue = result.second;
+	float sum = red + blue;
+	drawCannonPower( red / sum, blue / sum );
 }
 void cResult::draw2D( )
 {
@@ -115,6 +120,77 @@ hardptr<Node::node> cResult::createScoreBoard( int team, bool win, std::vector<s
 		name->set_position( vec2( 93, 12 ) );
 	}
 	return board;
+}
+
+
+void cResult::drawCannonPower( float red, float blue )
+{
+	geom::Capsule capsule;
+	capsule.radius( 1.0F );
+
+	geom::Torus torus;
+
+	float length = Game::Field::WORLD_SIZE.z - 7 - 7;
+
+	{
+		gl::color( Color( 1, 0, 0 ) );
+
+		auto begin = Game::Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 0.0F ) + vec3( 0, 5, 7 );
+		capsule.set( begin, begin + vec3( 0, 0, length * red ) );
+		gl::draw( capsule );
+
+		torus.radius( 2.2F, 2.0F );
+		gl::pushModelView( );
+		gl::translate( Game::Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 0.0F ) + vec3( 0, 5, 7 ) + vec3( 0, 0, -1 ) );
+		gl::rotate( M_PI * 0.5F, vec3( 1, 0, 0 ) );
+		gl::draw( torus );
+		gl::popModelView( );
+
+		torus.radius( 2.4F, 2.2F );
+		gl::pushModelView( );
+		gl::translate( Game::Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 0.0F ) + vec3( 0, 5, 7 ) + vec3( 0, 0, 0 ) );
+		gl::rotate( M_PI * 0.5F, vec3( 1, 0, 0 ) );
+		gl::draw( torus );
+		gl::popModelView( );
+
+		torus.radius( 2.2F, 2.0F );
+		gl::pushModelView( );
+		gl::translate( Game::Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 0.0F ) + vec3( 0, 5, 7 ) + vec3( 0, 0, 1 ) );
+		gl::rotate( M_PI * 0.5F, vec3( 1, 0, 0 ) );
+		gl::draw( torus );
+		gl::popModelView( );
+	}
+
+	{
+		gl::color( Color( 0, 0, 1 ) );
+
+		auto begin = Game::Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 1.0F ) + vec3( 0, 5, -7 );
+		capsule.set( begin, begin + vec3( 0, 0, -length * blue ) );
+		gl::draw( capsule );
+
+		torus.radius( 2.2F, 2.0F );
+		gl::pushModelView( );
+		gl::translate( Game::Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 1.0F ) + vec3( 0, 5, -7 ) + vec3( 0, 0, 1 ) );
+		gl::rotate( M_PI * 0.5F, vec3( 1, 0, 0 ) );
+		gl::draw( torus );
+		gl::popModelView( );
+
+		torus.radius( 2.4F, 2.2F );
+		gl::pushModelView( );
+		gl::translate( Game::Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 1.0F ) + vec3( 0, 5, -7 ) + vec3( 0, 0, 0 ) );
+		gl::rotate( M_PI * 0.5F, vec3( 1, 0, 0 ) );
+		gl::draw( torus );
+		gl::popModelView( );
+
+		torus.radius( 2.2F, 2.0F );
+		gl::pushModelView( );
+		gl::translate( Game::Field::WORLD_SIZE * vec3( 0.5F, 1.0F, 1.0F ) + vec3( 0, 5, -7 ) + vec3( 0, 0, -1 ) );
+		gl::rotate( M_PI * 0.5F, vec3( 1, 0, 0 ) );
+		gl::draw( torus );
+		gl::popModelView( );
+	}
+
+	gl::color( Color( 1, 1, 1 ) );
 }
 }
 }

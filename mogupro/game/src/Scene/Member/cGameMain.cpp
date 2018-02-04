@@ -230,12 +230,6 @@ void cGameMain::draw( )
 		gl::enableDepthWrite( );
 		Game::cFieldManager::getInstance( )->draw( );
 		Game::cShaderManager::getInstance( )->uniformUpdate( );
-		Game::cStrategyManager::getInstance( )->draw( );
-		Game::cMapObjectManager::getInstance()->draw();
-		Game::cSubWeaponManager::getInstance()->draw();
-		Game::cCapsuleManager::getInstance()->draw();
-        Resource::cFbxManager::getInstance()->testDraw( );
-		skydome.draw( );
 		CAMERA->unBind3D( );
 
 		CAMERA->bind2D( );
@@ -248,6 +242,12 @@ void cGameMain::draw( )
 		gl::enableDepthRead( );
 		gl::enableDepthWrite( );
 		GemManager->draw( );
+		Game::cStrategyManager::getInstance( )->draw( );
+		Game::cMapObjectManager::getInstance( )->draw( );
+		Game::cSubWeaponManager::getInstance( )->draw( );
+		Game::cCapsuleManager::getInstance( )->draw( );
+		Resource::cFbxManager::getInstance( )->testDraw( );
+		skydome.draw( );
 		Game::cPlayerManager::getInstance( )->draw( );
 
 		Particle::cParticleManager::getInstance( )->draw( );
