@@ -15,6 +15,8 @@
 #include <Game/cPlayerManager.h>
 #include <Sound/Wav.h>
 #include <Game/cResultManager.h>
+using namespace cinder;
+using namespace Node::Action;
 namespace Game
 {
 cGameManager::cGameManager( )
@@ -29,11 +31,20 @@ cGameManager::cGameManager( )
 	introloopBGM.create( bgm.data( ), bgm.size( ), 9.63499F, 69.45829F );
 	introloopBGM.gain( 0.3F );
 
-	using namespace Node::Action;
-	addPreUpdate( State::INIT, [ this ] ( float t )
-	{
-		next( );
+	STATE_GENERATE( sMac, load );
+	STATE_GENERATE( sMac, my_team );
+	STATE_GENERATE( sMac, enemy_team );
+	STATE_GENERATE( sMac, ready );
+	STATE_GENERATE( sMac, battle );
+	STATE_GENERATE( sMac, battle_end );
+	STATE_GENERATE( sMac, result );
 
+	load->join( my_team, [ this ] ( auto n )
+	{
+		return Network::cUDPClientManager::getInstance( )->getServerTime( ) > allUserloadFinishedTime;
+	} );
+	load->onStateIn = [ this ] ( auto m )
+	{
 		auto cameraPosition = root->add_child( Node::node::create( ) );
 		cameraPosition->set_schedule_update( );
 		cameraPosition->set_position_3d( Game::Field::WORLD_SIZE * cinder::vec3( 0.4F, 1.0F, 0.4F ) + cinder::vec3( 0, 1.0F, 0 ) );
@@ -56,130 +67,21 @@ cGameManager::cGameManager( )
 
 		auto ruleSpeech = rule->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 64 ) );
 		ruleSpeech->set_text( u8"たくさんジェムを大砲に入れろ" );
-	} );
-	addPreUpdate( State::LOAD, [ this ] ( float t )
+	};
+	load->onStateOut = [ this ] ( )
 	{
-		if ( ENV->pushKey( cinder::app::MouseEvent::RIGHT_DOWN ) )
-		{
-			skipReady( );
-		}
-		// タイマーが来るまで待機します。
-		if ( timeEmpty( ) ) return;
-		if ( shiftSeconds[State::LOAD] < Network::cUDPClientManager::getInstance()->getServerTime( ) )
-		{
-			next( );
-			root->remove_all_children( );
-		}
-	} );
-	addPreUpdate( State::MY_TEAM, [ this ] ( float t )
-	{
-		if ( shiftSeconds[State::MY_TEAM] < Network::cUDPClientManager::getInstance()->getServerTime( ) )
-		{
-			next( );
-		}
-	} );
-	addPreUpdate( State::ENEMY_TEAM, [ this ] ( float t )
-	{
-		if ( shiftSeconds[State::ENEMY_TEAM] < Network::cUDPClientManager::getInstance()->getServerTime( ) )
-		{
-			next( );
-			root->remove_all_children( );
-
-			switch ( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) )
-			{
-			case Player::Red:
-				CAMERA->setCameraAngle( cinder::vec2( 0, 0 ) );
-				break;
-			case Player::Blue:
-				CAMERA->setCameraAngle( cinder::vec2( -glm::pi<float>( ), 0 ) );
-				break;
-			default:
-				break;
-			}
-
-			ENV->setMouseControl( true );
-			auto ready = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 128 ) );
-			ready->set_text( u8"ready" );
-			ready->set_position( root->get_content_size( ) / 2.0F );
-			ready->run_action( sequence::create( delay::create( 2.0F ), remove_self::create( ) ) );
-		}
-	} );
-	addPreUpdate( State::READY, [ this ] ( float t )
-	{
-		if ( shiftSeconds[State::READY] < Network::cUDPClientManager::getInstance()->getServerTime( ) )
-		{
-			next( );
-			root->remove_all_children( );
-
-			ENV->enableKeyButton( );
-			ENV->enablePadAxis( );
-			ENV->enablePadButton( );
-			ENV->enableMouseButton();
-			cUIManager::getInstance( )->enable( );
-			auto go = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 128 ) );
-			go->set_text( u8"GO!!" );
-			go->set_position( root->get_content_size( ) / 2.0F );
-			go->run_action( sequence::create( delay::create( 2.0F ), fade_out::create( 1.0F ), remove_self::create( ) ) );
-			introloopBGM.play( );
-		}
-	} );
-	addPreUpdate( State::BATTLE, [ this ] ( float t )
-	{
-		if ( ENV->pushKey( cinder::app::KeyEvent::KEY_RETURN ) )
-		{
-			skipBattle( );
-		}
-		if ( shiftSeconds[State::BATTLE] < Network::cUDPClientManager::getInstance()->getServerTime( ) )
-		{
-			next( );
-
-			ENV->disableMouseButton( );
-			ENV->disableKeyButton( );
-			ENV->disablePadButton( );
-			ENV->disablePadAxis( );
-
-			if ( root->get_child_by_name( "fader" ) ) return;
-			auto n = root->add_child( Node::Renderer::rect::create( cinder::app::getWindowSize( ) ) );
-			n->set_color( cinder::ColorA( 0, 0, 0, 0 ) );
-			n->set_name( "fader" );
-			n->set_position( root->get_content_size( ) / 2.0F );
-			n->run_action( Node::Action::sequence::create( Node::Action::fade_in::create( 1.0F ), Node::Action::call_func::create( [ this ]
-			{
-				next( );
-
-				ENV->setMouseControl( false );
-
-				ENV->enableKeyButton( );
-				ENV->enableMouseButton( );
-				ENV->enablePadButton( );
-				ENV->enablePadAxis( );
-				introloopBGM.stop( );
-				cUIManager::getInstance( )->disable( );
-				root->get_child_by_name( "fader" )->run_action( Node::Action::sequence::create( Node::Action::fade_out::create( 1.0F ), Node::Action::remove_self::create( ) ) );
-				cResultManager::getInstance( )->setup( );
-			} ) ) );
-		}
-	} );
-	addPreUpdate( State::BATTLE_END, [ this ] ( float t )
-	{
-		if ( shiftSeconds[State::BATTLE_END] < Network::cUDPClientManager::getInstance()->getServerTime( ) )
-		{
-			next( );
-		}
-	} );
-	addPreUpdate( State::RESULT, [ this ] ( float t )
-	{
-
-	} );
-	addUpdate( State::INIT, [ this ] ( float t )
-	{
-	} );
-	addUpdate( State::LOAD, [ this ] ( float t )
+		root->remove_all_children( );
+	};
+	load->onStateStay = [ this ] ( auto n )
 	{
 		CAMERA->refPosition = root->get_child_by_name( "cameraPosition" )->get_position_3d( );
 		CAMERA->setCameraAngle( root->get_child_by_name( "cameraAngle" )->get_position( ) );
+	};
+	my_team->join( enemy_team, [ this ] ( auto n )
+	{
+		return n->time > 2.0F;
 	} );
-	addUpdate( State::MY_TEAM, [ this ] ( float t )
+	my_team->onStateStay = [ this ] ( auto n )
 	{
 		switch ( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) )
 		{
@@ -194,8 +96,16 @@ cGameManager::cGameManager( )
 		default:
 			break;
 		}
+	};
+	enemy_team->join( ready, [ this ] ( auto n )
+	{
+		return n->time > 2.0F;
 	} );
-	addUpdate( State::ENEMY_TEAM, [ this ] ( float t )
+	enemy_team->onStateOut = [ this ] ( )
+	{
+		root->remove_all_children( );
+	};
+	enemy_team->onStateStay = [ this ] ( auto n )
 	{
 		switch ( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) )
 		{
@@ -210,108 +120,132 @@ cGameManager::cGameManager( )
 		default:
 			break;
 		}
-	} );
-	addUpdate( State::READY, [ this ] ( float t )
+	};
+	ready->join( battle, [ this ] ( auto n )
 	{
+		return n->time > 2.0F;
 	} );
-	addUpdate( State::BATTLE, [ this ] ( float t )
+	ready->onStateIn = [ this ]( auto m )
 	{
+		switch ( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) )
+		{
+		case Player::Red:
+			CAMERA->setCameraAngle( cinder::vec2( 0, 0 ) );
+			break;
+		case Player::Blue:
+			CAMERA->setCameraAngle( cinder::vec2( -glm::pi<float>( ), 0 ) );
+			break;
+		default:
+			break;
+		}
 
-	} );
-	addUpdate( State::BATTLE_END, [ this ] ( float t )
+		ENV->setMouseControl( true );
+		auto ready = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 128 ) );
+		ready->set_text( u8"ready" );
+		ready->set_position( root->get_content_size( ) / 2.0F );
+		ready->run_action( sequence::create( delay::create( 2.0F ), remove_self::create( ) ) );
+	};
+	ready->onStateOut = [ this ] ( )
 	{
+		root->remove_all_children( );
+	};
+	battle->join( battle_end, [ this ] ( auto n )
+	{
+		return n->time > 60.0F * 5.0F;
+	} );
+	battle->onStateIn = [ this ] ( auto m )
+	{
+		battleStartTime = Network::cUDPClientManager::getInstance( )->getServerTime( );
 
-	} );
-	addUpdate( State::RESULT, [ this ] ( float t )
+		ENV->enableKeyButton( );
+		ENV->enablePadAxis( );
+		ENV->enablePadButton( );
+		ENV->enableMouseButton( );
+		cUIManager::getInstance( )->enable( );
+
+		auto go = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 128 ) );
+		go->set_text( u8"GO!!" );
+		go->set_position( root->get_content_size( ) / 2.0F );
+		go->run_action( sequence::create( delay::create( 2.0F ), fade_out::create( 1.0F ), remove_self::create( ) ) );
+		introloopBGM.play( );
+	};
+	battle->onStateOut = [ this ] ( )
 	{
-		cResultManager::getInstance( )->update( t );
+		ENV->disableMouseButton( );
+		ENV->disableKeyButton( );
+		ENV->disablePadButton( );
+		ENV->disablePadAxis( );
+	};
+	battle_end->join( result, [ this ] ( auto n )
+	{
+		return n->time > 1.0F;
 	} );
+	battle_end->onStateIn = [ this ] ( auto m )
+	{
+		auto n = root->add_child( Node::Renderer::rect::create( cinder::app::getWindowSize( ) ) );
+		n->set_color( cinder::ColorA( 0, 0, 0, 0 ) );
+		n->set_position( root->get_content_size( ) / 2.0F );
+		n->set_name( "battle_end_fader" );
+		n->run_action( Node::Action::fade_in::create( 1.0F ) );
+	};
+	battle->onStateOut = [ this ] ( )
+	{
+		ENV->setMouseControl( false );
+		ENV->enableKeyButton( );
+		ENV->enableMouseButton( );
+		ENV->enablePadButton( );
+		ENV->enablePadAxis( );
+		introloopBGM.stop( );
+		cUIManager::getInstance( )->disable( );
+	};
+	result->onStateIn = [ this ] ( auto m )
+	{
+		root->get_child_by_name( "battle_end_fader" )->run_action( Node::Action::sequence::create( Node::Action::fade_out::create( 1.0F ), Node::Action::remove_self::create( ) ) );
+		cResultManager::getInstance( )->setup( );
+	};
+	result->onStateStay = [ this ] ( auto n )
+	{
+		cResultManager::getInstance( )->update( delta );
+	};
+
+	sMac.setEntryNode( load );
 }
 cGameManager::~cGameManager( )
 {
 	cResultManager::removeInstance( );
 }
-void cGameManager::setTime( float loadTime )
+void cGameManager::setTime( float allUserloadFinishedTime )
 {
-	auto myTeam = loadTime + 2.0F;
-	auto enemyTeam = myTeam + 2.0F;
-	auto ready = enemyTeam + 2.0F;
-	auto battle = ready + 60.0F * 5.0F;
-	auto battleEnd = battle + 3.0F;
-	auto result = battleEnd + 3.0F;
-
-	shiftSeconds[State::LOAD] = loadTime;
-	shiftSeconds[State::MY_TEAM] = myTeam;
-	shiftSeconds[State::ENEMY_TEAM] = enemyTeam;
-	shiftSeconds[State::READY] = ready;
-	shiftSeconds[State::BATTLE] = battle;
-	shiftSeconds[State::BATTLE_END] = battleEnd;
-	shiftSeconds[State::RESULT] = result;
+	this->allUserloadFinishedTime = allUserloadFinishedTime;
 }
 std::string cGameManager::getLeftBattleTime( )
 {
-	auto duration = shiftSeconds[State::BATTLE] - Network::cUDPClientManager::getInstance()->getServerTime( );
+	auto duration = ( battleStartTime + 60.0F * 5.0F ) - Network::cUDPClientManager::getInstance()->getServerTime( );
 	if ( duration < 0.0F )
 	{
 		return "00:00";
 	}
 	return boost::str( boost::format( "%02d:%02d" ) % (int)( duration / 60.0F ) % (int)( std::fmodf( duration, 60.0F ) ) );
 }
-void cGameManager::preUpdate( float delta )
-{
-	flash = false;
-	mPreUpdates[state]( delta );
-}
 void cGameManager::update( float delta )
 {
+	this->delta = delta;
+
 	root->entry_update( delta );
 	introloopBGM.update( delta );
-	mUpdates[state]( delta );
+	sMac.update( delta );
 }
 void cGameManager::draw( )
 {
 	root->entry_render( cinder::mat4( ) );
-	if ( state == State::RESULT )
+	if ( sMac.isCurrentState( "result" ) )
 	{
 		cResultManager::getInstance( )->draw( );
 	}
 }
-void cGameManager::skipReady( )
-{
-	auto now = Network::cUDPClientManager::getInstance()->getServerTime( );
-	shiftSeconds[State::LOAD] = shiftSeconds[State::MY_TEAM] = shiftSeconds[State::ENEMY_TEAM] = shiftSeconds[State::READY] = now;
-	shiftSeconds[State::BATTLE] = shiftSeconds[State::READY] + 60.0F * 5.0F;
-	shiftSeconds[State::BATTLE_END] = shiftSeconds[State::BATTLE] + 3.0F;
-	shiftSeconds[State::RESULT] = shiftSeconds[State::BATTLE_END] + 3.0F;
-}
-void cGameManager::skipBattle( )
-{
-	auto now = Network::cUDPClientManager::getInstance( )->getServerTime( );
-	shiftSeconds[State::LOAD] = shiftSeconds[State::MY_TEAM] = shiftSeconds[State::ENEMY_TEAM] = shiftSeconds[State::READY] = shiftSeconds[State::BATTLE] = now;
-	shiftSeconds[State::BATTLE_END] = shiftSeconds[State::BATTLE] + 3.0F;
-	shiftSeconds[State::RESULT] = shiftSeconds[State::BATTLE_END] + 3.0F;
-}
-void cGameManager::addPreUpdate( State state, std::function<void( float )> method )
-{
-	mPreUpdates.insert( std::make_pair( state, method ) );
-}
-void cGameManager::addUpdate( State state, std::function<void( float )> method )
-{
-	mUpdates.insert( std::make_pair( state, method ) );
-}
-void cGameManager::next( )
-{
-	flash = true;
-	prevState = state;
-	state = static_cast<State>( static_cast<int>( state ) + 1 );
-}
-bool cGameManager::timeEmpty( )
-{
-	return shiftSeconds.find( state ) == shiftSeconds.end( );
-}
 bool cGameManager::isInGame( )
 {
-	return state == State::BATTLE;
+	return sMac.isCurrentState( "battle" );
 }
 void cGameManager::addRedCannonPower( int value )
 {

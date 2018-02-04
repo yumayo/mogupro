@@ -7,10 +7,13 @@
 #include <Scene/Member/cBegin.h>
 #include <Utility/cScheduler.h>
 #include <Resource/cJsonManager.h>
+#include <Game/cDebugManager.h>
 class gameApp : public cinder::app::App
 {
 private:
     float prevSeconds = 0.0F;
+	float debugDelta = 0.016F;
+	bool useDebugDelta = false;
 public:
     void setup( ) override;
     void mouseDown( cinder::app::MouseEvent event ) override;
@@ -26,6 +29,9 @@ public:
 void gameApp::setup( )
 {
 	ENV->setup( );
+	Game::cDebugManager::getInstance( )->setup( );
+	Game::cDebugManager::getInstance( )->mParam->addParam( "DebugUseDelta", &useDebugDelta );
+	Game::cDebugManager::getInstance( )->mParam->addParam( "DebugDelta", &debugDelta );
     Scene::cSceneManager::getInstance( )->shift<Scene::Member::cBegin>( );
 }
 void gameApp::mouseDown( cinder::app::MouseEvent event )
@@ -62,6 +68,11 @@ void gameApp::update( )
 	float elapsedSeconds = cinder::app::getElapsedSeconds( );
     float delta = elapsedSeconds - prevSeconds;
     prevSeconds = elapsedSeconds;
+
+	if ( useDebugDelta )
+	{
+		delta = debugDelta;
+	}
 
 	ENV->preUpdate( delta );
 

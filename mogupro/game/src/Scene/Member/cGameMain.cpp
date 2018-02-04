@@ -48,7 +48,6 @@ cGameMain::cGameMain( )
 void cGameMain::setup( )
 {
 	Game::cUIManager::getInstance( )->awake( );
-	Game::cDebugManager::getInstance( )->setup( );
 	Sound::StereophonicManager::getInstance()->open();
 	Resource::cFbxManager::getInstance( )->setup( );
 
@@ -149,11 +148,6 @@ void cGameMain::update( float deltaTime )
 		
 		cTimeMeasurement::getInstance()->make();
 		console() << "Network Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
-
-		// 他のアップデートよりも先に行います。
-		Game::cGameManager::getInstance( )->preUpdate( deltaTime );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cGameManager preUpdate Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 
 		Game::cDebugManager::getInstance( )->update( deltaTime );
 		cTimeMeasurement::getInstance()->make();
