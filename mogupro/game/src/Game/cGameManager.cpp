@@ -169,6 +169,13 @@ cGameManager::cGameManager( )
 		go->run_action( sequence::create( delay::create( 2.0F ), fade_out::create( 1.0F ), remove_self::create( ) ) );
 		introloopBGM.play( );
 	};
+	battle->onStateStay = [ this ] ( auto n )
+	{
+		if ( ENV->pushKey( app::KeyEvent::KEY_RETURN ) )
+		{
+			n->time = 60.0F * 5.0F;
+		}
+	};
 	battle->onStateOut = [ this ] ( )
 	{
 		ENV->disableMouseButton( );

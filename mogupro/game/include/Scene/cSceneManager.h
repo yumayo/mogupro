@@ -23,11 +23,15 @@ public:
 
 	void update( float delta )
 	{
+		mIsInUpdate = true;
+
 		for ( auto& scene : mSceneBases )
 		{
 			scene->update( delta );
 		}
 		mDontDestroyOnLoad->update( delta );
+
+		mIsInUpdate = false;
 	}
 	void draw( )
 	{
@@ -91,36 +95,50 @@ public:
 		}
 	}
 
+	class SceneDeleted : public std::runtime_error
+	{
+	public:
+		SceneDeleted( ) : std::runtime_error( "シーンを削除しました。" )
+		{
+		}
+	};
+
 	template<class TyScene, class... Args>
 	void shift( Args... args )
 	{
+		// 全てのシーンのシャットダウン
 		for ( auto& scene : mSceneBases )
 		{
 			scene->shutDown( );
 		}
+
+		// 入力を遮断
 		ENV->flashInput( );
 
-		change<TyScene>( args... );
-
-		for ( auto& scene : mSceneBases )
-		{
-			scene->setup( );
-		}
-	}
-private:
-	std::vector<std::shared_ptr<cSceneBase>> mSceneBases;
-	std::shared_ptr<cSceneBase> mDontDestroyOnLoad;
-
-	// setupとshutDownは必ず呼びたいためprivateに.
-	template<class TyScene, class... Args>
-	void change( Args...args )
-	{
+		// 全てのシーンを削除
 		auto it = mSceneBases.begin( );
 		while ( it != mSceneBases.end( ) )
 		{
 			it = mSceneBases.erase( it );
 		}
+
+		// 新しいシーンを作成
 		mSceneBases.emplace_back( std::make_shared<TyScene>( args... ) );
-	};
+
+		// 全てのシーンのセットアップ
+		for ( auto& scene : mSceneBases )
+		{
+			scene->setup( );
+		}
+
+		if ( mIsInUpdate )
+		{
+			throw SceneDeleted( );
+		}
+	}
+private:
+	std::vector<std::shared_ptr<cSceneBase>> mSceneBases;
+	std::shared_ptr<cSceneBase> mDontDestroyOnLoad;
+	bool mIsInUpdate = false;
 };
 }
