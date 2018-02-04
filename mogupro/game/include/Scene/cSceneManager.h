@@ -4,6 +4,7 @@
 #include <memory>
 #include "cSceneBase.h"
 #include <Utility/cInput.h>
+#include <algorithm>
 
 //! @file cSceneManager
 //! @brief Scene切り替えを含め現在のSceneのすべてを管理するクラスです
@@ -20,18 +21,52 @@ class cSceneManager : public Utility::cSingletonAble<cSceneManager>
 public:
 	cSceneManager( );
 	~cSceneManager( );
-
+private:
+	class SceneRemoveSelf : public std::runtime_error
+	{
+	public:
+		SceneRemoveSelf( ) : std::runtime_error( "シーンを追加しました。" )
+		{
+		}
+	};
+	class SceneAllDeleted : public std::runtime_error
+	{
+	public:
+		SceneAllDeleted( ) : std::runtime_error( "シーンを削除しました。" )
+		{
+		}
+	};
+public:
+	class SceneNotFound : public std::runtime_error
+	{
+	public:
+		SceneNotFound( ) : std::runtime_error( "シーンが見つかりません。" )
+		{
+		}
+	};
 	void update( float delta )
 	{
-		mIsInUpdate = true;
-
-		for ( auto& scene : mSceneBases )
+		try
 		{
-			scene->update( delta );
+			iteration = true;
+			for ( iterator = 0; iterator < mSceneBases.size( ); ++iterator )
+			{
+				try
+				{
+					mSceneBases[iterator]->update( delta );
+				}
+				catch ( SceneRemoveSelf const& )
+				{
+					// nothing
+				}
+			}
+			iteration = false;
+			mDontDestroyOnLoad->update( delta );
 		}
-		mDontDestroyOnLoad->update( delta );
-
-		mIsInUpdate = false;
+		catch ( SceneAllDeleted const& )
+		{
+			this->update( delta );
+		}
 	}
 	void draw( )
 	{
@@ -50,13 +85,6 @@ public:
 		mDontDestroyOnLoad->draw2D( );
 	}
 
-	class SceneNotFound : public std::runtime_error
-	{
-	public:
-		SceneNotFound( ) : std::runtime_error( "シーンが見つかりません。" )
-		{
-		}
-	};
 	template<class TyScene>
 	TyScene& find( )
 	{
@@ -83,25 +111,24 @@ public:
 	template<class TyScene>
 	void erase( )
 	{
-		auto it = mSceneBases.begin( );
-		while ( it != mSceneBases.end( ) )
+		if ( mSceneBases.empty( ) ) return;
+		auto erase_itr = std::find_if( mSceneBases.begin(), mSceneBases.end(), [ this ] ( std::shared_ptr<cSceneBase>& scene )
 		{
-			if ( ( *it )->getName( ) == typeid( TyScene ).name( ) )
-			{
-				(*it)->shutDown( );
-				it = mSceneBases.erase( it );
-			}
-			else ++it;
+			return scene->getName() == typeid( TyScene ).name( );
+		} );
+		if ( erase_itr == mSceneBases.end( ) ) return;
+		auto index = std::distance( mSceneBases.begin( ), erase_itr );
+		mSceneBases[index]->shutDown( );
+		if ( iteration )
+		{
+			if ( index == iterator ) { mSceneBases.erase( mSceneBases.begin( ) + index ); iterator--; throw SceneRemoveSelf( ); }
+			else { mSceneBases.erase( mSceneBases.begin( ) + index ); if ( index < iterator ) iterator--; }
+		}
+		else
+		{
+			mSceneBases.erase( mSceneBases.begin( ) + index );
 		}
 	}
-
-	class SceneDeleted : public std::runtime_error
-	{
-	public:
-		SceneDeleted( ) : std::runtime_error( "シーンを削除しました。" )
-		{
-		}
-	};
 
 	template<class TyScene, class... Args>
 	void shift( Args... args )
@@ -131,14 +158,12 @@ public:
 			scene->setup( );
 		}
 
-		if ( mIsInUpdate )
-		{
-			throw SceneDeleted( );
-		}
+		throw SceneAllDeleted( );
 	}
 private:
 	std::vector<std::shared_ptr<cSceneBase>> mSceneBases;
 	std::shared_ptr<cSceneBase> mDontDestroyOnLoad;
-	bool mIsInUpdate = false;
+	int iterator = 0;
+	bool iteration = false;
 };
 }

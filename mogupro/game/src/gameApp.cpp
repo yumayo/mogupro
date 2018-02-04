@@ -26,7 +26,7 @@ public:
 void gameApp::setup( )
 {
 	ENV->setup( );
-    Scene::cSceneManager::getInstance( )->shift<Scene::Member::cBegin>( );
+    Scene::cSceneManager::getInstance( )->add<Scene::Member::cBegin>( );
 }
 void gameApp::mouseDown( cinder::app::MouseEvent event )
 {
@@ -65,16 +65,9 @@ void gameApp::update( )
 
 	ENV->preUpdate( delta );
 
-	try
-	{
-		Scene::cSceneManager::getInstance( )->update( delta );
-		CAMERA->update( delta );
-		Utility::cScheduler::getInstance( )->update( delta );
-	}
-	catch ( Scene::cSceneManager::SceneDeleted const& sceneDeleted )
-	{
-
-	}
+	Scene::cSceneManager::getInstance( )->update( delta );
+	CAMERA->update( delta );
+	Utility::cScheduler::getInstance( )->update( delta );
 }
 void gameApp::draw( )
 {
