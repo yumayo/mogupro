@@ -34,12 +34,12 @@ public:
 	void death( int playerId );
 	void appendGem( int playerId, int gemNum );
 	std::pair<int, int> getResult( );
-	std::map<int, int> redTeamKillNum( );
-	std::map<int, int> redTeamDeathNum( );
-	std::map<int, int> redTeamAppendGemNum( );
-	std::map<int, int> blueTeamKillNum( );
-	std::map<int, int> blueTeamDeathNum( );
-	std::map<int, int> blueTeamAppendGemNum( );
+	std::vector<int> getRedTeamKillData( );
+	std::vector<int> getRedTeamDeathData( );
+	std::vector<int> getRedTeamAppendGemData( );
+	std::vector<int> getBlueTeamKillData( );
+	std::vector<int> getBlueTeamDeathData( );
+	std::vector<int> getBlueTeamAppendGemData( );
 private:
 	int redCannonPower = 0;
 	int blueCannonPower = 0;

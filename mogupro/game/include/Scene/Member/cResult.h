@@ -20,6 +20,7 @@ public:
 	inline std::string const getName( ) { return typeid( *this ).name( ); }
 private:
 	hardptr<Node::node> root;
+	hardptr<Node::node> createScoreBoard( int team, bool win, std::vector<std::string> playerNameData, std::vector<int> pointData, std::vector<int> killData, std::vector<int> deathData );
 };
 }
 }

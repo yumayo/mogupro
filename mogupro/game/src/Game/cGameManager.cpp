@@ -309,57 +309,57 @@ std::pair<int, int> cGameManager::getResult( )
 {
 	return std::make_pair( redCannonPower, blueCannonPower );
 }
-std::map<int, int> cGameManager::redTeamKillNum( )
+std::vector<int> cGameManager::getRedTeamKillData( )
 {
-	std::map<int, int> ret;
+	std::vector<int> ret;
 	for ( int i = 0; i < 3; ++i )
 	{
-		ret[i] = killNum[i];
+		ret.emplace_back( killNum[i] );
 	}
 	return ret;
 }
-std::map<int, int> cGameManager::redTeamDeathNum( )
+std::vector<int> cGameManager::getRedTeamDeathData( )
 {
-	std::map<int, int> ret;
+	std::vector<int> ret;
 	for ( int i = 0; i < 3; ++i )
 	{
-		ret[i] = deathNum[i];
+		ret.emplace_back( deathNum[i] );
 	}
 	return ret;
 }
-std::map<int, int> cGameManager::redTeamAppendGemNum( )
+std::vector<int> cGameManager::getRedTeamAppendGemData( )
 {
-	std::map<int, int> ret;
+	std::vector<int> ret;
 	for ( int i = 0; i < 3; ++i )
 	{
-		ret[i] = appendGemNum[i];
+		ret.emplace_back( appendGemNum[i] );
 	}
 	return ret;
 }
-std::map<int, int> cGameManager::blueTeamKillNum( )
+std::vector<int> cGameManager::getBlueTeamKillData( )
 {
-	std::map<int, int> ret;
+	std::vector<int> ret;
 	for ( int i = 4; i < 7; ++i )
 	{
-		ret[i] = killNum[i];
+		ret.emplace_back( killNum[i] );
 	}
 	return ret;
 }
-std::map<int, int> cGameManager::blueTeamDeathNum( )
+std::vector<int> cGameManager::getBlueTeamDeathData( )
 {
-	std::map<int, int> ret;
+	std::vector<int> ret;
 	for ( int i = 4; i < 7; ++i )
 	{
-		ret[i] = deathNum[i];
+		ret.emplace_back( deathNum[i] );
 	}
 	return ret;
 }
-std::map<int, int> cGameManager::blueTeamAppendGemNum( )
+std::vector<int> cGameManager::getBlueTeamAppendGemData( )
 {
-	std::map<int, int> ret;
+	std::vector<int> ret;
 	for ( int i = 4; i < 7; ++i )
 	{
-		ret[i] = appendGemNum[i];
+		ret.emplace_back( appendGemNum[i] );
 	}
 	return ret;
 }
