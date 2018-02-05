@@ -96,8 +96,10 @@ void cClientAdapter::recvAllGems( )
     }
     while ( auto packet = m->EveGetJemPlayer.get( ) )
     {
+		app::console() << "breakGemStone " << packet->mGemId << std::endl;
 		for ( auto& gem : cGemManager::getInstance( )->breakGemStone( packet->mGemId ) )
 		{
+			app::console() << "breakGemStonefrag " << gem->getId() << std::endl;
 			cPlayerManager::getInstance( )->getPlayer(packet->mPlayerId)->getGems( gem->getId() );
 		}
     }

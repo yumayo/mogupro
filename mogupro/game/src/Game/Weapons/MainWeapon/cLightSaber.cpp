@@ -228,6 +228,7 @@ void cLightSaber::setup( )
 					if ( s.intersects( gemAABB ) ||
 						 s_plus.intersects( gemAABB ) )
 					{
+						app::console() << "sendGetGemPlayer " << gem_ref->getId() << std::endl;
 						cClientAdapter::getInstance( )->sendGetGemPlayer( gem_ref->getId( ) );
 					}
 				}

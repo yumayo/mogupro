@@ -41,7 +41,7 @@ cGameManager::cGameManager( )
 
 	load->join( my_team, [ this ] ( auto n )
 	{
-		return Network::cUDPClientManager::getInstance( )->getServerTime( ) > allUserloadFinishedTime;
+		return Network::cUDPClientManager::getInstance( )->getServerTime( ) > allUserloadFinishedTime + 4.0F;
 	} );
 	load->onStateIn = [ this ] ( auto m )
 	{

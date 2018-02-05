@@ -107,6 +107,10 @@ void cServerAdapter::sendGetGemPlayer( )
 			eventPack->mGemId = packet->mGemId;
 			Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
 		}
+		else
+		{
+			cinder::app::console() << "stoneGemInsert faild " << packet->mGemId << std::endl;
+		}
 	}
 }
 void cServerAdapter::sendGetGemQuarry( )
