@@ -141,7 +141,7 @@ void cClientAdapter::recvAllCannons( )
 	auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
 	while ( auto packet = m->EveAddCannonPower.get( ) )
 	{
-		cPlayerManager::getInstance()->receiveAddCannonPower();
+		cPlayerManager::getInstance()->receiveAddCannonPower( packet->playerId );
 		if ( packet->playerId < 4 )
 		{
 			cGameManager::getInstance( )->addRedCannonPower( packet->power );

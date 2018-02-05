@@ -51,15 +51,7 @@ namespace Weapons
 		{
 			for (int i = 0; i < Game::cGemManager::getInstance()->getGemStones().size(); i++) {
 				if (glm::distance2(mPos, Game::cGemManager::getInstance()->getGemStones()[i]->getPos()) < mExprosionLength*1.5f) {
-
-					auto gems = Game::cGemManager::getInstance()->breakGemStone(Game::cGemManager::getInstance()->getGemStones()[i]->getId());
-					
-					for (int j = 0; j < gems.size(); j++) {
-						Game::cPlayerManager::getInstance()->getPlayers()[mPlayerId]->gem_production_end[gems[j]->getId()];
-						Game::cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getGems(gems[j]->getId());
-					}
-
-					
+					cClientAdapter::getInstance()->sendGetGemPlayer( Game::cGemManager::getInstance()->getGemStones()[i]->getId());
 				}
 			}
 

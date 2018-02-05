@@ -20,21 +20,6 @@ private:
 
 	int watching_target_player_id = -1;
 
-	// ジェムを大砲に入れる時を同期する。
-	bool sendGemWaiting = false;
-public:
-	void receiveAddCannonPower(int playerId)
-	{
-		if (playerId == active_player_id)
-		{
-			sendGemWaiting = false;
-		}
-		cGemManager::getInstance()->deleteFragmentGems(players[playerId]->getgems);
-		players[playerId]->gem_production_end.clear();
-		players[playerId]->getgems.clear();
-	}
-private:
-
     bool mouse_on = false;
     void playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams);
 	ci::vec3 playerNormalMoveKey(const float& delta_time);
@@ -97,6 +82,7 @@ public:
 	}
 	//コリジョンの後に呼ぶアップデート
 	void playerCollisionAfterUpdate(const float& delta_time);
+	void receiveAddCannonPower(int playerId);
 	// カメラの更新後に呼ぶアップデート
 	void cameraAfterUpdate( const float& delta_time );
     void setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams);

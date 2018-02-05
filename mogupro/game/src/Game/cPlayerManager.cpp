@@ -10,6 +10,15 @@
 #include <Game/cGameManager.h>
 #include <Resource/cImageManager.h>
 #include <Network/cUDPClientManager.h>
+void Game::cPlayerManager::receiveAddCannonPower(int playerId)
+{
+	if (playerId != active_player_id)
+	{
+		cGemManager::getInstance()->deleteFragmentGems(players[playerId]->getgems);
+		players[playerId]->gem_production_end.clear();
+		players[playerId]->getgems.clear();
+	}
+}
 void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
 	//¶¬
@@ -156,12 +165,14 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	
 	//‘å–C‚ÉƒWƒFƒ€‚ð“ü‚ê‚é
 	auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];
-	if (!sendGemWaiting && !active_player->getgems.empty())
+	if (!active_player->getgems.empty())
 	{
 		if (cannon->getAABB().intersects(active_player->getAABB()))
 		{
 			cClientAdapter::getInstance()->sendAddCannonPower(active_player->getgems.size(), 0);
-			sendGemWaiting = true;
+			cGemManager::getInstance()->deleteFragmentGems(active_player->getgems);
+			active_player->gem_production_end.clear();
+			active_player->getgems.clear();
 		}
 	}
 
