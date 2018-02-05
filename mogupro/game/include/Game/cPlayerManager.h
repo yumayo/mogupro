@@ -20,6 +20,21 @@ private:
 
 	int watching_target_player_id = -1;
 
+	// ƒWƒFƒ€‚ð‘å–C‚É“ü‚ê‚éŽž‚ð“¯Šú‚·‚éB
+	bool sendGemWaiting = false;
+public:
+	void receiveAddCannonPower(int playerId)
+	{
+		if (playerId == active_player_id)
+		{
+			sendGemWaiting = false;
+		}
+		cGemManager::getInstance()->deleteFragmentGems(players[playerId]->getgems);
+		players[playerId]->gem_production_end.clear();
+		players[playerId]->getgems.clear();
+	}
+private:
+
     bool mouse_on = false;
     void playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams);
 	ci::vec3 playerNormalMoveKey(const float& delta_time);
