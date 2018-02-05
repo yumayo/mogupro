@@ -234,12 +234,13 @@ namespace Game
 					.randomEaseTypes({ EaseType::BackIn,EaseType::BackOut,EaseType::CircIn,EaseType::CircOut,EaseType::Linear,EaseType::CubicIn })
 				);
 
-				int num = getgems.size();
+				if (ismyobject)
+				{
+					cClientAdapter::getInstance()->sendAddCannonPower(getgems.size(), 1);
+				}
 
 				cGemManager::getInstance()->deleteFragmentGems(getgems);
 				getgems.clear();
-
-				Game::cStrategyManager::getInstance()->getCannons()[int(cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam())]->receiveQuarryGem(num, mPlayerId, ismyobject);
 			}
 			void Weapons::SubWeapon::cQuarry::updateCreate(const float & deltatime)
 			{

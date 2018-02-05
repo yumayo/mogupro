@@ -57,11 +57,13 @@ cQuarryPlus::~cQuarryPlus( )
 		.vanishTime( 10.0 )
 		.randomEaseTypes( { EaseType::BackIn,EaseType::BackOut,EaseType::CircIn,EaseType::CircOut,EaseType::Linear,EaseType::CubicIn } )
 	);
-	int num = getgems.size( );
 
-	cGemManager::getInstance( )->deleteFragmentGems( getgems );
+	if (ismyobject)
+	{
+		cClientAdapter::getInstance()->sendAddCannonPower(getgems.size(), 1);
+	}
 
-	Game::cStrategyManager::getInstance( )->getCannons( )[int( cPlayerManager::getInstance( )->getPlayers( )[mPlayerId]->getWhichTeam( ) )]->receiveQuarryGem( num, mPlayerId, ismyobject );
+	cGemManager::getInstance()->deleteFragmentGems(getgems);
 }
 void cQuarryPlus::setup( )
 {

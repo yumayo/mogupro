@@ -59,7 +59,7 @@ public:
 	//
 	void sendRespawn( );
 	//
-	void sendAddCannonPower( Network::ubyte1 teamId, Network::ubyte1 power );
+	void sendAddCannonPower( Network::ubyte1 power, Network::ubyte1 playerOrQuarry );
 	//
 	void sendResult( );
 	//
