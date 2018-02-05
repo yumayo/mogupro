@@ -184,11 +184,12 @@ void cServerAdapter::sendAddCannonPower( )
 	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto p = m->ReqAddCannonPower.get( ) )
 	{
-		if ( p->teamId == Game::Player::Red )
+		// TODO: ãY—í‚É‚·‚é‚Æ‚ÍŒ¾‚Á‚Ä‚¢‚È‚¢
+		if ( p->playerId < 4 )
 		{
 			mRedTeamPower += p->power;
 		}
-		else if ( p->teamId == Game::Player::Blue )
+		else if ( p->playerId >= 4 )
 		{
 			mBlueTeamPower += p->power;
 		}
@@ -198,7 +199,7 @@ void cServerAdapter::sendAddCannonPower( )
 		}
 
 		auto e = new cEveAddCannonPower( );
-		e->teamId = p->teamId;
+		e->playerOrQuarry = p->playerOrQuarry;
 		e->playerId = p->playerId;
 		e->power = p->power;
 		cUDPServerManager::getInstance( )->broadcast( e );

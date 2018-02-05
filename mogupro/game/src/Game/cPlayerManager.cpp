@@ -156,8 +156,9 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	
 	//‘å–C‚ÉƒWƒFƒ€‚ð“ü‚ê‚é
 	auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];
-	if (cannon->getAABB().intersects(active_player->getAABB())) {
-		cannon->receivePlayerGem(active_player->getgems.size(), active_player_id);
+	if (!active_player->getgems.empty() && cannon->getAABB().intersects(active_player->getAABB()))
+	{
+		cClientAdapter::getInstance()->sendAddCannonPower( active_player->getgems.size( ), 0 );
 		cGemManager::getInstance()->deleteFragmentGems(active_player->getgems);
 		active_player->gem_production_end.clear();
 		active_player->getgems.clear();
