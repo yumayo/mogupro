@@ -11,6 +11,7 @@
 #include <Network/Packet/Event/cEveRespawn.h>
 #include <Network/Packet/Event/cEveAddCannonPower.h>
 #include <Network/Packet/Event/cEveLightBomb.h>
+#include <Network/Packet/Event/cEveWeaponCapsule.h>
 #include <Network/Packet/Event/cEveTeamMember.h>
 #include <Network/Packet/Event/cEveDamage.h>
 #include <Network/Packet/Event/cEvePlayerAttack.h>

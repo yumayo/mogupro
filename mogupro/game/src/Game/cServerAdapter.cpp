@@ -28,11 +28,10 @@ cServerAdapter::~cServerAdapter( )
 void cServerAdapter::update( )
 {
 	sendPlayers( );
-	sendSetQuarry( );
 	sendGetGemPlayer( );
 	sendGetGemQuarry( );
 	sendBreakBlocks( );
-	sendLightBombs( );
+	sendWeaponCapsules( );
 	sendResult( );
 	sendAddCannonPower( );
 }
@@ -95,21 +94,6 @@ void cServerAdapter::sendPlayers( )
 		cUDPServerManager::getInstance( )->broadcast( eve );
 	}
 }
-void cServerAdapter::sendSetQuarry( )
-{
-	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
-	while ( auto packet = m->ReqSetQuarry.get( ) )
-	{
-		if ( true )
-		{
-			auto eventPack = new cEveSetQuarry( );
-			eventPack->mObjectId = mObjectId++;
-			eventPack->mPosition = packet->mPosition;
-			eventPack->mPlayerId = packet->mPlayerId;
-			Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
-		}
-	}
-}
 void cServerAdapter::sendGetGemPlayer( )
 {
 	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
@@ -155,17 +139,37 @@ void cServerAdapter::sendBreakBlocks( )
 		Network::cUDPServerManager::getInstance( )->broadcast( breakBlocksPacket );
 	}
 }
-void cServerAdapter::sendLightBombs( )
+void cServerAdapter::sendWeaponCapsules( )
 {
-	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
-	while ( auto packet = m->ReqLightBomb.get( ) )
+	for (auto& m : Network::cUDPServerManager::getInstance()->getUDPManager())
 	{
-		auto eventPack = new cEveLightBomb( );
-		eventPack->playerId = packet->playerId;
-		eventPack->position = packet->position;
-		eventPack->objectId = mObjectId++;
-		eventPack->speed = packet->speed;
-		Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
+		while (auto packet = m->ReqLightBomb.get())
+		{
+			auto eventPack = new cEveLightBomb();
+			eventPack->playerId = packet->playerId;
+			eventPack->position = packet->position;
+			eventPack->objectId = mObjectId++;
+			eventPack->speed = packet->speed;
+			Network::cUDPServerManager::getInstance()->broadcast(eventPack);
+		}
+		while (auto packet = m->ReqSetQuarry.get())
+		{
+			auto eventPack = new cEveSetQuarry();
+			eventPack->mObjectId = mObjectId++;
+			eventPack->mPosition = packet->mPosition;
+			eventPack->mPlayerId = packet->mPlayerId;
+			Network::cUDPServerManager::getInstance()->broadcast(eventPack);
+		}
+		while (auto packet = m->ReqWeaponCapsule.get())
+		{
+			auto eventPack = new cEveWeaponCapsule();
+			eventPack->playerId = packet->playerId;
+			eventPack->position = packet->position;
+			eventPack->objectId = mObjectId++;
+			eventPack->speed = packet->speed;
+			eventPack->type = packet->type;
+			Network::cUDPServerManager::getInstance()->broadcast(eventPack);
+		}
 	}
 }
 void cServerAdapter::sendResult( )

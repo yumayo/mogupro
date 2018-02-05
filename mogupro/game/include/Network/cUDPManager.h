@@ -27,6 +27,7 @@ public:
 	cPacketQueue<Packet::Event::cEveRespawn> EveRespawn;
 	cPacketQueue<Packet::Event::cEveAddCannonPower> EveAddCannonPower;
 	cPacketQueue<Packet::Event::cEveLightBomb> EveLightBomb;
+	cPacketQueue<Packet::Event::cEveWeaponCapsule> EveWeaponCapsule;
 	cPacketQueue<Packet::Event::cEveTeamMember> EveTeamMember;
 	cPacketQueue<Packet::Event::cEveDamage> EveDamage;
 	cPacketQueue<Packet::Event::cEvePlayerAttack> EvePlayerAttack;
@@ -55,6 +56,7 @@ public:
 	cPacketQueue<Packet::Request::cReqEndGamemainSetup> ReqEndGamemainSetup;
 	cPacketQueue<Packet::Request::cReqEndStartTimer> ReqEndStartTimer;
 	cPacketQueue<Packet::Request::cReqAddCannonPower> ReqAddCannonPower;
+	cPacketQueue<Packet::Request::cReqWeaponCapsule> ReqWeaponCapsule;
 	cPacketQueue<Packet::Request::cReqResult> ReqResult;
 	cPacketQueue<Packet::Request::cReqPlayerAttack> ReqPlayerAttack;
 	cPacketQueue<Packet::Request::cReqFragmentGem> ReqFragmentGem;

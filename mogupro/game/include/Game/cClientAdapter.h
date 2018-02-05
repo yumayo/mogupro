@@ -27,14 +27,12 @@ public:
 private:
     // 全てのプレイヤーの更新を行う。
     void recvAllPlayers( );
-    // 全ての掘削機の設置イベントを行う。
-    void recvAllQuarrys( );
     // 全てのジェム採取イベントを行う。
     void recvAllGems( );
     // 全てのブロック破壊イベントを行う。
     void recvAllBreakBlocks( );
-	// 全てのライトボムイベントを行う。
-	void recvAllBombs( );
+	// 全てのサブウェポンイベントを行う。
+	void recvAllWeaponCapsules( );
 	// 全ての大砲イベントを行う。
 	void recvAllCannons( );
 	//
@@ -52,6 +50,8 @@ public:
     void sendGetGemQuarry( Network::ubyte2 objectId, Network::ubyte2 gemId );
 	// ライトボムを投げる。
 	void sendLightBomb( cinder::vec3 const& position, cinder::vec3 const& speed );
+	// カプセルを投げる。
+	void sendWeaponCapsule( cinder::vec3 const& position, cinder::vec3 const& speed, Network::ubyte1 type );
 	// 誰かをキルしたら呼んでください。
 	void sendKill( Network::ubyte1 enemyId );
 	// 誰かにダメージを与えたら呼んでください。

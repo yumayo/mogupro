@@ -104,8 +104,10 @@ void cUseWeaponCapsel::createSubWeapon()
 
 	float power = 10.0F;
 
-	Game::cSubWeaponManager::getInstance()->createWeaponCapsel(pos, normalizedSpeed*power,
-		mPlayerId, Game::cSubWeaponManager::getInstance()->debugcapselcount, mType);
+	cClientAdapter::getInstance()->sendWeaponCapsule(pos, normalizedSpeed*power, mType);
+
+	//Game::cSubWeaponManager::getInstance()->createWeaponCapsel(pos, normalizedSpeed*power,
+	//	mPlayerId, Game::cSubWeaponManager::getInstance()->debugcapselcount, mType);
 
 
 	//cClientAdapter::getInstance()->sendLightBomb(pos, normalizedSpeed * power);

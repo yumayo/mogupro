@@ -31,10 +31,9 @@ void cClientAdapter::update( )
     // サーバーから受信したものがあった場合は取り出して、
     // 各マネージャーに伝えます。
     recvAllPlayers( );
-    recvAllQuarrys( );
     recvAllGems( );
     recvAllBreakBlocks( );
-	recvAllBombs( );
+	recvAllWeaponCapsules( );
 	recvAllCannons( );
 	recvAllGameInfo( );
 }
@@ -85,18 +84,6 @@ void cClientAdapter::recvAllPlayers( )
 		}
 	}
 }
-void cClientAdapter::recvAllQuarrys( )
-{
-    auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
-    while ( auto packet = m->EveSetQuarry.get( ) )
-    {
-		cSubWeaponManager::getInstance( )->createQuarry(
-			packet->mPosition
-			, packet->mObjectId
-			, packet->mPlayerId
-		);
-    }
-}
 void cClientAdapter::recvAllGems( )
 {
     auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
@@ -128,12 +115,30 @@ void cClientAdapter::recvAllBreakBlocks( )
         }
     }
 }
-void cClientAdapter::recvAllBombs( )
+void cClientAdapter::recvAllWeaponCapsules()
 {
-	auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
-	while ( auto packet = m->EveLightBomb.get( ) )
+	auto m = Network::cUDPClientManager::getInstance()->getUDPManager();
+	while (auto packet = m->EveLightBomb.get())
 	{
-		cSubWeaponManager::getInstance( )->createLightBomb( packet->position, packet->speed, cinder::vec3(0.5F), packet->objectId, packet->playerId );
+		cSubWeaponManager::getInstance()->createLightBomb(packet->position, packet->speed, cinder::vec3(0.5F), packet->objectId, packet->playerId);
+	}
+	while (auto packet = m->EveSetQuarry.get())
+	{
+		cSubWeaponManager::getInstance()->createQuarry(
+			packet->mPosition
+			, packet->mObjectId
+			, packet->mPlayerId
+		);
+	}
+	while (auto packet = m->EveWeaponCapsule.get())
+	{
+		cSubWeaponManager::getInstance()->createWeaponCapsel(
+			packet->position
+			, packet->speed
+			, packet->playerId
+			, packet->objectId
+			, (Weapons::SubWeapon::SubWeaponType)packet->type
+		);
 	}
 }
 void cClientAdapter::recvAllCannons( )
@@ -227,6 +232,15 @@ void cClientAdapter::sendLightBomb( cinder::vec3 const & position, cinder::vec3 
 	packet->position = position;
 	packet->speed = speed;
 	cUDPClientManager::getInstance( )->send( packet );
+}
+void cClientAdapter::sendWeaponCapsule(cinder::vec3 const & position, cinder::vec3 const & speed, Network::ubyte1 type)
+{
+	auto p = new cReqWeaponCapsule();
+	p->playerId = cPlayerManager::getInstance()->getActivePlayerId();
+	p->position = position;
+	p->speed = speed;
+	p->type = type;
+	cUDPClientManager::getInstance()->send(p);
 }
 void cClientAdapter::sendKill( Network::ubyte1 enemyId )
 {
