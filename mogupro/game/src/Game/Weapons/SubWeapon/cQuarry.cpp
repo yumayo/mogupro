@@ -234,7 +234,7 @@ namespace Game
 					.randomEaseTypes({ EaseType::BackIn,EaseType::BackOut,EaseType::CircIn,EaseType::CircOut,EaseType::Linear,EaseType::CubicIn })
 				);
 
-				if (ismyobject)
+				if (ismyobject && !getgems.empty())
 				{
 					cClientAdapter::getInstance()->sendAddCannonPower(getgems.size(), 1);
 				}
