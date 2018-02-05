@@ -89,6 +89,17 @@ void cWeaponCapsule::HitLand()
 		mIsHitLand = true;
 		isDelete = true;
 		Sound::StereophonicManager::getInstance()->add("capselopen" + std::to_string(mObjectId), ci::app::getAssetPath("SE/SubWeapon/capselopen.wav").string(), mPos);
+		
+		Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
+			.scale(1.5f).
+			vanishTime(0.5f).
+			vanishTimeRange(0.0f).
+			speed(0.30f).
+			addVec(ci::vec3(0, 0.5, 0)).
+			textureType(Particle::ParticleTextureType::SMOKE).
+			color(ci::ColorA::white()).
+			moveType(Particle::ParticleType::EXPROTION).count(30).isTrajectory(true).gravity(0.24));
+
 		if (mIsMyObject) {
 			createSubWeapon();
 
@@ -109,15 +120,7 @@ void cWeaponCapsule::HitLand()
 			//	textureType(Particle::ParticleTextureType::SMOKE).
 			//	color(ci::ColorA::white()).
 			//	moveType(Particle::ParticleType::EXPROTION).count(30).isTrajectory(true).gravity(-0.12));
-			Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
-				.scale(1.5f).
-				vanishTime(0.5f).
-				vanishTimeRange(0.0f).
-				speed(0.30f).
-				addVec(ci::vec3(0, 0.5, 0)).
-				textureType(Particle::ParticleTextureType::SMOKE).
-				color(ci::ColorA::white()).
-				moveType(Particle::ParticleType::EXPROTION).count(30).isTrajectory(true).gravity(0.24));
+			
 		}
 	}
 }
