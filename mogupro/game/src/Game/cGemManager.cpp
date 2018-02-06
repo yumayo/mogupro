@@ -220,7 +220,7 @@ namespace Game
 	void cGemManager::buildMesh()
 	{
 		mesh->clear();
-		IdSortGemStone();
+//		IdSortGemStone(); この関数を使っているところでfor文を回しているので、ソートされると困るンゴ
 		for (size_t i = 0; i < mGemStone.size(); i++)
 		{
 			auto indices   = mGemStone[i]->getIndices();
