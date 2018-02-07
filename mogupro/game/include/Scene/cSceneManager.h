@@ -98,6 +98,29 @@ public:
 		throw SceneNotFound( );
 	}
 
+	std::vector<std::string> getSceneNames()
+	{
+		std::vector<std::string> ret;
+		for (auto& scene : mSceneBases)
+		{
+			ret.emplace_back(scene->getName());
+		}
+		return ret;
+	}
+
+	template<class TyScene>
+	bool isCurrentScene()
+	{
+		for (auto& scene : mSceneBases)
+		{
+			if (scene->getName() == typeid(TyScene).name())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	cSceneBase& getDontDestroyOnLoad( );
 
 	template<class TyScene, class... Args>
