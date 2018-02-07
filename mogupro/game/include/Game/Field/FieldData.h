@@ -36,6 +36,7 @@ CHUNK_RANGE_X = 8, CHUNK_RANGE_Y = 4, CHUNK_RANGE_Z = 16;
 extern cinder::vec3 const WORLD_SIZE;
 extern cinder::vec3 const WORLD_COLLISION_SIZE;
 extern std::vector<cinder::vec3> const RESPAWN_POINT;
+extern std::vector<cinder::quat> const RESPAWN_ROTATION;
 extern std::vector<cinder::vec3> const CANNON_POINT;
 }
 }

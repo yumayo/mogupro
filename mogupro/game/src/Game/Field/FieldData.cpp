@@ -8,13 +8,24 @@ cinder::vec3 const WORLD_COLLISION_SIZE = WORLD_SIZE + cinder::vec3( 0.0F, 100.0
 std::vector<cinder::vec3> const RESPAWN_POINT =
 {
 	{ WORLD_SIZE.x / 2 - 1.5F, WORLD_SIZE.y + 1.0F, 8.0F },
-	{ WORLD_SIZE.x / 2 - 0.5F, WORLD_SIZE.y + 1.0F, 8.0F },
-	{ WORLD_SIZE.x / 2 + 0.5F, WORLD_SIZE.y + 1.0F, 8.0F },
+	{ WORLD_SIZE.x / 2		 , WORLD_SIZE.y + 1.0F, 8.0F },
 	{ WORLD_SIZE.x / 2 + 1.5F, WORLD_SIZE.y + 1.0F, 8.0F },
+	{ WORLD_SIZE.x / 2		 , WORLD_SIZE.y + 7.0F, 8.0F },
 	{ WORLD_SIZE.x / 2 - 1.5F, WORLD_SIZE.y + 1.0F, WORLD_SIZE.z - 8.0F },
-	{ WORLD_SIZE.x / 2 - 0.5F, WORLD_SIZE.y + 1.0F, WORLD_SIZE.z - 8.0F },
-	{ WORLD_SIZE.x / 2 + 0.5F, WORLD_SIZE.y + 1.0F, WORLD_SIZE.z - 8.0F },
+	{ WORLD_SIZE.x / 2		 , WORLD_SIZE.y + 1.0F, WORLD_SIZE.z - 8.0F },
 	{ WORLD_SIZE.x / 2 + 1.5F, WORLD_SIZE.y + 1.0F, WORLD_SIZE.z - 8.0F },
+	{ WORLD_SIZE.x / 2		 , WORLD_SIZE.y + 7.0F, WORLD_SIZE.z - 8.0F },
+};
+std::vector<cinder::quat> const RESPAWN_ROTATION =
+{
+	glm::angleAxis( 0.0F, cinder::vec3(0, 1, 0) ),
+	glm::angleAxis( 0.0F, cinder::vec3(0, 1, 0) ),
+	glm::angleAxis( 0.0F, cinder::vec3(0, 1, 0) ),
+	glm::angleAxis( 0.0F, cinder::vec3(0, 1, 0) ),
+	glm::angleAxis( glm::pi<float>( ), cinder::vec3(0, 1, 0) ),
+	glm::angleAxis( glm::pi<float>( ), cinder::vec3(0, 1, 0) ),
+	glm::angleAxis( glm::pi<float>( ), cinder::vec3(0, 1, 0) ),
+	glm::angleAxis( glm::pi<float>( ), cinder::vec3(0, 1, 0) ),
 };
 std::vector<cinder::vec3> const CANNON_POINT =
 {
