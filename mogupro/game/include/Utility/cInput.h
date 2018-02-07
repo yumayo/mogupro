@@ -55,6 +55,9 @@ public:
 	bool pressKey( );
 	bool pullKey( );
 	float getPadAxis( const int& pad_num );
+	bool getPadAxisPush(const int& pad_num);
+	bool getPadAxisPull(const int& pad_num);
+	bool getPadAxisPress(const int& pad_num);
 	bool isPadPush( const int& num );
 	bool isPadPress( const int& num );
 	bool isPadPull( const int& num );
@@ -72,6 +75,7 @@ private:
 	void mouseDown( const ci::app::MouseEvent& event );
 	void mouseUp( const ci::app::MouseEvent& event );
 private:
+	std::unordered_map<int,float> pad_axis_value_buf;
 	void padAxis( const int& num, const float& value );
 	void padDown( const int& num );
 	void padUp( const int& num );
