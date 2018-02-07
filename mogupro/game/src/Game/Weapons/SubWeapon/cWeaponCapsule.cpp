@@ -126,13 +126,16 @@ void cWeaponCapsule::HitLand()
 }
 void cWeaponCapsule::createSubWeapon()
 {
+	float length = 2.5f;
 	switch (mType)
 	{
 	case Game::Weapons::SubWeapon::SubWeaponType::LIGHT_BOMB:
 		Game::cClientAdapter::getInstance()->sendLightBomb(mPos, mSpeed);
 		break;
 	case Game::Weapons::SubWeapon::SubWeaponType::QUARRY:
-		Game::cClientAdapter::getInstance()->sendSetQuarry(mPos + ci::vec3(0, 1.5, 0));
+		Game::cClientAdapter::getInstance()->sendSetQuarry(mPos + ci::vec3(length*cos(2.f*M_PI*(0.f/3.f)), 1.5, length*sin(2.f*M_PI*(0.f / 3.f))));
+		Game::cClientAdapter::getInstance()->sendSetQuarry(mPos + ci::vec3(length*cos(2.f*M_PI*(1.f / 3.f)), 1.5, length*sin(2.f*M_PI*(1.f / 3.f))));
+		Game::cClientAdapter::getInstance()->sendSetQuarry(mPos + ci::vec3(length*cos(2.f*M_PI*(2.f / 3.f)), 1.5, length*sin(2.f*M_PI*(2.f / 3.f))));
 		break;
 	default:
 		break;
