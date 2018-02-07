@@ -1,6 +1,7 @@
 #include <Game/cFieldManager.h>
 #include <cinder/gl/gl.h>
-#include"Sound\Stereophonic.h"
+#include "Sound/Stereophonic.h"
+#include <Game/Field/FieldData.h>
 using namespace ci;
 using namespace ci::app;
 
@@ -57,6 +58,16 @@ ci::vec3 cFieldManager::getBlockTopPosition( const ci::vec3 & target_position )
 std::vector<int> cFieldManager::getChunkId( const ci::vec3 & position, const float & radius )
 {
     return mUnderGround->getChunkId( position, radius );
+}
+bool cFieldManager::isUnderCannon( const int & chunk_x, const int & chunk_y, const int & chunk_z )
+{
+    using namespace Field;
+    ivec3 cell = ivec3( chunk_x, chunk_y, chunk_z );
+    if ( cell.x < 3 || cell.x > 5 )
+        return false;
+    if ( cell.z > 2 && cell.z + 1 < CHUNK_RANGE_Z - 2 )
+        return false;
+    return true;
 }
 void cFieldManager::blockAllReset()
 {
