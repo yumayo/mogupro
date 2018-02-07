@@ -129,7 +129,7 @@ namespace Game
 				.easeTime(60.0f)
 				.count(color.size()*2)
 				.effectTime(0)
-				.vanishTime(5.0)
+				.vanishTime(2.0)
 				.randomEaseTypes({EaseType::BackIn,EaseType::BackOut,EaseType::CircIn,EaseType::CircOut,EaseType::Linear,EaseType::CubicIn})
 			);
 
