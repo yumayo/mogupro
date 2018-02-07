@@ -234,7 +234,7 @@ namespace Scene
 
 		void cMatchingServer::resetMember()
 		{
-			if (!ENV->pushKey(ci::app::KeyEvent::KEY_SPACE))return;
+			if (!ENV->pushKey(ci::app::KeyEvent::KEY_l))return;
 
 			mPhaseState = PhaseState::NOT_IN_ROOM;
 			mOpenRoom = false;

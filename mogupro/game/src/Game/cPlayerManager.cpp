@@ -399,11 +399,12 @@ void Game::cPlayerManager::update(const float& delta_time)
 	watchingCamera(delta_time);
 	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), active_player->getRotate());
 	
-	auto packet = new Network::Packet::Request::cReqPlayer();
-	packet->mFormat.playerId = 1;
-	packet->mFormat.position = players[1]->getPos();
-	packet->mFormat.rotation = active_player->getRotate();
-	Network::cUDPClientManager::getInstance()->send(packet);
+	// デバッグ用っぽいので削除。
+//	auto packet = new Network::Packet::Request::cReqPlayer();
+//	packet->mFormat.playerId = 1;
+//	packet->mFormat.position = players[1]->getPos();
+//	packet->mFormat.rotation = active_player->getRotate();
+//	Network::cUDPClientManager::getInstance()->send(packet);
 }
 
 void Game::cPlayerManager::draw()

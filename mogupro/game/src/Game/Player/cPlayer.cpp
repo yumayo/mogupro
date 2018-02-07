@@ -21,6 +21,8 @@
 #include <Sound/Stereophonic.h>
 void Game::Player::cPlayer::updatePlayerRotation()
 {
+	if (!active_user) return;
+
 	ci::vec3 playerYAxis;
 	ci::vec3 playerZAxis;
 	ci::vec3 playerXAxis;
@@ -330,9 +332,11 @@ Game::Player::cPlayer::cPlayer(
 	{
 	case Player::Blue:
 		lightColor = ci::vec3( 0, 0, 1 - ( status.hp / Player::MAX_HP ) / 2 );
+		rotation = cinder::quat(glm::angleAxis(glm::pi<float>(), ci::vec3(0, 1, 0)));
 		break;
 	case Player::Red:
 		lightColor = ci::vec3( 1 - ( status.hp / Player::MAX_HP ) / 2, 0, 0 );
+		rotation = cinder::quat(glm::angleAxis(0.0F, ci::vec3(0, 1, 0)));
 		break;
 	default:
 		break;
@@ -488,8 +492,8 @@ void Game::Player::cPlayer::update(const float & delta_time)
 	aabb = mCollider.createAABB(mCollider.getPosition());
 	respawn(delta_time);
 	root->set_position_3d(mPos);
-	collisionGems();
-	updatePlayerRotation( );
+//	collisionGems(); ’Ü‚Å”j‰ó‚µ‚½uŠÔ‚É‚·‚×‚Ä”»’è‚µ‚Ä‚¢‚é‚Ì‚Å•K—v‚È‚­‚È‚è‚Ü‚µ‚½B
+	updatePlayerRotation();
 }
 
 void Game::Player::cPlayer::cameraAfterUpdate( const float & delta_time )

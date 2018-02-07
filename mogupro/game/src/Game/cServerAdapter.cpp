@@ -17,7 +17,15 @@ cServerAdapter::cServerAdapter( )
 	ubyte1 index = 0;
 	for ( auto& respo : Game::Field::RESPAWN_POINT )
 	{
-		mPlayers[index] = { index, true, respo, cinder::quat() };
+		if (index < 4)
+		{
+			mPlayers[index] = { index, true, respo, cinder::quat(glm::angleAxis(0.0F, ci::vec3(0, 1, 0))) };
+		}
+		else
+		{
+			mPlayers[index] = { index, true, respo, cinder::quat(glm::angleAxis(glm::pi<float>(), ci::vec3(0, 1, 0))) };
+		}
+		
 		index += 1;
 	}
 }
