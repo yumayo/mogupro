@@ -10,6 +10,7 @@
 #include <Game/cGameManager.h>
 #include <Resource/cImageManager.h>
 #include <Network/cUDPClientManager.h>
+#include <Game/Weapons/MainWeapon/cBase.h>
 void Game::cPlayerManager::receiveAddCannonPower(int playerId)
 {
 	if (playerId != active_player_id)

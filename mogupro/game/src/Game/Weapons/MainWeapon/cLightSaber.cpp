@@ -145,6 +145,7 @@ void cLightSaber::setup( )
 				gl::drawCube( vec3( 0 ), vec3( 0.1F ) );
 			};
 			animation( 0.1F, TumeFormat( ) );
+			Resource::SE["Player/aura1.wav"].stop();
 			tumeRoot->set_block_visible( );
 		};
 	}
