@@ -30,6 +30,8 @@ void TutorialUI::playerInit()
 	CAMERA->setCameraAngle(cinder::vec2(0, -0.3f));
 	Game::cFieldManager::getInstance()->blockAllReset();
 	Game::cPlayerManager::getInstance()->getActivePlayer()->useSubWeapon.clearSubWeapon();
+	Game::cPlayerManager::getInstance()->getActivePlayer()->move(ci::vec3(0,0,0.1f));
+	Game::cPlayerManager::getInstance()->update(0.001f);
 }
 //テキスト初期化
 void TutorialUI::textInit()

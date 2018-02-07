@@ -150,12 +150,16 @@ namespace Scene
 				Sound::StereophonicManager::getInstance()->update(deltaTime);
 				Game::cUIManager::getInstance()->update(deltaTime);
 				Game::cFieldManager::getInstance()->update(deltaTime);
-				Game::cPlayerManager::getInstance()->update(deltaTime);
+				if (!Game::cTutorialManager::getInstance()->getTutorialStan()) {
+					Game::cPlayerManager::getInstance()->update(deltaTime);
+				}
 				Game::cStrategyManager::getInstance()->update(deltaTime);
 				Game::cCapsuleManager::getInstance()->update(deltaTime);
 				Game::cSubWeaponManager::getInstance()->update(deltaTime);
 				Collision::cCollisionManager::getInstance()->update(deltaTime);
+				
 				Game::cPlayerManager::getInstance()->playerCollisionAfterUpdate(deltaTime);
+				
 				Game::cSubWeaponManager::getInstance()->updateCollisionAfterUpdate(deltaTime);
 				GemManager->update(deltaTime);
 				Game::cLightManager::getInstance()->update();

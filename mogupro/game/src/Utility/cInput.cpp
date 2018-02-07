@@ -122,6 +122,63 @@ float cInputAll::getPadAxis( const int & pad_num )
 
 	return pad_stick_axis_value.find( pad_num )->second;
 }
+
+bool cInputAll::getPadAxisPush(const int & pad_num)
+{
+	//キーが無ければ初期化
+	if (pad_axis_value_buf.count(pad_num) == 0) {
+		pad_axis_value_buf[pad_num] = 0.0f;
+	}
+	if (pad_stick_axis_value.find(pad_num) == pad_stick_axis_value.cend())
+		return false;
+	
+	if (pad_axis_value_buf[pad_num] < 0.5f &&
+		pad_stick_axis_value.find(pad_num)->second > 0.5f) {
+		pad_axis_value_buf[pad_num] = pad_stick_axis_value.find(pad_num)->second;
+		return true;
+	}
+	pad_axis_value_buf[pad_num] = pad_stick_axis_value.find(pad_num)->second;
+	return false;
+}
+
+bool cInputAll::getPadAxisPull(const int & pad_num)
+{
+	//キーが無ければ初期化
+	if (pad_axis_value_buf.count(pad_num) == 0) {
+		pad_axis_value_buf[pad_num] = 0.0f;
+	}
+
+	if (pad_stick_axis_value.find(pad_num) == pad_stick_axis_value.cend())
+		return false;
+
+	if (pad_axis_value_buf[pad_num] > 0.5f &&
+		pad_stick_axis_value.find(pad_num)->second < 0.5f) {
+		pad_axis_value_buf[pad_num] = pad_stick_axis_value.find(pad_num)->second;
+		return true;
+	}
+	pad_axis_value_buf[pad_num] = pad_stick_axis_value.find(pad_num)->second;
+	return false;
+}
+
+bool cInputAll::getPadAxisPress(const int & pad_num)
+{
+	//キーが無ければ初期化
+	if (pad_axis_value_buf.count(pad_num) == 0) {
+		pad_axis_value_buf[pad_num] = 0.0f;
+	}
+
+	if (pad_stick_axis_value.find(pad_num) == pad_stick_axis_value.cend())
+		return false;
+
+	if (pad_axis_value_buf[pad_num] > 0.5f &&
+		pad_stick_axis_value.find(pad_num)->second > 0.5f) {
+		pad_axis_value_buf[pad_num] = pad_stick_axis_value.find(pad_num)->second;
+		return true;
+	}
+	pad_axis_value_buf[pad_num] = pad_stick_axis_value.find(pad_num)->second;
+	return false;
+}
+
 void cInputAll::flashInput( )
 {
 	keyState.flush( );
