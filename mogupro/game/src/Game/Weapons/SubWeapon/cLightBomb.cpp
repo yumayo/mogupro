@@ -50,7 +50,7 @@ namespace Weapons
 		void cLightBomb::getGem()
 		{
 			for (int i = 0; i < Game::cGemManager::getInstance()->getGemStones().size(); i++) {
-				if (glm::distance2(mPos, Game::cGemManager::getInstance()->getGemStones()[i]->getPos()) < mExprosionLength*1.5f) {
+				if (glm::distance(mPos, Game::cGemManager::getInstance()->getGemStones()[i]->getPos()) < mExprosionLength) {
 					cClientAdapter::getInstance()->sendGetGemPlayer( Game::cGemManager::getInstance()->getGemStones()[i]->getId());
 				}
 			}
@@ -203,7 +203,7 @@ namespace Weapons
 			for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size(); i++) {
 				if (cPlayerManager::getInstance()->getPlayers()[i]->getWhichTeam() == mTeamNum)continue;
 
-				float distance = glm::distance2(cPlayerManager::getInstance()->getPlayers()[i]->getPos(), mPos);
+				float distance = glm::distance(cPlayerManager::getInstance()->getPlayers()[i]->getPos(), mPos);
 
 				if (distance < mExprosionLength*2.f) {
 					cClientAdapter::getInstance()->sendDamage(cPlayerManager::getInstance()->getPlayers()[i]->getPlayerId(),
