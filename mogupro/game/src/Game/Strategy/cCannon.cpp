@@ -107,7 +107,6 @@ namespace Game
 
 		void cCannon::receivePlayerGem(int getgemnum, int playerid)
 		{
-			if (getgemnum == 0) return;
 			if (mGemCount >= GEM_MAXNUM)return;
 		
 			ci::vec3 playerpos = Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getPos();
@@ -130,67 +129,18 @@ namespace Game
 				.easeTime(60.0f)
 				.count(color.size()*2)
 				.effectTime(0)
-				.vanishTime(5.0)
+				.vanishTime(2.0)
 				.randomEaseTypes({EaseType::BackIn,EaseType::BackOut,EaseType::CircIn,EaseType::CircOut,EaseType::Linear,EaseType::CubicIn})
 			);
 
-
-			Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(), getgemnum);
-			////////////
 			Sound::StereophonicManager::getInstance()->add(mCannonName,ci::app::getAssetPath("SE/cannoncharge.wav").string(), mPos);
-			////////////
-			//sendCollectMaxGem();
 		}
 
-		void cCannon::receiveQuarryGem(std::vector<std::shared_ptr<Game::Gem::cFragmentGem>>& getgems, int playerid, bool ismyobject)
+		void cCannon::receiveQuarryGem(int getgemnum, int playerid)
 		{
-			if (getgems.size() == 0) return;
 			if (mGemCount >= GEM_MAXNUM)return;
-
-			if (ismyobject) {
-			
-				Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(), getgems.size());
-				Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").setGain(0.4f);
-				Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").play();
-			}
-			else {
-				setAddCanonPower(mGetgems.size());
-			}
-
-			ci::app::console() << "いれるものはじめ" << std::endl;
-			for (int i = 0; i < getgems.size(); i++) {
-				ci::app::console() << getgems[i]->getType() << std::endl;
-				mGetgems.push_back(getgems[i]);
-			}
-			ci::app::console() << "いれるものおわり" << std::endl;
-
-			getgems.clear();
-
-			//////////////////////デバック
-			ci::app::console() << "ぜんぶはじめ" << std::endl;
-			for (int i = 0; i < mGetgems.size(); i++) {
-				ci::app::console() << mGetgems[i]->getType() << std::endl;
-			}
-			ci::app::console() << "ぜんぶおわり" << std::endl;
-			//////////////////////デバック
-
-			sendCollectMaxGem();
-		}
-
-		void cCannon::receiveQuarryGem(int getgemnum, int playerid, bool ismyobject)
-		{
-			if (getgemnum == 0) return;
-			if (mGemCount >= GEM_MAXNUM)return;
-
-			if (ismyobject) {
-			
-				Game::cClientAdapter::getInstance()->sendAddCannonPower(Game::cPlayerManager::getInstance()->getPlayers()[playerid]->getWhichTeam(),getgemnum);
-				Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").setGain(0.4f);
-				Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").play();
-			}
-			else {
-				setAddCanonPower(getgemnum);
-			}
+			Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").setGain(0.4f);
+			Resource::cSoundManager::getInstance()->findSe("cannoncharge.wav").play();
 		}
 	
 		ci::vec3 cCannon::getGemStorePos()

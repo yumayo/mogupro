@@ -12,6 +12,8 @@
 #include <Game/UI/cItemSlot.h>
 #include <Game/UI/cPlayerNameUIs.h>
 #include <Game/UI/cTips.h>
+#include <Scene/cSceneManager.h>
+#include <Scene/Member/Tutorial.h>
 //Weapons::SubWeapon::SubWeaponType
 using namespace ci;
 namespace Game
@@ -31,17 +33,6 @@ void cUIManager::awake( )
 	damage_effect->set_name( "player_screen_effect" );
 	damage_effect->set_position( mRoot->get_content_size( ) * vec2( 0.5F ) );
 
-	// タイマー作成
-	mTime = mRoot->add_child( Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( "gameMainUI/timer.png" ) ) );
-	mTime->set_anchor_point( vec2( 0.5F, 0.0F ) );
-	mTime->set_position( mRoot->get_content_size( ) * vec2( 0.5F, 0.0F ) );
-	mTime->set_pivot( vec2( 0.5F, 0.125F ) );
-	auto l = mTime->add_child( Node::Renderer::letter::create( "AMEMUCHIGOTHIC-06.ttf", 36.0F ) );
-	l->set_space( -9.0F );
-	l->set_name( "letter" );
-	l->set_text( "12:34" );
-	l->set_color( ColorA( 0, 0, 0 ) );
-
 	mSlot = mRoot->add_child( UI::cItemSlot::create( mRoot->get_content_size( ) ) );
 }
 void cUIManager::setup( )
@@ -51,15 +42,31 @@ void cUIManager::setup( )
 	mBlueTeamCannonMeter = mRoot->add_child( UI::cCannonMeter::create( mRoot->get_content_size( ), playerTeamId, Player::Team::Blue ) );
 
 	mRoot->add_child( UI::cPlayerNameUIs::create( ) );
-	mRoot->add_child( UI::cTips::create( mRoot->get_content_size(), playerTeamId ) );
+
+	if (!Scene::cSceneManager::getInstance()->isCurrentScene<Scene::Member::cTutorial>())
+	{
+		// タイマー作成
+		mTime = mRoot->add_child(Node::Renderer::sprite::create(Resource::cImageManager::getInstance()->find("gameMainUI/timer.png")));
+		mTime->set_anchor_point(vec2(0.5F, 0.0F));
+		mTime->set_position(mRoot->get_content_size() * vec2(0.5F, 0.0F));
+		mTime->set_pivot(vec2(0.5F, 0.125F));
+		auto l = mTime->add_child(Node::Renderer::letter::create("AMEMUCHIGOTHIC-06.ttf", 36.0F));
+		l->set_space(-9.0F);
+		l->set_name("letter");
+		l->set_text("12:34");
+		l->set_color(ColorA(0, 0, 0));
+
+		mRoot->add_child(UI::cTips::create(mRoot->get_content_size(), playerTeamId));
+	}
 }
 void cUIManager::update( float delta )
 {
 	mRoot->entry_update( delta );
 
+	if (mTime)
 	{
-		auto l = mTime->get_child_by_name( "letter" ).dynamicptr<Node::Renderer::letter>( );
-		l->set_text( cGameManager::getInstance( )->getLeftBattleTime( ) );
+		auto l = mTime->get_child_by_name("letter").dynamicptr<Node::Renderer::letter>();
+		l->set_text(cGameManager::getInstance()->getLeftBattleTime());
 	}
 
 	for ( auto player : cPlayerManager::getInstance( )->getPlayers( ) )

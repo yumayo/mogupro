@@ -21,6 +21,7 @@ public:
 	void pullCall( );
 	void flashInput( );
 	cinder::mat4 getWorldMatrix( ) const;
+	bool getPress( ) const { return press; }
 protected:
 	Player::cPlayer& player;
 	bool push = false;

@@ -75,6 +75,5 @@ namespace Game
 	private:
 		void DistanceSortGemStone();
 		void IdSortGemStone();
-		void drawCannonPower( float red, float blue );
 	};
 }

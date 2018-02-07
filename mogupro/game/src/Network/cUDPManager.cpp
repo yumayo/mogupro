@@ -54,15 +54,15 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
 		{
 			PACKET_TEMPLATE_BEGIN
 		case Network::Packet::PacketId::EVE_STRING:
+		{
+			if ( EveString.isNew( packetHeader ) )
 			{
-				if ( EveString.isNew( packetHeader ) )
-				{
-					Packet::Event::cEveString data;
-					data.onReceive( networkHandle, bufferSize, bufferData );
-					EveString.unget( std::move( data ) );
-				}
-				break;
+				Packet::Event::cEveString data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EveString.unget( std::move( data ) );
 			}
+			break;
+		}
 		case Network::Packet::PacketId::EVE_PING:
 		{
 			if ( EvePing.isNew( packetHeader ) )
@@ -170,6 +170,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
 				Packet::Event::cEveLightBomb data;
 				data.onReceive( networkHandle, bufferSize, bufferData );
 				EveLightBomb.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::EVE_WEAPON_CAPSULE:
+		{
+			if ( EveWeaponCapsule.isNew( packetHeader ) )
+			{
+				Packet::Event::cEveWeaponCapsule data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				EveWeaponCapsule.unget( std::move( data ) );
 			}
 			break;
 		}
@@ -450,6 +460,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
 				Packet::Request::cReqAddCannonPower data;
 				data.onReceive( networkHandle, bufferSize, bufferData );
 				ReqAddCannonPower.unget( std::move( data ) );
+			}
+			break;
+		}
+		case Network::Packet::PacketId::REQ_WEAPON_CAPSULE:
+		{
+			if ( ReqWeaponCapsule.isNew( packetHeader ) )
+			{
+				Packet::Request::cReqWeaponCapsule data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqWeaponCapsule.unget( std::move( data ) );
 			}
 			break;
 		}

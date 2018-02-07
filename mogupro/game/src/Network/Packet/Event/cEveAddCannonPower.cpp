@@ -16,14 +16,14 @@ void cEveAddCannonPower::packetImport( cNetworkHandle networkHandle, ubyte2 tran
     cImporter packet( data );
     // Žg‚¢•û: vec2 pos1, pos2; ubyte2 a1, a2;
     // packet >> pos1 >> a1 >> pos2 >> a2;
-	packet >> teamId >> playerId >> power;
+	packet >> playerOrQuarry >> playerId >> power;
 }
 ubyte2 cEveAddCannonPower::packetExport( char* const data )
 {
     cExporter packet( data );
     // Žg‚¢•û: vec2 pos1, pos2; ubyte2 a1, a2;
     // packet << pos1 << a1 << pos2 << a2;
-	packet << teamId << playerId << power;
+	packet << playerOrQuarry << playerId << power;
     return packet.getSize( );
 }
 }

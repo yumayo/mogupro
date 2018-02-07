@@ -150,11 +150,6 @@ void cGameMain::update( float deltaTime )
 		cTimeMeasurement::getInstance()->make();
 		console() << "Network Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 
-		// 他のアップデートよりも先に行います。
-		Game::cGameManager::getInstance( )->preUpdate( deltaTime );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cGameManager preUpdate Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
-
 		Game::cDebugManager::getInstance( )->update( deltaTime );
 		cTimeMeasurement::getInstance()->make();
 		console() << "cDebugManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
@@ -235,12 +230,6 @@ void cGameMain::draw( )
 		gl::enableDepthWrite( );
 		Game::cFieldManager::getInstance( )->draw( );
 		Game::cShaderManager::getInstance( )->uniformUpdate( );
-		Game::cStrategyManager::getInstance( )->draw( );
-		Game::cMapObjectManager::getInstance()->draw();
-		Game::cSubWeaponManager::getInstance()->draw();
-		Game::cCapsuleManager::getInstance()->draw();
-        Resource::cFbxManager::getInstance()->testDraw( );
-		skydome.draw( );
 		CAMERA->unBind3D( );
 
 		CAMERA->bind2D( );
@@ -253,6 +242,12 @@ void cGameMain::draw( )
 		gl::enableDepthRead( );
 		gl::enableDepthWrite( );
 		GemManager->draw( );
+		Game::cStrategyManager::getInstance( )->draw( );
+		Game::cMapObjectManager::getInstance( )->draw( );
+		Game::cSubWeaponManager::getInstance( )->draw( );
+		Game::cCapsuleManager::getInstance( )->draw( );
+		Resource::cFbxManager::getInstance( )->testDraw( );
+		skydome.draw( );
 		Game::cPlayerManager::getInstance( )->draw( );
 
 		Particle::cParticleManager::getInstance( )->draw( );

@@ -14,11 +14,9 @@ cServerAdapter::cServerAdapter( )
 {
 	mObjectId = 0;
 
-	ubyte1 index = 0;
-	for ( auto& respo : Game::Field::RESPAWN_POINT )
+	for ( int i = 0; i < (int)Field::RESPAWN_POINT.size(); ++i )
 	{
-		mPlayers[index] = { index, true, respo, cinder::quat() };
-		index += 1;
+		mPlayers[i] = { (ubyte1)i, true, Field::RESPAWN_POINT[i], Field::RESPAWN_ROTATION[i] };
 	}
 }
 cServerAdapter::~cServerAdapter( )
@@ -28,11 +26,10 @@ cServerAdapter::~cServerAdapter( )
 void cServerAdapter::update( )
 {
 	sendPlayers( );
-	sendSetQuarry( );
 	sendGetGemPlayer( );
 	sendGetGemQuarry( );
 	sendBreakBlocks( );
-	sendLightBombs( );
+	sendWeaponCapsules( );
 	sendResult( );
 	sendAddCannonPower( );
 }
@@ -95,21 +92,6 @@ void cServerAdapter::sendPlayers( )
 		cUDPServerManager::getInstance( )->broadcast( eve );
 	}
 }
-void cServerAdapter::sendSetQuarry( )
-{
-	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
-	while ( auto packet = m->ReqSetQuarry.get( ) )
-	{
-		if ( true )
-		{
-			auto eventPack = new cEveSetQuarry( );
-			eventPack->mObjectId = mObjectId++;
-			eventPack->mPosition = packet->mPosition;
-			eventPack->mPlayerId = packet->mPlayerId;
-			Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
-		}
-	}
-}
 void cServerAdapter::sendGetGemPlayer( )
 {
 	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
@@ -122,6 +104,10 @@ void cServerAdapter::sendGetGemPlayer( )
 			eventPack->mPlayerId = packet->mPlayerId;
 			eventPack->mGemId = packet->mGemId;
 			Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
+		}
+		else
+		{
+			cinder::app::console() << "stoneGemInsert faild " << packet->mGemId << std::endl;
 		}
 	}
 }
@@ -155,17 +141,37 @@ void cServerAdapter::sendBreakBlocks( )
 		Network::cUDPServerManager::getInstance( )->broadcast( breakBlocksPacket );
 	}
 }
-void cServerAdapter::sendLightBombs( )
+void cServerAdapter::sendWeaponCapsules( )
 {
-	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
-	while ( auto packet = m->ReqLightBomb.get( ) )
+	for (auto& m : Network::cUDPServerManager::getInstance()->getUDPManager())
 	{
-		auto eventPack = new cEveLightBomb( );
-		eventPack->playerId = packet->playerId;
-		eventPack->position = packet->position;
-		eventPack->objectId = mObjectId++;
-		eventPack->speed = packet->speed;
-		Network::cUDPServerManager::getInstance( )->broadcast( eventPack );
+		while (auto packet = m->ReqLightBomb.get())
+		{
+			auto eventPack = new cEveLightBomb();
+			eventPack->playerId = packet->playerId;
+			eventPack->position = packet->position;
+			eventPack->objectId = mObjectId++;
+			eventPack->speed = packet->speed;
+			Network::cUDPServerManager::getInstance()->broadcast(eventPack);
+		}
+		while (auto packet = m->ReqSetQuarry.get())
+		{
+			auto eventPack = new cEveSetQuarry();
+			eventPack->mObjectId = mObjectId++;
+			eventPack->mPosition = packet->mPosition;
+			eventPack->mPlayerId = packet->mPlayerId;
+			Network::cUDPServerManager::getInstance()->broadcast(eventPack);
+		}
+		while (auto packet = m->ReqWeaponCapsule.get())
+		{
+			auto eventPack = new cEveWeaponCapsule();
+			eventPack->playerId = packet->playerId;
+			eventPack->position = packet->position;
+			eventPack->objectId = mObjectId++;
+			eventPack->speed = packet->speed;
+			eventPack->type = packet->type;
+			Network::cUDPServerManager::getInstance()->broadcast(eventPack);
+		}
 	}
 }
 void cServerAdapter::sendResult( )
@@ -184,11 +190,12 @@ void cServerAdapter::sendAddCannonPower( )
 	for ( auto& m : Network::cUDPServerManager::getInstance( )->getUDPManager( ) )
 	while ( auto p = m->ReqAddCannonPower.get( ) )
 	{
-		if ( p->teamId == Game::Player::Red )
+		// TODO: ãY—í‚É‚·‚é‚Æ‚ÍŒ¾‚Á‚Ä‚¢‚È‚¢
+		if ( p->playerId < 4 )
 		{
 			mRedTeamPower += p->power;
 		}
-		else if ( p->teamId == Game::Player::Blue )
+		else if ( p->playerId >= 4 )
 		{
 			mBlueTeamPower += p->power;
 		}
@@ -198,7 +205,7 @@ void cServerAdapter::sendAddCannonPower( )
 		}
 
 		auto e = new cEveAddCannonPower( );
-		e->teamId = p->teamId;
+		e->playerOrQuarry = p->playerOrQuarry;
 		e->playerId = p->playerId;
 		e->power = p->power;
 		cUDPServerManager::getInstance( )->broadcast( e );

@@ -50,16 +50,8 @@ namespace Weapons
 		void cLightBomb::getGem()
 		{
 			for (int i = 0; i < Game::cGemManager::getInstance()->getGemStones().size(); i++) {
-				if (glm::distance2(mPos, Game::cGemManager::getInstance()->getGemStones()[i]->getPos()) < mExprosionLength*1.5f) {
-
-					auto gems = Game::cGemManager::getInstance()->breakGemStone(Game::cGemManager::getInstance()->getGemStones()[i]->getId());
-					
-					for (int j = 0; j < gems.size(); j++) {
-						Game::cPlayerManager::getInstance()->getPlayers()[mPlayerId]->gem_production_end[gems[j]->getId()];
-						Game::cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getGems(gems[j]->getId());
-					}
-
-					
+				if (glm::distance(mPos, Game::cGemManager::getInstance()->getGemStones()[i]->getPos()) < mExprosionLength) {
+					cClientAdapter::getInstance()->sendGetGemPlayer( Game::cGemManager::getInstance()->getGemStones()[i]->getId());
 				}
 			}
 
@@ -134,8 +126,9 @@ namespace Weapons
 				if (mPlayerId == cPlayerManager::getInstance()->getActivePlayerId()) {
 					collisonToPlayer();
 					Game::cFieldManager::getInstance()->blockBreak(mPos, mExprosionLength / 2.f);
+					getGem();
 				}
-				getGem();
+			
 				playSound();
 				createParticle();
 				mIsExprosion = true;
@@ -211,7 +204,7 @@ namespace Weapons
 			for (int i = 0; i < cPlayerManager::getInstance()->getPlayers().size(); i++) {
 				if (cPlayerManager::getInstance()->getPlayers()[i]->getWhichTeam() == mTeamNum)continue;
 
-				float distance = glm::distance2(cPlayerManager::getInstance()->getPlayers()[i]->getPos(), mPos);
+				float distance = glm::distance(cPlayerManager::getInstance()->getPlayers()[i]->getPos(), mPos);
 
 				if (distance < mExprosionLength*2.f) {
 					cClientAdapter::getInstance()->sendDamage(cPlayerManager::getInstance()->getPlayers()[i]->getPlayerId(),

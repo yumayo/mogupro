@@ -21,6 +21,8 @@
 #include <Sound/Stereophonic.h>
 void Game::Player::cPlayer::updatePlayerRotation()
 {
+	if (!active_user) return;
+
 	ci::vec3 playerYAxis;
 	ci::vec3 playerZAxis;
 	ci::vec3 playerXAxis;
@@ -66,10 +68,7 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 	//自分の所持しているジェムにプッシュバック
 	getgems.push_back(GemManager->getFragmentGem(_gemid));
 	GemManager->getFragmentGem(_gemid)->setIsActive(false);
-	if (getgems.size() > 1) {
-		//持っているジェムが複数あれば1個前のジェムのライトを消す
-		GemManager->getFragmentGem(gem_id_buf)->handle->color = ci::vec3(0);
-	}
+
 	//ランダムの生成
 	std::random_device rd;
 	std::mt19937 mt(rd());
@@ -330,9 +329,11 @@ Game::Player::cPlayer::cPlayer(
 	{
 	case Player::Blue:
 		lightColor = ci::vec3( 0, 0, 1 - ( status.hp / Player::MAX_HP ) / 2 );
+		rotation = cinder::quat(glm::angleAxis(glm::pi<float>(), ci::vec3(0, 1, 0)));
 		break;
 	case Player::Red:
 		lightColor = ci::vec3( 1 - ( status.hp / Player::MAX_HP ) / 2, 0, 0 );
+		rotation = cinder::quat(glm::angleAxis(0.0F, ci::vec3(0, 1, 0)));
 		break;
 	default:
 		break;
@@ -439,8 +440,8 @@ void Game::Player::cPlayer::setup()
 	}
 	else {
 		//最初に角度を設定するためにほんの少し動かす
-		move(ci::vec3(0, 0, 0.01f));
-		mCollider.setPosition(mPos + ci::vec3(0, 0, 0.01f));
+		move(ci::vec3(0, 0, -0.01f));
+		mCollider.setPosition(mPos + ci::vec3(0, 0, -0.01f));
 	}
 	
 	//プレイヤーの移動
@@ -488,8 +489,8 @@ void Game::Player::cPlayer::update(const float & delta_time)
 	aabb = mCollider.createAABB(mCollider.getPosition());
 	respawn(delta_time);
 	root->set_position_3d(mPos);
-	collisionGems();
-	updatePlayerRotation( );
+//	collisionGems(); 爪で破壊した瞬間にすべて判定しているので必要なくなりました。
+	updatePlayerRotation();
 }
 
 void Game::Player::cPlayer::cameraAfterUpdate( const float & delta_time )

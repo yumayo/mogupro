@@ -31,10 +31,9 @@ void cClientAdapter::update( )
     // サーバーから受信したものがあった場合は取り出して、
     // 各マネージャーに伝えます。
     recvAllPlayers( );
-    recvAllQuarrys( );
     recvAllGems( );
     recvAllBreakBlocks( );
-	recvAllBombs( );
+	recvAllWeaponCapsules( );
 	recvAllCannons( );
 	recvAllGameInfo( );
 }
@@ -85,18 +84,6 @@ void cClientAdapter::recvAllPlayers( )
 		}
 	}
 }
-void cClientAdapter::recvAllQuarrys( )
-{
-    auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
-    while ( auto packet = m->EveSetQuarry.get( ) )
-    {
-		cSubWeaponManager::getInstance( )->createQuarry(
-			packet->mPosition
-			, packet->mObjectId
-			, packet->mPlayerId
-		);
-    }
-}
 void cClientAdapter::recvAllGems( )
 {
     auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
@@ -109,9 +96,12 @@ void cClientAdapter::recvAllGems( )
     }
     while ( auto packet = m->EveGetJemPlayer.get( ) )
     {
-		// TODO: プレイヤーが宝石を取得する。
-		packet->mGemId;
-		packet->mPlayerId;
+		app::console() << "breakGemStone " << packet->mGemId << std::endl;
+		for ( auto& gem : cGemManager::getInstance( )->breakGemStone( packet->mGemId ) )
+		{
+			app::console() << "breakGemStonefrag " << gem->getId() << std::endl;
+			cPlayerManager::getInstance( )->getPlayer(packet->mPlayerId)->getGems( gem->getId() );
+		}
     }
 }
 void cClientAdapter::recvAllBreakBlocks( )
@@ -127,12 +117,30 @@ void cClientAdapter::recvAllBreakBlocks( )
         }
     }
 }
-void cClientAdapter::recvAllBombs( )
+void cClientAdapter::recvAllWeaponCapsules()
 {
-	auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
-	while ( auto packet = m->EveLightBomb.get( ) )
+	auto m = Network::cUDPClientManager::getInstance()->getUDPManager();
+	while (auto packet = m->EveLightBomb.get())
 	{
-		cSubWeaponManager::getInstance( )->createLightBomb( packet->position, packet->speed, cinder::vec3(0.5F), packet->objectId, packet->playerId );
+		cSubWeaponManager::getInstance()->createLightBomb(packet->position, packet->speed, cinder::vec3(0.5F), packet->objectId, packet->playerId);
+	}
+	while (auto packet = m->EveSetQuarry.get())
+	{
+		cSubWeaponManager::getInstance()->createQuarry(
+			packet->mPosition
+			, packet->mObjectId
+			, packet->mPlayerId
+		);
+	}
+	while (auto packet = m->EveWeaponCapsule.get())
+	{
+		cSubWeaponManager::getInstance()->createWeaponCapsel(
+			packet->position
+			, packet->speed
+			, packet->playerId
+			, packet->objectId
+			, (Weapons::SubWeapon::SubWeaponType)packet->type
+		);
 	}
 }
 void cClientAdapter::recvAllCannons( )
@@ -140,17 +148,34 @@ void cClientAdapter::recvAllCannons( )
 	auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
 	while ( auto packet = m->EveAddCannonPower.get( ) )
 	{
-		if ( packet->teamId == Game::Player::Red )
+		cPlayerManager::getInstance()->receiveAddCannonPower( packet->playerId );
+		if ( packet->playerId < 4 )
 		{
 			cGameManager::getInstance( )->addRedCannonPower( packet->power );
 			cGameManager::getInstance( )->appendGem( packet->playerId, packet->power );
-			cStrategyManager::getInstance()->getCannons()[int(packet->teamId)]->setAddCanonPower(packet->power);
+			if (packet->playerOrQuarry == 0)
+			{
+				cStrategyManager::getInstance()->getCannons()[Player::Team::Red]->receivePlayerGem(packet->power, packet->playerId);
+			}
+			else if (packet->playerOrQuarry == 1)
+			{
+				cStrategyManager::getInstance()->getCannons()[Player::Team::Red]->receiveQuarryGem(packet->power, packet->playerId);
+			}
+			cStrategyManager::getInstance()->getCannons()[Player::Team::Red]->setAddCanonPower(packet->power);
 		}
-		else if ( packet->teamId == Game::Player::Blue )
+		else if ( packet->playerId >= 4 )
 		{
 			cGameManager::getInstance( )->addBlueCannonPower( packet->power );
 			cGameManager::getInstance( )->appendGem( packet->playerId, packet->power );
-			cStrategyManager::getInstance()->getCannons()[int(packet->teamId)]->setAddCanonPower(packet->power);
+			if (packet->playerOrQuarry == 0)
+			{
+				cStrategyManager::getInstance()->getCannons()[Player::Team::Blue]->receivePlayerGem(packet->power, packet->playerId);
+			}
+			else if(packet->playerOrQuarry == 1)
+			{
+				cStrategyManager::getInstance()->getCannons()[Player::Team::Blue]->receiveQuarryGem(packet->power, packet->playerId);
+			}
+			cStrategyManager::getInstance()->getCannons()[Player::Team::Blue]->setAddCanonPower(packet->power);
 		}
 		else
 		{
@@ -210,6 +235,15 @@ void cClientAdapter::sendLightBomb( cinder::vec3 const & position, cinder::vec3 
 	packet->speed = speed;
 	cUDPClientManager::getInstance( )->send( packet );
 }
+void cClientAdapter::sendWeaponCapsule(cinder::vec3 const & position, cinder::vec3 const & speed, Network::ubyte1 type)
+{
+	auto p = new cReqWeaponCapsule();
+	p->playerId = cPlayerManager::getInstance()->getActivePlayerId();
+	p->position = position;
+	p->speed = speed;
+	p->type = type;
+	cUDPClientManager::getInstance()->send(p);
+}
 void cClientAdapter::sendKill( Network::ubyte1 enemyId )
 {
 	auto p = new cReqPlayerDeath( );
@@ -231,10 +265,10 @@ void cClientAdapter::sendRespawn( )
 	p->playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
 	cUDPClientManager::getInstance( )->send( p );
 }
-void cClientAdapter::sendAddCannonPower( Network::ubyte1 teamId, Network::ubyte1 power )
+void cClientAdapter::sendAddCannonPower( Network::ubyte1 power, Network::ubyte1 playerOrQuarry)
 {
 	auto p = new cReqAddCannonPower( );
-	p->teamId = teamId;
+	p->playerOrQuarry = playerOrQuarry;
 	p->playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
 	p->power = power;
 	cUDPClientManager::getInstance( )->send( p );

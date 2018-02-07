@@ -82,6 +82,7 @@ public:
 	}
 	//コリジョンの後に呼ぶアップデート
 	void playerCollisionAfterUpdate(const float& delta_time);
+	void receiveAddCannonPower(int playerId);
 	// カメラの更新後に呼ぶアップデート
 	void cameraAfterUpdate( const float& delta_time );
     void setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams);

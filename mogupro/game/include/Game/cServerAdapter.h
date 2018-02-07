@@ -25,11 +25,10 @@ public:
     void update( );
 private:
 	void sendPlayers( );
-    void sendSetQuarry( );
     void sendGetGemPlayer( );
     void sendGetGemQuarry( );
 	void sendBreakBlocks( );
-	void sendLightBombs( );
+	void sendWeaponCapsules();
 	void sendResult( );
 	void sendAddCannonPower( );
 private:

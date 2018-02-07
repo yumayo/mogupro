@@ -89,6 +89,17 @@ void cWeaponCapsule::HitLand()
 		mIsHitLand = true;
 		isDelete = true;
 		Sound::StereophonicManager::getInstance()->add("capselopen" + std::to_string(mObjectId), ci::app::getAssetPath("SE/SubWeapon/capselopen.wav").string(), mPos);
+		
+		Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
+			.scale(1.5f).
+			vanishTime(0.5f).
+			vanishTimeRange(0.0f).
+			speed(0.30f).
+			addVec(ci::vec3(0, 0.5, 0)).
+			textureType(Particle::ParticleTextureType::SMOKE).
+			color(ci::ColorA::white()).
+			moveType(Particle::ParticleType::EXPROTION).count(30).isTrajectory(true).gravity(0.24));
+
 		if (mIsMyObject) {
 			createSubWeapon();
 
@@ -109,27 +120,22 @@ void cWeaponCapsule::HitLand()
 			//	textureType(Particle::ParticleTextureType::SMOKE).
 			//	color(ci::ColorA::white()).
 			//	moveType(Particle::ParticleType::EXPROTION).count(30).isTrajectory(true).gravity(-0.12));
-			Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
-				.scale(1.5f).
-				vanishTime(0.5f).
-				vanishTimeRange(0.0f).
-				speed(0.30f).
-				addVec(ci::vec3(0, 0.5, 0)).
-				textureType(Particle::ParticleTextureType::SMOKE).
-				color(ci::ColorA::white()).
-				moveType(Particle::ParticleType::EXPROTION).count(30).isTrajectory(true).gravity(0.24));
+			
 		}
 	}
 }
 void cWeaponCapsule::createSubWeapon()
 {
+	float length = 2.5f;
 	switch (mType)
 	{
 	case Game::Weapons::SubWeapon::SubWeaponType::LIGHT_BOMB:
 		Game::cClientAdapter::getInstance()->sendLightBomb(mPos, mSpeed);
 		break;
 	case Game::Weapons::SubWeapon::SubWeaponType::QUARRY:
-		Game::cClientAdapter::getInstance()->sendSetQuarry(mPos + ci::vec3(0, 1.5, 0));
+		Game::cClientAdapter::getInstance()->sendSetQuarry(mPos + ci::vec3(length*cos(2.f*M_PI*(0.f/3.f)), 1.5, length*sin(2.f*M_PI*(0.f / 3.f))));
+		Game::cClientAdapter::getInstance()->sendSetQuarry(mPos + ci::vec3(length*cos(2.f*M_PI*(1.f / 3.f)), 1.5, length*sin(2.f*M_PI*(1.f / 3.f))));
+		Game::cClientAdapter::getInstance()->sendSetQuarry(mPos + ci::vec3(length*cos(2.f*M_PI*(2.f / 3.f)), 1.5, length*sin(2.f*M_PI*(2.f / 3.f))));
 		break;
 	default:
 		break;

@@ -41,6 +41,8 @@ enum class PacketId : ubyte1
 	EVE_ADD_CANNON_POWER,
 	// 他のプレイヤーがボムを投げたと通知します。
 	EVE_LIGHT_BOMB,
+	//
+	EVE_WEAPON_CAPSULE,
     //Memberがどこに所属しているかの送信
     EVE_TEAM_MEMBER,
 	// ダメージがあったことを知らせます。
@@ -109,6 +111,8 @@ enum class PacketId : ubyte1
 	REQ_END_START_TIMER,
 	// 
 	REQ_ADD_CANNON_POWER,
+	//
+	REQ_WEAPON_CAPSULE,
 	// 
 	REQ_RESULT,
 	//

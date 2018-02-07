@@ -10,6 +10,16 @@
 #include <Game/cGameManager.h>
 #include <Resource/cImageManager.h>
 #include <Network/cUDPClientManager.h>
+#include <Game/Weapons/MainWeapon/cBase.h>
+void Game::cPlayerManager::receiveAddCannonPower(int playerId)
+{
+	if (playerId != active_player_id)
+	{
+		cGemManager::getInstance()->deleteFragmentGems(players[playerId]->getgems);
+		players[playerId]->gem_production_end.clear();
+		players[playerId]->getgems.clear();
+	}
+}
 void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
 {
 	//生成
@@ -156,13 +166,16 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	
 	//大砲にジェムを入れる
 	auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];
-	if (cannon->getAABB().intersects(active_player->getAABB())) {
-		cannon->receivePlayerGem(active_player->getgems.size(), active_player_id);
-		cGemManager::getInstance()->deleteFragmentGems(active_player->getgems);
-		active_player->gem_production_end.clear();
-		active_player->getgems.clear();
+	if (!active_player->getgems.empty())
+	{
+		if (cannon->getAABB().intersects(active_player->getAABB()))
+		{
+			cClientAdapter::getInstance()->sendAddCannonPower(active_player->getgems.size(), 0);
+			cGemManager::getInstance()->deleteFragmentGems(active_player->getgems);
+			active_player->gem_production_end.clear();
+			active_player->getgems.clear();
+		}
 	}
-
 
 	keyMove(delta_time);
 
@@ -387,11 +400,12 @@ void Game::cPlayerManager::update(const float& delta_time)
 	watchingCamera(delta_time);
 	cClientAdapter::getInstance()->sendPlayer(active_player->getPos(), active_player->getRotate());
 	
-	auto packet = new Network::Packet::Request::cReqPlayer();
-	packet->mFormat.playerId = 1;
-	packet->mFormat.position = players[1]->getPos();
-	packet->mFormat.rotation = active_player->getRotate();
-	Network::cUDPClientManager::getInstance()->send(packet);
+	// デバッグ用っぽいので削除。
+//	auto packet = new Network::Packet::Request::cReqPlayer();
+//	packet->mFormat.playerId = 1;
+//	packet->mFormat.position = players[1]->getPos();
+//	packet->mFormat.rotation = active_player->getRotate();
+//	Network::cUDPClientManager::getInstance()->send(packet);
 }
 
 void Game::cPlayerManager::draw()

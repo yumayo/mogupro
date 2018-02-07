@@ -4,6 +4,7 @@
 #include <memory>
 #include "cSceneBase.h"
 #include <Utility/cInput.h>
+#include <algorithm>
 
 //! @file cSceneManager
 //! @brief Scene切り替えを含め現在のSceneのすべてを管理するクラスです
@@ -20,14 +21,52 @@ class cSceneManager : public Utility::cSingletonAble<cSceneManager>
 public:
 	cSceneManager( );
 	~cSceneManager( );
-
+private:
+	class SceneRemoveSelf : public std::runtime_error
+	{
+	public:
+		SceneRemoveSelf( ) : std::runtime_error( "シーンを追加しました。" )
+		{
+		}
+	};
+	class SceneAllDeleted : public std::runtime_error
+	{
+	public:
+		SceneAllDeleted( ) : std::runtime_error( "シーンを削除しました。" )
+		{
+		}
+	};
+public:
+	class SceneNotFound : public std::runtime_error
+	{
+	public:
+		SceneNotFound( ) : std::runtime_error( "シーンが見つかりません。" )
+		{
+		}
+	};
 	void update( float delta )
 	{
-		for ( auto& scene : mSceneBases )
+		try
 		{
-			scene->update( delta );
+			iteration = true;
+			for ( iterator = 0; iterator < mSceneBases.size( ); ++iterator )
+			{
+				try
+				{
+					mSceneBases[iterator]->update( delta );
+				}
+				catch ( SceneRemoveSelf const& )
+				{
+					// nothing
+				}
+			}
+			iteration = false;
+			mDontDestroyOnLoad->update( delta );
 		}
-		mDontDestroyOnLoad->update( delta );
+		catch ( SceneAllDeleted const& )
+		{
+			this->update( delta );
+		}
 	}
 	void draw( )
 	{
@@ -46,13 +85,6 @@ public:
 		mDontDestroyOnLoad->draw2D( );
 	}
 
-	class SceneNotFound : public std::runtime_error
-	{
-	public:
-		SceneNotFound( ) : std::runtime_error( "シーンが見つかりません。" )
-		{
-		}
-	};
 	template<class TyScene>
 	TyScene& find( )
 	{
@@ -64,6 +96,29 @@ public:
 			}
 		}
 		throw SceneNotFound( );
+	}
+
+	std::vector<std::string> getSceneNames()
+	{
+		std::vector<std::string> ret;
+		for (auto& scene : mSceneBases)
+		{
+			ret.emplace_back(scene->getName());
+		}
+		return ret;
+	}
+
+	template<class TyScene>
+	bool isCurrentScene()
+	{
+		for (auto& scene : mSceneBases)
+		{
+			if (scene->getName() == typeid(TyScene).name())
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	cSceneBase& getDontDestroyOnLoad( );
@@ -79,48 +134,59 @@ public:
 	template<class TyScene>
 	void erase( )
 	{
-		auto it = mSceneBases.begin( );
-		while ( it != mSceneBases.end( ) )
+		if ( mSceneBases.empty( ) ) return;
+		auto erase_itr = std::find_if( mSceneBases.begin(), mSceneBases.end(), [ this ] ( std::shared_ptr<cSceneBase>& scene )
 		{
-			if ( ( *it )->getName( ) == typeid( TyScene ).name( ) )
-			{
-				(*it)->shutDown( );
-				it = mSceneBases.erase( it );
-			}
-			else ++it;
+			return scene->getName() == typeid( TyScene ).name( );
+		} );
+		if ( erase_itr == mSceneBases.end( ) ) return;
+		auto index = std::distance( mSceneBases.begin( ), erase_itr );
+		mSceneBases[index]->shutDown( );
+		if ( iteration )
+		{
+			if ( index == iterator ) { mSceneBases.erase( mSceneBases.begin( ) + index ); iterator--; throw SceneRemoveSelf( ); }
+			else { mSceneBases.erase( mSceneBases.begin( ) + index ); if ( index < iterator ) iterator--; }
+		}
+		else
+		{
+			mSceneBases.erase( mSceneBases.begin( ) + index );
 		}
 	}
 
 	template<class TyScene, class... Args>
 	void shift( Args... args )
 	{
+		// 全てのシーンのシャットダウン
 		for ( auto& scene : mSceneBases )
 		{
 			scene->shutDown( );
 		}
+
+		// 入力を遮断
 		ENV->flashInput( );
 
-		change<TyScene>( args... );
-
-		for ( auto& scene : mSceneBases )
-		{
-			scene->setup( );
-		}
-	}
-private:
-	std::vector<std::shared_ptr<cSceneBase>> mSceneBases;
-	std::shared_ptr<cSceneBase> mDontDestroyOnLoad;
-
-	// setupとshutDownは必ず呼びたいためprivateに.
-	template<class TyScene, class... Args>
-	void change( Args...args )
-	{
+		// 全てのシーンを削除
 		auto it = mSceneBases.begin( );
 		while ( it != mSceneBases.end( ) )
 		{
 			it = mSceneBases.erase( it );
 		}
+
+		// 新しいシーンを作成
 		mSceneBases.emplace_back( std::make_shared<TyScene>( args... ) );
-	};
+
+		// 全てのシーンのセットアップ
+		for ( auto& scene : mSceneBases )
+		{
+			scene->setup( );
+		}
+
+		throw SceneAllDeleted( );
+	}
+private:
+	std::vector<std::shared_ptr<cSceneBase>> mSceneBases;
+	std::shared_ptr<cSceneBase> mDontDestroyOnLoad;
+	int iterator = 0;
+	bool iteration = false;
 };
 }
