@@ -443,8 +443,8 @@ void Game::Player::cPlayer::setup()
 	}
 	else {
 		//最初に角度を設定するためにほんの少し動かす
-		move(ci::vec3(0, 0, 0.01f));
-		mCollider.setPosition(mPos + ci::vec3(0, 0, 0.01f));
+		move(ci::vec3(0, 0, -0.01f));
+		mCollider.setPosition(mPos + ci::vec3(0, 0, -0.01f));
 	}
 	
 	//プレイヤーの移動
