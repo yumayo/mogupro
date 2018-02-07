@@ -126,8 +126,9 @@ namespace Weapons
 				if (mPlayerId == cPlayerManager::getInstance()->getActivePlayerId()) {
 					collisonToPlayer();
 					Game::cFieldManager::getInstance()->blockBreak(mPos, mExprosionLength / 2.f);
+					getGem();
 				}
-				getGem();
+			
 				playSound();
 				createParticle();
 				mIsExprosion = true;
