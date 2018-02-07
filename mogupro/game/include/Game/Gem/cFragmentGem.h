@@ -54,7 +54,7 @@ namespace Game
 
 			hardptr<Node::node> node;
 			hardptr<Node::node> popNode;
-			Game::Light::PointLightHandle handle;
+
 		private:
 
 			int         mId;
