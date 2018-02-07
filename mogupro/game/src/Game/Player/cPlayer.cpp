@@ -68,10 +68,7 @@ void Game::Player::cPlayer::getGems(const int& _gemid)
 	//自分の所持しているジェムにプッシュバック
 	getgems.push_back(GemManager->getFragmentGem(_gemid));
 	GemManager->getFragmentGem(_gemid)->setIsActive(false);
-	if (getgems.size() > 1) {
-		//持っているジェムが複数あれば1個前のジェムのライトを消す
-		GemManager->getFragmentGem(gem_id_buf)->handle->color = ci::vec3(0);
-	}
+
 	//ランダムの生成
 	std::random_device rd;
 	std::mt19937 mt(rd());
