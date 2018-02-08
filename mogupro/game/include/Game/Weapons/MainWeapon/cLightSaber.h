@@ -29,10 +29,10 @@ private:
 	};
 	#undef CHAIN
 	void animation( float t, TumeFormat const& tumeFormat );
-	void addBullet( float power );
+	void addBullet( float lightRadius, float damage );
 private:
 	Utility::cStateMachineBehaviour stateMachine;
-	std::function<void( )> drawFunc;
+	std::function<void( )> debugDrawFunc;
 	hardptr<Node::node> tumeRoot;
 	softptr<Node::node> tumeHolder;
 	softptr<Node::node> tume;

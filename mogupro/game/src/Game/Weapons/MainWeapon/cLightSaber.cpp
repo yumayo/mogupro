@@ -21,90 +21,112 @@ namespace Weapons
 {
 namespace MainWeapon
 {
-class tumeBaseNode : public Node::node
+class tumeNode : public Node::node
 {
-protected:
 	ci::gl::VboMeshRef vbo;
-	bool init( Player::Team team )
+	Light::PointLightHandle light;
+	float lightRadius = 0.0F;
+public:
+	CREATE_H(tumeNode, Player::Team team)
 	{
-		set_color( team == Player::Team::Red ? ci::ColorA( 1, 0, 0 ) : ci::ColorA( 0, 0, 1 ) );
-		vec3 col( get_color().r, get_color().g, get_color().b );
-		light = cLightManager::getInstance( )->addPointLight( ci::vec3(0), col, 0.0F );
+		CREATE(tumeNode, team);
+	}
+	bool init(Player::Team team)
+	{
+		set_color(team == Player::Team::Red ? ci::ColorA(1, 0, 0) : ci::ColorA(0, 0, 1));
+		vec3 col(get_color().r, get_color().g, get_color().b);
+		light = cLightManager::getInstance()->addPointLight(ci::vec3(0), col, 0.0F);
 		vbo = Resource::OBJ["mainWeapon.obj"];
 		return true;
 	}
-	Light::PointLightHandle light;
-	float lightPower = 0.0F;
+	float damage = 0.0F;
+	ci::vec3 center;
+	float radius = 0.0F;
+	ci::Sphere attackSphere;
+	ci::Sphere gemSphere;
+	ci::Sphere playerSphere;
+	std::vector<int> hitListPlayer;
+	std::vector<int> hitListGem;
 public:
+	void resetHitList()
+	{
+		hitListPlayer.clear();
+		hitListGem.clear();
+	}
+	void hitGem( cinder::AxisAlignedBox const& aabb, int id )
+	{
+		bool isIdCollide = false;
+		for (auto l : hitListGem)
+		{
+			if (l == id)
+			{
+				isIdCollide = true;
+			}
+		}
+		if (false == isIdCollide)
+		{
+			if (gemSphere.intersects(aabb) || playerSphere.intersects(aabb))
+			{
+				hitListGem.emplace_back(id);
+				cClientAdapter::getInstance()->sendGetGemPlayer(id);
+			}
+		}
+	}
+	void hitPlayer( cinder::AxisAlignedBox const& aabb, int id )
+	{
+		bool isIdCollide = false;
+		for (auto l : hitListPlayer)
+		{
+			if (l == id)
+			{
+				isIdCollide = true;
+			}
+		}
+		if (false == isIdCollide)
+		{
+			if (attackSphere.intersects(aabb))
+			{
+				hitListPlayer.emplace_back(id);
+				cClientAdapter::getInstance()->sendDamage(id, damage);
+			}
+		}
+	}
+	void update(float)override
+	{
+		auto mat = get_world_matrix_3d();
+		auto centerMat = glm::translate(mat, center);
+
+		auto tumePos = vec3(centerMat[3][0], centerMat[3][1], centerMat[3][2]);
+
+		attackSphere.setCenter(tumePos);
+		attackSphere.setRadius( radius );
+
+		gemSphere.setCenter(tumePos);
+		gemSphere.setRadius(radius * 2.0F);
+
+		auto pos = ci::vec3(mat[3][0], mat[3][1], mat[3][2]);
+		playerSphere.setCenter(pos);
+		playerSphere.setRadius(2.0F);
+
+		light->reAttachPositionWithRadius(pos, lightRadius);
+	}
 	void addLightPower( float powerByOnesecond )
 	{
-		lightPower = glm::clamp( lightPower + powerByOnesecond, 0.0F, 1.5F );
+		lightRadius = glm::clamp(lightRadius + powerByOnesecond, 0.0F, 1.5F );
 	}
 	void setLightPower( float powerByOnesecond )
 	{
-		lightPower = glm::clamp( powerByOnesecond, 0.0F, 1.5F );
+		lightRadius = glm::clamp( powerByOnesecond, 0.0F, 1.5F );
 	}
 	void resetLightPower( )
 	{
-		lightPower = 0.0F;
+		lightRadius = 0.0F;
 		light->reAttachPositionWithRadius( ci::vec3(0), 0.0F );
 	}
-};
-class tumeNode : public tumeBaseNode
-{
-public:
-	CREATE_H( tumeNode, Player::Team team )
-	{
-		CREATE( tumeNode, team );
-	}
-	void update( float delta ) override
-	{
-		auto mat = get_world_matrix_3d( );
-		auto pos = ci::vec3( mat[3][0], mat[3][1], mat[3][2] );
-		light->reAttachPositionWithRadius( pos, lightPower );
-	}
-	bool init( Player::Team team )
-	{
-		if ( !__super::init( team ) ) return false;
-		return true;
-	}
-	void render( ) override
+	void render()override
 	{
 		gl::draw( vbo );
 	}
-};
-class tumeBulletNode : public tumeBaseNode
-{
-public:
-	CREATE_H( tumeBulletNode, Player::Team team )
-	{
-		CREATE( tumeBulletNode, team );
-	}
-	bool init( Player::Team team )
-	{
-		if ( !__super::init( team ) ) return false;
-		ws.center( vec3( 0 ) ).radius( 0.7F );
-		return true;
-	}
-	void update( float delta ) override
-	{
-		auto mat = get_world_matrix_3d( );
-		auto pos = ci::vec3( mat[3][0], mat[3][1], mat[3][2] );
-		light->reAttachPositionWithRadius( pos, lightPower );
-
-		attackSphere.setCenter( pos );
-		attackSphere.setRadius( 0.7F );
-	}
-	void render( ) override
-	{
-		gl::draw( vbo );
-		gl::draw( ws );
-	}
-	float power = 0.0F;
-	ci::geom::WireSphere ws;
-	ci::Sphere attackSphere;
-	std::vector<int> hitListPlayer;
-	std::vector<int> hitListGem;
 };
 cLightSaber::cLightSaber( Player::cPlayer& player )
 	: cBase( player )
@@ -139,14 +161,20 @@ void cLightSaber::setup( )
 		} );
 		idle->onStateIn = [ this ] ( auto m )
 		{
-			drawFunc = [ this ]
+			debugDrawFunc = [ this ]
 			{
 				gl::ScopedColor col( ColorA( 1, 0, 0 ) );
 				gl::drawCube( vec3( 0 ), vec3( 0.1F ) );
 			};
-			animation( 0.1F, TumeFormat( ) );
-			Resource::SE["Player/aura1.wav"].stop();
+
+			if (player.getActiveUser())
+			{
+				Resource::SE["Player/aura1.wav"].stop();
+			}
+
 			tumeRoot->set_block_visible( );
+
+			animation( 0.1F, TumeFormat( ) );
 		};
 	}
 	// スラッシュか、チャージショットかの分岐
@@ -163,11 +191,12 @@ void cLightSaber::setup( )
 		} );
 		slash_ready->onStateIn = [ this ] ( auto m )
 		{
-			drawFunc = [ this ]
+			debugDrawFunc = [ this ]
 			{
 				gl::ScopedColor col( ColorA( 0.5F, 1, 0.5F ) );
 				gl::drawCube( vec3( 0 ), vec3( 0.1F ) );
 			};
+
 			tumeRoot->set_block_visible( false );
 		};
 	}
@@ -185,55 +214,41 @@ void cLightSaber::setup( )
 		} );
 		left_slash->onStateStay = [ this ] ( auto n )
 		{
+			if (player.getActiveUser())
+			{
+				auto t = tume.dynamicptr<tumeNode>();
+				for (auto& p : cPlayerManager::getInstance()->getPlayers())
+				{
+					if (p->getPlayerId() == player.getPlayerId()) continue;
+					if (p->getWhichTeam() == player.getWhichTeam()) continue;
+					if (p->isWatching()) continue;
+
+					t->hitPlayer(p->getAABB(), p->getPlayerId());
+				}
+				for (auto& gem_ref : cGemManager::getInstance()->getGemStones())
+				{
+					if (!gem_ref->isActive()) continue;
+
+					t->hitGem(gem_ref->getAabb().createAABB(gem_ref->getCenterPos()), gem_ref->getId());
+				}
+			}
 			player.getPlayerAnimation( ).setAnimationIncrementTime( 0.075F );
 		};
 		left_slash->onStateIn = [ this ] ( auto m )
 		{
-			ci::geom::WireSphere attackSphere;
-			auto center = glm::normalize( vec3( 1, 0, 1 ) );
-			auto radius = 0.6F;
-			attackSphere.center( center ).radius( radius );
+			auto t = tume.dynamicptr<tumeNode>();
+			t->center = glm::normalize( vec3( 1, 0, 1 ) );
+			t->radius = 0.6F;
+			t->damage = 62.0F;
 
-			drawFunc = [ attackSphere, this ]
+			debugDrawFunc = [ this ]
 			{
 				gl::ScopedColor col( ColorA( 0, 1, 0 ) );
 				gl::drawCube( vec3( 0 ), vec3( 0.1F ) );
-				gl::draw( attackSphere );
 			};
 
 			if ( player.getActiveUser( ) )
 			{
-				auto mat = tumeRoot->get_world_matrix_3d( );
-				auto centerMat = glm::translate( mat, center );
-				center = vec3( centerMat[3][0], centerMat[3][1], centerMat[3][2] );
-				attackSphere.center( center );
-
-				ci::Sphere s( center, radius );
-
-				for ( auto& p : cPlayerManager::getInstance( )->getPlayers( ) )
-				{
-					if ( p->getPlayerId( ) == player.getPlayerId( ) ) continue;
-					if ( p->getWhichTeam( ) == player.getWhichTeam( ) ) continue;
-					if ( p->isWatching( ) ) continue;
-					if ( s.intersects( p->getAABB( ) ) )
-					{
-						cClientAdapter::getInstance( )->sendDamage( p->getPlayerId( ), 40.0F );
-					}
-				}
-
-				ci::Sphere s_plus( vec3( mat[3][0], mat[3][1], mat[3][2] ), 0.5F );
-				for ( auto& gem_ref : cGemManager::getInstance( )->getGemStones( ) )
-				{
-					if ( !gem_ref->isActive( ) ) continue;
-					auto gemAABB = gem_ref->getAabb( ).createAABB( gem_ref->getCenterPos( ) );
-					if ( s.intersects( gemAABB ) ||
-						 s_plus.intersects( gemAABB ) )
-					{
-						app::console() << "sendGetGemPlayer " << gem_ref->getId() << std::endl;
-						cClientAdapter::getInstance( )->sendGetGemPlayer( gem_ref->getId( ) );
-					}
-				}
-
 				Resource::SE["Player/aura1.wav"].setLooping( false );
 				Resource::SE["Player/aura1.wav"].stop( );
 
@@ -248,6 +263,11 @@ void cLightSaber::setup( )
 					   .tumeRotation( 0.15F, glm::pi<float>( ) / 2.0F )
 					   .tumeRootRotation( 0.3F, glm::pi<float>( ) / 1.5F ) );
 		};
+		left_slash->onStateOut = [this]
+		{
+			auto t = tume.dynamicptr<tumeNode>();
+			t->resetHitList();
+		};
 	}
 	// 右スラッシュ
 	{
@@ -257,52 +277,41 @@ void cLightSaber::setup( )
 		} );
 		right_slash->onStateStay = [ this ] (auto n)
 		{
+			if (player.getActiveUser())
+			{
+				auto t = tume.dynamicptr<tumeNode>();
+				for (auto& p : cPlayerManager::getInstance()->getPlayers())
+				{
+					if (p->getPlayerId() == player.getPlayerId()) continue;
+					if (p->getWhichTeam() == player.getWhichTeam()) continue;
+					if (p->isWatching()) continue;
+
+					t->hitPlayer(p->getAABB(), p->getPlayerId());
+				}
+				for (auto& gem_ref : cGemManager::getInstance()->getGemStones())
+				{
+					if (!gem_ref->isActive()) continue;
+
+					t->hitGem(gem_ref->getAabb().createAABB(gem_ref->getCenterPos()), gem_ref->getId());
+				}
+			}
 			player.getPlayerAnimation( ).setAnimationIncrementTime( 0.075F );
 		};
 		right_slash->onStateIn = [ this ] ( auto m )
 		{
-			ci::geom::WireSphere attackSphere;
-			auto center = glm::normalize( vec3( -1, 0, 2 ) );
-			auto radius = 0.8F;
-			attackSphere.center( center ).radius( radius );
+			auto t = tume.dynamicptr<tumeNode>();
+			t->center = glm::normalize( vec3( -1, 0, 2 ) );
+			t->radius = 0.8F;
+			t->damage = 62.0F;
 
-			drawFunc = [ attackSphere, this ]
+			debugDrawFunc = [ this ]
 			{
 				gl::ScopedColor col( ColorA( 0, 0, 1 ) );
 				gl::drawCube( vec3( 0 ), vec3( 0.1F ) );
-				gl::draw( attackSphere );
 			};
 
 			if ( player.getActiveUser( ) )
 			{
-				auto mat = tumeRoot->get_world_matrix_3d( );
-				auto centerMat = glm::translate( mat, center );
-				center = vec3( centerMat[3][0], centerMat[3][1], centerMat[3][2] );
-				attackSphere.center( center );
-
-				ci::Sphere s( center, radius );
-				for ( auto& p : cPlayerManager::getInstance( )->getPlayers( ) )
-				{
-					if ( p->getPlayerId( ) == player.getPlayerId( ) ) continue;
-					if ( p->getWhichTeam( ) == player.getWhichTeam( ) ) continue;
-					if ( p->isWatching( ) ) continue;
-					if ( s.intersects( p->getAABB( ) ) )
-					{
-						cClientAdapter::getInstance( )->sendDamage( p->getPlayerId( ), 50.0F );
-					}
-				}
-				ci::Sphere s_plus( vec3( mat[3][0], mat[3][1], mat[3][2] ), 0.5F );
-				for ( auto& gem_ref : cGemManager::getInstance( )->getGemStones( ) )
-				{
-					if ( !gem_ref->isActive( ) ) continue;
-					auto gemAABB = gem_ref->getAabb( ).createAABB( gem_ref->getCenterPos( ) );
-					if ( s.intersects( gemAABB ) ||
-						 s_plus.intersects( gemAABB ) )
-					{
-						cClientAdapter::getInstance( )->sendGetGemPlayer( gem_ref->getId( ) );
-					}
-				}
-
 				Resource::SE["Player/swing2.wav"].setGain( 0.2f );
 				Resource::SE["Player/swing2.wav"].play( );
 			}
@@ -313,6 +322,11 @@ void cLightSaber::setup( )
 					   TumeFormat( )
 					   .tumeRotation( 0.1F, -glm::pi<float>( ) / 2.0F )
 					   .tumeRootRotation( 0.3F, -glm::pi<float>( ) / 1.5F ) );
+		};
+		right_slash->onStateOut = [this]
+		{
+			auto t = tume.dynamicptr<tumeNode>();
+			t->resetHitList();
 		};
 	}
 
@@ -377,7 +391,7 @@ void cLightSaber::setup( )
 		};
 		chage_hold->onStateIn = [ this ] ( auto m )
 		{
-			drawFunc = [ this ]
+			debugDrawFunc = [ this ]
 			{
 				gl::ScopedColor col( ColorA( 1, 1, 0 ) );
 				gl::drawCube( vec3( 0 ), vec3( 0.1F ) );
@@ -414,7 +428,7 @@ void cLightSaber::setup( )
 		shot->onStateIn = [ this ] ( auto m )
 		{
 			float power = boost::any_cast<float>( m );
-			drawFunc = [ this ]
+			debugDrawFunc = [ this ]
 			{
 				gl::ScopedColor col( ColorA( 0, 1, 1 ) );
 				gl::drawCube( vec3( 0 ), vec3( 0.1F ) );
@@ -429,7 +443,7 @@ void cLightSaber::setup( )
 			Resource::SE["Player/katana-slash5.wav"].setGain( 0.2f );
 			Resource::SE["Player/katana-slash5.wav"].play( );
 
-			addBullet( power );
+			addBullet( power, power * 80.0F );
 
 			tumeRoot->set_block_visible( );
 		};
@@ -448,7 +462,7 @@ void cLightSaber::setup( )
 		};
 		chage_hold_max->onStateIn = [ this ] ( auto m )
 		{
-			drawFunc = [ this ]
+			debugDrawFunc = [ this ]
 			{
 				gl::ScopedColor col( ColorA( 1, 0, 1 ) );
 				gl::drawCube( vec3( 0 ), vec3( 0.1F ) );
@@ -466,7 +480,7 @@ void cLightSaber::setup( )
 		} );
 		shot_max->onStateIn = [ this ] ( auto m )
 		{
-			drawFunc = [ this ]
+			debugDrawFunc = [ this ]
 			{
 				gl::ScopedColor col( ColorA( 1, 0.5F, 0.5F ) );
 				gl::drawCube( vec3( 0 ), vec3( 0.1F ) );
@@ -482,7 +496,7 @@ void cLightSaber::setup( )
 			Resource::SE["Player/iainuki1.wav"].setLooping( false );
 			Resource::SE["Player/iainuki1.wav"].play( );
 
-			addBullet( 2.0F );
+			addBullet( 2.0F, 140.0F );
 
 			tumeRoot->set_block_visible( );
 		};
@@ -504,7 +518,7 @@ void cLightSaber::update( const float& delta_time )
 		// 爪Bulletとの当たり判定
 		for ( auto& b_holder : tumeBulletRoot->get_children( ) )
 		{
-			auto b = std::dynamic_pointer_cast<tumeBulletNode>( b_holder->get_children( ).front( ) );
+			auto b = std::dynamic_pointer_cast<tumeNode>( b_holder->get_children( ).front( ) );
 
 			// 爪Bulletとプレイヤーの当たり判定
 			for ( auto& p : cPlayerManager::getInstance( )->getPlayers( ) )
@@ -513,23 +527,7 @@ void cLightSaber::update( const float& delta_time )
 				if ( p->getWhichTeam( ) == player.getWhichTeam( ) ) continue;
 				if ( p->isWatching( ) ) continue;
 
-				bool collision = false;
-				for ( auto l : b->hitListPlayer )
-				{
-					if ( l == p->getPlayerId( ) )
-					{
-						collision = true;
-						break;
-					}
-				}
-				if ( collision == false )
-				{
-					if ( b->attackSphere.intersects( p->getAABB( ) ) )
-					{
-						b->hitListPlayer.emplace_back( p->getPlayerId( ) );
-						cClientAdapter::getInstance( )->sendDamage( p->getPlayerId( ), b->power * 50.0F );
-					}
-				}
+				b->hitPlayer(p->getAABB(), p->getPlayerId() );
 			}
 
 			// 爪Bulletとジェムとの当たり判定
@@ -537,23 +535,7 @@ void cLightSaber::update( const float& delta_time )
 			{
 				if ( !gem_ref->isActive( ) ) continue;
 
-				bool collision = false;
-				for ( auto l : b->hitListGem )
-				{
-					if ( l == gem_ref->getId( ) )
-					{
-						collision = true;
-						break;
-					}
-				}
-				if ( collision == false )
-				{
-					if ( b->attackSphere.intersects( gem_ref->getAabb( ).createAABB( gem_ref->getCenterPos( ) ) ) )
-					{
-						b->hitListGem.emplace_back( gem_ref->getId( ) );
-						cClientAdapter::getInstance( )->sendGetGemPlayer( gem_ref->getId( ) );
-					}
-				}
+				b->hitGem(gem_ref->getAabb().createAABB(gem_ref->getCenterPos()), gem_ref->getId());
 			}
 		}
 	}
@@ -563,7 +545,7 @@ void cLightSaber::update( const float& delta_time )
 }
 void cLightSaber::draw( )
 {
-	drawFunc( );
+	debugDrawFunc( );
 	
 	{
 		gl::ScopedModelMatrix scp;
@@ -590,20 +572,22 @@ void cLightSaber::animation( float t, TumeFormat const & tumeFormat )
 	tume->run_action( axis_to::create( tumeFormat.m_tumeAxisTime == -1.0F ? t : tumeFormat.m_tumeAxisTime, tumeFormat.m_tumeAxis ) );
 	tume->run_action( move_to::create( tumeFormat.m_tumePosTime == -1.0F ? t : tumeFormat.m_tumePosTime, tumeFormat.m_tumePos ) );
 }
-void cLightSaber::addBullet( float power )
+void cLightSaber::addBullet(float lightRadius, float damage)
 {
 	auto b_holder = tumeBulletRoot->add_child( Node::node::create( ) );
 	{
 		b_holder->set_matrix_3d( player.getWorldMatrixWeapon( ) );
-		b_holder->run_action( sequence::create( delay::create( 0.6F + power * 0.2F ), remove_self::create( ) ) );
+		b_holder->run_action( sequence::create( delay::create( 0.6F + lightRadius * 0.2F ), remove_self::create( ) ) );
 	}
-	auto b = b_holder->add_child( tumeBulletNode::create( player.getWhichTeam( ) ) );
+	auto b = b_holder->add_child( tumeNode::create( player.getWhichTeam( ) ) );
 	{
-		b->power = power;
-		b->setLightPower( b->power );
+		b->damage = damage;
+		b->center = vec3( 0 );
+		b->radius = 0.7F;
+		b->setLightPower(lightRadius);
 		b->set_schedule_update( );
 		b->set_matrix_3d( tume->get_local_matrix_3d( ) );
-		b->run_action( sequence::create( move_by::create( 0.6F + power * 0.2F, vec3( 0, 0, 5 + power * 10 ) ) ) );
+		b->run_action( sequence::create( move_by::create( 0.6F + lightRadius * 0.2F, vec3( 0, 0, 5 + lightRadius * 10 ) ) ) );
 	}
 }
 }
