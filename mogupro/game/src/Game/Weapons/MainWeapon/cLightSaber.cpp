@@ -104,7 +104,8 @@ public:
 		gemSphere.setCenter(tumePos);
 		gemSphere.setRadius(radius * 2.0F);
 
-		auto pos = ci::vec3(mat[3][0], mat[3][1], mat[3][2]);
+		auto root_mat = get_root()->get_world_matrix_3d();
+		auto pos = ci::vec3(root_mat[3][0], root_mat[3][1], root_mat[3][2]);
 		playerSphere.setCenter(pos);
 		playerSphere.setRadius(2.0F);
 
