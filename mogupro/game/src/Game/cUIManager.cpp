@@ -14,6 +14,7 @@
 #include <Game/UI/cTips.h>
 #include <Scene/cSceneManager.h>
 #include <Scene/Member/Tutorial.h>
+#include <Game/UI/cTargetCannon.h>
 //Weapons::SubWeapon::SubWeaponType
 using namespace ci;
 namespace Game
@@ -42,6 +43,8 @@ void cUIManager::setup( )
 	mBlueTeamCannonMeter = mRoot->add_child( UI::cCannonMeter::create( mRoot->get_content_size( ), playerTeamId, Player::Team::Blue ) );
 
 	mRoot->add_child( UI::cPlayerNameUIs::create( ) );
+
+	mRoot->add_child( UI::cTargetCannon::create( playerTeamId ) );
 
 	if (!Scene::cSceneManager::getInstance()->isCurrentScene<Scene::Member::cTutorial>())
 	{
