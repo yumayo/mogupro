@@ -39,10 +39,25 @@ void cColliderBase::setPosition( cinder::vec3 const& position )
 }
 void cColliderBase::setLayer( unsigned int layer )
 {
-    mLayer = layer;
+    mLayer = ( mLayer & 0x80000000 ) | ( layer & ~0x80000000 );
 }
 unsigned int cColliderBase::getLayer( ) const
 {
-    return mLayer;
+    return mLayer & ~0x80000000;
+}
+void cColliderBase::setActive(bool value)
+{
+	if (value)
+	{
+		mLayer |= 0x80000000;
+	}
+	else
+	{
+		mLayer &= ~0x80000000;
+	}
+}
+bool cColliderBase::isActive() const
+{
+	return mLayer & 0x80000000;
 }
 }
