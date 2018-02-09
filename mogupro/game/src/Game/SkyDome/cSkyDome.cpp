@@ -18,5 +18,5 @@ void Game::SkyDome::cSkyDome::draw()
 	auto size = Game::Field::WORLD_COLLISION_SIZE;
 	auto center = size * 0.5F;
 	ci::gl::ScopedColor col( ci::ColorA( 0.294F, 0.156F, 0.090F ) );
-	cinder::gl::drawCube( center, size );
+	//cinder::gl::drawCube( center, size );
 }

@@ -22,15 +22,18 @@ public:
 private:
     ci::CameraPersp camera;
     ci::CameraOrtho camera_2d;
-    ci::vec3 pos;
     //滑らかに目的座標に追従するためのbuf
     ci::vec3 buf_pos;
 
+	// eyePos
+	ci::vec3 pos;
+	// カメラの向いている位置
+	// lookPos
+	ci::vec3 looking_position;
     //目標と対照的なカメラの位置
     ci::vec3 looking_point;
 
-	//カメラの向いている位置
-	ci::vec3 looking_position;
+	ci::vec3 up = ci::vec3( 0, 1, 0 );
 
     //カメラの向いている角度
     ci::vec2 camera_angle;
@@ -56,9 +59,17 @@ private:
 
     //ブレる動作
     void ScatterCamera( );
+
+	bool scheduleUpdate = true;
 public:
-
-
+	void setScheduleUpdate(bool value) { scheduleUpdate = value; }
+	bool isScheduleUpdate() { return scheduleUpdate; }
+	void lookAt(cinder::vec3 eye, cinder::vec3 target, cinder::vec3 up ) 
+	{ 
+		pos = eye; 
+		looking_position = target;
+		this->up = up;
+	}
     //画面のフェード値
     ci::vec4 fade_out;
 
@@ -105,6 +116,10 @@ public:
 			return ci::vec3(looking_point.x, looking_point.y, looking_point.z);
 		}*/
 		return ci::vec3(looking_point.x / 10, looking_point.y / 10, looking_point.z / 10);
+	}
+	void setCameraMode(CAMERA_MODE value)
+	{
+		camera_mode = value;
 	}
 	CAMERA_MODE getCameraMode() {
 		return camera_mode;
