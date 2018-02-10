@@ -560,7 +560,7 @@ void cLightSaber::draw( )
 }
 void cLightSaber::reset( )
 {
-
+	Resource::SE["Player/aura1.wav"].stop();
 }
 void cLightSaber::animation( float t, TumeFormat const & tumeFormat )
 {
