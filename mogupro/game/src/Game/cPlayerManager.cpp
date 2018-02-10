@@ -133,8 +133,8 @@ ci::vec3 Game::cPlayerManager::playerNormalMovePad(const float & delta_time)
 {
 	ci::vec3 pad_velocity = ci::vec3(0);
 
-	float x_axis = -20 * ENV->getPadAxis(0) * delta_time * active_player->getSpeed();
-	float z_axis = -20 * ENV->getPadAxis(1) * delta_time * active_player->getSpeed();
+	float x_axis = -(100 * ENV->getPadAxis(0) * delta_time * active_player->getSpeed());
+	float z_axis = -(100 * ENV->getPadAxis(1) * delta_time * active_player->getSpeed());
 
 	pad_velocity += ci::vec3(z_axis*sin(CAMERA->getCameraAngle().x), 0.0f, z_axis*cos(CAMERA->getCameraAngle().x));
 	pad_velocity += ci::vec3(x_axis*cos(CAMERA->getCameraAngle().x), 0.0f, -x_axis*sin(CAMERA->getCameraAngle().x));
