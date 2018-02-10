@@ -15,6 +15,9 @@ void cCameraManager::shakeCamera( const float & scatter, const float & seconds )
 void cCameraManager::setup( ) {
     camera.setAspectRatio( ci::app::getWindowAspectRatio( ) );
     camera.lookAt( refPosition, ci::vec3( 0 ), ci::vec3( 0, 1, 0 ) );
+	camera_mode = TPS;
+	up = ci::vec3( 0, 1, 0 );
+	scheduleUpdate = true;
     camera.setFarClip( 10000 );
     auto size = ci::app::getWindowSize( );
     camera_2d.setOrtho( -size.x / 2, size.x / 2, -size.y / 2, size.y / 2, 0.125F, 100.0F );
@@ -60,44 +63,48 @@ void cCameraManager::setCameraAngle( ci::vec2 const & angle )
 							   std::max( camera_angle.y, -float( M_PI / 2 ) + 0.01f ) );
 	camera_angle.x = std::fmod( camera_angle.x, M_PI * 2.0 );
 }
-void cCameraManager::update( const float& delta_time ) {
+void cCameraManager::update(const float& delta_time) {
 
-    //ブレるカメラの秒数をデルタタイムで引く
-    seconds -= delta_time;
+	//ブレるカメラの秒数をデルタタイムで引く
+	seconds -= delta_time;
 
-    ScatterCamera( );
+	ScatterCamera();
 
-    looking_point.x = camera_far * sin( camera_angle.x ) * cos( camera_angle.y );
-    looking_point.z = camera_far * cos( camera_angle.x ) * cos( camera_angle.y );
-    looking_point.y = camera_far * sin( camera_angle.y );
-	
-    MovingCamera( );
+	if (scheduleUpdate)
+	{
+		looking_point.x = camera_far * sin(camera_angle.x) * cos(camera_angle.y);
+		looking_point.z = camera_far * cos(camera_angle.x) * cos(camera_angle.y);
+		looking_point.y = camera_far * sin(camera_angle.y);
 
-    looking_position = pos - looking_point;
+		MovingCamera();
 
-    auto origin = pos;
-    auto target = looking_position;
+		looking_position = pos - looking_point;
+	}
+
+	auto origin = pos;
+	auto target = looking_position;
 	ci::vec3 direction;
 	if (camera_mode == CAMERA_MODE::TPS) {
 		direction = target - origin;
 	}
 	else if (camera_mode == CAMERA_MODE::FPS) {
-		direction = origin - target ;
+		direction = origin - target;
 	}
 
-    cinder::Ray ray( origin, direction );
+	if (scheduleUpdate)
+	{
+		cinder::Ray ray(origin, direction);
 
-    target = Collision::cCollisionManager::getInstance( )->calcNearestPoint( ray, 1 << 2 );
+		target = Collision::cCollisionManager::getInstance()->calcNearestPoint(ray, 1 << 2);
+	}
 
 
 	if (camera_mode == CAMERA_MODE::TPS) {
-		camera.lookAt(target + ci::vec3(my_scatter.x, my_scatter.y, 0), origin + ci::vec3(my_scatter.x, my_scatter.y, 0));
+		camera.lookAt(target + ci::vec3(my_scatter.x, my_scatter.y, 0), origin + ci::vec3(my_scatter.x, my_scatter.y, 0), up);
 	}
 	else if (camera_mode == CAMERA_MODE::FPS) {
-		camera.lookAt(origin + ci::vec3(my_scatter.x, my_scatter.y, 0), target + ci::vec3(my_scatter.x, my_scatter.y, 0));
+		camera.lookAt(origin + ci::vec3(my_scatter.x, my_scatter.y, 0), target + ci::vec3(my_scatter.x, my_scatter.y, 0), up);
 	}
-    
-
 }
 
 void cCameraManager::bind3D( )

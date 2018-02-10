@@ -9,41 +9,7 @@ namespace Game
 {
 namespace UI
 {
-class cTargetCannon : public Node::Renderer::sprite
-{
-public:
-	CREATE_H( cTargetCannon )
-	{
-		CREATE( cTargetCannon );
-	}
-	bool init( )
-	{
-		return __super::init( Resource::IMAGE["in_game/allow.png"] );
-	}
-	void update( float delta ) override
-	{
-		auto& camera = CAMERA->getCamera( );
-		auto& cannons = cStrategyManager::getInstance( )->getCannons( );
-		auto& cannon = cannons.at( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) );
-		auto targetPos = cannon->getGemStorePos( );
-		targetPos.y = Field::WORLD_SIZE.y;
-
-		ci::vec3 targetVec = targetPos - cPlayerManager::getInstance( )->getActivePlayer( )->getPos( );
-		targetVec = ci::normalize( targetVec );
-		ci::vec3 cameraVec = camera.getViewDirection( );
-		cameraVec = ci::normalize( cameraVec );
-
-		targetPos = targetVec + cPlayerManager::getInstance( )->getActivePlayer( )->getPos( );
-
-		auto screenPos = camera.worldToScreen( targetPos, ci::app::getWindowWidth( ), ci::app::getWindowHeight( ) );
-
-		set_position( screenPos );
-
-		ci::vec2 vec = screenPos - ci::app::getWindowCenter( );
-		float angle = atan2( vec.y, vec.x );
-		set_rotation( angle );
-	}
-};
+using namespace cinder;
 bool cTips::init( cinder::vec2 baseContentSize, Player::Team team )
 {
 	const auto messageBox = this->add_child( Node::Renderer::sprite::create( Resource::IMAGE[team == Player::Team::Red ? "in_game/mes6_03_b.png" : "in_game/mes6_05_b.png"] ) );
@@ -115,9 +81,6 @@ bool cTips::init( cinder::vec2 baseContentSize, Player::Team team )
 	transGem->onStateIn = [ this ] ( auto m )
 	{
 		message.dynamicptr<Node::Renderer::label>( )->set_text( u8"•óÎ‚ð‘å–C‚ÉŽ‚Á‚Ä‹A‚ë‚¤" );
-		auto hintTargetCannon = this->add_child( cTargetCannon::create( ) );
-		hintTargetCannon->set_name( "hintTargetCannon" );
-		hintTargetCannon->set_schedule_update( );
 	};
 	transGem->onStateOut = [ this ] ( )
 	{

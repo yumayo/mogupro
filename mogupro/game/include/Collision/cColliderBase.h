@@ -25,6 +25,8 @@ public:
     void setPosition( cinder::vec3 const& position );
     void setLayer( unsigned int layer );
     unsigned int getLayer( ) const;
+	void setActive( bool value );
+	bool isActive() const;
 protected:
     unsigned int mLayer;
     Type mType;

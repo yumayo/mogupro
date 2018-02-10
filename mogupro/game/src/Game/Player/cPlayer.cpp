@@ -166,8 +166,7 @@ void Game::Player::cPlayer::dead()
 	drilling = false;
 	main_weapon->reset();
 	mRigidbody.setSpeed(ci::vec3(0));
-	mCollider.removeWorld();
-	mRigidbody.removeWorld();
+	mCollider.setActive(false);
 	Particle::cParticleManager::getInstance()->create(Particle::ParticleParam().position(mPos)
 		.scale(0.5f).
 		vanishTime(1.0f).
@@ -197,9 +196,8 @@ void Game::Player::cPlayer::resetPlayerStatus()
 	status.hp = 100;
 	//位置をリスポーン位置に
 	mCollider.setPosition(start_position);
+	mCollider.setActive(true);
 	is_dead = false;
-	mCollider.addWorld( );
-	mRigidbody.addWorld( );
 	no_damage_count = 0;
 }
 
