@@ -51,11 +51,11 @@ void Game::cPlayerManager::playerAttack(const float & delta_time)
 	if (active_player->isDead())return;
 
 	//メイン攻撃 R2 or 右クリック
-	if (ENV->pushKey(ci::app::MouseEvent::RIGHT_DOWN) || ENV->isPadPush(ENV->BUTTON_10))
+	if (ENV->pushKey(ci::app::MouseEvent::RIGHT_DOWN) || ENV->isPadPush(ENV->BUTTON_6))
 	{
 		cClientAdapter::getInstance()->sendPlayerAttack(active_player_id, 1);
 	}
-	if (ENV->pullKey(ci::app::MouseEvent::RIGHT_DOWN) || ENV->isPadPull(ENV->BUTTON_10))
+	if (ENV->pullKey(ci::app::MouseEvent::RIGHT_DOWN) || ENV->isPadPull(ENV->BUTTON_6))
 	{
 		cClientAdapter::getInstance()->sendPlayerAttack(active_player_id, 2);
 	}
@@ -142,7 +142,6 @@ ci::vec3 Game::cPlayerManager::playerNormalMovePad(const float & delta_time)
 }
 void Game::cPlayerManager::playerMove(const float & delta_time)
 {
-
 	//カメラのマウス操作ON　OFF
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_ESCAPE)) {
 		ENV->setMouseControl(mouse_on);
@@ -153,8 +152,15 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 			mouse_on = true;
 		}
 	}
+
+	//カメラ移動
 	if (!active_player->isDead()) {
-		CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
+		if (!getActivePlayer()->isDrilling()) {
+			CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.1f), ENV->getPadAxis(3)*(-0.1f)));
+		}
+		else {
+			CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(0)*(-0.1f), ENV->getPadAxis(1)*(-0.1f)));
+		}
 	}
 	// ターゲットがいたらプレイヤーは動けません。
 	if ( watching_target_player_id != -1 ) return;
@@ -201,13 +207,13 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 	else
 	{
 		//掘る L1
-		if ( ENV->isPadPress( ENV->BUTTON_5 ) &&
+		if ( ENV->getPadAxisPress(2) &&
 			 Game::Field::WORLD_SIZE.y + 1 > active_player->getPos( ).y ) {
 			active_player->Drilling( true );
 		}
 
 		//サブ武器 R1
-		if ( ENV->isPadPush( ENV->BUTTON_6 ) ) {
+		if ( ENV->isPadPush( ENV->BUTTON_5 ) ) {
 			active_player->useSubWeapon.useWeapon( active_player_id );
 		}
 
@@ -265,6 +271,7 @@ void Game::cPlayerManager::keyMove(const float & delta_time)
 	if (ENV->pressKey(ci::app::KeyEvent::KEY_l)) {
 		getPlayer(debug_recieve_count)->receiveDamage(10.0f, debug_send_count);
 	}
+	
 	
 	if (!active_player->isDead()) {
 		if (ENV->pressKey(ci::app::KeyEvent::KEY_UP)) {

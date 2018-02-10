@@ -10,6 +10,7 @@
 #include <Scene/cSceneManager.h>
 #include <Resource/cSoundManager.h>
 #include <Scene/Member/cTitle.h>
+#include <Sound/Stereophonic.h>
 void TutorialUI::setup(const dess::SceneName & name)
 {
 	now_scene = TUTORIAL::MOVE;
@@ -25,14 +26,32 @@ void TutorialUI::setup(const dess::SceneName & name)
 //プレイヤー初期化
 void TutorialUI::playerInit()
 {
-	Game::cPlayerManager::getInstance()->getActivePlayer()->settingPosition(ci::vec3(Game::Field::WORLD_SIZE.x / 2, Game::Field::WORLD_SIZE.y + 0.5f, 17.0F));
+	Game::cPlayerManager::getInstance()->getActivePlayer()->settingPosition(ci::vec3(Game::Field::WORLD_SIZE.x / 2, Game::Field::WORLD_SIZE.y + 0.3f, 17.0F));
 	Game::cPlayerManager::getInstance()->getActivePlayer()->move(ci::vec3(0, 0, 0.1f));
 	CAMERA->setCameraAngle(cinder::vec2(0, -0.3f));
 	Game::cFieldManager::getInstance()->blockAllReset();
 	Game::cPlayerManager::getInstance()->getActivePlayer()->useSubWeapon.clearSubWeapon();
 	Game::cPlayerManager::getInstance()->getActivePlayer()->move(ci::vec3(0,0,0.1f));
-	Game::cPlayerManager::getInstance()->update(0.001f);
+	Game::cPlayerManager::getInstance()->getActivePlayer()->update(10);
+	Game::cPlayerManager::getInstance()->playerCollisionAfterUpdate(10);
 }
+
+void TutorialUI::tutorialNumbers(int num) {
+	ui_data["TutorialPlate"]->setActive(true);
+	ui_data["チュートリアル説明"]->setActive(true);
+	for (int i = 1; i < 8; i++) {
+		if (num == i) {
+			ui_data[std::to_string(i) + "y"]->setActive(true);
+			continue;
+		}
+		if (num < i) {
+			ui_data[std::to_string(i) + "g"]->setActive(true);
+			continue;
+		}
+		ui_data[std::to_string(i)]->setActive(true);
+	}
+}
+
 //テキスト初期化
 void TutorialUI::textInit()
 {
@@ -48,19 +67,19 @@ void TutorialUI::textInit()
 	ui_data["視点説明４"]->fontSetText(u8"視点を動かしてみましょう");
 
 	ui_data["掘る説明"]->fontSetText(u8"掘って地面を移動する");
-	ui_data["掘る説明２"]->fontSetText(u8"「LB」ボタンを長押しすると\n地面を掘ることができます。");
+	ui_data["掘る説明２"]->fontSetText(u8"「LT」ボタンを長押しすると\n地面を掘ることができます。");
 	ui_data["掘る説明３"]->fontSetText(u8"地面を掘って移動しましょう。");
-	ui_data["掘る説明４"]->fontSetText(u8"右スティックで移動する\n方向を変えることができます。");
+	ui_data["掘る説明４"]->fontSetText(u8"左スティックで移動する\n方向を変えることができます。");
 
 	ui_data["ジェム説明"]->fontSetText(u8"ジェムを集める");
 	ui_data["ジェム説明２"]->fontSetText(u8"地面の中で光っているものを\n「ジェム」と言います\nジェムは破壊する事で取得できます。");
 	ui_data["ジェム説明３"]->fontSetText(u8"壊す");
-	ui_data["ジェム説明４"]->fontSetText(u8"「RT」ボタンで攻撃ができます\nジェムは地下にあるので、\n掘って近くまで行き、\n攻撃をすることで取得可能です");
+	ui_data["ジェム説明４"]->fontSetText(u8"「RB」ボタンで攻撃ができます\nジェムは地下にあるので、\n掘って近くまで行き、\n攻撃をすることで取得可能です");
 	ui_data["ジェム説明５"]->fontSetText(u8"攻撃");
 	ui_data["ジェム説明６"]->fontSetText(u8"地面の下にあるジェムを攻撃して回収しましょう");
 	
 	ui_data["攻撃説明"]->fontSetText(u8"敵を倒す");
-	ui_data["攻撃説明２"]->fontSetText(u8"攻撃は敵を倒す事もできます。\n「RT」ボタンを長押しすると、\nチャージする事ができ、離すと遠くの敵も\n攻撃できる「チャージショット」になります。");
+	ui_data["攻撃説明２"]->fontSetText(u8"攻撃は敵を倒す事もできます。\n「RB」ボタンを長押しすると、\nチャージする事ができ、離すと遠くの敵も\n攻撃できる「チャージショット」になります。");
 	ui_data["攻撃説明３"]->fontSetText(u8"目の前の敵を倒してください");
 	
 	ui_data["納品説明"]->fontSetText(u8"取得したジェムは、自分のチームの大砲に持っていきます。");
@@ -69,14 +88,15 @@ void TutorialUI::textInit()
 
 	ui_data["アイテム説明"]->fontSetText(u8"アイテム");
 	ui_data["アイテム説明２"]->fontSetText(u8"地面にはアイテムが埋まっています。\n近づくことで取得ができます。");
-	ui_data["アイテム説明３"]->fontSetText(u8"「RB」キーで使用可能です。\nどんどん使っていきましょう！");
+	ui_data["アイテム説明３"]->fontSetText(u8"「LB」キーで使用可能です。\nどんどん使っていきましょう！");
 	ui_data["アイテム説明４"]->fontSetText(u8"アイテムを取得してください。");
 	ui_data["アイテム説明５"]->fontSetText(u8"アイテムを使用してください。");
 	
-	ui_data["最後説明"]->fontSetText(u8"操作説明は以上になります。\nこのゲームは、「大砲のゲージが満タンに\nなった方が勝ち」ですので、積極的に\nジェムを集めていきましょう。");
-
+	ui_data["最後説明"]->fontSetText(u8"このゲームは、「大砲のゲージが満タンに\nなった方が勝ち」ですので、積極的に\nジェムを集めていきましょう。");
+	ui_data["最後説明２"]->fontSetText(u8"操作説明は以上になります。お疲れさまでした。");
 	ui_data["次へ説明"]->fontSetText(u8"");
 	ui_data["移動説明４"]->fontSetText(u8"「A」ボタンでジャンプを\nすることができます。");
+	ui_data["チュートリアル説明"]->fontSetText(u8"チュートリアル");
 	//文字を更新
 	//かなり重いので必ず１フレームだけ呼ぶ
 	for (auto it = ui_objects.begin(); it != ui_objects.end(); it++) {
@@ -107,6 +127,7 @@ void TutorialUI::disableNextButton() {
 void TutorialUI::tutorialMoveSetup(const float & delta_time)
 {
 	playerInit();
+	tutorialNumbers(1);
 	ui_data["説明板"]->setActive(true);
 	ui_data["説明板"]->setActive(false);
 	ui_data["操作説明"]->setActive(true);
@@ -126,11 +147,13 @@ void TutorialUI::tutorialMoveSetup(const float & delta_time)
 	//カウントの初期化
 	tuto_counts["移動説明の時間"] = 0.0f;
 	tuto_counts["移動説明の時間２"] = 0.0f;
+	Sound::StereophonicManager::getInstance()->add("tutorial", ci::app::getAssetPath("SE/Tutorial/tutorial.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 }
 void TutorialUI::tutorialMoveUpdate(const float& delta_time)
 {
 
 	if (!turo_flags["操作説明"] && !ui_data["説明板"]->getActive()) {
+		Sound::StereophonicManager::getInstance()->add("tutorial2", ci::app::getAssetPath("SE/Tutorial/tutorial.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 		turo_flags["操作説明"] = true;
 		ui_data["説明板初期"]->setActive(true);
 		ui_data["説明板初期"]->setActive(false);
@@ -138,7 +161,6 @@ void TutorialUI::tutorialMoveUpdate(const float& delta_time)
 		ui_data["移動説明初期"]->setActive(false);
 	}
 	if (turo_flags["操作説明"] && !turo_flags["移動"] && !ui_data["説明板初期"]->getActive() && !turo_flags["移動２個目"]) {
-
 		ui_data["移動板"]->setActive(true);
 		ui_data["移動説明"]->setActive(true);
 		ui_data["移動説明２"]->setActive(true);
@@ -159,12 +181,14 @@ void TutorialUI::tutorialMoveUpdate(const float& delta_time)
 	}
 	if (tuto_counts["移動説明の時間"] > 3.0f && turo_flags["移動２個目"] == false) {
 		enableNextButton();
+		
 	}
 
 	if (tuto_counts["移動説明の時間"] > 3.0f
 		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
 			|| ENV->isPadPush(ENV->BUTTON_2))
 		&& turo_flags["移動２個目"] == false) {
+		Sound::StereophonicManager::getInstance()->add("mission", ci::app::getAssetPath("SE/Tutorial/mission.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 		disableNextButton();
 		turo_flags["移動２個目"] = true;
 		ui_data["移動説明"]->setActive(false);
@@ -190,11 +214,14 @@ void TutorialUI::tutorialMoveUpdate(const float& delta_time)
 	}
 	if (tuto_counts["移動説明の時間２"] > 3.0f && turo_flags["移動"] == false) {
 		enableNextButton();
+		
 	}
 
 	if (tuto_counts["移動説明の時間２"] > 3.0f
 		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
-			|| ENV->isPadPush(ENV->BUTTON_2))) {
+			|| ENV->isPadPush(ENV->BUTTON_2))
+		&& turo_flags["移動"] == false) {
+		Sound::StereophonicManager::getInstance()->add("mission", ci::app::getAssetPath("SE/Tutorial/mission.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 		disableNextButton();
 		turo_flags["移動"] = true;
 
@@ -224,6 +251,7 @@ void TutorialUI::tutorialMoveUpdate(const float& delta_time)
 			turo_flags["左"] &&
 			turo_flags["右"]) {
 			ui_data["OK!"]->setActive(true);
+			Sound::StereophonicManager::getInstance()->add("ok", ci::app::getAssetPath("SE/Tutorial/ok.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 			ui_data["FadePlateIn"]->setActive(false);
 			for (auto it = ui_objects.begin(); it != ui_objects.end(); it++) {
 				ui_data[(*it)]->setActive(false);
@@ -239,6 +267,7 @@ void TutorialUI::tutorialMoveUpdate(const float& delta_time)
 void TutorialUI::tutorialEyeSetup(const float & delta_time)
 {
 	playerInit();
+	tutorialNumbers(2);
 	ui_data["説明板"]->setActive(true);
 	ui_data["説明板"]->setActive(false);
 	ui_data["視点説明"]->setActive(true);
@@ -256,6 +285,7 @@ void TutorialUI::tutorialEyeSetup(const float & delta_time)
 
 	//カウントの初期化
 	tuto_counts["視点説明"] = 0.0f;
+	Sound::StereophonicManager::getInstance()->add("tutorial", ci::app::getAssetPath("SE/Tutorial/tutorial.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 }
 void TutorialUI::tutorialEyeUpdate(const float & delta_time)
 {
@@ -283,6 +313,7 @@ void TutorialUI::tutorialEyeUpdate(const float & delta_time)
 		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
 			|| ENV->isPadPush(ENV->BUTTON_2))
 		&& turo_flags["視点"] == false) {
+		Sound::StereophonicManager::getInstance()->add("mission", ci::app::getAssetPath("SE/Tutorial/mission.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 		disableNextButton();
 		turo_flags["視点"] = true;
 		tutorial_stan = false;
@@ -316,6 +347,7 @@ void TutorialUI::tutorialEyeUpdate(const float & delta_time)
 			turo_flags["左"] &&
 			turo_flags["右"]) {
 			ui_data["OK!"]->setActive(true);
+			Sound::StereophonicManager::getInstance()->add("ok", ci::app::getAssetPath("SE/Tutorial/ok.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 			ui_data["FadePlateIn"]->setActive(false);
 			for (auto it = ui_objects.begin(); it != ui_objects.end(); it++) {
 				ui_data[(*it)]->setActive(false);
@@ -333,6 +365,7 @@ void TutorialUI::tutorialEyeUpdate(const float & delta_time)
 
 void TutorialUI::tutorialDrillSetup(const float & delta_time) {
 	playerInit();
+	tutorialNumbers(3);
 	ui_data["説明板"]->setActive(true);
 	ui_data["説明板"]->setActive(false);
 	ui_data["掘る説明"]->setActive(true);
@@ -348,6 +381,7 @@ void TutorialUI::tutorialDrillSetup(const float & delta_time) {
 	tuto_counts["掘る説明１個目"] = 0.0f;
 	tuto_counts["掘る説明２個目"] = 0.0f;
 	tuto_counts["掘った時間"] = 0.0f;
+	Sound::StereophonicManager::getInstance()->add("tutorial", ci::app::getAssetPath("SE/Tutorial/tutorial.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 }
 void TutorialUI::tutorialDrillUpdate(const float & delta_time){
 
@@ -357,7 +391,7 @@ void TutorialUI::tutorialDrillUpdate(const float & delta_time){
 		ui_data["掘る説明２"]->setActive(true);
 
 		ui_data["コントローラLR"]->setActive(true);
-		ui_data["コントローラL"]->setActive(true);
+		ui_data["コントローラL2"]->setActive(true);
 
 		ui_data["掘ってる画像"]->setActive(true);
 
@@ -371,23 +405,24 @@ void TutorialUI::tutorialDrillUpdate(const float & delta_time){
 		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
 			|| ENV->isPadPush(ENV->BUTTON_2))
 		&& turo_flags["掘る２個目"] == false) {
+		Sound::StereophonicManager::getInstance()->add("mission", ci::app::getAssetPath("SE/Tutorial/mission.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 		disableNextButton();
 		turo_flags["掘る２個目"] = true;
 		ui_data["掘る説明２"]->setActive(false);
 		ui_data["コントローラLR"]->setActive(false);
 
-		ui_data["コントローラL"]->setActive(false);
+		ui_data["コントローラL2"]->setActive(false);
 		ui_data["掘ってる画像"]->setActive(false);
 
 
 		ui_data["掘る説明４"]->setActive(true);
-		ui_data["コントローラ右"]->setActive(true);
-		ui_data["スティック右"]->setActive(true);
+		ui_data["コントローラ左"]->setActive(true);
+		ui_data["スティック左"]->setActive(true);
 
-		ui_data["up2"]->setActive(true);
-		ui_data["down2"]->setActive(true);
-		ui_data["left2"]->setActive(true);
-		ui_data["right2"]->setActive(true);
+		ui_data["up"]->setActive(true);
+		ui_data["down"]->setActive(true);
+		ui_data["left"]->setActive(true);
+		ui_data["right"]->setActive(true);
 	}
 	if (turo_flags["掘る２個目"]) {
 		tuto_counts["掘る説明２個目"] += delta_time;
@@ -397,20 +432,22 @@ void TutorialUI::tutorialDrillUpdate(const float & delta_time){
 	}
 	if (tuto_counts["掘る説明２個目"] > 3.0f
 		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
-			|| ENV->isPadPush(ENV->BUTTON_2))) {
+			|| ENV->isPadPush(ENV->BUTTON_2))
+		&& turo_flags["掘る"] == false) {
+		Sound::StereophonicManager::getInstance()->add("mission", ci::app::getAssetPath("SE/Tutorial/mission.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 		disableNextButton();
 		turo_flags["掘る"] = true;
 		tutorial_stan = false;
 		ui_data["移動板"]->setActive(false);
 
 		ui_data["掘る説明４"]->setActive(false);
-		ui_data["コントローラ右"]->setActive(false);
-		ui_data["スティック右"]->setActive(false);
+		ui_data["コントローラ左"]->setActive(false);
+		ui_data["スティック左"]->setActive(false);
 
-		ui_data["up2"]->setActive(false);
-		ui_data["down2"]->setActive(false);
-		ui_data["left2"]->setActive(false);
-		ui_data["right2"]->setActive(false);
+		ui_data["up"]->setActive(false);
+		ui_data["down"]->setActive(false);
+		ui_data["left"]->setActive(false);
+		ui_data["right"]->setActive(false);
 	}
 
 	if (ui_data["移動板"]->getActive() == false && turo_flags["掘る"] == true
@@ -424,6 +461,7 @@ void TutorialUI::tutorialDrillUpdate(const float & delta_time){
 
 		if (tuto_counts["掘った時間"] > 6) {
 			ui_data["OK!"]->setActive(true);
+			Sound::StereophonicManager::getInstance()->add("ok", ci::app::getAssetPath("SE/Tutorial/ok.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 			ui_data["FadePlateIn"]->setActive(false);
 			for (auto it = ui_objects.begin(); it != ui_objects.end(); it++) {
 				ui_data[(*it)]->setActive(false);
@@ -439,6 +477,7 @@ void TutorialUI::tutorialDrillUpdate(const float & delta_time){
 
 void TutorialUI::tutorialGemSetup(const float & delta_time) {
 	playerInit();
+	tutorialNumbers(4);
 	ui_data["説明板"]->setActive(true);
 	ui_data["説明板"]->setActive(false);
 	ui_data["ジェム説明"]->setActive(true);
@@ -453,6 +492,11 @@ void TutorialUI::tutorialGemSetup(const float & delta_time) {
 	//カウントの初期化
 	tuto_counts["ジェム説明１個目"] = 0.0f;
 	tuto_counts["ジェム説明２個目"] = 0.0f;
+	Sound::StereophonicManager::getInstance()->add("tutorial", ci::app::getAssetPath("SE/Tutorial/tutorial.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
+	for (auto& it : Game::cPlayerManager::getInstance()->getActivePlayer()->getgems) {
+		it->setPos(ci::vec3(0));
+	}
+	Game::cPlayerManager::getInstance()->getActivePlayer()->getgems.clear();
 }
 void TutorialUI::tutorialGemUpdate(const float & delta_time) {
 	if (!turo_flags["ジェム"] && !ui_data["説明板"]->getActive() && turo_flags["ジェム２個目"] == false) {
@@ -475,6 +519,7 @@ void TutorialUI::tutorialGemUpdate(const float & delta_time) {
 		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
 			|| ENV->isPadPush(ENV->BUTTON_2))
 		&& turo_flags["ジェム２個目"] == false) {
+		Sound::StereophonicManager::getInstance()->add("mission", ci::app::getAssetPath("SE/Tutorial/mission.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 		disableNextButton();
 		turo_flags["ジェム２個目"] = true;
 		ui_data["ジェム説明２"]->setActive(false);
@@ -488,7 +533,7 @@ void TutorialUI::tutorialGemUpdate(const float & delta_time) {
 		ui_data["ジェム説明４"]->setActive(true);
 		ui_data["ジェム説明５"]->setActive(true);
 		ui_data["コントローラLR"]->setActive(true);
-		ui_data["コントローラR2"]->setActive(true);
+		ui_data["コントローラR"]->setActive(true);
 		ui_data["ジェム取得画像３"]->setActive(true);
 	}
 	if (turo_flags["ジェム２個目"]) {
@@ -499,7 +544,9 @@ void TutorialUI::tutorialGemUpdate(const float & delta_time) {
 	}
 	if (tuto_counts["ジェム説明２個目"] > 3.0f
 		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
-			|| ENV->isPadPush(ENV->BUTTON_2))) {
+			|| ENV->isPadPush(ENV->BUTTON_2))
+		&& turo_flags["ジェム"] == false) {
+		Sound::StereophonicManager::getInstance()->add("mission", ci::app::getAssetPath("SE/Tutorial/mission.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 		disableNextButton();
 		turo_flags["ジェム"] = true;
 
@@ -508,7 +555,7 @@ void TutorialUI::tutorialGemUpdate(const float & delta_time) {
 		ui_data["ジェム説明４"]->setActive(false);
 		ui_data["ジェム説明５"]->setActive(false);
 		ui_data["コントローラLR"]->setActive(false);
-		ui_data["コントローラR2"]->setActive(false);
+		ui_data["コントローラR"]->setActive(false);
 		ui_data["ジェム取得画像３"]->setActive(false);
 	}
 
@@ -521,6 +568,7 @@ void TutorialUI::tutorialGemUpdate(const float & delta_time) {
 		
 		if (Game::cPlayerManager::getInstance()->getActivePlayer()->getgems.size() > 6) {
 			ui_data["OK!"]->setActive(true);
+			Sound::StereophonicManager::getInstance()->add("ok", ci::app::getAssetPath("SE/Tutorial/ok.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 			ui_data["FadePlateIn"]->setActive(false);
 			for (auto it = ui_objects.begin(); it != ui_objects.end(); it++) {
 				ui_data[(*it)]->setActive(false);
@@ -537,11 +585,11 @@ void TutorialUI::tutorialGemUpdate(const float & delta_time) {
 void TutorialUI::tutorialAttackSetup(const float & delta_time)
 {
 	playerInit();
-
+	tutorialNumbers(5);
 	auto packet = new Network::Packet::Request::cReqPlayer();
 	packet->mFormat.playerId = 5;
-	packet->mFormat.position = ci::vec3(Game::Field::WORLD_SIZE.x / 2, Game::Field::WORLD_SIZE.y + 0.5f, 20.0F);
-	packet->mFormat.rotation = ci::quat();
+	packet->mFormat.position = ci::vec3(Game::Field::WORLD_SIZE.x / 2, Game::Field::WORLD_SIZE.y + 0.5f, 23.0F);
+	packet->mFormat.rotation = ci::quat(ci::vec3(0,M_PI,0));
 	Network::cUDPClientManager::getInstance()->send(packet);
 
 	ui_data["説明板"]->setActive(true);
@@ -556,6 +604,7 @@ void TutorialUI::tutorialAttackSetup(const float & delta_time)
 
 	//カウントの初期化
 	tuto_counts["攻撃説明"] = 0.0f;
+	Sound::StereophonicManager::getInstance()->add("tutorial", ci::app::getAssetPath("SE/Tutorial/tutorial.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 }
 
 void TutorialUI::tutorialAttackUpdate(const float & delta_time)
@@ -566,7 +615,7 @@ void TutorialUI::tutorialAttackUpdate(const float & delta_time)
 		ui_data["攻撃説明２"]->setActive(true);
 
 		ui_data["コントローラLR"]->setActive(true);
-		ui_data["コントローラR2"]->setActive(true);
+		ui_data["コントローラR"]->setActive(true);
 
 		ui_data["攻撃画像"]->setActive(true);
 
@@ -578,7 +627,9 @@ void TutorialUI::tutorialAttackUpdate(const float & delta_time)
 
 	if (tuto_counts["攻撃説明"] > 3.0f
 		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
-			|| ENV->isPadPush(ENV->BUTTON_2))) {
+			|| ENV->isPadPush(ENV->BUTTON_2))
+		&& turo_flags["攻撃"] == false) {
+		Sound::StereophonicManager::getInstance()->add("mission", ci::app::getAssetPath("SE/Tutorial/mission.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 		disableNextButton();
 		turo_flags["攻撃"] = true;
 		tutorial_stan = false;
@@ -586,7 +637,7 @@ void TutorialUI::tutorialAttackUpdate(const float & delta_time)
 		ui_data["攻撃説明２"]->setActive(false);
 
 		ui_data["コントローラLR"]->setActive(false);
-		ui_data["コントローラR2"]->setActive(false);
+		ui_data["コントローラR"]->setActive(false);
 
 		ui_data["攻撃画像"]->setActive(false);
 
@@ -602,6 +653,7 @@ void TutorialUI::tutorialAttackUpdate(const float & delta_time)
 		auto enemy = Game::cPlayerManager::getInstance()->getPlayer(5);
 		if (enemy->isDead()) {
 			ui_data["OK!"]->setActive(true);
+			Sound::StereophonicManager::getInstance()->add("ok", ci::app::getAssetPath("SE/Tutorial/ok.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 			ui_data["FadePlateIn"]->setActive(false);
 			for (auto it = ui_objects.begin(); it != ui_objects.end(); it++) {
 				ui_data[(*it)]->setActive(false);
@@ -618,7 +670,7 @@ void TutorialUI::tutorialAttackUpdate(const float & delta_time)
 void TutorialUI::tutorialDeliverySetup(const float & delta_time)
 {
 	playerInit();
-	
+	tutorialNumbers(6);
 	ui_data["説明板"]->setActive(true);
 	ui_data["説明板"]->setActive(false);
 	ui_data["納品説明"]->setActive(true);
@@ -637,6 +689,7 @@ void TutorialUI::tutorialDeliverySetup(const float & delta_time)
 	c_Easing::apply(camera_angle_buf.x, -3 * M_PI / 2, EasingFunction::Linear, 10);
 	c_Easing::apply(camera_angle_buf.y, -0.7f, EasingFunction::Linear, 10);
 	CAMERA->setCameraFar(cannon_far);
+	Sound::StereophonicManager::getInstance()->add("tutorial", ci::app::getAssetPath("SE/Tutorial/tutorial.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 }
 
 void TutorialUI::tutorialDeliveryUpdate(const float & delta_time)
@@ -664,7 +717,9 @@ void TutorialUI::tutorialDeliveryUpdate(const float & delta_time)
 
 	if (tuto_counts["納品説明"] > 3.0f
 		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
-			|| ENV->isPadPush(ENV->BUTTON_2))) {
+			|| ENV->isPadPush(ENV->BUTTON_2))
+		&& turo_flags["納品"] == false) {
+		Sound::StereophonicManager::getInstance()->add("mission", ci::app::getAssetPath("SE/Tutorial/mission.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 		disableNextButton();
 		turo_flags["納品"] = true;
 		tutorial_stan = false;
@@ -688,6 +743,7 @@ void TutorialUI::tutorialDeliveryUpdate(const float & delta_time)
 		auto enemy = Game::cPlayerManager::getInstance()->getPlayer(5);
 		if (Game::cStrategyManager::getInstance()->getCannons()[Game::cPlayerManager::getInstance()->getActivePlayer()->getWhichTeam()]->getGEmNum() > 0) {
 			ui_data["OK!"]->setActive(true);
+			Sound::StereophonicManager::getInstance()->add("ok", ci::app::getAssetPath("SE/Tutorial/ok.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 			ui_data["FadePlateIn"]->setActive(false);
 			for (auto it = ui_objects.begin(); it != ui_objects.end(); it++) {
 				ui_data[(*it)]->setActive(false);
@@ -703,6 +759,7 @@ void TutorialUI::tutorialDeliveryUpdate(const float & delta_time)
 
 void TutorialUI::tutorialItemSetup(const float & delta_time) {
 	playerInit();
+	tutorialNumbers(7);
 	auto packet = new Network::Packet::Request::cReqPlayer();
 	packet->mFormat.playerId = 5;
 	packet->mFormat.position = ci::vec3(Game::Field::WORLD_SIZE.x / 2 - 0.5F, Game::Field::WORLD_SIZE.y + 1.0F, Game::Field::WORLD_SIZE.z - 8.0F );
@@ -723,12 +780,15 @@ void TutorialUI::tutorialItemSetup(const float & delta_time) {
 	turo_flags["アイテム"] = false;
 	turo_flags["アイテム２個目"] = false;
 	turo_flags["アイテム終了"] = false;
+	turo_flags["アイテム３個目"] = false;
 
 	turo_flags["アイテム所持状態"] = false;
 
 	//カウントの初期化
 	tuto_counts["アイテム説明１個目"] = 0.0f;
 	tuto_counts["アイテム説明２個目"] = 0.0f;
+	tuto_counts["アイテム説明３個目"] = 0.0f;
+	Sound::StereophonicManager::getInstance()->add("tutorial", ci::app::getAssetPath("SE/Tutorial/tutorial.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 }
 void TutorialUI::tutorialItemUpdate(const float & delta_time) {
 
@@ -749,6 +809,7 @@ void TutorialUI::tutorialItemUpdate(const float & delta_time) {
 		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
 			|| ENV->isPadPush(ENV->BUTTON_2))
 		&& turo_flags["アイテム２個目"] == false) {
+		Sound::StereophonicManager::getInstance()->add("mission", ci::app::getAssetPath("SE/Tutorial/mission.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 		disableNextButton();
 		turo_flags["アイテム２個目"] = true;
 		ui_data["アイテム説明２"]->setActive(false);
@@ -761,7 +822,7 @@ void TutorialUI::tutorialItemUpdate(const float & delta_time) {
 
 		ui_data["アイテム説明３"]->setActive(true);
 		ui_data["コントローラLR"]->setActive(true);
-		ui_data["コントローラR"]->setActive(true);
+		ui_data["コントローラL"]->setActive(true);
 	}
 	if (turo_flags["アイテム２個目"]) {
 		tuto_counts["アイテム説明２個目"] += delta_time;
@@ -771,7 +832,10 @@ void TutorialUI::tutorialItemUpdate(const float & delta_time) {
 	}
 	if (tuto_counts["アイテム説明２個目"] > 3.0f
 		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
-			|| ENV->isPadPush(ENV->BUTTON_2))) {
+			|| ENV->isPadPush(ENV->BUTTON_2))
+		&& turo_flags["アイテム"] == false) {
+		disableNextButton();
+		Sound::StereophonicManager::getInstance()->add("mission", ci::app::getAssetPath("SE/Tutorial/mission.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 		turo_flags["アイテム"] = true;
 		
 		ui_data["移動板"]->setActive(false);
@@ -781,7 +845,7 @@ void TutorialUI::tutorialItemUpdate(const float & delta_time) {
 
 		ui_data["アイテム説明３"]->setActive(false);
 		ui_data["コントローラLR"]->setActive(false);
-		ui_data["コントローラR"]->setActive(false);
+		ui_data["コントローラL"]->setActive(false);
 	}
 
 	if (ui_data["移動板"]->getActive() == false && turo_flags["アイテム"] == true
@@ -800,11 +864,20 @@ void TutorialUI::tutorialItemUpdate(const float & delta_time) {
 
 		if (turo_flags["アイテム所持状態"] && item_size <= 0) {
 			ui_data["OK!"]->setActive(true);
-			ui_data["FadePlateIn"]->setActive(false);
-			for (auto it = ui_objects.begin(); it != ui_objects.end(); it++) {
-				ui_data[(*it)]->setActive(false);
-			}
+			Sound::StereophonicManager::getInstance()->add("ok", ci::app::getAssetPath("SE/Tutorial/ok.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
+			tutorial_stan = true;
 			turo_flags["アイテム終了"] = true;
+		}
+	}
+	if (turo_flags["アイテム終了"]) {
+		tuto_counts["アイテム説明３個目"] += delta_time;
+	}
+	if (tuto_counts["アイテム説明３個目"] > 3 &&
+		turo_flags["アイテム説明３個目"] == false) {
+		turo_flags["アイテム説明３個目"] = true;
+		ui_data["FadePlateIn"]->setActive(false);
+		for (auto it = ui_objects.begin(); it != ui_objects.end(); it++) {
+			ui_data[(*it)]->setActive(false);
 		}
 	}
 	if (!ui_data["FadePlateIn"]->getActive()) {
@@ -814,29 +887,57 @@ void TutorialUI::tutorialItemUpdate(const float & delta_time) {
 }
 void TutorialUI::tutorialEndSetup(const float & delta_time) {
 	playerInit();
-	
+	tutorialNumbers(8);
 	ui_data["移動板"]->setActive(true);
 	ui_data["最後説明"]->setActive(true);
 	ui_data["最後画像"]->setActive(true);
 	ui_data["最後画像２"]->setActive(true);
 	ui_data["FadePlateIn"]->setActive(true);
 
+	turo_flags["最後説明"] = false;
+	turo_flags["最後説明２"] = false;
 	//カウントの初期化
 	tuto_counts["最後説明"] = 0.0f;
+	tuto_counts["最後説明２"] = 0.0f;
+	Sound::StereophonicManager::getInstance()->add("tutorial", ci::app::getAssetPath("SE/Tutorial/tutorial.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 }
 
 void TutorialUI::tutorialEndUpdate(const float & delta_time)
 {
 	tuto_counts["最後説明"] += delta_time;
 
-	if (tuto_counts["最後説明"] > 10) {
+	if (tuto_counts["最後説明"] > 3.0f && turo_flags["最後説明"] == false) {
+		enableNextButton();
+	}
+
+	if (tuto_counts["最後説明"] > 3.0f
+		&& (ENV->pushKey(ci::app::KeyEvent::KEY_h)
+			|| ENV->isPadPush(ENV->BUTTON_2))
+		&& turo_flags["最後説明"] == false) {
+		Sound::StereophonicManager::getInstance()->add("mission", ci::app::getAssetPath("SE/Tutorial/mission.wav").string(), Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
+		disableNextButton();
+		turo_flags["最後説明"] = true;
+
 		ui_data["移動板"]->setActive(false);
 		ui_data["最後説明"]->setActive(false);
 		ui_data["最後画像"]->setActive(false);
 		ui_data["最後画像２"]->setActive(false);
-		ui_data["FadePlateIn"]->setActive(false);
+	}
+	if (turo_flags["最後説明"] == true) {
+		tuto_counts["最後説明２"] += delta_time;
+	}
+	if (turo_flags["最後説明２"] == false
+		&& tuto_counts["最後説明２"] > 1) {
+		turo_flags["最後説明２"] = true;
+		ui_data["最後説明２"]->setActive(true);
+		ui_data["説明板３"]->setActive(true);
 	}
 
+	if (tuto_counts["最後説明２"] > 7) {
+		ui_data["FadePlateIn"]->setActive(false);
+
+	}
+	
 	
 	if (!ui_data["FadePlateIn"]->getActive()) {
 		Resource::cSoundManager::getInstance()->findBgm("トロピカル無職.wav").stop();
