@@ -424,7 +424,7 @@ void cLightSaber::setup( )
 	{
 		shot->join( idle, [ this ] ( auto n )
 		{
-			return n->time > 0.5F;
+			return true;
 		} );
 		shot->onStateIn = [ this ] ( auto m )
 		{
@@ -477,7 +477,7 @@ void cLightSaber::setup( )
 	{
 		shot_max->join( idle, [ this ] ( auto n )
 		{
-			return n->time > 0.6F;
+			return true;
 		} );
 		shot_max->onStateIn = [ this ] ( auto m )
 		{
