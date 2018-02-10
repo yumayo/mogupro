@@ -127,6 +127,7 @@ namespace Scene
 			//—§‘Ì‰¹‹¿‚Ìíœ
 			Sound::StereophonicManager::getInstance()->clear();
 			Sound::StereophonicManager::getInstance()->close();
+			Game::cTutorialManager::removeInstance();
 		}
 
 		void cTutorial::update(float deltaTime)
@@ -157,9 +158,9 @@ namespace Scene
 				Game::cCapsuleManager::getInstance()->update(deltaTime);
 				Game::cSubWeaponManager::getInstance()->update(deltaTime);
 				Collision::cCollisionManager::getInstance()->update(deltaTime);
-				
-				Game::cPlayerManager::getInstance()->playerCollisionAfterUpdate(deltaTime);
-				
+				if (!Game::cTutorialManager::getInstance()->getTutorialStan()) {
+					Game::cPlayerManager::getInstance()->playerCollisionAfterUpdate(deltaTime);
+				}
 				Game::cSubWeaponManager::getInstance()->updateCollisionAfterUpdate(deltaTime);
 				GemManager->update(deltaTime);
 				Game::cLightManager::getInstance()->update();

@@ -36,7 +36,7 @@ public:
 	//ŽŸ‚Öƒ{ƒ^ƒ“
 	void enableNextButton();
 	void disableNextButton();
-
+	void tutorialNumbers(int num);
 	//ˆÚ“®
 	void tutorialMoveSetup(const float& delta_time);
 	void tutorialMoveUpdate(const float& delta_time);

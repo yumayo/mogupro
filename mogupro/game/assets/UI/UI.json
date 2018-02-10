@@ -65,7 +65,28 @@
         ],
       "EaseCollision": []
     },
-    
+     "説明板３": {
+      "UIType": "CollisionUI",
+      "TexturePath": "Tutorial/textbox.png",
+        "Pos": [ -900, 0 ],
+      "Size": [ 1700,0],
+      "Color" :  [1,1,1,1],
+      "EaseIn": [
+      { "UIState": "Pos","Change": [-900,75],"EasingType": "BackOut","Frame": 1},
+        { "UIState": "Size","Change": [1700,150],"EasingType": "BackOut","Frame": 1}
+          
+      ],
+      
+      "EaseOut": [
+          { "UIState": "Pos","Change": [-900,0],"EasingType": "BackIn","Frame": 1},
+       { "UIState": "Size","Change": [1700,0],"EasingType": "BackIn","Frame": 1}
+      ],
+
+      "EaseUpdate": [
+      ],
+      "EaseCollision": [
+      ]
+    },
     "操作説明": {
        "UIType": "FontUI",
       "FontPath": "",
@@ -234,6 +255,10 @@
       ],
 
         "EaseUpdate": [
+        { "UIState": "Pos","Change": [-200, 100],"EasingType": "Liner","Frame": 0.3},
+            { "UIState": "Size","Change": [ 400, 200],"EasingType": "Liner","Frame": 0.3},
+            { "UIState": "Pos","Change": [-250, 150],"EasingType": "Liner","Frame": 0.3},
+            { "UIState": "Size","Change": [ 500,300],"EasingType": "Liner","Frame": 0.3}
         ],
       "EaseCollision": []
     },
@@ -930,7 +955,26 @@
         ],
       "EaseCollision": []
     },
-    
+    "コントローラL2": {
+       "UIType": "CollisionUI",
+      "TexturePath": "Tutorial/contrllt.png",
+        "Pos": [ -500, 300 ],
+      "Size": [ 500,300],
+      "Color" :  [1,1,1,0],
+        "EaseIn": [
+           { "UIState": "Color","Change": [1,1,1,1],"EasingType": "CircOut","Frame": 0.5}
+        ],
+
+      "EaseOut": [
+         { "UIState": "Color","Change": [1,1,1,0],"EasingType": "CircOut","Frame": 0.5}
+      ],
+
+        "EaseUpdate": [
+            { "UIState": "Color","Change": [1,1,1,1],"EasingType": "CircOut","Frame": 0.5},
+            { "UIState": "Color","Change": [1,1,1,0],"EasingType": "CircOut","Frame": 0.5}
+        ],
+      "EaseCollision": []
+    },
       "コントローラR2": {
        "UIType": "CollisionUI",
       "TexturePath": "Tutorial/contrlr2.png",
@@ -1588,7 +1632,23 @@
         ],
         "EaseUpdate": []
     },
-   "最後画像": {
+   "最後説明２": {
+        "UIType": "FontUI",
+      "FontPath": "",
+      "Pos": [-500, 5 ],
+      "Color" :  [1,1,1,1],
+      "Size": 10,
+      "FontColor": [ 0, 0, 0, 1 ],
+      "FontScale" : 0.5,
+      "Text" : "",
+     
+      "EaseIn": [ ],
+        "EaseOut": [
+            { "UIState": "Color","Change": [0,0,0,0],"EasingType": "ExpoIn","Frame": 3.6}
+        ],
+       "EaseUpdate": []
+    },
+    "最後画像": {
        "UIType": "CollisionUI",
       "TexturePath": "Tutorial/gauge.png",
         "Pos": [ -350, 350 ],
@@ -1625,6 +1685,435 @@
         { "UIState": "Color","Change": [1,1,1,1],"EasingType": "ExpoOut","Frame": 0.5}
         ],
       "EaseCollision": []
+    },
+   "チュートリアル説明": {
+        "UIType": "FontUI",
+      "FontPath": "",
+      "Pos": [-60, 410 ],
+      "Color" :  [1,1,1,1],
+      "Size": 10,
+      "FontColor": [ 1, 1, 1, 1 ],
+      "FontScale" : 0.3,
+      "Text" : "",
+     
+      "EaseIn": [ ],
+        "EaseOut": [
+            
+        ],
+       "EaseUpdate": []
+    },
+     "TutorialPlate": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/GameChange.png",
+        "Pos": [ -200, 550 ],
+        "Size": [ 400, 200 ],
+        "Color": [ 0, 0, 0, 0.7 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
+    },
+     
+     "1": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/1.png",
+        "Pos": [ -190, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
+    },
+
+    "2": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/2.png",
+        "Pos": [ -134, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
+    },
+    "3": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/3.png",
+        "Pos": [ -77, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
+    },
+
+    "4": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/4.png",
+        "Pos": [ -20, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
+    },
+    "5": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/5.png",
+        "Pos": [ 36, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
+    },
+    "6": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/6.png",
+        "Pos": [ 93, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
+    },
+    "7": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/7.png",
+        "Pos": [ 150, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
+    },
+    "1y": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/1y.png",
+        "Pos": [ -190, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+             { "UIState": "Color","Change": [1,1,1,0.5],"EasingType": "ExpoOut","Frame": 0.5},
+        { "UIState": "Color","Change": [1,1,1,1],"EasingType": "ExpoOut","Frame": 0.5}
+        ],
+        "EaseCollision": []
+    },
+
+    "2y": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/2y.png",
+        "Pos": [ -134, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+             { "UIState": "Color","Change": [1,1,1,0.5],"EasingType": "ExpoOut","Frame": 0.5},
+        { "UIState": "Color","Change": [1,1,1,1],"EasingType": "ExpoOut","Frame": 0.5}
+        ],
+        "EaseCollision": []
+    },
+    "3y": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/3y.png",
+        "Pos": [ -77, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+             { "UIState": "Color","Change": [1,1,1,0.5],"EasingType": "ExpoOut","Frame": 0.5},
+        { "UIState": "Color","Change": [1,1,1,1],"EasingType": "ExpoOut","Frame": 0.5}
+        ],
+        "EaseCollision": []
+    },
+
+    "4y": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/4y.png",
+        "Pos": [ -20, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+             { "UIState": "Color","Change": [1,1,1,0.5],"EasingType": "ExpoOut","Frame": 0.5},
+        { "UIState": "Color","Change": [1,1,1,1],"EasingType": "ExpoOut","Frame": 0.5}
+        ],
+        "EaseCollision": []
+    },
+    "5y": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/5y.png",
+        "Pos": [ 36, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+             { "UIState": "Color","Change": [1,1,1,0.5],"EasingType": "ExpoOut","Frame": 0.5},
+        { "UIState": "Color","Change": [1,1,1,1],"EasingType": "ExpoOut","Frame": 0.5}
+        ],
+        "EaseCollision": []
+    },
+    "6y": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/6y.png",
+        "Pos": [ 93, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+             { "UIState": "Color","Change": [1,1,1,0.5],"EasingType": "ExpoOut","Frame": 0.5},
+        { "UIState": "Color","Change": [1,1,1,1],"EasingType": "ExpoOut","Frame": 0.5}
+        ],
+        "EaseCollision": []
+    },
+    "7y": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/7y.png",
+        "Pos": [ 150, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+             { "UIState": "Color","Change": [1,1,1,0.5],"EasingType": "ExpoOut","Frame": 0.5},
+        { "UIState": "Color","Change": [1,1,1,1],"EasingType": "ExpoOut","Frame": 0.5}
+        ],
+        "EaseCollision": []
+    },
+
+    "2g": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/2g.png",
+        "Pos": [ -134, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
+    },
+    "3g": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/3g.png",
+        "Pos": [ -77, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
+    },
+
+    "4g": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/4g.png",
+        "Pos": [ -20, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
+    },
+    "5g": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/5g.png",
+        "Pos": [ 36, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
+    },
+    "6g": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/6g.png",
+        "Pos": [ 93, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
+    },
+    "7g": {
+        "UIType": "CollisionUI",
+        "TexturePath": "Tutorial/numbers/7g.png",
+        "Pos": [ 150, 400 ],
+        "Size": [ 40, 40 ],
+        "Color": [ 1, 1, 1, 1 ],
+        "EaseIn": [
+
+        ],
+
+        "EaseOut": [
+
+        ],
+
+        "EaseUpdate": [
+
+        ],
+        "EaseCollision": []
     }
   }
 
