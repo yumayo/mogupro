@@ -20,9 +20,11 @@ public:
 	void draw2D( ) override;
 	inline std::string const getName( ) { return typeid( *this ).name( ); }
 private:
+	void sceneChange();
 	Utility::cStateMachineBehaviour sMac;
 	hardptr<Node::node> root3d;
 	hardptr<Node::node> root;
+	softptr<Node::node> rootUI;
 	softptr<Node::node> winBoard, loseBoard;
 	softptr<Node::node> eyeNode, tarNode, upNode;
 	softptr<Node::node> redCapsuleNode, blueCapsuleNode;

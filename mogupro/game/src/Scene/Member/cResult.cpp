@@ -282,9 +282,13 @@ void cResult::setup()
 {
 	root = Node::node::create();
 	root->set_schedule_update();
-	root->set_content_size(app::getWindowSize() - ivec2(100, 100));
+	root->set_content_size(app::getWindowSize());
 	root->set_scale(vec2(1, -1));
 	root->set_position(root->get_content_size() * vec2(-0.5F, 0.5F));
+
+	rootUI = root->add_child(Node::node::create());
+	rootUI->set_content_size(app::getWindowSize() - ivec2(100, 100));
+	rootUI->set_position(vec2(100, 100) / 2.0F);
 
 	root3d = Node::node::create();
 	root3d->set_schedule_update();
@@ -298,6 +302,7 @@ void cResult::setup()
 	upNode->set_position_3d(vec3(0, 1, 0));
 
 	Resource::BGM["result/cannon_power.wav"].play();
+	Resource::BGM["result/cannon_power.wav"].setGain( 0.7F );
 
 	{
 		std::vector<std::string> redPlayerName;
@@ -307,7 +312,7 @@ void cResult::setup()
 			redPlayerName.emplace_back(u8"‚à‚®‚ç" + std::to_string(i));
 		}
 		auto& n = win ? winBoard : loseBoard;
-		n = root->add_child(createScoreBoard(
+		n = rootUI->add_child(createScoreBoard(
 			Game::Player::Red,
 			win,
 			redPlayerName,
@@ -315,7 +320,7 @@ void cResult::setup()
 			gm->getRedTeamKillData(),
 			gm->getRedTeamDeathData()));
 		auto size_x = n->get_content_size().x * 2;
-		n->set_position(root->get_content_size() * (win ? vec2(0, 1) : vec2(1, 1)) + vec2(win ? -size_x : size_x, 0.0F));
+		n->set_position(rootUI->get_content_size() * (win ? vec2(0, 1) : vec2(1, 1)) + vec2(win ? -size_x : size_x, 0.0F));
 		n->set_anchor_point(win ? vec2(0, 1) : vec2(1, 1));
 	}
 	{
@@ -326,7 +331,7 @@ void cResult::setup()
 			bluePlayerName.emplace_back(u8"‚à‚®‚ç" + std::to_string(i));
 		}
 		auto& n = win ? winBoard : loseBoard;
-		n = root->add_child(createScoreBoard(
+		n = rootUI->add_child(createScoreBoard(
 			Game::Player::Blue,
 			win,
 			bluePlayerName,
@@ -334,7 +339,7 @@ void cResult::setup()
 			gm->getBlueTeamKillData(),
 			gm->getBlueTeamDeathData()));
 		auto size_x = n->get_content_size().x * 2;
-		n->set_position(root->get_content_size() * (win ? vec2(0, 1) : vec2(1, 1)) + vec2(win ? -size_x : size_x, 0.0F));
+		n->set_position(rootUI->get_content_size() * (win ? vec2(0, 1) : vec2(1, 1)) + vec2(win ? -size_x : size_x, 0.0F));
 		n->set_anchor_point(win ? vec2(0, 1) : vec2(1, 1));
 	}
 
@@ -496,6 +501,8 @@ void cResult::setup()
 		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.0F, vec.z * 3.0F * 2.0F)));
 		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, -vec.z * 0.5F * 2.0F)));
 		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, vec.z * 0.5F * 2.0F)));
+
+		Resource::BGM["result/cannon_power.wav"].fadeout(1.0F, 0.0F);
 	};
 	my->join(shake, [](auto n)
 	{
@@ -505,19 +512,21 @@ void cResult::setup()
 	shake->onStateIn = [this](auto)
 	{
 		auto vec = upNode->get_position_3d();
-		eyeNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec * 3.0F)));
-		tarNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec * 3.0F)));
+		eyeNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.2F, vec * 3.0F)));
+		tarNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.2F, vec * 3.0F)));
 
-		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.0F, vec.z * 3.0F)));
-		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.0F, -vec.z * 3.0F)));
-		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, vec.z * 0.5F)));
-		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, -vec.z * 0.5F)));
+		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.2F, vec.z * 3.0F)));
+		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.2F, -vec.z * 3.0F)));
+		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.2F, vec.z * 0.5F)));
+		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.2F, -vec.z * 0.5F)));
 
-		CAMERA->shakeCamera(0.2F, 2.0F);
+		Resource::BGM["result/judge.wav"].play( );
+
+		CAMERA->shakeCamera(0.2F, 1.0F);
 	};
 	shake->join(judge, [](auto n)
 	{
-		return n->time > 2.0F;
+		return n->time > 1.2F;
 	});
 
 	judge->onStateIn = [this](auto)
@@ -540,41 +549,52 @@ void cResult::setup()
 		{
 		case Game::Player::Red:
 		{
-			eyeNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec3(0, 0, -normalizedRedPower * CANNON_POWER_HALF_LENGTH))));
-			tarNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec3(0, 0, -normalizedRedPower * CANNON_POWER_HALF_LENGTH))));
+			eyeNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(0.3F, vec3(0, 0, -normalizedRedPower * CANNON_POWER_HALF_LENGTH))));
+			tarNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(0.3F, vec3(0, 0, -normalizedRedPower * CANNON_POWER_HALF_LENGTH))));
 		}
 		case Game::Player::Blue:
 		{
-			eyeNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec3(0, 0, -normalizedBluePower * CANNON_POWER_HALF_LENGTH))));
-			tarNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec3(0, 0, -normalizedBluePower * CANNON_POWER_HALF_LENGTH))));
+			eyeNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(0.3F, vec3(0, 0, -normalizedBluePower * CANNON_POWER_HALF_LENGTH))));
+			tarNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(0.3F, vec3(0, 0, -normalizedBluePower * CANNON_POWER_HALF_LENGTH))));
 		}
 		default:
 			break;
 		}
 
-		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.0F, normalizedRedPower * CANNON_POWER_HALF_LENGTH)));
-		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.0F, normalizedBluePower * CANNON_POWER_HALF_LENGTH)));
-		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, normalizedRedPower * 0.5F)));
-		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, normalizedBluePower * 0.5F)));
+		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(0.3F, normalizedRedPower * CANNON_POWER_HALF_LENGTH)));
+		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(0.3F, normalizedBluePower * CANNON_POWER_HALF_LENGTH)));
+		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(0.3F, normalizedRedPower * 0.5F)));
+		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(0.3F, normalizedBluePower * 0.5F)));
 	};
 	judge->join(score_board, [](auto n)
 	{
-		return n->time > 1.0F;
+		return n->time > 1.5F;
 	});
 
 	score_board->onStateIn = [this](auto)
 	{
-		Resource::BGM["result/cannon_power.wav"].fadeout(2.0F, 0.0F);
-
 		auto move_x = winBoard->get_content_size().x * 2;
 		winBoard->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec2(move_x, 0))));
 		loseBoard->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec2(-move_x, 0))));
+
+		if (Game::cGameManager::getInstance()->winTeam() == Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
+		{
+			Resource::BGM["result/win.wav"].play();
+			Resource::BGM["result/win.wav"].setGain(0.5F);
+		}
+		else
+		{
+			Resource::BGM["result/lose.wav"].play();
+			Resource::BGM["result/lose.wav"].setGain(0.5F);
+		}
 	};
 
 	sMac.setEntryNode(power_in);
 }
 void cResult::shutDown()
 {
+	Resource::BGM["result/win.wav"].stop();
+	Resource::BGM["result/lose.wav"].stop();
 	Resource::BGM["result/cannon_power.wav"].stop();
 }
 void cResult::resize()
@@ -598,7 +618,7 @@ void cResult::update(float deltaTime)
 
 	if (ENV->pushKey( app::KeyEvent::KEY_RETURN ))
 	{
-		Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
+		sceneChange();
 	}
 }
 void cResult::draw()
@@ -608,6 +628,34 @@ void cResult::draw()
 void cResult::draw2D()
 {
 	root->entry_render(ci::mat4());
+}
+void cResult::sceneChange()
+{
+	if ( root->get_child_by_name("fader") ) return;
+	auto fader = root->add_child( Node::Renderer::rect::create( app::getWindowSize() ) );
+	fader->set_color( ColorA(0, 0, 0, 0) );
+	fader->set_anchor_point( vec2(0, 0) );
+	fader->run_action(sequence::create(fade_in::create(0.75F), call_func::create([] 
+	{
+		Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
+	})));
+	fader->set_name( "fader" );
+	if (Game::cGameManager::getInstance()->winTeam() == Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
+	{
+		auto& target = Resource::BGM["result/win.wav"];
+		if (target.isPlaying())
+		{
+			target.fadeout(0.75F, 0.0F);
+		}
+	}
+	else
+	{
+		auto& target = Resource::BGM["result/lose.wav"];
+		if (target.isPlaying())
+		{
+			target.fadeout(0.75F, 0.0F);
+		}
+	}
 }
 hardptr<Node::node> cResult::createScoreBoard(int team, bool win, std::vector<std::string> playerNameData, std::vector<int> pointData, std::vector<int> killData, std::vector<int> deathData)
 {
