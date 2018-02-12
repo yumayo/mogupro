@@ -45,15 +45,17 @@ void cCameraManager::MovingCamera( )
 }
 void cCameraManager::ScatterCamera( )
 {
-	my_scatter = ci::vec2(0,0);
+	my_scatter = ci::vec3(0);
     if ( seconds < 0 )return;
     std::random_device rd;
     std::mt19937 mt( rd( ) );
     std::uniform_real_distribution<float> random_x( -scatter, scatter );
-    std::uniform_real_distribution<float> random_y( -scatter, scatter );
+	std::uniform_real_distribution<float> random_y( -scatter, scatter);
+	std::uniform_real_distribution<float> random_z( -scatter, scatter );
     float buf_x = random_x( mt );
-    float buf_y = random_y( mt );
-    my_scatter = ci::vec2( buf_x, buf_y );
+	float buf_y = random_y(mt);
+	float buf_z = random_z( mt );
+    my_scatter = ci::vec3( buf_x, buf_y, buf_z);
 
 }
 void cCameraManager::setCameraAngle( ci::vec2 const & angle )
@@ -100,10 +102,10 @@ void cCameraManager::update(const float& delta_time) {
 
 
 	if (camera_mode == CAMERA_MODE::TPS) {
-		camera.lookAt(target + ci::vec3(my_scatter.x, my_scatter.y, 0), origin + ci::vec3(my_scatter.x, my_scatter.y, 0), up);
+		camera.lookAt(target + my_scatter, origin + my_scatter, up);
 	}
 	else if (camera_mode == CAMERA_MODE::FPS) {
-		camera.lookAt(origin + ci::vec3(my_scatter.x, my_scatter.y, 0), target + ci::vec3(my_scatter.x, my_scatter.y, 0), up);
+		camera.lookAt(origin + my_scatter, target + my_scatter, up);
 	}
 }
 

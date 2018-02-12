@@ -308,7 +308,7 @@ void cGameManager::appendGem( int playerId, int gemNum )
 }
 std::pair<int, int> cGameManager::getResult( )
 {
-	return std::make_pair( redCannonPower, blueCannonPower );
+	return std::make_pair( redCannonPower, redCannonPower == blueCannonPower ? blueCannonPower + 1 : blueCannonPower );
 }
 std::vector<int> cGameManager::getRedTeamKillData( )
 {

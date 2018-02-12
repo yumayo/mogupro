@@ -18,24 +18,6 @@ namespace Scene
 namespace Member
 {
 using namespace cinder;
-class ButtonNextNode : public Node::Renderer::sprite
-{
-public:
-	CREATE_H(ButtonNextNode) { CREATE(ButtonNextNode); }
-	bool init()
-	{
-		__super::init( Resource::IMAGE["in_game/buttonb.png"] );
-		set_schedule_update( );
-		return true;
-	}
-	void update( float ) override
-	{
-		if (ENV->pushKey())
-		{
-			Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
-		}
-	}
-};
 class CapsuleNode : public Node::node
 {
 	geom::Capsule capsule;
@@ -89,7 +71,7 @@ public:
 			return true;
 		}
 	protected:
-		void setup() override
+		virtual void setup() override
 		{
 			if (auto target = _target.dynamicptr<CapsuleNode>())
 			{
@@ -108,7 +90,7 @@ public:
 				target->set_radius(temp);
 			}
 		}
-		void restart() override
+		virtual void restart() override
 		{
 			finite_time_action::restart();
 			setup();
@@ -116,6 +98,33 @@ public:
 	protected:
 		float _start_radius = 0.0F;
 		float _radius = 0.0F;
+	};
+	class radius_by : public radius_to
+	{
+	public:
+		CREATE_H(radius_by, float duration, float radius)
+		{
+			CREATE(radius_by, duration, radius);
+		}
+		bool init(float duration, float radius)
+		{
+			radius_to::init(duration, radius);
+			_init_radius = radius;
+			return true;
+		}
+	protected:
+		void setup() override
+		{
+			radius_to::setup();
+			_radius = _init_radius + _start_radius;
+		}
+		void restart() override
+		{
+			radius_to::restart();
+			setup();
+		}
+	protected:
+		float _init_radius = 0.0F;
 	};
 	class length_to : public Node::Action::finite_time_action
 	{
@@ -131,7 +140,7 @@ public:
 			return true;
 		}
 	protected:
-		void setup() override
+		virtual void setup() override
 		{
 			if (auto target = _target.dynamicptr<CapsuleNode>())
 			{
@@ -150,7 +159,7 @@ public:
 				target->set_length(temp);
 			}
 		}
-		void restart() override
+		virtual void restart() override
 		{
 			finite_time_action::restart();
 			setup();
@@ -158,6 +167,33 @@ public:
 	protected:
 		float _start_length = 0.0F;
 		float _length = 0.0F;
+	};
+	class length_by : public length_to
+	{
+	public:
+		CREATE_H(length_by, float duration, float length)
+		{
+			CREATE(length_by, duration, length);
+		}
+		bool init(float duration, float length)
+		{
+			length_to::init(duration, length);
+			_init_length = length;
+			return true;
+		}
+	protected:
+		void setup() override
+		{
+			length_to::setup();
+			_length = _init_length + _start_length;
+		}
+		void restart() override
+		{
+			length_to::restart();
+			setup();
+		}
+	protected:
+		float _init_length = 0.0F;
 	};
 };
 class TorusNode : public Node::node
@@ -241,6 +277,7 @@ public:
 		float _minor = 0.0F;
 	};
 };
+const float CANNON_POWER_HALF_LENGTH = ( Game::Field::WORLD_SIZE.z - 8 * 2 ) / 2.0F;
 void cResult::setup()
 {
 	root = Node::node::create();
@@ -304,14 +341,17 @@ void cResult::setup()
 	STATE_GENERATE(sMac, power_in);
 	STATE_GENERATE(sMac, burst);
 	STATE_GENERATE(sMac, sky);
+	STATE_GENERATE(sMac, enemy);
+	STATE_GENERATE(sMac, my);
+	STATE_GENERATE(sMac, shake);
+	STATE_GENERATE(sMac, judge);
 	STATE_GENERATE(sMac, score_board);
 
 	auto redPowerRoot = root3d->add_child(Node::node::create());
-	redPowerRoot->set_position_3d(Game::Field::WORLD_SIZE * vec3(0.5F, 1.0F, 0.0F) + vec3(0, 5, 7));
-	redPowerRoot->set_rotation(-glm::pi<float>() / 6.0F + glm::pi<float>());
+	redPowerRoot->set_position_3d(Game::Field::WORLD_SIZE * vec3(0.5F, 1.0F, 0.0F) + vec3(0, 5.5F, 7));
+	redPowerRoot->set_rotation(/*-glm::pi<float>() / 6.0F +*/ glm::pi<float>());
 	redPowerRoot->set_axis(vec3(1, 0, 0));
 	redCapsuleNode = redPowerRoot->add_child(CapsuleNode::create(0.8F, 0.0F));
-	redCapsuleNode->set_position_3d(vec3(0.0F, 0.0F, -1.0F));
 	redCapsuleNode->set_rotation(-glm::pi<float>() / 2.0F);
 	redCapsuleNode->set_axis(vec3(1, 0, 0));
 	redCapsuleNode->set_color(ColorA(1, 0, 0));
@@ -319,11 +359,10 @@ void cResult::setup()
 	redCapsuleNode->set_pivot_3d(vec3(0.5F, 1.0F, 0.5F));
 
 	auto bluePowerRoot = root3d->add_child(Node::node::create());
-	bluePowerRoot->set_position_3d(Game::Field::WORLD_SIZE * vec3(0.5F, 1.0F, 1.0F) + vec3(0, 5, -7));
-	bluePowerRoot->set_rotation(glm::pi<float>() / 6.0F);
+	bluePowerRoot->set_position_3d(Game::Field::WORLD_SIZE * vec3(0.5F, 1.0F, 1.0F) + vec3(0, 5.5F, -7));
+	bluePowerRoot->set_rotation(/*glm::pi<float>() / 6.0F +*/ 0.0F);
 	bluePowerRoot->set_axis(vec3(1, 0, 0));
 	blueCapsuleNode = bluePowerRoot->add_child(CapsuleNode::create(0.8F, 0.0F));
-	blueCapsuleNode->set_position_3d(vec3(0.0F, 0.0F, -1.0F));
 	blueCapsuleNode->set_rotation(-glm::pi<float>() / 2.0F);
 	blueCapsuleNode->set_axis(vec3(1, 0, 0));
 	blueCapsuleNode->set_color(ColorA(0, 0, 1));
@@ -335,7 +374,11 @@ void cResult::setup()
 	case Game::Player::Red:
 	{
 		eyeNode = redPowerRoot->add_child(Node::node::create());
+		eyeNode->set_position_3d(vec3(vec3(3, 0, -8)));
+		eyeNode->run_action(move_by::create(10.0F, vec3(5, 0, -7)));
 		tarNode = redPowerRoot->add_child(Node::node::create());
+		tarNode->set_position_3d(vec3(0, 0, 0));
+		tarNode->run_action(move_by::create(10.0F, vec3(0, 0, -2)));
 		{
 			auto const NUM = std::max(gm->getResult().second, 1);
 			float const ONE_TIME = 4.8F / NUM;
@@ -353,9 +396,9 @@ void cResult::setup()
 				tarNode->remove_from_parent();
 				tarNode = redCapsuleNode->add_child(Node::node::create());
 
-				blueCapsuleNode->run_action(CapsuleNode::length_to::create(1.0F, Game::Field::WORLD_SIZE.z - 37));
+				blueCapsuleNode->run_action(CapsuleNode::length_to::create(1.0F, CANNON_POWER_HALF_LENGTH));
 
-				redCapsuleNode->run_action(sequence::create(CapsuleNode::length_to::create(1.0F, Game::Field::WORLD_SIZE.z - 37), call_func::create([this, burst, sky]
+				redCapsuleNode->run_action(sequence::create(CapsuleNode::length_to::create(1.0F, CANNON_POWER_HALF_LENGTH), call_func::create([this, burst, sky]
 				{
 					burst->join(sky, [](auto n) { return true; });
 					upNode->run_action(ease<ci::EaseOutCubic>::create(move_to::create(1.0F, vec3(0, 0, 1))));
@@ -367,7 +410,11 @@ void cResult::setup()
 	case Game::Player::Blue:
 	{
 		eyeNode = bluePowerRoot->add_child(Node::node::create());
+		eyeNode->set_position_3d(vec3(vec3(3, 0, -8)));
+		eyeNode->run_action(move_by::create(10.0F, vec3(5, 0, -7)));
 		tarNode = bluePowerRoot->add_child(Node::node::create());
+		tarNode->set_position_3d(vec3(0, 0, 0));
+		tarNode->run_action(move_by::create(10.0F, vec3(0, 0, -2)));
 		{
 			auto const NUM = std::max(gm->getResult().first, 1);
 			float const ONE_TIME = 4.8F / NUM;
@@ -385,9 +432,9 @@ void cResult::setup()
 				tarNode->remove_from_parent();
 				tarNode = blueCapsuleNode->add_child(Node::node::create());
 
-				redCapsuleNode->run_action(CapsuleNode::length_to::create(1.0F, Game::Field::WORLD_SIZE.z - 37));
+				redCapsuleNode->run_action(CapsuleNode::length_to::create(1.0F, CANNON_POWER_HALF_LENGTH));
 
-				blueCapsuleNode->run_action(sequence::create(CapsuleNode::length_to::create(1.0F, Game::Field::WORLD_SIZE.z - 37), call_func::create([this, burst, sky]
+				blueCapsuleNode->run_action(sequence::create(CapsuleNode::length_to::create(1.0F, CANNON_POWER_HALF_LENGTH), call_func::create([this, burst, sky]
 				{
 					burst->join(sky, [](auto n) { return true; });
 					upNode->run_action(ease<ci::EaseOutCubic>::create(move_to::create(1.0F, vec3(0, 0, -1))));
@@ -400,27 +447,120 @@ void cResult::setup()
 		break;
 	}
 
-	eyeNode->set_position_3d(vec3(vec3(3, 0, -8)));
-	eyeNode->run_action(move_by::create(10.0F, vec3(5, 0, -7)));
-	tarNode->set_position_3d(vec3(0, 0, 0));
-	tarNode->run_action(move_by::create(10.0F, vec3(0, 0, -2)));
-
 	burst->onStateIn = [this](auto m)
 	{
 		
 	};
 
-	sky->onStateIn = [this, sky, score_board](auto m)
+	sky->onStateIn = [this, sky, enemy](auto m)
 	{
 		auto mat = eyeNode->get_world_matrix_3d();
 		eyeNode->remove_from_parent();
 		eyeNode = root3d->add_child(Node::node::create());
 		eyeNode->set_matrix_3d(mat);
-		eyeNode->run_action(sequence::create(ease<ci::EaseOutCubic>::create(move_to::create(1.0F, Game::Field::WORLD_SIZE * vec3(0.5F, 3.0F, 0.5F))), call_func::create([sky, score_board]
+
+		eyeNode->run_action(sequence::create(ease<ci::EaseOutCubic>::create(move_to::create(1.0F, Game::Field::WORLD_SIZE * vec3(0.5F, 3.0F, 0.5F))), call_func::create([sky, enemy]
 		{
-			sky->join(score_board, [](auto) { return true; });
+			sky->join(enemy, [](auto) { return true; });
 		})));
 	};
+
+	enemy->onStateIn = [this](auto)
+	{
+		auto mat = tarNode->get_world_matrix_3d();
+		tarNode->remove_from_parent();
+		tarNode = root3d->add_child(Node::node::create());
+		tarNode->set_matrix_3d(mat);
+
+		auto vec = upNode->get_position_3d();
+		eyeNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec * 3.0F )));
+		tarNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec * 3.0F )));
+
+		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.0F, vec.z * 3.0F)));
+		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.0F, -vec.z * 3.0F)));
+		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, vec.z * 0.5F)));
+		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, -vec.z * 0.5F)));
+	};
+	enemy->join(my, [](auto n)
+	{
+		return n->time > 1.0F;
+	});
+
+	my->onStateIn = [this](auto)
+	{
+		auto vec = upNode->get_position_3d();
+		eyeNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, -vec * 3.0F * 2.0F)));
+		tarNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, -vec * 3.0F * 2.0F)));
+
+		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.0F, -vec.z * 3.0F * 2.0F)));
+		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.0F, vec.z * 3.0F * 2.0F)));
+		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, -vec.z * 0.5F * 2.0F)));
+		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, vec.z * 0.5F * 2.0F)));
+	};
+	my->join(shake, [](auto n)
+	{
+		return n->time > 1.0F;
+	});
+
+	shake->onStateIn = [this](auto)
+	{
+		auto vec = upNode->get_position_3d();
+		eyeNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec * 3.0F)));
+		tarNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec * 3.0F)));
+
+		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.0F, vec.z * 3.0F)));
+		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.0F, -vec.z * 3.0F)));
+		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, vec.z * 0.5F)));
+		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, -vec.z * 0.5F)));
+
+		CAMERA->shakeCamera(0.2F, 2.0F);
+	};
+	shake->join(judge, [](auto n)
+	{
+		return n->time > 2.0F;
+	});
+
+	judge->onStateIn = [this](auto)
+	{
+		auto gm = Game::cGameManager::getInstance();
+
+		auto result = gm->getResult();
+		float redPoint = result.first;
+		float bluePoint = result.second;
+
+		auto sum = redPoint + bluePoint;
+		auto redPower = redPoint / sum;
+		auto normalizedRedPower = redPower * 2.0F - 1.0F;
+		auto bluePower = bluePoint / sum;
+		auto normalizedBluePower = bluePower * 2.0F - 1.0F;
+
+		auto vec = upNode->get_position_3d();
+
+		switch (Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
+		{
+		case Game::Player::Red:
+		{
+			eyeNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec3(0, 0, -normalizedRedPower * CANNON_POWER_HALF_LENGTH))));
+			tarNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec3(0, 0, -normalizedRedPower * CANNON_POWER_HALF_LENGTH))));
+		}
+		case Game::Player::Blue:
+		{
+			eyeNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec3(0, 0, -normalizedBluePower * CANNON_POWER_HALF_LENGTH))));
+			tarNode->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec3(0, 0, -normalizedBluePower * CANNON_POWER_HALF_LENGTH))));
+		}
+		default:
+			break;
+		}
+
+		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.0F, normalizedRedPower * CANNON_POWER_HALF_LENGTH)));
+		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::length_by::create(1.0F, normalizedBluePower * CANNON_POWER_HALF_LENGTH)));
+		redCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, normalizedRedPower * 0.5F)));
+		blueCapsuleNode->run_action(ease<ci::EaseOutCubic>::create(CapsuleNode::radius_by::create(1.0F, normalizedBluePower * 0.5F)));
+	};
+	judge->join(score_board, [](auto n)
+	{
+		return n->time > 1.0F;
+	});
 
 	score_board->onStateIn = [this](auto)
 	{
@@ -429,16 +569,6 @@ void cResult::setup()
 		auto move_x = winBoard->get_content_size().x * 2;
 		winBoard->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec2(move_x, 0))));
 		loseBoard->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec2(-move_x, 0))));
-
-		root->run_action(sequence::create(delay::create(2.0F), call_func::create([this]
-		{
-			auto n = root->add_child(ButtonNextNode::create());
-			n->set_position(root->get_content_size() * vec2(1, 1));
-			n->run_action(repeat_forever::create(sequence::create(
-				ease<ci::EaseOutCubic>::create(scale_to::create(1.0F, vec2(1.1F))),
-				ease<ci::EaseOutCubic>::create(scale_to::create(1.0F, vec2(1.0F)))
-			)));
-		})));
 	};
 
 	sMac.setEntryNode(power_in);
@@ -465,6 +595,11 @@ void cResult::update(float deltaTime)
 	sMac.update(deltaTime);
 	root3d->entry_update(deltaTime);
 	root->entry_update(deltaTime);
+
+	if (ENV->pushKey( app::KeyEvent::KEY_RETURN ))
+	{
+		Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
+	}
 }
 void cResult::draw()
 {
