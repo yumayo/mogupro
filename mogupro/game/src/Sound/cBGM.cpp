@@ -49,12 +49,12 @@ void cBGM::fadeout(const float fadeSecond, const float target)
 {
 	auto decrement = ( getGain() - target ) / fadeSecond;
 	cinder::app::console() << decrement << std::endl;
-	Utility::cScheduler::getInstance()->applyLimitUpdate(fadeSecond, [this, decrement](float delta) { setGain(getGain() - delta * decrement); }, [this](float) { stop(); });
+	fadeHandle = Utility::cScheduler::getInstance()->applyLimitUpdate(fadeSecond, [this, decrement](float delta) { setGain(getGain() - delta * decrement); }, [this]() { stop(); });
 }
 void cBGM::fadein(const float fadeSecond, const float target)
 {
 	auto increment = ( target ) / fadeSecond;
 	setGain( 0.0F );
-	Utility::cScheduler::getInstance()->applyLimitUpdate(fadeSecond, [this, increment](float delta){ setGain(getGain() + delta * increment); });
+	fadeHandle = Utility::cScheduler::getInstance()->applyLimitUpdate(fadeSecond, [this, increment](float delta){ setGain(getGain() + delta * increment); });
 }
 }

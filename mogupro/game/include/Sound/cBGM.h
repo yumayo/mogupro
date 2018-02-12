@@ -2,6 +2,7 @@
 #include <cinder/audio/Context.h>
 #include <cinder/audio/NodeEffects.h>
 #include <cinder/audio/SamplePlayerNode.h>
+#include <memory>
 namespace Sound
 {
 class cBGM
@@ -21,5 +22,6 @@ public:
 private:
     cinder::audio::BufferPlayerNodeRef mBufferPlayerRef;
     cinder::audio::GainNodeRef mGainRef;
+	std::shared_ptr<int> fadeHandle;
 };
 }

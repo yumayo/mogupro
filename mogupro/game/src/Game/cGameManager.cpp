@@ -203,6 +203,7 @@ cGameManager::cGameManager( )
 			finish->set_position( root->get_content_size( ) / 2.0F );
 			finish->run_action( sequence::create( delay::create( 1.0F ), fade_out::create( 1.0F ), remove_self::create( ) ) );
 		}
+		introloopBGM.fadeout( 2.0F, 0.0F );
 	};
 	battle_end->onStateOut = [ this ] ( )
 	{

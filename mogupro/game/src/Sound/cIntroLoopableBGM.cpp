@@ -1,5 +1,6 @@
 #include <Sound/cIntroLoopableBGM.h>
 #include <cinder/app/App.h>
+#include <Utility/cScheduler.h>
 namespace Sound
 {
 cIntroLoopableBGM::cIntroLoopableBGM( )
@@ -60,15 +61,42 @@ void cIntroLoopableBGM::play( ) const
 }
 void cIntroLoopableBGM::stop( ) const
 {
-	alSourcePause( source );
+	alSourceStop( source );
 }
 void cIntroLoopableBGM::pause( ) const
 {
 	alSourcePause( source );
 }
+float cIntroLoopableBGM::getPitch() const
+{
+	ALfloat value = 0.0F;
+	alGetSourcef(source, AL_PITCH, &value);
+	return value;
+}
+void cIntroLoopableBGM::fadeout(float fadeSecond, float target)
+{
+	auto decrement = (getGain() - target) / fadeSecond;
+	fadeHandle = Utility::cScheduler::getInstance()->applyLimitUpdate(fadeSecond, [this, decrement](float delta) { gain(getGain() - delta * decrement); }, [this] { stop(); });
+}
+void cIntroLoopableBGM::fadein(float fadeSecond, float target)
+{
+	auto increment = (target) / fadeSecond;
+	gain( 0.0F );
+	fadeHandle = Utility::cScheduler::getInstance()->applyLimitUpdate(fadeSecond, [this, increment](float delta) { gain(getGain() + delta * increment); });
+}
+void cIntroLoopableBGM::resume() const
+{
+	alSourcePlay( source );
+}
 void cIntroLoopableBGM::gain( float const value ) const
 {
 	alSourcef( source, AL_GAIN, value );
+}
+float cIntroLoopableBGM::getGain() const
+{
+	ALfloat value = 0.0F;
+	alGetSourcef( source, AL_GAIN, &value );
+	return value;
 }
 void cIntroLoopableBGM::pitch( float const value ) const
 {

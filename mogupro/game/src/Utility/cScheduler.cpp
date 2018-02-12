@@ -27,9 +27,13 @@ hardptr<int> cScheduler::apply( float updateSeconds, std::function<void( )> meth
 	}
 	return *p.first;
 }
-void cScheduler::applyLimitUpdate(float updateSeconds, std::function<void(float)> method, std::function<void(float)> finalizeMethod)
+hardptr<int> cScheduler::applyLimitUpdate(float updateSeconds, std::function<void(float)> method, std::function<void()> finalizeMethod)
 {
-	mUpdateMethods.insert(std::make_pair(ci::app::getElapsedSeconds() + updateSeconds, LimitUpdateMethod{ method, finalizeMethod }));
+	auto time = ci::app::getElapsedSeconds() + updateSeconds;
+	auto it = mUpdateMethods.insert(std::make_pair(time, LimitUpdateMethod{ method, finalizeMethod }));
+	auto p = mUpdateMethodHandles.insert(std::make_pair(std::make_shared<int>(mIdGen.createId()), time));
+	if (!p.second) std::runtime_error( "ŽžŠÔ‚ª“¯‚¶‚à‚Ì‚Íì‚ê‚È‚¢ƒ“ƒSB" );
+	return p.first->first;
 }
 void cScheduler::update( float delta )
 {
@@ -47,20 +51,40 @@ void cScheduler::update( float delta )
 	}
 	mRoot->entry_update( delta );
 
+	// ƒnƒ“ƒhƒ‹‚ª§Œä‚³‚ê‚È‚­‚È‚Á‚½‚ç“o˜^ƒƒ\ƒbƒh‚²‚Æíœ
 	{
-		auto it = mUpdateMethods.begin();
-		while (it != mUpdateMethods.end())
+		auto it = mUpdateMethodHandles.begin();
+		while (it != mUpdateMethodHandles.end())
 		{
-			if (it->first < ci::app::getElapsedSeconds())
+			if ((*it).first.use_count() == 1L)
 			{
-				auto f = (*it).second.finalize;
-				if (f) f(delta);
-				mUpdateMethods.erase(it++);
+				auto targetSecond = (*it).second;
+				auto& target = mUpdateMethods[targetSecond];
+				auto f = target.finalize;
+				if (f) f();
+				mUpdateMethodHandles.erase(it++);
+				mUpdateMethods.erase(targetSecond);
 			}
 			else ++it;
 		}
 	}
-	for (auto& method : mUpdateMethods) 
-		method.second.update(delta);
+	{
+		auto it = mUpdateMethods.begin();
+		while (it != mUpdateMethods.end())
+		{
+			if ((*it).first < ci::app::getElapsedSeconds())
+			{
+				auto f = (*it).second.finalize;
+				if (f) f();
+				mUpdateMethods.erase(it++);
+			}
+			else
+			{
+				auto f = (*it).second.update;
+				f(delta);
+				++it;
+			}
+		}
+	}
 }
 }
