@@ -57,37 +57,41 @@ void cUIManager::setup( )
 
 	mTargetCannon = mRoot->add_child( UI::cTargetCannon::create( playerTeamId ) );
 
-	if (!Scene::cSceneManager::getInstance()->isCurrentScene<Scene::Member::cTutorial>())
+	// タイマー作成
+	auto timer = mRoot->add_child(UI::cTimer::create(mRoot->get_content_size()));
+	mTimer = timer;
+	timer->lastOneMinutesCall = [this]
 	{
-		// タイマー作成
-		auto timer = mRoot->add_child(UI::cTimer::create(mRoot->get_content_size()));
-		mTimer = timer;
-		timer->lastOneMinutesCall = [this]
-		{
-			auto tex1 = mRoot->add_child( Node::Renderer::sprite::create( Resource::IMAGE["in_game/last_one_minutes.png"] ) );
-			tex1->set_position( mRoot->get_content_size() / 2.0F );
-			tex1->set_color( ColorA( 1, 1, 1, 0.5F ) );
-			tex1->run_action(sequence::create(delay::create(2.0F), fade_out::create(1.0F), remove_self::create()));
+		auto tex1 = mRoot->add_child( Node::Renderer::sprite::create( Resource::IMAGE["in_game/last_one_minutes.png"] ) );
+		tex1->set_position( mRoot->get_content_size() / 2.0F );
+		tex1->set_color( ColorA( 1, 1, 1, 0.5F ) );
+		tex1->run_action(sequence::create(delay::create(2.0F), fade_out::create(1.0F), remove_self::create()));
 
-			auto tex2 = mRoot->add_child(Node::Renderer::sprite::create(Resource::IMAGE["in_game/last_one_minutes.png"]));
-			tex2->set_position( mRoot->get_content_size() / 2.0F );
-			tex2->set_color(ColorA(1, 1, 1, 0.5F));
-			tex2->run_action(ease<ci::EaseOutCubic>::create( scale_by::create(1.0F, vec2(1.0F))));
-			tex2->run_action(fade_out::create( 1.0F ) );
-			tex2->run_action(sequence::create( delay::create(1.0F ), remove_self::create()));
-		};
-		timer->countDownCall = [this](auto number)
-		{
-			auto l = mRoot->get_child_by_name("count_down").dynamicptr<Node::Renderer::label>();
-			l->set_text(number);
-			l->set_rotation(rander.nextFloat(-0.2F, 0.2F));
-			l->set_scale( vec2(1.0F) );
-			l->run_action( scale_by::create( 0.7F, vec2(0.2F) ) );
-			l->set_opacity( 0.5F );
-			l->run_action(sequence::create( delay::create(0.1F), fade_out::create(0.5F)));
-		};
+		auto tex2 = mRoot->add_child(Node::Renderer::sprite::create(Resource::IMAGE["in_game/last_one_minutes.png"]));
+		tex2->set_position( mRoot->get_content_size() / 2.0F );
+		tex2->set_color(ColorA(1, 1, 1, 0.5F));
+		tex2->run_action(ease<ci::EaseOutCubic>::create( scale_by::create(1.0F, vec2(1.0F))));
+		tex2->run_action(fade_out::create( 1.0F ) );
+		tex2->run_action(sequence::create( delay::create(1.0F ), remove_self::create()));
+	};
+	timer->countDownCall = [this](auto number)
+	{
+		auto l = mRoot->get_child_by_name("count_down").dynamicptr<Node::Renderer::label>();
+		l->set_text(number);
+		l->set_rotation(rander.nextFloat(-0.2F, 0.2F));
+		l->set_scale( vec2(1.0F) );
+		l->run_action( scale_by::create( 0.7F, vec2(0.2F) ) );
+		l->set_opacity( 0.5F );
+		l->run_action(sequence::create( delay::create(0.1F), fade_out::create(0.5F)));
+	};
 
-		mTips = mRoot->add_child(UI::cTips::create(mRoot->get_content_size(), playerTeamId));
+	mTips = mRoot->add_child(UI::cTips::create(mRoot->get_content_size(), playerTeamId));
+
+
+	if (Scene::cSceneManager::getInstance()->isCurrentScene<Scene::Member::cTutorial>())
+	{
+		mTimer->set_block_visible(true);
+		mTips->set_block_visible(true);
 	}
 
 	ui[mTimer] = FixedPosition{ mTimer->get_position(), mTimer->get_position() + vec2( 0, mTimer->get_content_size().y + 100 ) * -1.0F };
