@@ -15,6 +15,9 @@ public:
     bool isLooping( );
     void setLooping( const bool islooping );
     void setGain( const float gainSize );
+	float getGain();
+	void fadeout( const float fadeSecond, const float target );
+	void fadein(const float fadeSecond, const float target );
 private:
     cinder::audio::BufferPlayerNodeRef mBufferPlayerRef;
     cinder::audio::GainNodeRef mGainRef;

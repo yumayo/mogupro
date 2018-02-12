@@ -260,7 +260,7 @@ void cResult::setup()
 	upNode = root3d->add_child(Node::node::create());
 	upNode->set_position_3d(vec3(0, 1, 0));
 
-	Resource::SE["result/cannon_power.wav"].play();
+	Resource::BGM["result/cannon_power.wav"].play();
 
 	{
 		std::vector<std::string> redPlayerName;
@@ -352,13 +352,13 @@ void cResult::setup()
 				tarNode->remove_from_parent();
 				tarNode = redCapsuleNode->add_child(Node::node::create());
 
+				blueCapsuleNode->run_action(CapsuleNode::length_to::create(1.0F, Game::Field::WORLD_SIZE.z - 37));
+
 				redCapsuleNode->run_action(sequence::create(CapsuleNode::length_to::create(1.0F, Game::Field::WORLD_SIZE.z - 37), call_func::create([this, burst, score_board]
 				{
 					burst->join(score_board, [](auto n) { return true; });
 					upNode->run_action(ease<ci::EaseOutCubic>::create(move_to::create(1.0F, vec3(0, 0, 1))));
 				})));
-
-				blueCapsuleNode->run_action(CapsuleNode::length_to::create(1.0F, Game::Field::WORLD_SIZE.z - 37));
 			})));
 		}
 		break;
@@ -420,6 +420,8 @@ void cResult::setup()
 		auto move_x = winBoard->get_content_size().x * 2;
 		winBoard->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec2(move_x, 0))));
 		loseBoard->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec2(-move_x, 0))));
+
+		Resource::BGM["result/cannon_power.wav"].fadeout( 2.0F, 0.0F );
 		
 		root->run_action(sequence::create(delay::create(2.0F), call_func::create([this] 
 		{
@@ -436,7 +438,7 @@ void cResult::setup()
 }
 void cResult::shutDown()
 {
-	Resource::SE["result/cannon_power.wav"].stop();
+	Resource::BGM["result/cannon_power.wav"].stop();
 }
 void cResult::resize()
 {

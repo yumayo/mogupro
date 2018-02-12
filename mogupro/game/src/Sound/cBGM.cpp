@@ -1,5 +1,6 @@
 #include <Sound/cBGM.h>
 #include <cinder/app/App.h>
+#include <Utility/cScheduler.h>
 namespace Sound
 {
 using namespace cinder;
@@ -40,5 +41,20 @@ void cBGM::setGain( const float gain )
 {
     mGainRef->setValue( gain );
 }
-;
+float cBGM::getGain()
+{
+	return mGainRef->getValue();
+}
+void cBGM::fadeout(const float fadeSecond, const float target)
+{
+	auto decrement = ( getGain() - target ) / fadeSecond;
+	cinder::app::console() << decrement << std::endl;
+	Utility::cScheduler::getInstance()->applyLimitUpdate(fadeSecond, [this, decrement](float delta) { setGain(getGain() - delta * decrement); }, [this](float) { stop(); });
+}
+void cBGM::fadein(const float fadeSecond, const float target)
+{
+	auto increment = ( target ) / fadeSecond;
+	setGain( 0.0F );
+	Utility::cScheduler::getInstance()->applyLimitUpdate(fadeSecond, [this, increment](float delta){ setGain(getGain() + delta * increment); });
+}
 }
