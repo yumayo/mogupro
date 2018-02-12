@@ -50,7 +50,7 @@ void cTitle::setup( )
 	auto version = mContentsRoot->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
 	version->set_anchor_point( vec2( 0, 1 ) );
 	version->set_position( mContentsRoot->get_content_size( ) * vec2( 0, 1 ) );
-	version->set_text( "ver0.3.0" );
+	version->set_text( "ver0.4.0" );
 }
 void cTitle::shutDown( )
 {
