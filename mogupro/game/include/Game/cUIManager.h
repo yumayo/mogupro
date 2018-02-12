@@ -2,6 +2,8 @@
 #include <Node/node.h>
 #include <Utility/cSingletonAble.h>
 #include <boost/optional.hpp>
+#include <cinder/Rand.h>
+#include <map>
 namespace Game
 {
 class cUIManager : public Utility::cSingletonAble<cUIManager>
@@ -22,10 +24,18 @@ public:
 	void disable( );
 private:
 	hardptr<Node::node> mRoot;
-	softptr<Node::node> mTime;
+	softptr<Node::node> mTimer;
 	softptr<Node::node> mSlot;
+	softptr<Node::node> mTips;
 	softptr<Node::node> mRedTeamCannonMeter;
 	softptr<Node::node> mBlueTeamCannonMeter;
 	softptr<Node::node> mPlayerScreenEffect;
+	softptr<Node::node> mTargetCannon;
+	cinder::Rand rander;
+
+	struct FixedPosition { cinder::vec2 enable, disable; };
+	std::map< softptr<Node::node>, FixedPosition > ui;
+
+	bool visible = true;
 };
 }

@@ -15,7 +15,10 @@
 #include <Scene/cSceneManager.h>
 #include <Scene/Member/Tutorial.h>
 #include <Game/UI/cTargetCannon.h>
+#include <Game/UI/cTimer.h>
+#include <cinder/Rand.h>
 //Weapons::SubWeapon::SubWeaponType
+using namespace Node::Action;
 using namespace ci;
 namespace Game
 {
@@ -27,6 +30,14 @@ void cUIManager::awake( )
 	mRoot->set_schedule_update( );
 	mRoot->set_scale( vec2( 1, -1 ) );
 	mRoot->set_position( mRoot->get_content_size( ) * vec2( -0.5F, 0.5F ) );
+
+	// 文字生成が重い気がするのでキャッシュ。
+	auto l = mRoot->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 340.0F));
+	l->set_name("count_down");
+	l->set_color(ColorA(1, 1, 1, 0.5F));
+	l->set_position(mRoot->get_content_size() / 2.0F);
+
+	rander.seed(20180212);
 
 	//プレイヤーがダメージを受けた時の画面の周りの光
 	mPlayerScreenEffect = mRoot->add_child( Node::node::create( ) );
@@ -44,33 +55,53 @@ void cUIManager::setup( )
 
 	mRoot->add_child( UI::cPlayerNameUIs::create( ) );
 
-	mRoot->add_child( UI::cTargetCannon::create( playerTeamId ) );
+	mTargetCannon = mRoot->add_child( UI::cTargetCannon::create( playerTeamId ) );
 
 	if (!Scene::cSceneManager::getInstance()->isCurrentScene<Scene::Member::cTutorial>())
 	{
 		// タイマー作成
-		mTime = mRoot->add_child(Node::Renderer::sprite::create(Resource::cImageManager::getInstance()->find("gameMainUI/timer.png")));
-		mTime->set_anchor_point(vec2(0.5F, 0.0F));
-		mTime->set_position(mRoot->get_content_size() * vec2(0.5F, 0.0F));
-		mTime->set_pivot(vec2(0.5F, 0.125F));
-		auto l = mTime->add_child(Node::Renderer::letter::create("AMEMUCHIGOTHIC-06.ttf", 36.0F));
-		l->set_space(-9.0F);
-		l->set_name("letter");
-		l->set_text("12:34");
-		l->set_color(ColorA(0, 0, 0));
+		auto timer = mRoot->add_child(UI::cTimer::create(mRoot->get_content_size()));
+		mTimer = timer;
+		timer->lastOneMinutesCall = [this]
+		{
+			auto tex1 = mRoot->add_child( Node::Renderer::sprite::create( Resource::IMAGE["in_game/last_one_minutes.png"] ) );
+			tex1->set_position( mRoot->get_content_size() / 2.0F );
+			tex1->set_color( ColorA( 1, 1, 1, 0.5F ) );
+			tex1->run_action(sequence::create(delay::create(2.0F), fade_out::create(1.0F), remove_self::create()));
 
-		mRoot->add_child(UI::cTips::create(mRoot->get_content_size(), playerTeamId));
+			auto tex2 = mRoot->add_child(Node::Renderer::sprite::create(Resource::IMAGE["in_game/last_one_minutes.png"]));
+			tex2->set_position( mRoot->get_content_size() / 2.0F );
+			tex2->set_color(ColorA(1, 1, 1, 0.5F));
+			tex2->run_action(ease<ci::EaseOutCubic>::create( scale_by::create(1.0F, vec2(1.0F))));
+			tex2->run_action(fade_out::create( 1.0F ) );
+			tex2->run_action(sequence::create( delay::create(1.0F ), remove_self::create()));
+		};
+		timer->countDownCall = [this](auto number)
+		{
+			auto l = mRoot->get_child_by_name("count_down").dynamicptr<Node::Renderer::label>();
+			l->set_text(number);
+			l->set_rotation(rander.nextFloat(-0.2F, 0.2F));
+			l->set_scale( vec2(1.0F) );
+			l->run_action( scale_by::create( 0.7F, vec2(0.2F) ) );
+			l->set_opacity( 0.5F );
+			l->run_action(sequence::create( delay::create(0.1F), fade_out::create(0.5F)));
+		};
+
+		mTips = mRoot->add_child(UI::cTips::create(mRoot->get_content_size(), playerTeamId));
 	}
+
+	ui[mTimer] = FixedPosition{ mTimer->get_position(), mTimer->get_position() + vec2( 0, mTimer->get_content_size().y + 100 ) * -1.0F };
+	ui[mTips] = FixedPosition{ mTips->get_position(), mTips->get_position() + vec2(0, mTips->get_content_size().y + 300) * 1.0F };
+	ui[mSlot] = FixedPosition{ mSlot->get_position(), mSlot->get_position() + vec2(0, mSlot->get_content_size().y + 300) * -1.0F };
+	ui[mRedTeamCannonMeter] = FixedPosition{ mRedTeamCannonMeter->get_position(), mRedTeamCannonMeter->get_position() + vec2(mRedTeamCannonMeter->get_content_size().x + 200, 0) * -1.0F };
+	ui[mBlueTeamCannonMeter] = FixedPosition{ mBlueTeamCannonMeter->get_position(), mBlueTeamCannonMeter->get_position() + vec2(mBlueTeamCannonMeter->get_content_size().x + 200, 0) * 1.0F };
+
+	disable();
+	mRoot->entry_update(1.0F);
 }
 void cUIManager::update( float delta )
 {
-	mRoot->entry_update( delta );
-
-	if (mTime)
-	{
-		auto l = mTime->get_child_by_name("letter").dynamicptr<Node::Renderer::letter>();
-		l->set_text(cGameManager::getInstance()->getLeftBattleTime());
-	}
+	mRoot->entry_update(delta);
 
 	for ( auto player : cPlayerManager::getInstance( )->getPlayers( ) )
 	{
@@ -162,10 +193,26 @@ void cUIManager::setItem( boost::optional<int> currentItem, boost::optional<int>
 }
 void cUIManager::enable( )
 {
-	mRoot->set_block_visible( false );
+	if (visible) return;
+	for (auto& u : ui)
+	{
+		u.first->remove_all_actions();
+		u.first->set_schedule_update( true );
+		u.first->run_action(ease<ci::EaseOutCubic>::create(move_to::create(0.2F, u.second.enable)));
+	}
+	mTargetCannon->set_block_visible( false );
+	visible = true;
 }
 void cUIManager::disable( )
 {
-	mRoot->set_block_visible( true );
+	if (!visible) return;
+	for (auto& u : ui)
+	{
+		u.first->remove_all_actions();
+		u.first->set_schedule_update( false );
+		u.first->run_action(ease<ci::EaseOutCubic>::create(move_to::create(0.2F, u.second.disable)));
+	}
+	mTargetCannon->set_block_visible( true );
+	visible = false;
 }
 }
