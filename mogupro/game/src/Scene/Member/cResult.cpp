@@ -303,6 +303,7 @@ void cResult::setup()
 
 	STATE_GENERATE(sMac, power_in);
 	STATE_GENERATE(sMac, burst);
+	STATE_GENERATE(sMac, sky);
 	STATE_GENERATE(sMac, score_board);
 
 	auto redPowerRoot = root3d->add_child(Node::node::create());
@@ -344,7 +345,7 @@ void cResult::setup()
 			auto const NUM = std::max(gm->getResult().first, 1);
 			float const ONE_TIME = 4.8F / NUM;
 			redPowerRoot->run_action(sequence::create(repeat_times::create(sequence::create(call_func::create([this, redPowerRoot, ONE_TIME] {redPowerRoot->add_child(createPowerTorus(ONE_TIME))->set_color(ColorA(1, 0, 0)); }), delay::create(ONE_TIME)), NUM),
-				call_func::create([this, power_in, burst, score_board]
+				call_func::create([this, power_in, burst, sky]
 			{
 				power_in->join(burst, [](auto n) { return true; });
 
@@ -354,9 +355,9 @@ void cResult::setup()
 
 				blueCapsuleNode->run_action(CapsuleNode::length_to::create(1.0F, Game::Field::WORLD_SIZE.z - 37));
 
-				redCapsuleNode->run_action(sequence::create(CapsuleNode::length_to::create(1.0F, Game::Field::WORLD_SIZE.z - 37), call_func::create([this, burst, score_board]
+				redCapsuleNode->run_action(sequence::create(CapsuleNode::length_to::create(1.0F, Game::Field::WORLD_SIZE.z - 37), call_func::create([this, burst, sky]
 				{
-					burst->join(score_board, [](auto n) { return true; });
+					burst->join(sky, [](auto n) { return true; });
 					upNode->run_action(ease<ci::EaseOutCubic>::create(move_to::create(1.0F, vec3(0, 0, 1))));
 				})));
 			})));
@@ -376,7 +377,7 @@ void cResult::setup()
 			auto const NUM = std::max(gm->getResult().second, 1);
 			float const ONE_TIME = 4.8F / NUM;
 			bluePowerRoot->run_action(sequence::create(repeat_times::create(sequence::create(call_func::create([this, bluePowerRoot, ONE_TIME] {bluePowerRoot->add_child(createPowerTorus(ONE_TIME))->set_color(ColorA(0, 0, 1)); }), delay::create(ONE_TIME)), NUM),
-				call_func::create([this, power_in, burst, score_board]
+				call_func::create([this, power_in, burst, sky]
 			{
 				power_in->join(burst, [](auto n) { return true; });
 
@@ -386,9 +387,9 @@ void cResult::setup()
 
 				redCapsuleNode->run_action(CapsuleNode::length_to::create(1.0F, Game::Field::WORLD_SIZE.z - 37));
 
-				blueCapsuleNode->run_action(sequence::create(CapsuleNode::length_to::create(1.0F, Game::Field::WORLD_SIZE.z - 37), call_func::create([this, burst, score_board]
+				blueCapsuleNode->run_action(sequence::create(CapsuleNode::length_to::create(1.0F, Game::Field::WORLD_SIZE.z - 37), call_func::create([this, burst, sky]
 				{
-					burst->join(score_board, [](auto n) { return true; });
+					burst->join(sky, [](auto n) { return true; });
 					upNode->run_action(ease<ci::EaseOutCubic>::create(move_to::create(1.0F, vec3(0, 0, -1))));
 				})));
 			})));
@@ -409,28 +410,34 @@ void cResult::setup()
 		
 	};
 
-	score_board->onStateIn = [this](auto m)
+	sky->onStateIn = [this, sky, score_board](auto m)
 	{
 		auto mat = eyeNode->get_world_matrix_3d();
 		eyeNode->remove_from_parent();
 		eyeNode = root3d->add_child(Node::node::create());
 		eyeNode->set_matrix_3d(mat);
-		eyeNode->run_action(ease<ci::EaseOutCubic>::create(move_to::create(1.0F, Game::Field::WORLD_SIZE * vec3(0.5F, 3.0F, 0.5F))));
+		eyeNode->run_action(sequence::create(ease<ci::EaseOutCubic>::create(move_to::create(1.0F, Game::Field::WORLD_SIZE * vec3(0.5F, 3.0F, 0.5F))), call_func::create([sky, score_board]
+		{
+			sky->join(score_board, [](auto) { return true; });
+		})));
+	};
+
+	score_board->onStateIn = [this](auto)
+	{
+		Resource::BGM["result/cannon_power.wav"].fadeout(2.0F, 0.0F);
 
 		auto move_x = winBoard->get_content_size().x * 2;
 		winBoard->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec2(move_x, 0))));
 		loseBoard->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, vec2(-move_x, 0))));
 
-		Resource::BGM["result/cannon_power.wav"].fadeout( 2.0F, 0.0F );
-		
-		root->run_action(sequence::create(delay::create(2.0F), call_func::create([this] 
+		root->run_action(sequence::create(delay::create(2.0F), call_func::create([this]
 		{
-			auto n = root->add_child(ButtonNextNode::create()); 
+			auto n = root->add_child(ButtonNextNode::create());
 			n->set_position(root->get_content_size() * vec2(1, 1));
-			n->run_action( repeat_forever::create( sequence::create( 
+			n->run_action(repeat_forever::create(sequence::create(
 				ease<ci::EaseOutCubic>::create(scale_to::create(1.0F, vec2(1.1F))),
 				ease<ci::EaseOutCubic>::create(scale_to::create(1.0F, vec2(1.0F)))
-			) ) );
+			)));
 		})));
 	};
 
