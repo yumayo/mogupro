@@ -97,19 +97,33 @@ static std::array<GLfloat, 12> bottom_normal
     0.0f, -1.0f, 0.0f ,
 };
 
-const std::array<ci::vec2, 4> texture_coords0
+const std::array<ci::vec2, 4> texture_coords_dirt
 {
-    ci::vec2( 0.0 ,0.0 ),
-    ci::vec2( 0.0 ,0.5 ),
-    ci::vec2( 0.5 ,0.5 ),
-    ci::vec2( 0.5 ,0.0 ),
+    ci::vec2( 0.0  ,0.0 ),
+    ci::vec2( 0.0  ,1.0 ),
+    ci::vec2( 0.25 ,1.0 ),
+    ci::vec2( 0.25 ,0.0 ),
 };
-const std::array<ci::vec2, 4> texture_coords1
+const std::array<ci::vec2, 4> texture_coords_rock
 {
-    ci::vec2( 0.5 ,0.5 ),
-    ci::vec2( 0.5 ,1.0 ),
-    ci::vec2( 1.0 ,1.0 ),
-    ci::vec2( 1.0 ,0.5 ),
+    ci::vec2( 0.25 ,0.0 ),
+    ci::vec2( 0.25 ,1.0 ),
+    ci::vec2( 0.5  ,1.0 ),
+    ci::vec2( 0.5  ,0.0 ),
+};
+const std::array<ci::vec2, 4> texture_coords_sand
+{
+    ci::vec2( 0.5  ,0.0 ),
+    ci::vec2( 0.5  ,1.0 ),
+    ci::vec2( 0.75 ,1.0 ),
+    ci::vec2( 0.75 ,0.0 ),
+};
+const std::array<ci::vec2, 4> texture_coords_mud
+{
+    ci::vec2( 0.75 ,0.0 ),
+    ci::vec2( 0.75 ,1.0 ),
+    ci::vec2( 1.0  ,1.0 ),
+    ci::vec2( 1.0  ,0.0 ),
 };
 
 std::array<ci::vec2, 4> getTexCoordsFromBlockType( const BlockType& type )
@@ -119,13 +133,13 @@ std::array<ci::vec2, 4> getTexCoordsFromBlockType( const BlockType& type )
         case BlockType::AIR:
             break;
         case BlockType::NORMAL:
-            return texture_coords0;
+            return texture_coords_dirt;
         case BlockType::HARD:
             break;
         case BlockType::UNBREAKING:
-            return texture_coords1;
+            return texture_coords_rock;
     }
-    return texture_coords0;
+    return texture_coords_dirt;
 }
 
 struct AdjacentBlockPositions
@@ -173,7 +187,9 @@ bool cChunkMeshBuilder::buildMesh()
                 if ( block->isActive() == false )
                     continue;
 
-                const std::array<ci::vec2, 4> tex_coords = getTexCoordsFromBlockType( block->getType() );
+                std::array<ci::vec2, 4> tex_coords;
+                tex_coords = getTexCoordsFromBlockType( block->getType() );
+
                 auto position = block->getPosition();
 
                 directions.update( x, y, z );
@@ -182,9 +198,13 @@ bool cChunkMeshBuilder::buildMesh()
                 tryAddFaceToMesh( back_face, back_normal, tex_coords, position, directions.back );
                 tryAddFaceToMesh( left_face, left_normal, tex_coords, position, directions.left );
                 tryAddFaceToMesh( right_face, right_normal, tex_coords, position, directions.right );
-                tryAddFaceToMesh( top_face, top_normal, tex_coords, position, directions.up );
                 if ( mChunkLayer->getChunkCell().y != 0 || y != 0 )
                     tryAddFaceToMesh( bottom_face, bottom_normal, tex_coords, position, directions.down );
+
+                if ( block->getType() != BlockType::UNBREAKING &&
+                     mChunkLayer->getChunkCell().y == CHUNK_RANGE_Y - 1 && y >= CHUNK_SIZE - 1 )
+                    tex_coords = texture_coords_mud;
+                tryAddFaceToMesh( top_face, top_normal, tex_coords, position, directions.up );
             }
         }
     }
