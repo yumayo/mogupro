@@ -174,4 +174,17 @@ void cMatchingMemberManager::addPlayerDatas(std::string playerStr, ubyte1 teamNu
 
 	mPlayerDatas.push_back(PlayerData(teamNum, playerStr, playerID,networkHandle));
 }
+
+void cMatchingMemberManager::reset()
+{
+	mPlayerDatas.clear();
+	mEmptyRedTeamIds.clear();
+	mEmptyBlueTeamIds.clear();
+
+	mPlayerID = 0;
+	mPlayerTeamNum = 0;
+	for(int i = 0; i < 2;i++)
+	teamCount[i] = 0;
+	playerCount = 0;
+}
 }
