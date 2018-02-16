@@ -97,8 +97,10 @@ void cUIManager::setup( )
 	ui[mTimer] = FixedPosition{ mTimer->get_position(), mTimer->get_position() + vec2( 0, mTimer->get_content_size().y + 100 ) * -1.0F };
 	ui[mTips] = FixedPosition{ mTips->get_position(), mTips->get_position() + vec2(0, mTips->get_content_size().y + 300) * 1.0F };
 	ui[mSlot] = FixedPosition{ mSlot->get_position(), mSlot->get_position() + vec2(0, mSlot->get_content_size().y + 300) * -1.0F };
-	ui[mRedTeamCannonMeter] = FixedPosition{ mRedTeamCannonMeter->get_position(), mRedTeamCannonMeter->get_position() + vec2(mRedTeamCannonMeter->get_content_size().x + 200, 0) * -1.0F };
-	ui[mBlueTeamCannonMeter] = FixedPosition{ mBlueTeamCannonMeter->get_position(), mBlueTeamCannonMeter->get_position() + vec2(mBlueTeamCannonMeter->get_content_size().x + 200, 0) * 1.0F };
+	ui[mRedTeamCannonMeter] = FixedPosition{ mRedTeamCannonMeter->get_position(), 
+		mRedTeamCannonMeter->get_position() + vec2(mRedTeamCannonMeter->get_content_size().x + 200, 0) * ( playerTeamId == Player::Red ? -1.0F : 1.0F ) };
+	ui[mBlueTeamCannonMeter] = FixedPosition{ mBlueTeamCannonMeter->get_position(),
+		mBlueTeamCannonMeter->get_position() + vec2(mBlueTeamCannonMeter->get_content_size().x + 200, 0) * (playerTeamId == Player::Red ? 1.0F : -1.0F) };
 
 	disable();
 	mRoot->entry_update(1.0F);

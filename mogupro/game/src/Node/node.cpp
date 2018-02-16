@@ -640,6 +640,22 @@ cinder::mat4 node::get_world_matrix_3d( ) const
     }
     return result;
 }
+cinder::mat4 node::get_world_matrix_3d(softptr<node> target) const
+{
+	std::vector<mat4> mats;
+	auto p = shared_from_this();
+	while (p && p != target.lock())
+	{
+		mats.emplace_back(p->get_local_matrix_3d());
+		p = p->_parent.lock();
+	}
+	mat4 result;
+	for (auto itr = mats.rbegin(); itr != mats.rend(); ++itr)
+	{
+		result *= *itr;
+	}
+	return result;
+}
 cinder::mat4 node::get_local_matrix_3d( ) const
 {
 	auto p = shared_from_this( );

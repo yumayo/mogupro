@@ -10,6 +10,7 @@
 #include <Resource/cImageManager.h>
 #include <Game/cPlayerManager.h>
 #include <Resource/cSoundManager.h>
+#include <Network/cMatchingMemberManager.h>
 using namespace Node::Renderer;
 using namespace cinder;
 using namespace Node::Action;
@@ -277,6 +278,51 @@ public:
 		float _minor = 0.0F;
 	};
 };
+class PlayerNode : public Node::node
+{
+	//アニメーション
+	Game::Animation::cAnimation animation;
+	cinder::gl::TextureRef texture;
+public:
+	CREATE_H(PlayerNode, int winTeam, int team) { CREATE(PlayerNode, winTeam, team); }
+	bool init(int winTeam, int team)
+	{
+		set_schedule_update();
+		switch (team)
+		{
+		case Game::Player::Red:
+			texture = Resource::IMAGE["in_game/UV_mogura_red.jpg"];
+			break;
+		case Game::Player::Blue:
+			texture = Resource::IMAGE["in_game/UV_mogura_blue.jpg"];
+			break;
+		default:
+			break;
+		}
+		if (winTeam == team)
+		{
+			animation.create("mogura_win", false, true);
+			animation.animationChange("mogura_win");
+		}
+		else
+		{
+			animation.create("mogura_lose", false, true);
+			animation.animationChange("mogura_lose");
+		}
+		return true;
+	}
+	void update( float delta ) override
+	{
+		animation.update(delta);
+	}
+	void render() override
+	{
+		ci::gl::ScopedDepth depth(true);
+		ci::gl::ScopedGlslProg glsl(ci::gl::getStockShader(ci::gl::ShaderDef().texture()) );
+		ci::gl::ScopedTextureBind tex(texture);
+		animation.draw();
+	}
+};
 const float CANNON_POWER_HALF_LENGTH = ( Game::Field::WORLD_SIZE.z - 8 * 2 ) / 2.0F;
 void cResult::setup()
 {
@@ -309,7 +355,7 @@ void cResult::setup()
 		bool win = gm->winTeam() == Game::Player::Red;
 		for (int i = 0; i < 3; ++i)
 		{
-			redPlayerName.emplace_back(u8"もぐら" + std::to_string(i));
+			redPlayerName.emplace_back(createPlayerName( i ));
 		}
 		auto& n = win ? winBoard : loseBoard;
 		n = rootUI->add_child(createScoreBoard(
@@ -328,7 +374,7 @@ void cResult::setup()
 		bool win = gm->winTeam() == Game::Player::Blue;
 		for (int i = 4; i < 7; ++i)
 		{
-			bluePlayerName.emplace_back(u8"もぐら" + std::to_string(i));
+			bluePlayerName.emplace_back(createPlayerName(i));
 		}
 		auto& n = win ? winBoard : loseBoard;
 		n = rootUI->add_child(createScoreBoard(
@@ -351,6 +397,7 @@ void cResult::setup()
 	STATE_GENERATE(sMac, shake);
 	STATE_GENERATE(sMac, judge);
 	STATE_GENERATE(sMac, score_board);
+	STATE_GENERATE(sMac, bar);
 
 	auto redPowerRoot = root3d->add_child(Node::node::create());
 	redPowerRoot->set_position_3d(Game::Field::WORLD_SIZE * vec3(0.5F, 1.0F, 0.0F) + vec3(0, 5.5F, 7));
@@ -587,12 +634,82 @@ void cResult::setup()
 			Resource::BGM["result/lose.wav"].play();
 			Resource::BGM["result/lose.wav"].setGain(0.5F);
 		}
+
+		bool win = Game::cGameManager::getInstance()->winTeam() == Game::cPlayerManager::getInstance()->getActivePlayerTeamId();
+		vec2 winPos = vec2(300, 200) + vec2(-move_x, 0);
+		vec2 losePos = rootUI->get_content_size() * vec2(1, 0) + vec2(-300, 200) + vec2(move_x, 0);
+		{
+			auto p = rootUI->add_child(PlayerNode::create(
+				Game::cGameManager::getInstance()->winTeam(),
+				Game::cPlayerManager::getInstance()->getActivePlayerTeamId()));
+			p->set_position(win ? winPos : losePos);
+			p->set_rotation(glm::pi<float>());
+			p->set_scale(vec2(100));
+			p->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, win ? vec2(move_x, 0) : vec2(-move_x, 0))));
+		}
+		{
+			auto p = rootUI->add_child(PlayerNode::create(
+				Game::cGameManager::getInstance()->winTeam(),
+				Game::cPlayerManager::getInstance()->getActivePlayerTeamId() == Game::Player::Red ? Game::Player::Blue : Game::Player::Red));
+			p->set_position(win ? losePos : winPos);
+			p->set_rotation(glm::pi<float>());
+			p->set_scale(vec2(100));
+			p->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, win ? vec2(-move_x, 0) : vec2(move_x, 0))));
+		}
+	};
+	score_board->join(bar, [this](auto n)
+	{
+		return n->time > 1.0F;
+	});
+
+	bar->onStateIn = [this](auto)
+	{
+		auto gm = Game::cGameManager::getInstance();
+		hardptr<Node::node> activePlayerScoreBar;
+		auto id = Game::cPlayerManager::getInstance()->getActivePlayerId();
+		auto playerName = createPlayerName(id);
+		switch (Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
+		{
+		case Game::Player::Red:
+		{
+			activePlayerScoreBar = createScoreBar(playerName,
+				gm->getRedTeamAppendGemData()[id],
+				gm->getRedTeamKillData()[id],
+				gm->getRedTeamDeathData()[id]
+			);
+			break;
+		}
+		case Game::Player::Blue:
+		{
+			activePlayerScoreBar = createScoreBar(playerName,
+				gm->getBlueTeamAppendGemData()[id - 4U],
+				gm->getBlueTeamKillData()[id - 4U],
+				gm->getBlueTeamDeathData()[id - 4U]
+			);
+			break;
+		}
+		default:
+			break;
+		}
+
+		rootUI->add_child(activePlayerScoreBar);
+		softptr<Node::node> targetNode;
+		if (Game::cGameManager::getInstance()->winTeam() == Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
+			targetNode = winBoard->get_child_by_name(playerName);
+		else
+			targetNode = loseBoard->get_child_by_name(playerName);
+
+		auto mat = targetNode->get_world_matrix_3d(rootUI);
+		auto targetPos = vec2(mat[3][0], mat[3][1]);
+		activePlayerScoreBar->set_position(targetPos);
+		activePlayerScoreBar->run_action(ease<ci::EaseOutCubic>::create(move_to::create(1.0F, vec2( targetPos.x, 350 ))));
 	};
 
 	sMac.setEntryNode(power_in);
 }
 void cResult::shutDown()
 {
+	Network::cMatchingMemberManager::getInstance()->reset();
 	Resource::BGM["result/win.wav"].stop();
 	Resource::BGM["result/lose.wav"].stop();
 	Resource::BGM["result/cannon_power.wav"].stop();
@@ -664,30 +781,8 @@ hardptr<Node::node> cResult::createScoreBoard(int team, bool win, std::vector<st
 	board->set_pivot(vec2(0, 0));
 	for (int i = 0; i < 3; ++i)
 	{
-		auto scr = board->add_child(Node::Renderer::sprite::create(Resource::IMAGE["result/bar.png"]));
-		scr->set_anchor_point(vec2(0, 0));
-		scr->set_pivot(vec2(0, 0));
+		auto scr = board->add_child(createScoreBar(playerNameData[i], pointData[i], killData[i], deathData[i]));
 		scr->set_position(vec2(17, 138 + i * 70));
-
-		auto gem = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 32));
-		gem->set_text(std::to_string(pointData[i]));
-		gem->set_anchor_point(vec2(0, 0));
-		gem->set_position(vec2(403, 12));
-
-		auto kill = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 18));
-		kill->set_text(std::to_string(killData[i]));
-		kill->set_anchor_point(vec2(0, 0));
-		kill->set_position(vec2(551, 8));
-
-		auto death = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 18));
-		death->set_text(std::to_string(deathData[i]));
-		death->set_anchor_point(vec2(0, 0));
-		death->set_position(vec2(551, 34));
-
-		auto name = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 36));
-		name->set_text(playerNameData[i]);
-		name->set_anchor_point(vec2(0, 0));
-		name->set_position(vec2(93, 12));
 	}
 	return board;
 }
@@ -701,6 +796,39 @@ hardptr<Node::node> cResult::createPowerTorus( float time )
 	t->run_action(sequence::create(move_to::create(one, vec3(0, 0, -0.5F)), spawn::create(move_to::create(one, vec3(0, 0, -1.0F)), TorusNode::radius_to::create(one, 0.8F, 0.0F)), remove_self::create()));
 	t->set_axis(vec3(1, 0, 0));
 	return t;
+}
+hardptr<Node::node> cResult::createScoreBar(std::string playerName, int pointData, int killData, int deathData)
+{
+	auto scr = Node::Renderer::sprite::create(Resource::IMAGE["result/bar.png"]);
+	scr->set_anchor_point(vec2(0, 0));
+	scr->set_pivot(vec2(0, 0));
+	scr->set_name(playerName);
+
+	auto gem = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 32));
+	gem->set_text(std::to_string(pointData));
+	gem->set_anchor_point(vec2(0, 0));
+	gem->set_position(vec2(403, 12));
+
+	auto kill = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 18));
+	kill->set_text(std::to_string(killData));
+	kill->set_anchor_point(vec2(0, 0));
+	kill->set_position(vec2(551, 8));
+
+	auto death = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 18));
+	death->set_text(std::to_string(deathData));
+	death->set_anchor_point(vec2(0, 0));
+	death->set_position(vec2(551, 34));
+
+	auto name = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 36));
+	name->set_text(playerName);
+	name->set_anchor_point(vec2(0, 0));
+	name->set_position(vec2(93, 12));
+
+	return scr;
+}
+std::string cResult::createPlayerName(int playerId)
+{
+	return u8"もぐら" + std::to_string(playerId);
 }
 }
 }
