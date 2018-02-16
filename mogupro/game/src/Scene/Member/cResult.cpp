@@ -664,45 +664,49 @@ void cResult::setup()
 
 	bar->onStateIn = [this](auto)
 	{
-		auto gm = Game::cGameManager::getInstance();
-		hardptr<Node::node> activePlayerScoreBar;
 		auto id = Game::cPlayerManager::getInstance()->getActivePlayerId();
-		auto playerName = createPlayerName(id);
-		switch (Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
+		if (!(id == 3U || id == 7U))
 		{
-		case Game::Player::Red:
-		{
-			activePlayerScoreBar = createScoreBar(playerName,
-				gm->getRedTeamAppendGemData()[id],
-				gm->getRedTeamKillData()[id],
-				gm->getRedTeamDeathData()[id]
-			);
-			break;
-		}
-		case Game::Player::Blue:
-		{
-			activePlayerScoreBar = createScoreBar(playerName,
-				gm->getBlueTeamAppendGemData()[id - 4U],
-				gm->getBlueTeamKillData()[id - 4U],
-				gm->getBlueTeamDeathData()[id - 4U]
-			);
-			break;
-		}
-		default:
-			break;
-		}
+			auto gm = Game::cGameManager::getInstance();
+			hardptr<Node::node> activePlayerScoreBar;
 
-		rootUI->add_child(activePlayerScoreBar);
-		softptr<Node::node> targetNode;
-		if (Game::cGameManager::getInstance()->winTeam() == Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
-			targetNode = winBoard->get_child_by_name(playerName);
-		else
-			targetNode = loseBoard->get_child_by_name(playerName);
+			auto playerName = createPlayerName(id);
+			switch (Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
+			{
+			case Game::Player::Red:
+			{
+				activePlayerScoreBar = createScoreBar(playerName,
+					gm->getRedTeamAppendGemData()[id],
+					gm->getRedTeamKillData()[id],
+					gm->getRedTeamDeathData()[id]
+				);
+				break;
+			}
+			case Game::Player::Blue:
+			{
+				activePlayerScoreBar = createScoreBar(playerName,
+					gm->getBlueTeamAppendGemData()[id - 4U],
+					gm->getBlueTeamKillData()[id - 4U],
+					gm->getBlueTeamDeathData()[id - 4U]
+				);
+				break;
+			}
+			default:
+				break;
+			}
 
-		auto mat = targetNode->get_world_matrix_3d(rootUI);
-		auto targetPos = vec2(mat[3][0], mat[3][1]);
-		activePlayerScoreBar->set_position(targetPos);
-		activePlayerScoreBar->run_action(ease<ci::EaseOutCubic>::create(move_to::create(1.0F, vec2( targetPos.x, 350 ))));
+			rootUI->add_child(activePlayerScoreBar);
+			softptr<Node::node> targetNode;
+			if (Game::cGameManager::getInstance()->winTeam() == Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
+				targetNode = winBoard->get_child_by_name(playerName);
+			else
+				targetNode = loseBoard->get_child_by_name(playerName);
+
+			auto mat = targetNode->get_world_matrix_3d(rootUI);
+			auto targetPos = vec2(mat[3][0], mat[3][1]);
+			activePlayerScoreBar->set_position(targetPos);
+			activePlayerScoreBar->run_action(ease<ci::EaseOutCubic>::create(move_to::create(1.0F, vec2(targetPos.x, 350))));
+		}
 	};
 
 	sMac.setEntryNode(power_in);
