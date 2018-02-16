@@ -35,6 +35,6 @@ public:
 	void update( float delta );
 private:
 	// 16bit stereo 44100Hz
-	size_t calcOffset( float second );
+	static size_t calcOffset( float second );
 };
 }

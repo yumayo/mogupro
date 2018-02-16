@@ -29,7 +29,7 @@ cGameManager::cGameManager( )
 	root->set_scale( cinder::vec2( 1, -1 ) );
 	root->set_position( root->get_content_size( ) * cinder::vec2( -0.5F, 0.5F ) );
 
-	auto bgm = Sound::Wav( cinder::app::getAssetDirectories().front().string() + "/BGM/testbgm2.wav" );
+	auto bgm = Sound::Wav( cinder::app::getAssetDirectories().front().string() + "/BGM/in_game/background.wav" );
 	introloopBGM.create( bgm.data( ), bgm.size( ), 9.63499F, 69.45829F );
 	introloopBGM.gain( 0.3F );
 
@@ -223,6 +223,12 @@ cGameManager::cGameManager( )
 	};
 
 	sMac.setEntryNode( load );
+}
+void cGameManager::setup()
+{
+	auto& wav = Resource::BGM["in_game/standby.wav"];
+	wav.setGain(0.3F);
+	wav.play();
 }
 void cGameManager::setTime( float allUserloadFinishedTime )
 {

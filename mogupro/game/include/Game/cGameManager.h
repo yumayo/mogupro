@@ -13,6 +13,7 @@ public:
 	cGameManager( );
 	~cGameManager( ) = default;
 public:
+	void setup();
 	void setTime( float allUserloadFinishedTime );
 	void update( float delta );
 	void draw( );

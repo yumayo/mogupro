@@ -80,8 +80,8 @@ void cIntroLoopableBGM::fadeout(float fadeSecond, float target)
 }
 void cIntroLoopableBGM::fadein(float fadeSecond, float target)
 {
+	play();
 	auto increment = (target) / fadeSecond;
-	gain( 0.0F );
 	fadeHandle = Utility::cScheduler::getInstance()->applyLimitUpdate(fadeSecond, [this, increment](float delta) { gain(getGain() + delta * increment); });
 }
 void cIntroLoopableBGM::resume() const

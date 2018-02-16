@@ -100,6 +100,8 @@ void cGameMain::setup( )
 	ENV->disablePadAxis();
 	
 	Game::cUIManager::getInstance( )->disable( );
+
+	Game::cGameManager::getInstance()->setup();
 }
 
 void cGameMain::shutDown( )

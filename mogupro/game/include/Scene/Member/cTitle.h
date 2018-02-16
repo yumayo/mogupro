@@ -2,14 +2,19 @@
 #include <Scene/cSceneBase.h>
 #include <Node/node.h>
 #include <Utility/cFont.h>
+#include <Sound/cIntroLoopableBGM.h>
+#include <Utility/cStateMachineBehaviour.h>
 namespace Scene
 {
 namespace Member
 {
 class cTitle final : public cSceneBase
 {
-	hardptr<Node::node> mBackGround;
-	hardptr<Node::node> mContentsRoot;
+	Utility::hardptr<Node::node> root;
+	Utility::softptr<Node::node> fader;
+	Sound::cIntroLoopableBGM introloopBGM;
+	Utility::cStateMachineBehaviour sMac;
+	Utility::softptr<Utility::cStateNode> fadeout;
 public:
     cTitle( );
     ~cTitle( );

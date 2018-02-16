@@ -756,7 +756,7 @@ void cResult::sceneChange()
 	auto fader = root->add_child( Node::Renderer::rect::create( app::getWindowSize() ) );
 	fader->set_color( ColorA(0, 0, 0, 0) );
 	fader->set_anchor_point( vec2(0, 0) );
-	fader->run_action(sequence::create(fade_in::create(0.75F), call_func::create([] 
+	fader->run_action(sequence::create(fade_in::create(1.2F), call_func::create([] 
 	{
 		Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
 	})));
@@ -766,7 +766,7 @@ void cResult::sceneChange()
 		auto& target = Resource::BGM["result/win.wav"];
 		if (target.isPlaying())
 		{
-			target.fadeout(0.75F, 0.0F);
+			target.fadeout(1.0F, 0.0F);
 		}
 	}
 	else
@@ -774,7 +774,7 @@ void cResult::sceneChange()
 		auto& target = Resource::BGM["result/lose.wav"];
 		if (target.isPlaying())
 		{
-			target.fadeout(0.75F, 0.0F);
+			target.fadeout(1.0F, 0.0F);
 		}
 	}
 }
