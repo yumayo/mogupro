@@ -819,18 +819,24 @@ hardptr<Node::node> cResult::createScoreBoard(int team, bool win, std::vector<st
 	boardWithPower->set_anchor_point(win ? vec2(0, 0) : vec2(1, 0));
 	boardWithPower->set_scale(win ? vec2(1, 1) : vec2(-1, 1));
 
-	auto power = boardWithPower->add_child( Node::Renderer::sprite::create(Resource::IMAGE[win ? "result/win_power.png" : "result/lose_power.png"]) );
-	power->set_anchor_point(vec2(0));
-	power->set_position(vec2( 142, -373 ) );
+	if (team == Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
+	{
+		auto power = boardWithPower->add_child(Node::Renderer::sprite::create(Resource::IMAGE[win ? "result/win_power.png" : "result/lose_power.png"]));
+		power->set_anchor_point(vec2(0));
+		power->set_position(vec2(142, -373));
+	}
 
 	auto board = boardWithPower->add_child( Node::Renderer::sprite::create(Resource::IMAGE[team == Game::Player::Red ? "result/red_board.png" : "result/blue_board.png"]) );
 	board->set_anchor_point(vec2(0));
 	boardRoot->set_content_size(board->get_content_size());
 
-	auto logo = boardWithPower->add_child(Node::Renderer::sprite::create(Resource::IMAGE[win ? "result/win.png" : "result/lose.png"]));
-	logo->set_anchor_point(vec2(0.5F));
-	logo->set_position( vec2(422, 108) );
-	logo->set_scale(win ? vec2(1, 1) : vec2(-1, 1));
+	if (team == Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
+	{
+		auto logo = boardWithPower->add_child(Node::Renderer::sprite::create(Resource::IMAGE[win ? "result/win.png" : "result/lose.png"]));
+		logo->set_anchor_point(vec2(0.5F));
+		logo->set_position(vec2(422, 108));
+		logo->set_scale(win ? vec2(1, 1) : vec2(-1, 1));
+	}
 
 	auto eastOrWest = boardWithPower->add_child(Node::Renderer::sprite::create(Resource::IMAGE[team == Game::Player::Red ? "result/east.png" : "result/west.png"]));
 	eastOrWest->set_anchor_point(vec2(0.5F));
