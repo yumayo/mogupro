@@ -780,15 +780,38 @@ void cResult::sceneChange()
 }
 hardptr<Node::node> cResult::createScoreBoard(int team, bool win, std::vector<std::string> playerNameData, std::vector<int> pointData, std::vector<int> killData, std::vector<int> deathData)
 {
-	auto board = Node::Renderer::sprite::create(Resource::IMAGE[win ? "result/win_board.png" : "result/lose_board.png"]);
-	board->set_color(team == Game::Player::Red ? ColorA(1, 0, 0) : ColorA(0, 0, 1));
-	board->set_pivot(vec2(0, 0));
+	auto boardRoot = Node::node::create();
+
+	auto boardWithPower = boardRoot->add_child( Node::node::create() );
+	boardWithPower->set_content_size(vec2(724 - 142 + 27, 865));
+	boardWithPower->set_anchor_point(win ? vec2(0, 0) : vec2(1, 0));
+	boardWithPower->set_scale(win ? vec2(1, 1) : vec2(-1, 1));
+
+	auto power = boardWithPower->add_child( Node::Renderer::sprite::create(Resource::IMAGE[win ? "result/win_power.png" : "result/lose_power.png"]) );
+	power->set_anchor_point(vec2(0));
+	power->set_position(vec2( 142, -373 ) );
+
+	auto board = boardWithPower->add_child( Node::Renderer::sprite::create(Resource::IMAGE[team == Game::Player::Red ? "result/red_board.png" : "result/blue_board.png"]) );
+	board->set_anchor_point(vec2(0));
+	boardRoot->set_content_size(board->get_content_size());
+
+	auto logo = boardWithPower->add_child(Node::Renderer::sprite::create(Resource::IMAGE[win ? "result/win.png" : "result/lose.png"]));
+	logo->set_anchor_point(vec2(0.5F));
+	logo->set_position( vec2(422, 108) );
+	logo->set_scale(win ? vec2(1, 1) : vec2(-1, 1));
+
+	auto eastOrWest = boardWithPower->add_child(Node::Renderer::sprite::create(Resource::IMAGE[team == Game::Player::Red ? "result/east.png" : "result/west.png"]));
+	eastOrWest->set_anchor_point(vec2(0.5F));
+	eastOrWest->set_position(vec2(100, 137));
+	eastOrWest->set_scale(win ? vec2(1, 1) : vec2(-1, 1));
+
 	for (int i = 0; i < 3; ++i)
 	{
-		auto scr = board->add_child(createScoreBar(playerNameData[i], pointData[i], killData[i], deathData[i]));
-		scr->set_position(vec2(17, 138 + i * 70));
+		auto scr = boardRoot->add_child(createScoreBar(playerNameData[i], pointData[i], killData[i], deathData[i]));
+		scr->set_position(vec2(27, 220 + i * ( scr->get_content_size().y + 17 )));
 	}
-	return board;
+
+	return boardRoot;
 }
 hardptr<Node::node> cResult::createPowerTorus( float time )
 {
@@ -808,25 +831,25 @@ hardptr<Node::node> cResult::createScoreBar(std::string playerName, int pointDat
 	scr->set_pivot(vec2(0, 0));
 	scr->set_name(playerName);
 
-	auto gem = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 32));
+	auto gem = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 30));
 	gem->set_text(std::to_string(pointData));
-	gem->set_anchor_point(vec2(0, 0));
-	gem->set_position(vec2(403, 12));
+	gem->set_anchor_point(vec2(1, 0.5F));
+	gem->set_position(vec2(329, 33));
 
-	auto kill = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 18));
+	auto kill = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 30));
 	kill->set_text(std::to_string(killData));
-	kill->set_anchor_point(vec2(0, 0));
-	kill->set_position(vec2(551, 8));
+	kill->set_anchor_point(vec2(1, 0.5F));
+	kill->set_position(vec2(443, 33));
 
-	auto death = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 18));
+	auto death = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 30));
 	death->set_text(std::to_string(deathData));
-	death->set_anchor_point(vec2(0, 0));
-	death->set_position(vec2(551, 34));
+	death->set_anchor_point(vec2(1, 0.5F));
+	death->set_position(vec2(546, 33));
 
-	auto name = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 36));
+	auto name = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 46));
 	name->set_text(playerName);
-	name->set_anchor_point(vec2(0, 0));
-	name->set_position(vec2(93, 12));
+	name->set_anchor_point(vec2(0.5F));
+	name->set_position(vec2(113, 33 + 3));
 
 	return scr;
 }
