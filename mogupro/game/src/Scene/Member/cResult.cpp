@@ -398,6 +398,9 @@ void cResult::setup()
 	STATE_GENERATE(sMac, judge);
 	STATE_GENERATE(sMac, score_board);
 	STATE_GENERATE(sMac, bar);
+	STATE_GENERATE(sMac, thankyouforplaying);
+	STATE_GENERATE(sMac, blackout);
+	STATE_GENERATE(sMac, gototitle);
 
 	auto redPowerRoot = root3d->add_child(Node::node::create());
 	redPowerRoot->set_position_3d(Game::Field::WORLD_SIZE * vec3(0.5F, 1.0F, 0.0F) + vec3(0, 5.5F, 7));
@@ -709,6 +712,63 @@ void cResult::setup()
 		}
 	};
 
+	bar->join(thankyouforplaying, [](auto n)
+	{
+		return n->time > 5.0F;
+	});
+	
+	thankyouforplaying->onStateIn = [this](auto)
+	{
+		auto fader = root->add_child(Node::Renderer::rect::create(app::getWindowSize()));
+		fader->set_color(ColorA(0, 0, 0, 0));
+		fader->set_anchor_point(vec2(0, 0));
+		fader->run_action(fade_in::create(2.0F));
+
+		auto l = root->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 120));
+		l->set_color(ColorA(1, 1, 1, 0));
+		l->set_position(root->get_content_size() * vec2(0.5F));
+		l->run_action( fade_in::create( 2.0F ) );
+		l->set_text(u8"Thank you for playing.");
+		l->set_name("thx");
+	};
+	thankyouforplaying->join(blackout, [](auto n)
+	{
+		return n->time > 7.0F;
+	});
+	thankyouforplaying->onStateOut = [this]
+	{
+		if (auto l = root->get_child_by_name("thx"))
+		{
+			l->run_action(Node::Action::fade_out::create(1.0F));
+		}
+		if (Game::cGameManager::getInstance()->winTeam() == Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
+		{
+			auto& target = Resource::BGM["result/win.wav"];
+			if (target.isPlaying())
+			{
+				target.fadeout(1.0F, 0.0F);
+			}
+		}
+		else
+		{
+			auto& target = Resource::BGM["result/lose.wav"];
+			if (target.isPlaying())
+			{
+				target.fadeout(1.0F, 0.0F);
+			}
+		}
+	};
+
+	blackout->join(gototitle, [](auto n)
+	{
+		return n->time > 1.5F;
+	});
+
+	gototitle->onStateIn = [this](auto)
+	{
+		Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
+	};
+
 	sMac.setEntryNode(power_in);
 }
 void cResult::shutDown()
@@ -737,9 +797,9 @@ void cResult::update(float deltaTime)
 	root3d->entry_update(deltaTime);
 	root->entry_update(deltaTime);
 
-	if (ENV->pushKey( app::KeyEvent::KEY_RETURN ))
+	if (ENV->pushKey(app::KeyEvent::KEY_RETURN))
 	{
-		sceneChange();
+		Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
 	}
 }
 void cResult::draw()
@@ -749,34 +809,6 @@ void cResult::draw()
 void cResult::draw2D()
 {
 	root->entry_render(ci::mat4());
-}
-void cResult::sceneChange()
-{
-	if ( root->get_child_by_name("fader") ) return;
-	auto fader = root->add_child( Node::Renderer::rect::create( app::getWindowSize() ) );
-	fader->set_color( ColorA(0, 0, 0, 0) );
-	fader->set_anchor_point( vec2(0, 0) );
-	fader->run_action(sequence::create(fade_in::create(1.2F), call_func::create([] 
-	{
-		Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
-	})));
-	fader->set_name( "fader" );
-	if (Game::cGameManager::getInstance()->winTeam() == Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
-	{
-		auto& target = Resource::BGM["result/win.wav"];
-		if (target.isPlaying())
-		{
-			target.fadeout(1.0F, 0.0F);
-		}
-	}
-	else
-	{
-		auto& target = Resource::BGM["result/lose.wav"];
-		if (target.isPlaying())
-		{
-			target.fadeout(1.0F, 0.0F);
-		}
-	}
 }
 hardptr<Node::node> cResult::createScoreBoard(int team, bool win, std::vector<std::string> playerNameData, std::vector<int> pointData, std::vector<int> killData, std::vector<int> deathData)
 {
