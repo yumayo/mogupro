@@ -16,6 +16,9 @@ public: //! override functions
 	void update( const float& delta_time ) override;
 	void draw( ) override;
 	void reset( ) override;
+public:
+	// TIPS—p
+	bool isHitGem( );
 private:
 	#define CHAIN(type, var, def) type m_ ## var = def; float m_ ## var ## Time = -1.0F; TumeFormat& var(float time, type var){ m_ ## var = var; m_ ## var ## Time = time; return *this; }
 	struct TumeFormat
