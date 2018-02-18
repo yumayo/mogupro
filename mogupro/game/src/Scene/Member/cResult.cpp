@@ -397,6 +397,7 @@ void cResult::setup()
 	STATE_GENERATE(sMac, shake);
 	STATE_GENERATE(sMac, judge);
 	STATE_GENERATE(sMac, score_board);
+	STATE_GENERATE(sMac, win_lose);
 	STATE_GENERATE(sMac, bar);
 	STATE_GENERATE(sMac, thankyouforplaying);
 	STATE_GENERATE(sMac, blackout);
@@ -660,17 +661,48 @@ void cResult::setup()
 			p->run_action(ease<ci::EaseOutCubic>::create(move_by::create(1.0F, win ? vec2(-move_x, 0) : vec2(move_x, 0))));
 		}
 	};
-	score_board->join(bar, [this](auto n)
+	score_board->join(win_lose, [this](auto n)
 	{
 		return n->time > 1.0F;
 	});
 
-	bar->onStateIn = [this](auto)
+	win_lose->onStateIn = [this](auto)
 	{
 		auto id = Game::cPlayerManager::getInstance()->getActivePlayerId();
 		if (!(id == 3U || id == 7U))
 		{
 			auto gm = Game::cGameManager::getInstance();
+			auto win = Game::cGameManager::getInstance()->winTeam() == Game::cPlayerManager::getInstance()->getActivePlayerTeamId();
+
+			auto const& image = Resource::IMAGE[win ? "result/win.png" : "result/lose.png"];
+			auto logo = rootUI->add_child(Node::Renderer::sprite::create(image));
+			logo->set_anchor_point(vec2(0.5F));
+			logo->set_color( ColorA(1, 1, 1, 0 ));
+			logo->run_action(sequence::create(ease<ci::EaseOutCubic>::create(fade_in::create(1.0F)), call_func::create([this, image]
+			{
+				auto scaler = rootUI->add_child(Node::Renderer::sprite::create(image));
+				scaler->set_anchor_point(vec2(0.5F));
+				scaler->run_action(ease<ci::EaseOutCubic>::create(fade_out::create(1.0F)));
+				scaler->run_action(ease<ci::EaseOutCubic>::create( scale_by::create(1.0F, vec2( 1.0F ) )));
+				scaler->set_position(rootUI->get_content_size() * vec2(0.5F));
+			}), ease<ci::EaseInBack>::create( move_by::create(1.0F, vec2(0.0F, -1000.0F)) ) ));
+			logo->set_position(rootUI->get_content_size() * vec2(0.5F));
+		}
+	};
+
+	win_lose->join(bar, [](auto n)
+	{
+		return n->time > 2.0F;
+	});
+
+	bar->onStateIn = [this](auto n)
+	{
+		auto id = Game::cPlayerManager::getInstance()->getActivePlayerId();
+		if (!(id == 3U || id == 7U))
+		{
+			auto gm = Game::cGameManager::getInstance();
+			auto win = Game::cGameManager::getInstance()->winTeam() == Game::cPlayerManager::getInstance()->getActivePlayerTeamId();
+
 			hardptr<Node::node> activePlayerScoreBar;
 
 			auto playerName = createPlayerName(id);
@@ -700,7 +732,7 @@ void cResult::setup()
 
 			rootUI->add_child(activePlayerScoreBar);
 			softptr<Node::node> targetNode;
-			if (Game::cGameManager::getInstance()->winTeam() == Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
+			if (win)
 				targetNode = winBoard->get_child_by_name(playerName);
 			else
 				targetNode = loseBoard->get_child_by_name(playerName);
@@ -829,14 +861,6 @@ hardptr<Node::node> cResult::createScoreBoard(int team, bool win, std::vector<st
 	auto board = boardWithPower->add_child( Node::Renderer::sprite::create(Resource::IMAGE[team == Game::Player::Red ? "result/red_board.png" : "result/blue_board.png"]) );
 	board->set_anchor_point(vec2(0));
 	boardRoot->set_content_size(board->get_content_size());
-
-	if (team == Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
-	{
-		auto logo = boardWithPower->add_child(Node::Renderer::sprite::create(Resource::IMAGE[win ? "result/win.png" : "result/lose.png"]));
-		logo->set_anchor_point(vec2(0.5F));
-		logo->set_position(vec2(422, 108));
-		logo->set_scale(win ? vec2(1, 1) : vec2(-1, 1));
-	}
 
 	auto eastOrWest = boardWithPower->add_child(Node::Renderer::sprite::create(Resource::IMAGE[team == Game::Player::Red ? "result/east.png" : "result/west.png"]));
 	eastOrWest->set_anchor_point(vec2(0.5F));
