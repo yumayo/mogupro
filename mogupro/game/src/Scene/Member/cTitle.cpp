@@ -14,6 +14,7 @@
 #include <Scene/Member/Tutorial.h>
 #include <Game/Player/cPlayer.h>
 #include <Sound/Wav.h>
+#include <Scene/Member/cModeSelect.h>
 using namespace cinder;
 using namespace Node::Action;
 namespace Scene
@@ -156,6 +157,9 @@ void cTitle::update( float deltaTime )
 				Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum = Game::Player::Team::Blue;
 				cSceneManager::getInstance()->shift<Scene::Member::cGameMain>();
 			};
+		}
+		else if (ENV->pushKey(cinder::app::KeyEvent::KEY_0)) {
+			fadeout->onStateOut = [] {cSceneManager::getInstance()->shift<Scene::Member::cModeSelect>(); };
 		}
 		else if (ENV->pushKey())
 		{
