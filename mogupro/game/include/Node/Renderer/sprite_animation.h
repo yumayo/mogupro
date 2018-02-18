@@ -9,8 +9,10 @@ class sprite_animation : public node
 {
 public:
     CREATE_H( sprite_animation, std::string const& relative_path );
+	CREATE_H(sprite_animation, cinder::gl::TextureRef const& texture);
     virtual ~sprite_animation( );
     bool init( std::string const& relative_path );
+	bool init(cinder::gl::TextureRef const& texture);
     void update( float delta ) override;
     void render( ) override;
 public:
