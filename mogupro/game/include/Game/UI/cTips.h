@@ -16,10 +16,12 @@ public:
 	bool init( cinder::vec2 baseContentSize, Player::Team team );
 	void update( float delta ) override;
 private:
-	bool mHintTransportGem = false;
-	bool mHintNearGemStone = false;
-	bool mHintNearBlock    = false;
+	bool mYokuyatta = false;
 	softptr<Node::node> message;
+	softptr<Node::node> attack;
+	softptr<Node::node> dig;
+	softptr<Node::node> block;
+	softptr<Node::node> gem;
 	Utility::cStateMachineBehaviour mStateMachine;
 };
 }

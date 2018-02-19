@@ -36,13 +36,12 @@ const char* label::_fragment_shader =
 "\n"
 "in vec4 Color;\n"
 "in vec2 TexCoord0;\n"
-"uniform float alpha;\n"
 "\n"
 "out vec4 oColor;\n"
 "\n"
 "\n"
 "void main( void ) {\n"
-"    oColor = vec4( 1, 1, 1, texture( uTex0, TexCoord0 ).r * alpha ) * Color;\n"
+"    oColor = vec4( 1, 1, 1, texture( uTex0, TexCoord0 ).r ) * Color;\n"
 "}\n";
 CREATE_CPP( label, std::string const& relative_path, float size )
 {
@@ -67,7 +66,6 @@ bool label::init( std::string const& relative_path, float size )
 void label::render( )
 {
     gl::ScopedGlslProg glsl( _font_shader );
-	_font_shader->uniform( "alpha", _color.a );
     fonsDrawText( _m->font, 0, -_height, _text.c_str( ), nullptr );
 }
 void label::set_size( float value )
@@ -97,6 +95,11 @@ void label::set_color( cinder::ColorA const& value )
 {
     node::set_color( value );
     fonsSetColor( _m->font, Library::font::color( _color ) );
+}
+void label::set_opacity(float value)
+{
+	node::set_opacity(value);
+	fonsSetColor(_m->font, Library::font::color(_color));
 }
 }
 }

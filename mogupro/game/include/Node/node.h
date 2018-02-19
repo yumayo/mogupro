@@ -161,31 +161,18 @@ public:
 protected:
     std::vector<hardptr<node>> _children;
 private:
-    struct iteration
+    class iteration
     {
-        static const char RUNNING;
-        static const char INCREMENT;
-        static const char DECREMENT;
-    };
-    class scoped_iteration_increment
-    {
-        node& n;
     public:
-        scoped_iteration_increment( node& n ) :n( n ) 
-        {
-            n._iteration_state = ( node::iteration::RUNNING | node::iteration::INCREMENT );
-        }
-        ~scoped_iteration_increment( ) { n._iteration_state = 0; }
-    };
-    class scoped_iteration_decrement
-    {
-        node& n;
-    public:
-        scoped_iteration_decrement( node& n ) :n( n ) 
-        {
-            n._iteration_state = ( node::iteration::RUNNING | node::iteration::DECREMENT );
-        }
-        ~scoped_iteration_decrement( ) { n._iteration_state = 0; }
+		static const char RUNNING;
+		static const char INCREMENT;
+		static const char DECREMENT;
+		iteration( node& n ) :n( n ) {}
+		void increment(){ n._iteration_state = (node::iteration::RUNNING | node::iteration::INCREMENT); }
+		void decrement() { n._iteration_state = (node::iteration::RUNNING | node::iteration::DECREMENT); }
+		void reset() { n._iteration_state = 0; };
+	private:
+		node & n;
     };
     char _iteration_state = 0;
     int _iterator = 0;
@@ -260,6 +247,7 @@ public:
 public:
     cinder::mat3 get_world_matrix( ) const;
     cinder::mat4 get_world_matrix_3d( )const;
+	cinder::mat4 get_world_matrix_3d( softptr<node> target )const;
 	cinder::mat4 get_local_matrix_3d( ) const;
 	void set_matrix_3d( cinder::mat4 const& value );
 };

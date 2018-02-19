@@ -170,9 +170,9 @@ bool cChunkLayer::isFieldEdge( const int& x, const  int& y, const int& z )
 bool cChunkLayer::isUnderCannon( const int & x, const int & y, const int & z )
 {
     ivec3 cell = ( getChunkCell() * CHUNK_SIZE ) + ivec3( x, y, z );
-    if ( cell.x < 3 * CHUNK_SIZE || cell.x > 5 * CHUNK_SIZE )
+    if ( cell.x < 3 * CHUNK_SIZE - 2 || cell.x > 5 * CHUNK_SIZE + 2 )
         return false;
-    if ( cell.z > 2 * CHUNK_SIZE && cell.z + 1 < ( CHUNK_RANGE_Z - 2 ) * CHUNK_SIZE )
+    if ( cell.z > 2 * CHUNK_SIZE + 6 && cell.z + 1 < ( CHUNK_RANGE_Z - 2 ) * CHUNK_SIZE - 6 )
         return false;
     return true;
 }

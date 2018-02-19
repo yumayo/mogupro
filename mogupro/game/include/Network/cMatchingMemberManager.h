@@ -50,6 +50,10 @@ public:
 	// 観戦者が増えたため封印 yuamyo
 	//void addPlayerDatas(std::string playerStr,ubyte1 teamNum, cNetworkHandle networkHandle);
 	void addPlayerDatas(std::string playerStr, ubyte1 teamNum, ubyte1 playerID,cNetworkHandle networkHandle);
+	
+	//メンバーリストの初期化
+	void reset();
+	
 	cNetworkHandle mMasterHandle;
 	std::vector<PlayerData> mPlayerDatas;
 	std::map<int, bool> mEmptyRedTeamIds; // 2017/12/14 観戦者が入ってきてID管理が面倒になったため。

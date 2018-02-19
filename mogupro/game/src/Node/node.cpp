@@ -31,7 +31,9 @@ bool node::entry_mouse_began( cinder::app::MouseEvent event )
 {
     if ( !_block_schedule_event )
     {
-        scoped_iteration_decrement scp_decrement( *this );
+        iteration it( *this );
+		it.decrement();
+
         for ( _riterator = (int)_children.size( ) - 1; _riterator >= 0; --_riterator )
         {
             try
@@ -48,6 +50,8 @@ bool node::entry_mouse_began( cinder::app::MouseEvent event )
                          [ ] { } );*/
             }
         }
+
+		it.reset();
     }
     if ( _schedule_mouse_event )
     {
@@ -63,7 +67,9 @@ bool node::entry_mouse_moved( cinder::app::MouseEvent event )
 {
     if ( !_block_schedule_event )
     {
-        scoped_iteration_decrement scp_decrement( *this );
+		iteration it(*this);
+		it.decrement();
+
         for ( _riterator = (int)_children.size( ) - 1; _riterator >= 0; --_riterator )
         {
             try
@@ -79,6 +85,8 @@ bool node::entry_mouse_moved( cinder::app::MouseEvent event )
                          [ ] { } );*/
             }
         }
+
+		it.reset();
     }
     if ( _schedule_mouse_event )
     {
@@ -94,7 +102,9 @@ bool node::entry_mouse_ended( cinder::app::MouseEvent event )
 {
     if ( !_block_schedule_event )
     {
-        scoped_iteration_decrement scp_decrement( *this );
+        iteration it(*this);
+		it.decrement();
+
         for ( _riterator = (int)_children.size( ) - 1; _riterator >= 0; --_riterator )
         {
             try
@@ -110,6 +120,8 @@ bool node::entry_mouse_ended( cinder::app::MouseEvent event )
                          [ ] { } );*/
             }
         }
+
+		it.reset();
     }
     if ( _schedule_mouse_event )
     {
@@ -126,7 +138,9 @@ bool node::entry_touch_began( cinder::app::TouchEvent::Touch event )
 {
     if ( !_block_schedule_event )
     {
-        scoped_iteration_decrement scp_decrement( *this );
+		iteration it(*this);
+		it.decrement();
+
         for ( _riterator = (int)_children.size( ) - 1; _riterator >= 0; --_riterator )
         {
             try
@@ -143,6 +157,8 @@ bool node::entry_touch_began( cinder::app::TouchEvent::Touch event )
                          [ ] { } );*/
             }
         }
+
+		it.reset();
     }
     if ( _schedule_touch_event )
     {
@@ -158,7 +174,9 @@ bool node::entry_touch_moved( cinder::app::TouchEvent::Touch event )
 {
     if ( !_block_schedule_event )
     {
-        scoped_iteration_decrement scp_decrement( *this );
+		iteration it(*this);
+		it.decrement();
+
         for ( _riterator = (int)_children.size( ) - 1; _riterator >= 0; --_riterator )
         {
             try
@@ -174,6 +192,8 @@ bool node::entry_touch_moved( cinder::app::TouchEvent::Touch event )
                          [ ] { } );*/
             }
         }
+
+		it.reset();
     }
     if ( _schedule_touch_event )
     {
@@ -189,7 +209,9 @@ bool node::entry_touch_ended( cinder::app::TouchEvent::Touch event )
 {
     if ( !_block_schedule_event )
     {
-        scoped_iteration_decrement scp_decrement( *this );
+		iteration it(*this);
+		it.decrement();
+
         for ( _riterator = (int)_children.size( ) - 1; _riterator >= 0; --_riterator )
         {
             try
@@ -205,6 +227,8 @@ bool node::entry_touch_ended( cinder::app::TouchEvent::Touch event )
                          [ ] { } );*/
             }
         }
+
+		it.reset();
     }
     if ( _schedule_touch_event )
     {
@@ -221,7 +245,9 @@ void node::entry_touches_began( cinder::app::TouchEvent event )
 {
     if ( !_block_schedule_event )
     {
-        scoped_iteration_decrement scp_decrement( *this );
+		iteration it(*this);
+		it.decrement();
+
         for ( _riterator = (int)_children.size( ) - 1; _riterator >= 0; --_riterator )
         {
             try
@@ -234,6 +260,8 @@ void node::entry_touches_began( cinder::app::TouchEvent event )
                          [ ] { } );*/
             }
         }
+
+		it.reset();
     }
     if ( _schedule_touches_event )
     {
@@ -244,7 +272,9 @@ void node::entry_touches_moved( cinder::app::TouchEvent event )
 {
     if ( !_block_schedule_event )
     {
-        scoped_iteration_decrement scp_decrement( *this );
+		iteration it(*this);
+		it.decrement();
+
         for ( _riterator = (int)_children.size( ) - 1; _riterator >= 0; --_riterator )
         {
             try
@@ -257,6 +287,8 @@ void node::entry_touches_moved( cinder::app::TouchEvent event )
                          [ ] { } );*/
             }
         }
+
+		it.reset();
     }
     if ( _schedule_touches_event )
     {
@@ -267,7 +299,9 @@ void node::entry_touches_ended( cinder::app::TouchEvent event )
 {
     if ( !_block_schedule_event )
     {
-        scoped_iteration_decrement scp_decrement( *this );
+		iteration it(*this);
+		it.decrement();
+
         for ( _riterator = (int)_children.size( ) - 1; _riterator >= 0; --_riterator )
         {
             try
@@ -280,6 +314,8 @@ void node::entry_touches_ended( cinder::app::TouchEvent event )
                          [ ] { } );*/
             }
         }
+
+		it.reset();
     }
     if ( _schedule_touches_event )
     {
@@ -290,7 +326,9 @@ void node::entry_key_down( cinder::app::KeyEvent event )
 {
     if ( !_block_schedule_event )
     {
-        scoped_iteration_decrement scp_decrement( *this );
+		iteration it(*this);
+		it.decrement();
+
         for ( _riterator = (int)_children.size( ) - 1; _riterator >= 0; --_riterator )
         {
             try
@@ -303,6 +341,8 @@ void node::entry_key_down( cinder::app::KeyEvent event )
                          [ ] { } );*/
             }
         }
+
+		it.reset();
     }
     if ( _schedule_key_event )
     {
@@ -313,11 +353,15 @@ void node::entry_key_up( cinder::app::KeyEvent event )
 {
     if ( !_block_schedule_event )
     {
-        scoped_iteration_decrement scp_decrement( *this );
+		iteration it(*this);
+		it.decrement();
+
         for ( _riterator = (int)_children.size( ) - 1; _riterator >= 0; --_riterator )
         {
             _children[_riterator]->entry_key_up( event );
         }
+
+		it.reset();
     }
 
     if ( _schedule_key_event )
@@ -329,7 +373,9 @@ void node::entry_update( float delta )
 {
     if ( !_block_schedule_update )
     {
-        scoped_iteration_increment scp_increment( *this );
+		iteration it(*this);
+		it.increment();
+
         for ( _iterator = 0; _iterator < (int)_children.size( ); ++_iterator )
         {
             try
@@ -342,6 +388,8 @@ void node::entry_update( float delta )
                          [ ] { } );*/
             }
         }
+
+		it.reset();
     }
     _action_manager.update( delta );
     if ( _schedule_update ) update( delta );
@@ -357,7 +405,10 @@ void node::entry_render( cinder::mat4 m )
     gl::setModelMatrix( m );
     if( _visible ) this->render( );
     m = translate( m, get_content_size_3d( ) * get_pivot_3d( ) );
-    scoped_iteration_increment scp_increment( *this );
+
+	iteration it(*this);
+	it.increment();
+
     for ( _iterator = 0; _iterator < (int)_children.size( ); ++_iterator )
     {
         try
@@ -370,6 +421,8 @@ void node::entry_render( cinder::mat4 m )
                      [ ] { } );*/
         }
     }
+
+	it.reset();
 }
 bool node::init( )
 {
@@ -586,6 +639,22 @@ cinder::mat4 node::get_world_matrix_3d( ) const
         result *= *itr;
     }
     return result;
+}
+cinder::mat4 node::get_world_matrix_3d(softptr<node> target) const
+{
+	std::vector<mat4> mats;
+	auto p = shared_from_this();
+	while (p && p != target.lock())
+	{
+		mats.emplace_back(p->get_local_matrix_3d());
+		p = p->_parent.lock();
+	}
+	mat4 result;
+	for (auto itr = mats.rbegin(); itr != mats.rend(); ++itr)
+	{
+		result *= *itr;
+	}
+	return result;
 }
 cinder::mat4 node::get_local_matrix_3d( ) const
 {

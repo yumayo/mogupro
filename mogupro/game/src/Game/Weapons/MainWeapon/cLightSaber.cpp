@@ -53,6 +53,10 @@ public:
 		hitListPlayer.clear();
 		hitListGem.clear();
 	}
+	bool isHitGem(cinder::AxisAlignedBox const& aabb)
+	{
+		return gemSphere.intersects(aabb) || playerSphere.intersects(aabb);
+	}
 	void hitGem( cinder::AxisAlignedBox const& aabb, int id )
 	{
 		bool isIdCollide = false;
@@ -65,7 +69,7 @@ public:
 		}
 		if (false == isIdCollide)
 		{
-			if (gemSphere.intersects(aabb) || playerSphere.intersects(aabb))
+			if (isHitGem(aabb))
 			{
 				hitListGem.emplace_back(id);
 				cClientAdapter::getInstance()->sendGetGemPlayer(id);
@@ -424,7 +428,7 @@ void cLightSaber::setup( )
 	{
 		shot->join( idle, [ this ] ( auto n )
 		{
-			return n->time > 0.5F;
+			return true;
 		} );
 		shot->onStateIn = [ this ] ( auto m )
 		{
@@ -477,7 +481,7 @@ void cLightSaber::setup( )
 	{
 		shot_max->join( idle, [ this ] ( auto n )
 		{
-			return n->time > 0.6F;
+			return true;
 		} );
 		shot_max->onStateIn = [ this ] ( auto m )
 		{
@@ -560,7 +564,21 @@ void cLightSaber::draw( )
 }
 void cLightSaber::reset( )
 {
+	Resource::SE["Player/aura1.wav"].stop();
+}
+bool cLightSaber::isHitGem()
+{
+	auto t = tume.dynamicptr<tumeNode>();
+	for (auto& gem_ref : cGemManager::getInstance()->getGemStones())
+	{
+		if (!gem_ref->isActive()) continue;
 
+		if (t->isHitGem(gem_ref->getAabb().createAABB(gem_ref->getCenterPos())))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 void cLightSaber::animation( float t, TumeFormat const & tumeFormat )
 {

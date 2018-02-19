@@ -23,11 +23,14 @@ private:
 	Utility::cStateMachineBehaviour sMac;
 	hardptr<Node::node> root3d;
 	hardptr<Node::node> root;
+	softptr<Node::node> rootUI;
 	softptr<Node::node> winBoard, loseBoard;
 	softptr<Node::node> eyeNode, tarNode, upNode;
 	softptr<Node::node> redCapsuleNode, blueCapsuleNode;
-	hardptr<Node::node> createScoreBoard( int team, bool win, std::vector<std::string> playerNameData, std::vector<int> pointData, std::vector<int> killData, std::vector<int> deathData );
-	hardptr<Node::node> createPowerTorus( float time );
+	static hardptr<Node::node> createScoreBoard( int team, bool win, std::vector<std::string> playerNameData, std::vector<int> pointData, std::vector<int> killData, std::vector<int> deathData );
+	static hardptr<Node::node> createPowerTorus( float time );
+	static hardptr<Node::node> createScoreBar(std::string playerName, int pointData, int killData, int deathData);
+	static std::string createPlayerName(int playerId);
 };
 }
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <Utility/cSingletonAble.h>
 #include <Game/Player/cPlayer.h>
+#include <Utility/cStateMachineBehaviour.h>	
 namespace Game
 {
 	
@@ -29,6 +30,10 @@ private:
 	void playerMove(const float& delta_time);
 	void padMove(const float & delta_time);
 	void keyMove(const float & delta_time);
+	Utility::cStateMachineBehaviour backOnTheGroundStater;
+	hardptr<Node::node> backOnTheGroundNode;
+	void setupBackOnTheGround();
+	void updateBackOnTheGround(const float & delta_time);
 	void killCamera( const float & delta_time );
 	void watchingCamera(const float & delta_time);
 public:

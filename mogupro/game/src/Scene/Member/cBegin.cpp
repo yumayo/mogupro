@@ -32,7 +32,7 @@ void cBegin::setup( )
 	root->set_scale( ci::vec2( 1, -1 ) );
 	root->set_position( root->get_content_size( ) / 2.0F * ci::vec2( -1, 1 ) );
 
-	root->add_child( Node::Renderer::sprite::create( "IMAGE/logo/loading.png" ) )->set_position( root->get_content_size( ) * ci::vec2( 0.5F ) );
+	root->add_child( Node::Renderer::sprite::create( "IMAGE/loading/logo.png" ) )->set_position( root->get_content_size( ) * ci::vec2( 0.5F ) );
 
 	loadBar = root->add_child( Node::node::create( ) );
 	loadBar->set_position( root->get_content_size( ) * ci::vec2( 0.5F, 0.8F ) );

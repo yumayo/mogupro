@@ -13,8 +13,8 @@ public:
 	cGameManager( );
 	~cGameManager( ) = default;
 public:
+	void setup();
 	void setTime( float allUserloadFinishedTime );
-	std::string getLeftBattleTime( );
 	void update( float delta );
 	void draw( );
 private:
@@ -22,8 +22,11 @@ private:
 	float allUserloadFinishedTime = std::numeric_limits<float>::max( );
 	float battleStartTime = std::numeric_limits<float>::max( );
 	hardptr<Node::node> root;
+	float gameTime;
 	Sound::cIntroLoopableBGM introloopBGM;
 public:
+	std::string getLeftBattleTime();
+	float getLeftBattleTimef();
 	bool isInGame( );
 	void addRedCannonPower( int value );
 	void addBlueCannonPower( int value );

@@ -21,13 +21,15 @@ namespace Game
 {
 cGameManager::cGameManager( )
 {
+	gameTime = 60.0F * 5.0F;
+
 	root = Node::node::create( );
 	root->set_schedule_update( );
 	root->set_content_size( cinder::app::getWindowSize( ) );
 	root->set_scale( cinder::vec2( 1, -1 ) );
 	root->set_position( root->get_content_size( ) * cinder::vec2( -0.5F, 0.5F ) );
 
-	auto bgm = Sound::Wav( cinder::app::getAssetDirectories().front().string() + "/BGM/testbgm2.wav" );
+	auto bgm = Sound::Wav( cinder::app::getAssetDirectories().front().string() + "/BGM/in_game/background.wav" );
 	introloopBGM.create( bgm.data( ), bgm.size( ), 9.63499F, 69.45829F );
 	introloopBGM.gain( 0.3F );
 
@@ -151,7 +153,7 @@ cGameManager::cGameManager( )
 	};
 	battle->join( battle_end, [ this ] ( auto n )
 	{
-		return ( n->time > 60.0F * 5.0F ) || redCannonPower >= 100 || blueCannonPower >= 100;
+		return ( n->time > gameTime) || redCannonPower >= 100 || blueCannonPower >= 100;
 	} );
 	battle->onStateIn = [ this ] ( auto m )
 	{
@@ -173,7 +175,7 @@ cGameManager::cGameManager( )
 	{
 		if ( ENV->pushKey( app::KeyEvent::KEY_RETURN ) )
 		{
-			n->time = 60.0F * 5.0F;
+			n->time = gameTime;
 		}
 	};
 	battle->onStateOut = [ this ] ( )
@@ -202,12 +204,13 @@ cGameManager::cGameManager( )
 			finish->set_text( u8"FINISH!!" );
 			finish->set_position( root->get_content_size( ) / 2.0F );
 			finish->run_action( sequence::create( delay::create( 1.0F ), fade_out::create( 1.0F ), remove_self::create( ) ) );
+			cUIManager::getInstance()->disable();
 		}
+		introloopBGM.fadeout( 2.0F, 0.0F );
 	};
 	battle_end->onStateOut = [ this ] ( )
 	{
 		introloopBGM.stop( );
-		cUIManager::getInstance( )->disable( );
 	};
 	result->onStateIn = [ this ] ( auto m )
 	{
@@ -221,18 +224,29 @@ cGameManager::cGameManager( )
 
 	sMac.setEntryNode( load );
 }
+void cGameManager::setup()
+{
+	auto& wav = Resource::BGM["in_game/standby.wav"];
+	wav.setGain(0.3F);
+	wav.play();
+}
 void cGameManager::setTime( float allUserloadFinishedTime )
 {
 	this->allUserloadFinishedTime = allUserloadFinishedTime;
 }
 std::string cGameManager::getLeftBattleTime( )
 {
-	auto duration = ( battleStartTime + 60.0F * 5.0F ) - Network::cUDPClientManager::getInstance()->getServerTime( );
-	if ( duration < 0.0F )
-	{
-		return "00:00";
-	}
+	auto duration = getLeftBattleTimef();
 	return boost::str( boost::format( "%02d:%02d" ) % (int)( duration / 60.0F ) % (int)( std::fmodf( duration, 60.0F ) ) );
+}
+float cGameManager::getLeftBattleTimef()
+{
+	auto duration = (battleStartTime + gameTime) - Network::cUDPClientManager::getInstance()->getServerTime();
+	if (duration < 0.0F)
+	{
+		return 0.0F;
+	}
+	return duration;
 }
 void cGameManager::update( float delta )
 {
@@ -307,7 +321,7 @@ void cGameManager::appendGem( int playerId, int gemNum )
 }
 std::pair<int, int> cGameManager::getResult( )
 {
-	return std::make_pair( redCannonPower, blueCannonPower );
+	return std::make_pair( redCannonPower, redCannonPower == blueCannonPower ? blueCannonPower + 1 : blueCannonPower );
 }
 std::vector<int> cGameManager::getRedTeamKillData( )
 {

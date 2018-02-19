@@ -40,7 +40,7 @@ private:
 
 	CAMERA_MODE camera_mode;
 
-    ci::vec2 my_scatter;
+    ci::vec3 my_scatter;
     //óhÇÍÇÈïù
     float scatter;
     //óhÇÍÇÈïbêî
@@ -81,7 +81,7 @@ public:
         fade_out = ci::vec4( 0, 0, 0, 0 );
         camera_angle = ci::vec2( 0 );
         looking_point = ci::vec3( 0 );
-        my_scatter = ci::vec2( 0 );
+        my_scatter = ci::vec3( 0 );
 		looking_position = ci::vec3(0);
 		camera_mode = CAMERA_MODE::TPS;
         camera_far = 5;

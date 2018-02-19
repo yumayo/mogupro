@@ -11,6 +11,7 @@ CREATE_CPP( move_by, float duration, cinder::vec2 position )
 }
 bool move_by::init( float duration, cinder::vec2 position )
 {
+	// TODO: そういえば3次元を扱うノードだった場合強制的に zに0を入れてしまっているので、move_toとかだと余計な動作をする場合がありますね。
     move_to::init( duration, position );
     _init_position = vec3( position, 0.0F );
     return true;

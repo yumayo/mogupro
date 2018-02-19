@@ -278,7 +278,6 @@ namespace Scene
 		void cMatching::update(float deltaTime)
 		{
 			if (sceneChange == true)return;
-
 			mPrevSelectTag = mSelectTag;
 			mRoot->entry_update(deltaTime);
 			mMemberRoot->entry_update(deltaTime);
