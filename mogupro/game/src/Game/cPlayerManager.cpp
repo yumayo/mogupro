@@ -188,6 +188,9 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	//パッドの時に攻撃が上書きされないように注意
 	padMove(delta_time);
 
+	// ここで強制的に掘るモードに移行するかどうかを決める
+	updateBackOnTheGround(delta_time);
+
 	//掘削中は動き方が変わる
 	if (active_player->isDrilling()) {
 		playerDrillMove(delta_time);
@@ -302,6 +305,75 @@ void Game::cPlayerManager::keyMove(const float & delta_time)
 		///////////////////
 	}
 }
+void Game::cPlayerManager::setupBackOnTheGround()
+{
+	backOnTheGroundNode = Node::node::create();
+
+	STATE_GENERATE(backOnTheGroundStater, idle);
+	STATE_GENERATE(backOnTheGroundStater, begin);
+	STATE_GENERATE(backOnTheGroundStater, drilling);
+	STATE_GENERATE(backOnTheGroundStater, end);
+
+	idle->join(begin, [this](auto)
+	{
+		if (active_player->getPos().y < Game::Field::WORLD_SIZE.y - 5)
+		{
+			if (ENV->pushKey(ci::app::KeyEvent::KEY_m))
+			{
+				return true;
+			}
+			if (ENV->isPadPush(ENV->BUTTON_2)) // とりあえずBボタン。
+			{
+				return true;
+			}
+		}
+		return false;
+	});
+	begin->join(drilling, [this](auto n)
+	{
+		return n->time > 1.0F;
+	});
+	begin->onStateIn = [this](auto)
+	{
+		auto ang = CAMERA->getCameraAngle();
+		backOnTheGroundNode->run_action(Node::Action::float_to::create(1.0F, ang.y, glm::pi<float>(), [](auto v)
+		{
+			auto ang = CAMERA->getCameraAngle();
+			CAMERA->setCameraAngle(ci::vec2(ang.x, v));
+		}));
+	};
+	begin->onStateStay = [this](auto)
+	{
+		active_player->Drilling(true);
+	};
+	drilling->join(end, [this](auto)
+	{
+		return active_player->getPos().y > Game::Field::WORLD_SIZE.y - 1.0F;
+	});
+	drilling->onStateStay = [this](auto)
+	{
+		active_player->Drilling(true);
+		auto ang = CAMERA->getCameraAngle();
+		CAMERA->setCameraAngle(ci::vec2(ang.x, glm::pi<float>()));
+	};
+	end->join(idle, [](auto n)
+	{
+		return n->time > 1.1F;
+	});
+	end->onStateStay = [this](auto n)
+	{
+		active_player->Drilling(true);
+		auto ang = CAMERA->getCameraAngle();
+		CAMERA->setCameraAngle(ci::vec2(ang.x, glm::pi<float>() - n->time * glm::pi<float>()));
+	};
+
+	backOnTheGroundStater.setEntryNode(idle);
+}
+void Game::cPlayerManager::updateBackOnTheGround(const float & delta_time)
+{
+	backOnTheGroundNode->entry_update(delta_time);
+	backOnTheGroundStater.update(delta_time);
+}
 void Game::cPlayerManager::killCamera(const float & delta_time)
 {
 	if (!active_player->isDead())return;
@@ -396,6 +468,8 @@ void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& pla
 	for (auto& it : players) {
 		it->setup();
 	}
+
+	setupBackOnTheGround();
 }
 void Game::cPlayerManager::update(const float& delta_time)
 {
