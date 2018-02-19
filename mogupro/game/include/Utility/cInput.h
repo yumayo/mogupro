@@ -55,9 +55,13 @@ public:
 	bool pressKey( );
 	bool pullKey( );
 	float getPadAxis( const int& pad_num );
-	bool getPadAxisPush(const int& pad_num);
-	bool getPadAxisPull(const int& pad_num);
-	bool getPadAxisPress(const int& pad_num);
+	bool getPadAxisPushPlus(const int& pad_num);
+	bool getPadAxisPullPlus(const int& pad_num);
+	bool getPadAxisPressPlus(const int& pad_num);
+	
+	bool getPadAxisPushMinus(const int& pad_num);
+	bool getPadAxisPullMinus(const int& pad_num);
+	bool getPadAxisPressMinus(const int& pad_num);
 	bool isPadPush( const int& num );
 	bool isPadPress( const int& num );
 	bool isPadPull( const int& num );
