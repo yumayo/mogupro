@@ -144,7 +144,7 @@ namespace Scene
 
 				// 他のアップデートよりも先に行います。
 				Game::cTutorialManager::getInstance()->preUpdate(deltaTime);
-
+				Game::cTutorialManager::getInstance()->update(deltaTime);
 				Game::cDebugManager::getInstance()->update(deltaTime);
 				Game::cClientAdapter::getInstance()->update();
 				Game::cServerAdapter::getInstance()->update();
@@ -167,7 +167,6 @@ namespace Scene
 				Game::cShaderManager::getInstance()->update(std::bind(&cTutorial::drawShadow, this));
 				Particle::cParticleManager::getInstance()->update(deltaTime);
 				GemManager->lateUpdate(deltaTime);
-				Game::cTutorialManager::getInstance()->update(deltaTime);
 				Resource::cFbxManager::getInstance()->testUpdate(deltaTime);
 				if (ENV->pushKey(cinder::app::KeyEvent::KEY_F5))
 				{

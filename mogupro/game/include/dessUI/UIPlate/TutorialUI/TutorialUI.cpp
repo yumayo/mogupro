@@ -11,6 +11,8 @@
 #include <Resource/cSoundManager.h>
 #include <Scene/Member/cTitle.h>
 #include <Sound/Stereophonic.h>
+#include <Game/cStrategyManager.h>
+#include <Game/Weapons/MainWeapon/cFactory.h>
 void TutorialUI::setup(const dess::SceneName & name)
 {
 	now_scene = TUTORIAL::MOVE;
@@ -26,12 +28,13 @@ void TutorialUI::setup(const dess::SceneName & name)
 //プレイヤー初期化
 void TutorialUI::playerInit()
 {
+	Game::cPlayerManager::getInstance()->getActivePlayer()->Drilling(false);
+	Game::cPlayerManager::getInstance()->getActivePlayer()->setPlayerVec(ci::vec3(0));
 	Game::cPlayerManager::getInstance()->getActivePlayer()->settingPosition(ci::vec3(Game::Field::WORLD_SIZE.x / 2, Game::Field::WORLD_SIZE.y + 0.3f, 17.0F));
 	Game::cPlayerManager::getInstance()->getActivePlayer()->move(ci::vec3(0, 0, 0.1f));
 	CAMERA->setCameraAngle(cinder::vec2(0, -0.3f));
 	Game::cFieldManager::getInstance()->blockAllReset();
 	Game::cPlayerManager::getInstance()->getActivePlayer()->useSubWeapon.clearSubWeapon();
-	Game::cPlayerManager::getInstance()->getActivePlayer()->move(ci::vec3(0,0,0.1f));
 	Game::cPlayerManager::getInstance()->getActivePlayer()->update(10);
 	Game::cPlayerManager::getInstance()->playerCollisionAfterUpdate(10);
 }
@@ -685,7 +688,8 @@ void TutorialUI::tutorialDeliverySetup(const float & delta_time)
 	//カウントの初期化
 	tuto_counts["納品説明"] = 0.0f;
 	tuto_counts["納品説明２"] = 0.0f;
-	
+	auto cannon = Game::cStrategyManager::getInstance()->getCannons()[static_cast<Game::Player::Team>(Game::cPlayerManager::getInstance()->getActivePlayer()->getWhichTeam())];
+	cannon->setGemNum(0);
 	c_Easing::apply(camera_angle_buf.x, -3 * M_PI / 2, EasingFunction::Linear, 10);
 	c_Easing::apply(camera_angle_buf.y, -0.7f, EasingFunction::Linear, 10);
 	CAMERA->setCameraFar(cannon_far);
@@ -947,6 +951,10 @@ void TutorialUI::tutorialEndUpdate(const float & delta_time)
 
 void TutorialUI::update(const float& delta_time)
 {
+	if (tutorial_stan) {
+		Game::cPlayerManager::getInstance()->getActivePlayer()->getMainWeapon()->pullCall();
+		Game::cPlayerManager::getInstance()->getActivePlayer()->getMainWeapon()->update(delta_time);
+	}
 	if (buf_scene != static_cast<int>(now_scene)) {
 		buf_scene = static_cast<int>(now_scene);
 		switch (now_scene) {

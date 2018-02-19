@@ -142,6 +142,7 @@ ci::vec3 Game::cPlayerManager::playerNormalMovePad(const float & delta_time)
 }
 void Game::cPlayerManager::playerMove(const float & delta_time)
 {
+
 	//カメラのマウス操作ON　OFF
 	if (ENV->pushKey(ci::app::KeyEvent::KEY_ESCAPE)) {
 		ENV->setMouseControl(mouse_on);
@@ -210,7 +211,7 @@ void Game::cPlayerManager::padMove(const float & delta_time)
 	else
 	{
 		//掘る L1
-		if ( ENV->getPadAxisPress(2) &&
+		if ( ENV->getPadAxisPressPlus(2) &&
 			 Game::Field::WORLD_SIZE.y + 1 > active_player->getPos( ).y ) {
 			active_player->Drilling( true );
 		}

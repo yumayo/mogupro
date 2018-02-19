@@ -123,7 +123,7 @@ float cInputAll::getPadAxis( const int & pad_num )
 	return pad_stick_axis_value.find( pad_num )->second;
 }
 
-bool cInputAll::getPadAxisPush(const int & pad_num)
+bool cInputAll::getPadAxisPushPlus(const int & pad_num)
 {
 	//キーが無ければ初期化
 	if (pad_axis_value_buf.count(pad_num) == 0) {
@@ -141,7 +141,7 @@ bool cInputAll::getPadAxisPush(const int & pad_num)
 	return false;
 }
 
-bool cInputAll::getPadAxisPull(const int & pad_num)
+bool cInputAll::getPadAxisPullPlus(const int & pad_num)
 {
 	//キーが無ければ初期化
 	if (pad_axis_value_buf.count(pad_num) == 0) {
@@ -160,7 +160,7 @@ bool cInputAll::getPadAxisPull(const int & pad_num)
 	return false;
 }
 
-bool cInputAll::getPadAxisPress(const int & pad_num)
+bool cInputAll::getPadAxisPressPlus(const int & pad_num)
 {
 	//キーが無ければ初期化
 	if (pad_axis_value_buf.count(pad_num) == 0) {
@@ -176,6 +176,68 @@ bool cInputAll::getPadAxisPress(const int & pad_num)
 		return true;
 	}
 	pad_axis_value_buf[pad_num] = pad_stick_axis_value.find(pad_num)->second;
+	return false;
+}
+
+bool cInputAll::getPadAxisPushMinus(const int & pad_num)
+{
+	//キーがプラスと被らないように１０を足す
+	int buf = pad_num + 10;
+	//キーが無ければ初期化
+	if (pad_axis_value_buf.count(buf) == 0) {
+		pad_axis_value_buf[buf] = 0.0f;
+	}
+	if (pad_stick_axis_value.find(pad_num) == pad_stick_axis_value.cend())
+		return false;
+
+	if (pad_axis_value_buf[buf] > -0.5f &&
+		pad_stick_axis_value.find(pad_num)->second < -0.5f) {
+		pad_axis_value_buf[buf] = pad_stick_axis_value.find(pad_num)->second;
+		return true;
+	}
+	pad_axis_value_buf[buf] = pad_stick_axis_value.find(pad_num)->second;
+	return false;
+}
+
+bool cInputAll::getPadAxisPullMinus(const int & pad_num)
+{
+	//キーがプラスと被らないように１０を足す
+	int buf = pad_num + 10;
+	//キーが無ければ初期化
+	if (pad_axis_value_buf.count(buf) == 0) {
+		pad_axis_value_buf[buf] = 0.0f;
+	}
+
+	if (pad_stick_axis_value.find(pad_num) == pad_stick_axis_value.cend())
+		return false;
+
+	if (pad_axis_value_buf[buf] < -0.5f &&
+		pad_stick_axis_value.find(pad_num)->second > -0.5f) {
+		pad_axis_value_buf[buf] = pad_stick_axis_value.find(pad_num)->second;
+		return true;
+	}
+	pad_axis_value_buf[buf] = pad_stick_axis_value.find(pad_num)->second;
+	return false;
+}
+
+bool cInputAll::getPadAxisPressMinus(const int & pad_num)
+{
+	//キーがプラスと被らないように１０を足す
+	int buf = pad_num + 10;
+	//キーが無ければ初期化
+	if (pad_axis_value_buf.count(buf) == 0) {
+		pad_axis_value_buf[buf] = 0.0f;
+	}
+
+	if (pad_stick_axis_value.find(pad_num) == pad_stick_axis_value.cend())
+		return false;
+
+	if (pad_axis_value_buf[buf] < -0.5f &&
+		pad_stick_axis_value.find(pad_num)->second < -0.5f) {
+		pad_axis_value_buf[buf] = pad_stick_axis_value.find(pad_num)->second;
+		return true;
+	}
+	pad_axis_value_buf[buf] = pad_stick_axis_value.find(pad_num)->second;
 	return false;
 }
 
