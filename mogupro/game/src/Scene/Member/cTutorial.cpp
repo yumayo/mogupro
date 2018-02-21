@@ -73,6 +73,8 @@ namespace Scene
 			teams[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum;
 
 			Game::cPlayerManager::getInstance()->setup(Game::Field::RESPAWN_POINT, 8U, active_player_id, teams);
+			// ////////プレイヤーが揃った後に、キャノンにはプレイヤーの使用している全ライトを適応させる。
+			Game::cStrategyManager::getInstance()->lightSetup();
 
 			int seed = 20171031;
 			GemManager->setUp(vec3(0, 0, 0),

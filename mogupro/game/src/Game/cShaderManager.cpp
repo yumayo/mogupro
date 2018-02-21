@@ -178,6 +178,45 @@ void cShaderManager::uniformUpdate( int chunkId )
 		mGlsl->uniformBlock( "SpotLightParams", 2 );
 	}
 }
+void cShaderManager::uniformUpdate(std::vector<int> const & pointLightIds, std::vector<int> const & lineLightIds, std::vector<int> const & spotLightIds)
+{
+	{
+		memset(&mPointLightParams, 0, sizeof(mPointLightParams.useIndices));
+		int i = 0;
+		for (auto& id : pointLightIds)
+		{
+			mPointLightParams.useIndices[i / 4][i % 4] = id;
+			i++;
+		}
+		mGlsl->uniform("uPointLightNum", i);
+		mPointLightUBO->bufferSubData(0, sizeof(mPointLightParams.useIndices), &mPointLightParams);
+		mGlsl->uniformBlock("PointLightParams", 0);
+	}
+	{
+		memset(&mLineLightParams, 0, sizeof(mLineLightParams.useIndices));
+		int i = 0;
+		for (auto& id : lineLightIds)
+		{
+			mLineLightParams.useIndices[i / 4][i % 4] = id;
+			i++;
+		}
+		mGlsl->uniform("uLineLightNum", i);
+		mLineLightUBO->bufferSubData(0, sizeof(mLineLightParams.useIndices), &mLineLightParams);
+		mGlsl->uniformBlock("LineLightParams", 1);
+	}
+	{
+		memset(&mSpotLightParams, 0, sizeof(mSpotLightParams.useIndices));
+		int i = 0;
+		for (auto& id : spotLightIds)
+		{
+			mSpotLightParams.useIndices[i / 4][i % 4] = id;
+			i++;
+		}
+		mGlsl->uniform("uSpotLightNum", i);
+		mSpotLightUBO->bufferSubData(0, sizeof(mSpotLightParams.useIndices), &mSpotLightParams);
+		mGlsl->uniformBlock("SpotLightParams", 2);
+	}
+}
 void cShaderManager::update( std::function<void( )> const& drawFunc )
 {
 	if ( mUseShadow )

@@ -16,6 +16,7 @@ public:
 	void setup( );
 	void uniformUpdate( );
 	void uniformUpdate( int chunkId );
+	void uniformUpdate(std::vector<int> const& pointLightIds, std::vector<int> const& lineLightIds, std::vector<int> const& spotLightIds );
 	void update( std::function<void( )> const& drawFunc );
 	void draw( std::function<void( )> const& render );
 private:

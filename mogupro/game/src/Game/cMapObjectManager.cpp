@@ -2,6 +2,7 @@
 #include "Utility\cInput.h"
 #include "Resource\cJsonManager.h"
 #include "Game/Field/FieldData.h"
+#include <Game/cShaderManager.h>
 using namespace ci;
 using namespace ci::app;
 namespace Game
@@ -24,12 +25,13 @@ void cMapObjectManager::draw()
 	for (auto it : mMapObjects) {
 		it->draw();
 	}
+	// ////////////ƒ‰ƒCƒg‚Ì”½‰f‰ðœ
+	cShaderManager::getInstance()->uniformUpdate();
 	if (mIsDrawAabb) {
 		for (auto it : mMapObjects) {
 			it->drawAABB();
 		}
 	}
-	
 }
 void cMapObjectManager::update(const float & deltatime)
 {

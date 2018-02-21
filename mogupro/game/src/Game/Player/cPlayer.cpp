@@ -19,6 +19,7 @@
 #include <Resource/cImageManager.h>
 #include <Sound/Wav.h>
 #include <Sound/Stereophonic.h>
+#include <Game/cShaderManager.h>
 void Game::Player::cPlayer::updatePlayerRotation()
 {
 	if (!active_user) return;
@@ -339,6 +340,11 @@ Game::Player::cPlayer::cPlayer(
 	light = cLightManager::getInstance( )->addPointLight( mPos, lightColor, isWatching( ) ? 0.0F : 1.0F );
 	auto pvec = glm::normalize( getPlayerVec( ) );
 	spotlight = cLightManager::getInstance( )->addSpotLight( mPos + pvec * 0.2F, pvec * 3.0F, lightColor, isWatching() ? 0.0F : 2.0F );
+
+	// /////////ライトのデータを詰め込む。
+	pointLightIds.emplace_back(light->getId());
+	// 鼻にライトが移るのでスポットライトは使用しない。
+	// spotLightIds.emplace_back(spotlight->getId());
 }
 
 
@@ -535,6 +541,9 @@ void Game::Player::cPlayer::draw()
 			return;
 		}
 	}
+
+	// ////////////まとめておいたIDを使ってライトを反映させる。
+	cShaderManager::getInstance()->uniformUpdate(pointLightIds, lineLightIds, spotLightIds);
 
 	// 武器の描画
 	{

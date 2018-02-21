@@ -7,6 +7,8 @@
 #include"Game\cClientAdapter.h"
 #include"Game\cFieldManager.h"
 #include"Resource\cJsonManager.h"
+#include <Game/cPlayerManager.h>
+#include <Game/cShaderManager.h>
 using namespace ci;
 using namespace ci::app;
 
@@ -65,13 +67,26 @@ void cStrategyManager::setup()
 
 	///////キャノン作ります
 }
+void cStrategyManager::lightSetup()
+{
+	for (auto& p : cPlayerManager::getInstance()->getPlayers())
+	{
+		auto lights = p->getLightIds();
+		pointLightIds.emplace_back(lights.p_id);
+		spotLightIds.emplace_back(lights.s_id);
+	}
+}
 void cStrategyManager::draw()
 {
+	// ////////////まとめておいたIDを使ってライトを反映させる。
+	cShaderManager::getInstance()->uniformUpdate(pointLightIds, lineLightIds, spotLightIds);
 
 	for (auto& it :cannons) {
 		it->draw();
 	}
 
+	// ////////////ライトの反映解除
+	cShaderManager::getInstance()->uniformUpdate();
 }
 void cStrategyManager::update(const float & deltatime)
 {

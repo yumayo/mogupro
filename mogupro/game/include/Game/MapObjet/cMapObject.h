@@ -48,6 +48,12 @@ private:
 	std::vector<PointLight>mPointLightData;
 	std::vector<LineLight>mLineLightData;
 	std::vector<Game::Light::LineLightHandle>mLineLights;
+
+	// ///// ライトのIDをまとめたデータを用意する
+	std::vector<int> pointLightIds;
+	std::vector<int> lineLightIds;
+	std::vector<int> spotLightIds;
+
 	float a = 0.0f;
 	ci::vec3 mPos;
 	ci::vec3 mScale;
