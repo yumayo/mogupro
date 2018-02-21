@@ -1,6 +1,7 @@
 #include <Game/Gem/cGemStone.h>
 #include <Utility/cTimeMeasurement.h>
 #include <Game/cLightManager.h>
+#include <Game/cShaderManager.h>
 
 namespace Game
 {
@@ -13,6 +14,9 @@ namespace Game
 			setColorAs();
 			setNomals();
 			mPointLightHandle = cLightManager::getInstance( )->addPointLight( mPosition, ci::vec3( mColor.r, mColor.g, mColor.b ), 2.0F );
+
+			// /////////ライトのデータを詰め込む。
+			pointLightIds.emplace_back(mPointLightHandle->getId());
 		};
 		cGemStone::~cGemStone()
 		{
@@ -29,6 +33,10 @@ namespace Game
 		void cGemStone::draw()
 		{
 			if (!mIsActive) return;
+
+			// ////////////まとめておいたIDを使ってライトを反映させる。
+			cShaderManager::getInstance()->uniformUpdate(pointLightIds, lineLightIds, spotLightIds);
+
 			ci::gl::pushModelMatrix();
 			ci::gl::color(ci::Color(mColor));
 			ci::gl::translate(mPosition);

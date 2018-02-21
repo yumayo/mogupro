@@ -15,6 +15,7 @@ public:
     cStrategyManager();
     ~cStrategyManager();
     void setup();
+	void lightSetup();
     void draw();
     void update(const float& deltatime);
 	void updateCollisionAfterUpdate(const float& deltaTime);
@@ -28,6 +29,11 @@ private:
 	ci::vec3 jsonToVec3(Json::Value json);
     void deleteObject();
 	int testcount = 0;
+
+	// ///// ライトのIDをまとめたデータを用意する
+	std::vector<int> pointLightIds;
+	std::vector<int> lineLightIds;
+	std::vector<int> spotLightIds;
 };
 
 }

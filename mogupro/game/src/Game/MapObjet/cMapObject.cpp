@@ -4,6 +4,7 @@
 #include"Game\Field\FieldData.h"
 #include"Game\cStrategyManager.h"
 #include"cinder\Rand.h"
+#include <Game/cShaderManager.h>	
 namespace Game
 {
 namespace MapObjet
@@ -37,6 +38,10 @@ void cMapObject::setup(const Json::Value & status)
 	createLineLight(Resource::JSON[name + ".json"]["LineLight"]);
 
 	createAABB(Resource::JSON[name + ".json"]["AABB"]);
+
+	// /////////ライトのデータを詰め込む。
+	for (auto& p_light : mPointLights) pointLightIds.emplace_back(p_light->getId());
+	for (auto& l_light : mLineLights) lineLightIds.emplace_back(l_light->getId());
 }
 
 
@@ -56,6 +61,8 @@ void cMapObject::update(const float & deltatime)
 
 void cMapObject::draw()
 {
+	// ////////////まとめておいたIDを使ってライトを反映させる。
+	cShaderManager::getInstance()->uniformUpdate(pointLightIds, lineLightIds, spotLightIds);
 	{
 		ci::gl::ScopedTextureBind tex(TEX->get(texturekey));
 

@@ -7,6 +7,7 @@
 #include <Game/Field/FieldData.h>
 #include <Game/cGameManager.h>
 #include <Sound/Stereophonic.h>
+#include <Game/cShaderManager.h>
 namespace Game
 {
 
@@ -46,6 +47,9 @@ namespace Game
 		{
 			mGemStone[i]->draw();
 		}
+
+		// ////////////ƒ‰ƒCƒg‚Ì”½‰f‰ðœ
+		cShaderManager::getInstance()->uniformUpdate();
 
 		//Œ‡•Ð
 		for (size_t i = 0; i < mFragmentGems.size(); i++)
