@@ -141,6 +141,10 @@ cGameManager::cGameManager( )
 			break;
 		}
 
+		if (Game::cPlayerManager::getInstance()->isActivePlayerWatching())
+		{
+			CAMERA->setCameraMode(CameraManager::FPS);
+		}
 		ENV->setMouseControl( true );
 		auto ready = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 128 ) );
 		ready->set_text( u8"ready" );

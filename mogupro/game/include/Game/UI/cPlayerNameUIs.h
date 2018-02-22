@@ -7,12 +7,14 @@ namespace UI
 class cPlayerNameUIs : public Node::node
 {
 public:
-	CREATE_H( cPlayerNameUIs )
+	CREATE_H( cPlayerNameUIs, int team )
 	{
-		CREATE( cPlayerNameUIs );
+		CREATE( cPlayerNameUIs, team);
 	}
-	bool init( );
+	bool init( int team );
 	void update( float delta ) override; 
+private:
+	int team;
 };
 }
 }

@@ -2,6 +2,7 @@
 #include <cinder/app/App.h>
 #include <Node/action.hpp>
 #include <CameraManager/cCameraManager.h>
+#include <cinder/Utilities.h>
 
 extern "C"
 {
@@ -25,6 +26,16 @@ cInputAll::cInputAll( )
 }
 void cInputAll::setMouseControl( const bool & flag )
 {
+	if (flag)
+	{
+		while (::ShowCursor(false) >= 0)
+			;
+	}
+	else
+	{
+		while (::ShowCursor(true) < 0)
+			;
+	}
 	mouse_active = flag;
 }
 void cInputAll::disableMouseButton( )

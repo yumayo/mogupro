@@ -12,7 +12,6 @@ bool cCannonMeter::init( cinder::vec2 contentSize, Player::Team playerTeam, Play
 	this->playerTeam = playerTeam;
 
 	auto gauge = Node::Renderer::sprite::create( Resource::cImageManager::getInstance( )->find( "gameMainUI/meter_gauge.png" ) );
-	this->set_scale( vec2( myTeam == playerTeam ? 1.0F : 0.75F ) );
 
 	auto rectSize = vec2( 82, 572 );
 

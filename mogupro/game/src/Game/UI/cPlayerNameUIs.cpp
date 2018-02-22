@@ -6,11 +6,12 @@ namespace Game
 {
 namespace UI
 {
-bool cPlayerNameUIs::init( )
+bool cPlayerNameUIs::init( int team )
 {
 	for ( auto& it : cPlayerManager::getInstance( )->getPlayers( ) )
 	{
-		if ( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) != it->getWhichTeam( ) ) continue;
+		this->team = team;
+		if ( team != it->getWhichTeam( ) ) continue;
 		if ( it->isWatching( ) ) continue;
 
 		auto l = this->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
@@ -41,7 +42,7 @@ void cPlayerNameUIs::update( float delta )
 
 	for ( auto& it : cPlayerManager::getInstance( )->getPlayers( ) )
 	{
-		if ( cPlayerManager::getInstance( )->getActivePlayerTeamId( ) != it->getWhichTeam( ) ) continue;
+		if ( team != it->getWhichTeam( ) ) continue;
 		if ( it->isWatching( ) ) continue;
 		auto p = this->get_child_by_tag( it->getPlayerId( ) );
 		ci::Frustum fru( CAMERA->getCamera( ) );

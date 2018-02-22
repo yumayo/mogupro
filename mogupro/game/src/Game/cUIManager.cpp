@@ -53,7 +53,21 @@ void cUIManager::setup( )
 	mRedTeamCannonMeter = mRoot->add_child( UI::cCannonMeter::create( mRoot->get_content_size( ), playerTeamId, Player::Team::Red ) );
 	mBlueTeamCannonMeter = mRoot->add_child( UI::cCannonMeter::create( mRoot->get_content_size( ), playerTeamId, Player::Team::Blue ) );
 
-	mRoot->add_child( UI::cPlayerNameUIs::create( ) );
+	// 観戦者以外は敵のUIを小さくします。
+	if (!cPlayerManager::getInstance()->isActivePlayerWatching())
+	{
+		mRedTeamCannonMeter->set_scale(vec2(playerTeamId == Player::Team::Red ? 1.0F : 0.75F));
+		mBlueTeamCannonMeter->set_scale(vec2(playerTeamId == Player::Team::Blue ? 1.0F : 0.75F));
+	}
+
+	mPlayerNames = mRoot->add_child( Node::node::create() );
+	mPlayerNames->add_child(UI::cPlayerNameUIs::create( playerTeamId ));
+
+	// 観戦者だけは敵の名前も表示させます。
+	if (cPlayerManager::getInstance()->isActivePlayerWatching())
+	{
+		mPlayerNames->add_child(UI::cPlayerNameUIs::create(playerTeamId == Player::Team::Red ? Player::Team::Blue : Player::Team::Red));
+	}
 
 	mTargetCannon = mRoot->add_child( UI::cTargetCannon::create( playerTeamId ) );
 
@@ -87,11 +101,19 @@ void cUIManager::setup( )
 
 	mTips = mRoot->add_child(UI::cTips::create(mRoot->get_content_size(), playerTeamId));
 
-
+	// チュートリアルはTIPSと時間表示を無効にします。
 	if (Scene::cSceneManager::getInstance()->isCurrentScene<Scene::Member::cTutorial>())
 	{
 		mTimer->set_block_visible(true);
 		mTips->set_block_visible(true);
+	}
+
+	// 観戦者はアイテム、TIPS、大砲への方向表示を無効にします。
+	if (cPlayerManager::getInstance()->isActivePlayerWatching())
+	{
+		mSlot->set_block_visible(true);
+		mTips->set_block_visible(true);
+		mTargetCannon->set_block_visible(true);
 	}
 
 	ui[mTimer] = FixedPosition{ mTimer->get_position(), mTimer->get_position() + vec2( 0, mTimer->get_content_size().y + 100 ) * -1.0F };
@@ -206,7 +228,11 @@ void cUIManager::enable( )
 		u.first->set_schedule_update( true );
 		u.first->run_action(ease<ci::EaseOutCubic>::create(move_to::create(0.2F, u.second.enable)));
 	}
-	mTargetCannon->set_block_visible( false );
+	if (!cPlayerManager::getInstance()->isActivePlayerWatching())
+	{
+		mTargetCannon->set_block_visible(false);
+	}
+	mPlayerNames->set_block_visible(false);
 	visible = true;
 }
 void cUIManager::disable( )
@@ -219,6 +245,7 @@ void cUIManager::disable( )
 		u.first->run_action(ease<ci::EaseOutCubic>::create(move_to::create(0.2F, u.second.disable)));
 	}
 	mTargetCannon->set_block_visible( true );
+	mPlayerNames->set_block_visible(true);
 	visible = false;
 }
 }

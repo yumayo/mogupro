@@ -77,6 +77,7 @@ void cGameMain::setup( )
 	teams[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum;
 
     Game::cPlayerManager::getInstance( )->setup( Game::Field::RESPAWN_POINT, 8U, active_player_id, teams);
+
 	// ////////プレイヤーが揃った後に、キャノンにはプレイヤーの使用している全ライトを適応させる。
 	Game::cStrategyManager::getInstance()->lightSetup();
 
@@ -108,6 +109,11 @@ void cGameMain::setup( )
 
 void cGameMain::shutDown( )
 {
+	if (Game::cPlayerManager::getInstance()->isActivePlayerWatching())
+	{
+		CAMERA->setCameraMode(CameraManager::TPS);
+	}
+
 	Network::cUDPClientManager::removeInstance( );
 	Network::cUDPServerManager::removeInstance( );
 	Game::cDebugManager::removeInstance( );

@@ -27,6 +27,7 @@ private:
 	softptr<Node::node> mTimer;
 	softptr<Node::node> mSlot;
 	softptr<Node::node> mTips;
+	softptr<Node::node> mPlayerNames;
 	softptr<Node::node> mRedTeamCannonMeter;
 	softptr<Node::node> mBlueTeamCannonMeter;
 	softptr<Node::node> mPlayerScreenEffect;

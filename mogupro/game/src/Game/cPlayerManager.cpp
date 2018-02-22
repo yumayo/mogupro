@@ -101,11 +101,11 @@ ci::vec3 Game::cPlayerManager::playerNormalMoveKey(const float& delta_time)
 
 	if ( active_player->isWatching( ) )
 	{
-		if ( ENV->pressKey( ci::app::KeyEvent::KEY_LSHIFT ) ) {
+		if ( ENV->pressKey( ci::app::KeyEvent::KEY_LSHIFT ) || ENV->isPadPress(4) ) {
 			keybord_velocity.y = -active_player->getSpeed( );
 		}
 
-		if ( ENV->pressKey( ci::app::KeyEvent::KEY_SPACE ) ) {
+		if ( ENV->pressKey( ci::app::KeyEvent::KEY_SPACE ) || ENV->isPadPress(5) ) {
 			keybord_velocity.y = active_player->getSpeed( );
 		}
 	}
@@ -393,30 +393,37 @@ void Game::cPlayerManager::watchingCamera( const float & delta_time )
 	if ( !isActivePlayerWatching( ) ) return;
 	if ( ENV->pushKey( ci::app::KeyEvent::KEY_1 ) )
 	{
+		CAMERA->setCameraMode(CameraManager::TPS);
 		watching_target_player_id = 0;
 	}
 	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_2 ) )
 	{
+		CAMERA->setCameraMode(CameraManager::TPS);
 		watching_target_player_id = 1;
 	}
 	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_3 ) )
 	{
+		CAMERA->setCameraMode(CameraManager::TPS);
 		watching_target_player_id = 2;
 	}
 	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_4 ) )
 	{
+		CAMERA->setCameraMode(CameraManager::TPS);
 		watching_target_player_id = 4; // 3‚ÍŠÏíÒ
 	}
 	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_5 ) )
 	{
+		CAMERA->setCameraMode(CameraManager::TPS);
 		watching_target_player_id = 5;
 	}
 	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_6 ) )
 	{
+		CAMERA->setCameraMode(CameraManager::TPS);
 		watching_target_player_id = 6;
 	}
-	else if ( ENV->pushKey( ci::app::KeyEvent::KEY_ESCAPE ) )
+	else if ( ENV->pushKey( ) )
 	{
+		CAMERA->setCameraMode(CameraManager::FPS);
 		watching_target_player_id = -1;
 	}
 	// 7‚ÍŠÏíÒ
