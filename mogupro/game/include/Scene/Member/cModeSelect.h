@@ -51,6 +51,16 @@ private:
 	Utility::hardptr<Node::node>root;
 	bool isfading = true;
 	Sound::cIntroLoopableBGM introloopBGM;
+
+	bool watching = false;
+	enum WatchFase
+	{
+		NONE,
+		BEIGN,
+		WAIT
+	};
+
+	WatchFase fase;
 };
 }
 }

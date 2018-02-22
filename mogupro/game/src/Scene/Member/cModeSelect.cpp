@@ -15,12 +15,20 @@
 #include <Game/cGameManager.h>
 #include <Scene/Member/cTitle.h>
 #include"Resource\cImageManager.h"
+#include <Network.hpp>
+#include <Resource/cJsonManager.h>
+#include <Network/cMatchingMemberManager.h>
 using namespace ci;
 using namespace ci::app;
 
 using namespace Node;
 
 using namespace Node::Action;
+
+using namespace Network;
+using namespace Network::Packet::Event;
+using namespace Network::Packet::Request;
+using namespace Network::Packet::Response;
 namespace Scene
 {
 namespace Member
@@ -86,6 +94,68 @@ void cModeSelect::update(float t)
 		desideScene();
 	}
 	root->entry_update(t);
+
+	if (watching == false)
+	{
+		if (ENV->pushKey(ci::app::KeyEvent::KEY_a))
+		{
+			watching = true;
+			Network::cUDPClientManager::getInstance()->open();
+			cUDPClientManager::getInstance()->connect(Resource::JSON["server.json"]["ip"].asString());
+		}
+	}
+
+	else
+	{
+		Network::cUDPClientManager::getInstance()->update(t);
+		if (cUDPClientManager::getInstance()->isConnected() == false)return;
+		
+		if (fase == WatchFase::NONE)
+		{
+			cUDPClientManager::getInstance()->send(new cReqInRoomWatching(100));
+			fase = WatchFase::BEIGN;
+		}
+
+		else if (fase == WatchFase::BEIGN)
+		{
+			auto m = Network::cUDPClientManager::getInstance()->getUDPManager();
+
+			while (auto resInRoom = m->ResInRoom.get())
+			{
+				if (resInRoom->mFlag = false)
+				{
+					cUDPClientManager::getInstance()->send(new cReqInRoom(100));
+					continue;
+				}
+				cUDPClientManager::getInstance()->send(new cReqWantTeamIn(0));
+				fase == WatchFase::WAIT;
+			}
+		}
+
+		else if (fase == WatchFase::WAIT)
+		{
+			auto m = Network::cUDPClientManager::getInstance()->getUDPManager();
+			while (auto resWantTeamIn = m->ResWantTeamIn.get())
+			{
+				if (resWantTeamIn->mFlag == 1)
+				Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum = resWantTeamIn->mTeamNum;;
+			}
+			int count = 0;
+			while (auto eveTeamMember = m->EveTeamMember.get())
+			{
+				cMatchingMemberManager::getInstance()->addPlayerDatas(
+					eveTeamMember->mNameStr, eveTeamMember->mTeamNum, eveTeamMember->mPlayerID, cNetworkHandle("", 0));
+			}
+			while (auto resCheckBeginGame = m->ResCheckBeginGame.get())
+			{
+				cMatchingMemberManager::getInstance()->mPlayerID = resCheckBeginGame->mPlayerID;
+				cSceneManager::getInstance()->shift<Scene::Member::cGameMain>();
+				continue;
+			}
+		}
+
+	}
+
 }
 void cModeSelect::draw()
 {

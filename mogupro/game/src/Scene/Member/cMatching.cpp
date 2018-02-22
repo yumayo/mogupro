@@ -186,6 +186,9 @@ namespace Scene
 			wantWatching = false;
 			canSendInRoom = false;
 			canStartUpdateServer = false;
+
+			Network::cUDPClientManager::getInstance()->open();
+			cUDPClientManager::getInstance()->connect(Resource::JSON["server.json"]["ip"].asString());
 		}
 
 		void cMatching::registerFunc()
@@ -199,63 +202,6 @@ namespace Scene
 			
 			mRoot = Node::node::create();
 			mRoot->set_schedule_update();
-
-			//対戦ボタンUI
-			auto fightPlate = Node::Renderer::sprite::create(Resource::IMAGE["matching/greenUI.png"]);
-			fightPlate->set_schedule_update();
-			fightPlate->set_tag(0);
-			fightPlate->set_position(ci::vec2(-250, 0));
-			mRoot->add_child(fightPlate);
-			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf",50);
-				f->set_text(u8"対戦");
-				f->set_scale(glm::vec2(1, -1));
-				fightPlate->add_child(f);
-			}
-			outRoomFunc.emplace_back(
-				[this] {
-				mCanSend = false;
-				Network::cUDPClientManager::getInstance()->open();
-				cUDPClientManager::getInstance()->connect(Resource::JSON["server.json"]["ip"].asString());
-				canSendInRoom = true;
-			});
-
-			//タイトルに戻るボタンUI
-			auto lookPlate = Node::Renderer::sprite::create(Resource::IMAGE["matching/redUI.png"]);
-			lookPlate->set_schedule_update();
-			lookPlate->set_tag(1);
-			lookPlate->set_position(ci::vec2(250, 0));
-			mRoot->add_child(lookPlate);
-			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 30);
-				f->set_text(u8"タイトルに戻る");
-				f->set_scale(glm::vec2(1, -1));
-				lookPlate->add_child(f);
-			}
-
-			outRoomFunc.emplace_back(
-				[this] 
-			{
-				sceneChange = true;
-				sceneType = SceneType::TITLE;
-			});
-			mRoot->get_child_by_tag(mSelectTag)->run_action(
-				repeat_forever::create(
-					sequence::create(
-						ease<ci::EaseInOutCirc>::create(scale_by::create(0.26F, ci::vec2(0.2F))),
-						ease<ci::EaseInOutCirc>::create(scale_by::create(0.26F, ci::vec2(-0.2F)))
-					)
-				)
-			);
-
-			inRoomFunc.emplace_back(
-				[this] {
-				if (mClassState == ClassState::MASTER)
-				{
-					cUDPClientManager::getInstance()->send(new cReqCheckBeginGame());
-					mCanSend = false;
-				}
-			});
 
 			mMemberRoot = Node::node::create();
 			mMemberRoot->set_scale(ci::vec2(1, 1));
@@ -373,7 +319,6 @@ namespace Scene
 		void cMatching::update(float deltaTime)
 		{
 			if (sceneChange == true)return;
-			mPrevSelectTag = mSelectTag;
 			mRoot->entry_update(deltaTime);
 			mMemberRoot->entry_update(deltaTime);
 			
@@ -386,36 +331,33 @@ namespace Scene
 				m.update(deltaTime);
 			if (mBeginAnimation == true)
 				mTrimeshAnimation.update(deltaTime);
-			if (canSendInRoom == true)
+
+				Network::cUDPClientManager::getInstance()->update(deltaTime);
+				if (cUDPClientManager::getInstance()->isConnected() == false)return;
+
+			if (canStartUpdateServer == false)
 			{
-				canSendInRoom = false;
 				cUDPClientManager::getInstance()->send(new cReqMakeRoom(100));
 				mWaitClassState = ClassState::MASTER;
 				canStartUpdateServer = true;
 			}
 
-			if (canStartUpdateServer == true)
-			{
-				Network::cUDPClientManager::getInstance()->update(deltaTime);
-				if (cUDPClientManager::getInstance()->isConnected() == false)return;
-			}
-
-			if (wantWatching == true)
-			{
-				Network::cUDPClientManager::getInstance()->update(deltaTime);
-				if (cUDPClientManager::getInstance()->isConnected() == true)
-				{
-					cUDPClientManager::getInstance()->send(new cReqInRoomWatching(100));
-					mCanSend = false;
-					mWaitClassState = ClassState::CLIENT;
-					mSelectTag = 0;
-					wantWatching = false;
-				}
-			}
-
 			makeRoom();
 			inRoom();
 			updateBoxFunc();
+
+			if (mPhaseState == PhaseState::IN_ROOM && mClassState == ClassState::CLIENT
+				|| mClassState == ClassState::MASTER)
+			{
+				auto m = Network::cUDPClientManager::getInstance()->getUDPManager();
+				while (auto resCheckBeginGame = m->ResCheckBeginGame.get())
+				{
+					cMatchingMemberManager::getInstance()->mPlayerID = resCheckBeginGame->mPlayerID;
+					setAnimation();
+					continue;
+				}
+			}
+
 			if (sceneChange == true)
 			{
 				if(sceneType == SceneType::TITLE)
@@ -423,7 +365,6 @@ namespace Scene
 				else if(sceneType == SceneType::GAME_MAIN)
 					cSceneManager::getInstance( )->shift<Scene::Member::cGameMain>( );
 			}
-
 		}
 
 
@@ -442,18 +383,6 @@ namespace Scene
 					)
 				);
 			}
-
-			if (mPhaseState == PhaseState::IN_ROOM && mClassState == ClassState::CLIENT
-				|| mClassState == ClassState::MASTER)
-			{
-				auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
-				while (auto resCheckBeginGame = m->ResCheckBeginGame.get())
-				{
-					cMatchingMemberManager::getInstance()->mPlayerID = resCheckBeginGame->mPlayerID;
-					setAnimation();
-					continue;
-				}
-			}
 		}
 
 		void cMatching::makeRoom()
@@ -466,34 +395,6 @@ namespace Scene
 				while (auto resMakeRoom = m->ResMakeRoom.get())
 				{
 					continue;
-				}
-
-				if (ENV->pushKey(ci::app::KeyEvent::KEY_RIGHT) || ENV->getPadAxisPushMinus(0))
-				{
-					mSelectTag = std::min(mSelectTag + 1, 1);
-				}
-				 
-				if (ENV->pushKey(ci::app::KeyEvent::KEY_LEFT) || ENV->getPadAxisPushPlus(0))
-				{
-					mSelectTag = std::max(mSelectTag - 1, 0);
-				}
-
-				if (ENV->pushKey(ci::app::KeyEvent::KEY_RETURN) || ENV->isPadPush(0) && mCanSend)
-				{
-					Resource::SE["Matching/click.wav"].play();
-					outRoomFunc[mSelectTag]();
-				}
-
-				if (ENV->pressKey(ci::app::KeyEvent::KEY_a) && ENV->pressKey(ci::app::KeyEvent::KEY_s) && mCanSend)
-				{
-					Network::cUDPClientManager::getInstance()->open();
-					cUDPClientManager::getInstance()->connect(Resource::JSON["server.json"]["ip"].asString());
-					//!@LookMe : クソ怪しい処理ではある。
-					/*cUDPClientManager::getInstance()->send(new cReqInRoomWatching(100));
-					mCanSend = false;
-					mWaitClassState = ClassState::CLIENT;
-					mSelectTag = 0;
-					wantWatching = true;*/
 				}
 			}
 			else if (mWaitClassState == ClassState::CLIENT)
@@ -552,7 +453,13 @@ namespace Scene
 			if (mClassState == ClassState::NOT)return;
 
 			if (ENV->pushKey(ci::app::KeyEvent::KEY_RETURN) || ENV->isPadPush(0) && mCanSend)
-				inRoomFunc[mSelectTag]();
+			{
+				if (mClassState == ClassState::MASTER)
+				{
+					cUDPClientManager::getInstance()->send(new cReqCheckBeginGame());
+					mCanSend = false;
+				}
+			}
 
 			//Teamに入れたかどうか
 			auto m = Network::cUDPClientManager::getInstance( )->getUDPManager( );
