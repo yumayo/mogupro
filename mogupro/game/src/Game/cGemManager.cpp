@@ -137,12 +137,12 @@ namespace Game
 		DistanceSortGemStone();
 		//ジェム点滅用タイム
 		mTime += deltaTime * mLightingSpeed;
-		if (isMeshReload)
+		/*if (isMeshReload)
 		{
 			IdSortGemStone();
 			isMeshReload = false;
 		}
-		Repop();
+		Repop();*/
 	};
 
 
