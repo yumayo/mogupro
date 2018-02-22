@@ -44,30 +44,7 @@ public:
 		{
 		}
 	};
-	void update( float delta )
-	{
-		try
-		{
-			iteration = true;
-			for ( iterator = 0; iterator < mSceneBases.size( ); ++iterator )
-			{
-				try
-				{
-					mSceneBases[iterator]->update( delta );
-				}
-				catch ( SceneRemoveSelf const& )
-				{
-					// nothing
-				}
-			}
-			iteration = false;
-			mDontDestroyOnLoad->update( delta );
-		}
-		catch ( SceneAllDeleted const& )
-		{
-			this->update( delta );
-		}
-	}
+	void update(float delta);
 	void draw( )
 	{
 		for ( auto& scene : mSceneBases )

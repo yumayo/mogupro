@@ -31,6 +31,8 @@ cTitle::~cTitle( )
 }
 void cTitle::setup( )
 {
+	ENV->setMouseControl(false);
+
 	STATE_GENERATE(sMac, init);
 	STATE_GENERATE(sMac, fadein);
 	STATE_GENERATE(sMac, idle);

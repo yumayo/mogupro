@@ -51,6 +51,10 @@ void cInputAll::enablePadButton( )
 {
 	padState.enable( );
 }
+bool cInputAll::isEnabledPadButton()
+{
+	return padState.isEnabled( );
+}
 void cInputAll::disablePadAxis( )
 {
 	usePadAxis = false;

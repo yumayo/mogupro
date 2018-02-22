@@ -43,6 +43,7 @@ public:
 	void enableMouseButton( );
 	void disablePadButton( );
 	void enablePadButton( );
+	bool isEnabledPadButton();
 	void disablePadAxis( );
 	void enablePadAxis( );
 	ci::vec2 getMouseVec( );
@@ -97,6 +98,10 @@ private:
 		int button = 0;
 		bool enabled = true;
 	public:
+		bool isEnabled()
+		{
+			return enabled;
+		}
 		void enable( )
 		{
 			if (enabled == true)return;
