@@ -33,6 +33,7 @@
 #include <Scene/cSceneManager.h>
 #include <Scene/Member/cTitle.h>
 #include <Resource/cSoundManager.h>
+#include <Game/cGameManager.h>
 static ci::vec3 testSoundPos;
 
 using namespace ci;
@@ -118,6 +119,7 @@ namespace Scene
 			Game::cShaderManager::removeInstance();
 			Particle::cParticleManager::removeInstance();
 			Game::cGemManager::removeInstance();
+			Game::cGameManager::removeInstance();
 			Game::cTutorialManager::removeInstance();
 			// 全てのマネージャーのライトを削除するためライトを使っているマネージャーより下。
 			Game::cLightManager::removeInstance();
