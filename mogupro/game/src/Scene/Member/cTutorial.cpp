@@ -131,6 +131,7 @@ namespace Scene
 			//—§‘Ì‰¹‹¿‚Ìíœ
 			Sound::StereophonicManager::getInstance()->clear();
 			Sound::StereophonicManager::getInstance()->close();
+			c_Easing::clear();
 			Game::cTutorialManager::removeInstance();
 		}
 

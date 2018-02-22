@@ -109,6 +109,9 @@ public:
 	static void clear(float& _terget) {
 		easinginfo[&_terget].clear();
 	}
+	static void clear() {
+		easinginfo.clear();
+	}
 	//イージングを止める
 	static void stop(float& _terget) {
 		easinginfo[&_terget].is_active = false;
