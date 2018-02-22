@@ -81,15 +81,15 @@ bool cInputAll::pullKey( const int & pressed_key )
 }
 bool cInputAll::pressKey( )
 {
-	return keyState.press( ) || mouseState.press( );
+	return keyState.press( ) || mouseState.press( ) || padState.press( );
 }
 bool cInputAll::pushKey( )
 {
-	return keyState.push( ) || mouseState.push( );
+	return keyState.push( ) || mouseState.push( ) || padState.push();
 }
 bool cInputAll::pullKey( )
 {
-	return keyState.pull( ) || mouseState.pull( );
+	return keyState.pull( ) || mouseState.pull( ) || padState.pull();
 }
 bool cInputAll::isPadPush( const int & num )
 {
