@@ -130,11 +130,5 @@
     "pos": [ 10, -0.4, 42 ],
     "scale": [ 1, 1, 1 ],
     "rotatey": 0
-  },
-  {
-    "name": "kidobanya",
-    "pos": [ 20, -0.4, 40 ],
-    "scale": [ 1, 1, 1 ],
-    "rotatey": 0
   }
 ]
