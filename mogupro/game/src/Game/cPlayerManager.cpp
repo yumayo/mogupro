@@ -132,14 +132,23 @@ ci::vec3 Game::cPlayerManager::playerNormalMoveKey(const float& delta_time)
 }
 ci::vec3 Game::cPlayerManager::playerNormalMovePad(const float & delta_time)
 {
-	ci::vec3 pad_velocity = ci::vec3(0);
+	ci::vec3 spd;
 
-	float x_axis = -(100 * ENV->getPadAxis(0) * delta_time * active_player->getSpeed());
-	float z_axis = -(100 * ENV->getPadAxis(1) * delta_time * active_player->getSpeed());
+	spd.x = -ENV->getPadAxis(0);
+	spd.z = -ENV->getPadAxis(1);
 
-	pad_velocity += ci::vec3(z_axis*sin(CAMERA->getCameraAngle().x), 0.0f, z_axis*cos(CAMERA->getCameraAngle().x));
-	pad_velocity += ci::vec3(x_axis*cos(CAMERA->getCameraAngle().x), 0.0f, -x_axis*sin(CAMERA->getCameraAngle().x));
-	return pad_velocity;
+	if (glm::length(spd) > 1.0F)
+	{
+		spd = glm::normalize(spd);
+	}
+
+	auto q = glm::angleAxis(CAMERA->getCameraAngle().x, glm::vec3(0, 1, 0));
+
+	spd = glm::rotate(q, spd);
+
+	spd *= active_player->getSpeed();
+
+	return spd;
 }
 void Game::cPlayerManager::playerMove(const float & delta_time)
 {
@@ -158,10 +167,10 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	//カメラ移動
 	if (!active_player->isDead()) {
 		if (!getActivePlayer()->isDrilling()) {
-			CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.01f), ENV->getPadAxis(3)*(-0.01f)));
+			CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
 		}
 		else {
-			CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(0)*(-0.1f), ENV->getPadAxis(1)*(-0.1f)));
+			CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(0)*(-0.05f), ENV->getPadAxis(1)*(-0.05f)));
 		}
 	}
 	// ターゲットがいたらプレイヤーは動けません。
@@ -170,7 +179,7 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	//プレイヤーが死んでいたらカメラ以外操作不能
 	if (active_player->isDead())return;
 
-	CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.07f), ENV->getPadAxis(3)*(-0.07f)));
+	CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
 	
 	//大砲にジェムを入れる
 	auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];

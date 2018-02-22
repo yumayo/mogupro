@@ -286,7 +286,7 @@ void cInputAll::setup( )
 	}, (void *)0x4 );
 	Gamepad_axisMoveFunc( [ ] ( Gamepad_device* device, unsigned int axisID, float value, float lastValue, double timestamp, void * context )
 	{
-		if ( value < 0.3f || value > 0.3f )
+		if ( value < 0.125f || value > 0.125f)
 		{
 			ENV->padAxis( axisID, value );
 		}

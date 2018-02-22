@@ -146,7 +146,7 @@ void cGameMain::shutDown( )
 void cGameMain::update( float deltaTime )
 {
 	this->deltaTime = deltaTime;
-	cTimeMeasurement::getInstance()->make();
+	//cTimeMeasurement::getInstance()->make();
     Network::cUDPClientManager::getInstance( )->update( deltaTime );
     Network::cUDPServerManager::getInstance( )->update( deltaTime );
     if ( Network::cUDPClientManager::getInstance( )->isConnected( ) )
@@ -157,77 +157,77 @@ void cGameMain::update( float deltaTime )
 			sendEndSetup = true;
 		}
 		
-		cTimeMeasurement::getInstance()->make();
-		console() << "Network Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "Network Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 
 		Game::cDebugManager::getInstance( )->update( deltaTime );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cDebugManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cDebugManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
         Game::cClientAdapter::getInstance( )->update( );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cClientAdapter Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cClientAdapter Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
         Game::cServerAdapter::getInstance( )->update( );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cServerAdapter Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cServerAdapter Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 		Sound::StereophonicManager::getInstance( )->update( deltaTime );
-		cTimeMeasurement::getInstance()->make();
-		console() << "StereophonicManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "StereophonicManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
         Game::cFieldManager::getInstance( )->update( deltaTime );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cFieldManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cFieldManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 		Game::cPlayerManager::getInstance( )->update( deltaTime );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cPlayerManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cPlayerManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
         Game::cStrategyManager::getInstance( )->update( deltaTime );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cStrategyManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cStrategyManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 		Game::cMapObjectManager::getInstance()->update(deltaTime);
-		cTimeMeasurement::getInstance()->make();
-		console() << "cMapObjectManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cMapObjectManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 		Game::cCapsuleManager::getInstance()->update(deltaTime);
-		cTimeMeasurement::getInstance()->make();
-		console() << "cCapsuleManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cCapsuleManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 		Game::cSubWeaponManager::getInstance()->update(deltaTime);
-		cTimeMeasurement::getInstance()->make();
-		console() << "cSubWeaponManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cSubWeaponManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
         Collision::cCollisionManager::getInstance( )->update( deltaTime );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cCollisionManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cCollisionManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 		Game::cPlayerManager::getInstance()->playerCollisionAfterUpdate( deltaTime );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cPlayerManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cPlayerManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 		Game::cSubWeaponManager::getInstance()->updateCollisionAfterUpdate(deltaTime);
-		cTimeMeasurement::getInstance()->make();
-		console() << "cSubWeaponManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cSubWeaponManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
         GemManager->update(deltaTime);
-		cTimeMeasurement::getInstance()->make();
-		console() << "GemManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "GemManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
         Game::cShaderManager::getInstance( )->update( std::bind( &cGameMain::drawShadow, this ) );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cShaderManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cShaderManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
         Particle::cParticleManager::getInstance()->update( deltaTime );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cParticleManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cParticleManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
         Resource::cFbxManager::getInstance()->testUpdate( deltaTime );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cFbxManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cFbxManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 		GemManager->lateUpdate(deltaTime);
-		cTimeMeasurement::getInstance()->make();
-		console() << "GemManager lateUpdate Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "GemManager lateUpdate Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 		Game::cGameManager::getInstance( )->update( deltaTime );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cGameManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cGameManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 		Game::cLightManager::getInstance( )->update( );
-		cTimeMeasurement::getInstance()->make();
-		console() << "cLightManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "cLightManager Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 
-		cTimeMeasurement::getInstance()->make();
-		console() << "Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+		//cTimeMeasurement::getInstance()->make();
+		//console() << "Update Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
     }
 }
 void cGameMain::draw( )
 {
-	cTimeMeasurement::getInstance()->make();
+	//cTimeMeasurement::getInstance()->make();
 	// カメラよりも後じゃないと1フレームズレます。
 	Game::cUIManager::getInstance( )->update( deltaTime );
 	Game::cPlayerManager::getInstance( )->cameraAfterUpdate( deltaTime );
@@ -265,27 +265,27 @@ void cGameMain::draw( )
 
 	Collision::cCollisionManager::getInstance( )->draw( );
 
-	cTimeMeasurement::getInstance()->make();
-	console() << "draw Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+	//cTimeMeasurement::getInstance()->make();
+	//console() << "draw Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 }
 void cGameMain::drawShadow( )
 {
 	ci::gl::ScopedColor scpCol( ColorA( 1.0F, 1.0F, 1.0F, 1.0F ) );
 	gl::enableDepthRead( );
 	gl::enableDepthWrite( );
-	cTimeMeasurement::getInstance()->make();
+	//cTimeMeasurement::getInstance()->make();
 	Game::cFieldManager::getInstance( )->draw( );
-	cTimeMeasurement::getInstance()->make();
-	console() << "drawShadow cFieldManager Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+	//cTimeMeasurement::getInstance()->make();
+	//console() << "drawShadow cFieldManager Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 	Game::cStrategyManager::getInstance( )->draw( );
-	cTimeMeasurement::getInstance()->make();
-	console() << "drawShadow cStrategyManager Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+	//cTimeMeasurement::getInstance()->make();
+	//console() << "drawShadow cStrategyManager Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 	Game::cMapObjectManager::getInstance()->draw();
-	cTimeMeasurement::getInstance()->make();
-	console() << "drawShadow cMapObjectManager Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+	//cTimeMeasurement::getInstance()->make();
+	//console() << "drawShadow cMapObjectManager Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 	Game::cPlayerManager::getInstance( )->draw( );
-	cTimeMeasurement::getInstance()->make();
-	console() << "drawShadow cPlayerManager Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
+	//cTimeMeasurement::getInstance()->make();
+	//console() << "drawShadow cPlayerManager Time : " << cTimeMeasurement::getInstance()->deltaTime() << std::endl;
 }
 void cGameMain::draw2D( )
 {
