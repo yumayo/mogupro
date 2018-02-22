@@ -448,7 +448,7 @@ void cLightSaber::setup( )
 			Resource::SE["Player/katana-slash5.wav"].setGain( 0.2f );
 			Resource::SE["Player/katana-slash5.wav"].play( );
 
-			addBullet( power, power * 80.0F );
+			addBullet( power, ( power + 1.0F ) * 50.0F );
 
 			tumeRoot->set_block_visible( );
 		};
