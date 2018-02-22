@@ -14,7 +14,7 @@ public:
 	virtual ~cBase( ) { }
 	virtual void setup( ) { };
 	virtual void update( const float& delta_time ) { };
-	virtual void draw( ) { };
+	virtual void draw(cinder::mat4 const& m) { };
 	virtual void reset( ) { };
 public:
 	void pushCall( );

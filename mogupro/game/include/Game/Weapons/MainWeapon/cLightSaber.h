@@ -14,7 +14,7 @@ public:
 public: //! override functions
 	void setup( ) override;
 	void update( const float& delta_time ) override;
-	void draw( ) override;
+	void draw(cinder::mat4 const& m) override;
 	void reset( ) override;
 public:
 	// TIPS—p

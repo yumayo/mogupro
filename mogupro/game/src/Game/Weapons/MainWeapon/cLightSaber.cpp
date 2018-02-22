@@ -271,6 +271,9 @@ void cLightSaber::setup( )
 		left_slash->onStateOut = [this]
 		{
 			auto t = tume.dynamicptr<tumeNode>();
+			t->center = vec3(0);
+			t->radius = 0.0F;
+			t->damage = 0.0F;
 			t->resetHitList();
 		};
 	}
@@ -331,6 +334,9 @@ void cLightSaber::setup( )
 		right_slash->onStateOut = [this]
 		{
 			auto t = tume.dynamicptr<tumeNode>();
+			t->center = vec3(0);
+			t->radius = 0.0F;
+			t->damage = 0.0F;
 			t->resetHitList();
 		};
 	}
@@ -392,7 +398,7 @@ void cLightSaber::setup( )
 		chage_hold->onStateStay = [ this ] ( auto n )
 		{
 			auto t = tume.dynamicptr<tumeNode>( );
-			t->addLightPower( delta );
+			t->addLightPower( delta * 1.5F );
 		};
 		chage_hold->onStateIn = [ this ] ( auto m )
 		{
@@ -448,7 +454,7 @@ void cLightSaber::setup( )
 			Resource::SE["Player/katana-slash5.wav"].setGain( 0.2f );
 			Resource::SE["Player/katana-slash5.wav"].play( );
 
-			addBullet( power, ( power + 1.0F ) * 50.0F );
+			addBullet( power * 1.5F, ( power + 1.0F ) * 50.0F );
 
 			tumeRoot->set_block_visible( );
 		};
@@ -548,13 +554,13 @@ void cLightSaber::update( const float& delta_time )
 	stateMachine.update( delta_time );
 	flashInput( );
 }
-void cLightSaber::draw( )
+void cLightSaber::draw(cinder::mat4 const& m)
 {
 	//debugDrawFunc( );
 	
 	{
 		gl::ScopedModelMatrix scp;
-		tumeRoot->entry_render( mat4( ) );
+		tumeRoot->entry_render(mat4());
 	}
 
 	{

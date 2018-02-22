@@ -529,11 +529,11 @@ void Game::Player::cPlayer::draw()
 	//死亡中は描画しない
 	if (is_dead)return;
 
-	ci::gl::pushModelView();
-	if (active_user&&
-		(CAMERA->getCameraMode() != CameraManager::CAMERA_MODE::TPS)) {
-		return;
-	}
+	// リザルトでアクティブプレイヤーのみ表示されなくなってしまったので。
+	//if (active_user&&
+	//	(CAMERA->getCameraMode() != CameraManager::CAMERA_MODE::TPS)) {
+	//	return;
+	//}
 
 	//再出撃ときに点滅させる処理
 	if (no_damage_count < DEFAULT_NO_DAMAGE_TIME) {
@@ -545,11 +545,12 @@ void Game::Player::cPlayer::draw()
 	// ////////////まとめておいたIDを使ってライトを反映させる。
 	cShaderManager::getInstance()->uniformUpdate(pointLightIds, lineLightIds, spotLightIds);
 
+	ci::gl::pushModelView();
+
 	// 武器の描画
 	{
 		ci::gl::pushModelView( );
-		ci::gl::setModelMatrix( getWorldMatrixWeapon( ) );
-		main_weapon->draw( );
+		main_weapon->draw(getWorldMatrixWeapon());
 		ci::gl::popModelView( );
 	}
 
