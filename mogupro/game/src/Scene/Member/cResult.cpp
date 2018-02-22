@@ -11,6 +11,7 @@
 #include <Game/cPlayerManager.h>
 #include <Resource/cSoundManager.h>
 #include <Network/cMatchingMemberManager.h>
+#include <Network/cUDPClientManager.h>
 using namespace Node::Renderer;
 using namespace cinder;
 using namespace Node::Action;
@@ -326,6 +327,12 @@ public:
 const float CANNON_POWER_HALF_LENGTH = ( Game::Field::WORLD_SIZE.z - 8 * 2 ) / 2.0F;
 void cResult::setup()
 {
+	// 0番の人はサーバーにゲームが終了したことを通知します。
+	if (Game::cPlayerManager::getInstance()->getActivePlayerId() == 0)
+	{
+		Network::cUDPClientManager::getInstance()->send(new Network::Packet::Request::cReqGameEnd());
+	}
+
 	root = Node::node::create();
 	root->set_schedule_update();
 	root->set_content_size(app::getWindowSize());

@@ -503,6 +503,16 @@ void cUDPManager::onReceive( cPacketChunk const & packetChunk )
 			}
 			break;
 		}
+		case Network::Packet::PacketId::REQ_GAME_END:
+		{
+			if ( ReqGameEnd.isNew( packetHeader ) )
+			{
+				Packet::Request::cReqGameEnd data;
+				data.onReceive( networkHandle, bufferSize, bufferData );
+				ReqGameEnd.unget( std::move( data ) );
+			}
+			break;
+		}
 		case Network::Packet::PacketId::RES_STRING:
 		{
 			if ( ResString.isNew( packetHeader ) )

@@ -52,4 +52,9 @@ int cImageManager::currentNum( )
 	return mCurrentLoadIndex;
 }
 ImageSuppoter const IMAGE;
+ImageSuppoter::ImageNotFound::ImageNotFound(std::string const & path)
+	: std::runtime_error("imageファイルが見つかりません。")
+{
+	cinder::app::console() << path << std::endl;
+}
 }

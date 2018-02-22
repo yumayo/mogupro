@@ -60,6 +60,7 @@ public:
 	cPacketQueue<Packet::Request::cReqResult> ReqResult;
 	cPacketQueue<Packet::Request::cReqPlayerAttack> ReqPlayerAttack;
 	cPacketQueue<Packet::Request::cReqFragmentGem> ReqFragmentGem;
+	cPacketQueue<Packet::Request::cReqGameEnd> ReqGameEnd;
 	cPacketQueue<Packet::Response::cResString> ResString;
 	cPacketQueue<Packet::Response::cResConnect> ResConnect;
 	cPacketQueue<Packet::Response::cResGetJemSeed> ResGetJemSeed;

@@ -27,9 +27,7 @@ struct ImageSuppoter
 	class ImageNotFound : public std::runtime_error
 	{
 	public:
-		ImageNotFound( ) : std::runtime_error( "imageファイルが見つかりません。" )
-		{
-		}
+		ImageNotFound(std::string const& path);
 	};
 	cinder::gl::TextureRef operator[]( std::string const& underAssetsUnderIMAGEUnderPath ) const
 	{
@@ -39,7 +37,7 @@ struct ImageSuppoter
 		}
 		catch ( ... )
 		{
-			throw ImageNotFound( );
+			throw ImageNotFound(underAssetsUnderIMAGEUnderPath);
 		}
 	}
 };

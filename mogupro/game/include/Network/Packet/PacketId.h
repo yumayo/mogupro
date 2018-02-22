@@ -119,6 +119,8 @@ enum class PacketId : ubyte1
 	REQ_PLAYER_ATTACK,
 	//
 	REQ_FRAGMENT_GEM,
+	//
+	REQ_GAME_END,
 
     //=========================================================//
     //                        Response                         //

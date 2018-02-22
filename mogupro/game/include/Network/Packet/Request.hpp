@@ -27,3 +27,4 @@
 #include <Network/Packet/Request/cReqResult.h>
 #include <Network/Packet/Request/cReqPlayerAttack.h>
 #include <Network/Packet/Request/cReqFragmentGem.h>
+#include <Network/Packet/Request/cReqGameEnd.h>

@@ -234,14 +234,25 @@ namespace Scene
 
 		void cMatchingServer::resetMember()
 		{
-			if (!ENV->pushKey(ci::app::KeyEvent::KEY_SPACE))return;
-
-			mPhaseState = PhaseState::NOT_IN_ROOM;
-			mOpenRoom = false;
-			mIsGameUpdate = false;
-			cMatchingMemberManager::removeInstance();
-			cUDPServerManager::getInstance()->close();
-			cUDPServerManager::getInstance()->open();
+			bool isReset = false;
+			for (auto& m : Network::cUDPServerManager::getInstance()->getUDPManager())
+			while (auto req = m->ReqGameEnd.get())
+			{
+				isReset = true;
+			}
+			if (ENV->pushKey(ci::app::KeyEvent::KEY_SPACE))
+			{
+				isReset = true;
+			}
+			if(isReset)
+			{
+				mPhaseState = PhaseState::NOT_IN_ROOM;
+				mOpenRoom = false;
+				mIsGameUpdate = false;
+				cMatchingMemberManager::removeInstance();
+				cUDPServerManager::getInstance()->close();
+				cUDPServerManager::getInstance()->open();
+			}
 		}
 		void cMatchingServer::draw()
 		{
