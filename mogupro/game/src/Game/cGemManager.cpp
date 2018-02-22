@@ -7,7 +7,6 @@
 #include <Game/Field/FieldData.h>
 #include <Game/cGameManager.h>
 #include <Sound/Stereophonic.h>
-#include <Game/cShaderManager.h>
 namespace Game
 {
 
@@ -47,9 +46,6 @@ namespace Game
 		{
 			mGemStone[i]->draw();
 		}
-
-		// ////////////ƒ‰ƒCƒg‚Ì”½‰f‰ðœ
-		cShaderManager::getInstance()->uniformUpdate();
 
 		//Œ‡•Ð
 		for (size_t i = 0; i < mFragmentGems.size(); i++)
@@ -163,12 +159,32 @@ namespace Game
 	void cGemManager::create()
 	{
 		ci::randSeed(uint32_t(mSeed));
+
+
+		for (int i = 0; i < 15;)
+		{
+			ci::vec3 pos;
+		    pos.x = ci::randInt(0, int32_t(Field::CHUNK_RANGE_X-1));
+			pos.y = ci::randInt(0, int32_t(Field::CHUNK_RANGE_Y-1));
+			pos.z = ci::randInt(0, int32_t(Field::CHUNK_RANGE_Z-1));
+
+			if (cFieldManager::getInstance()->isUnderCannon(pos.x, pos.y, pos.z)) continue;
+
+			for each(auto m in mhotSpot)
+			{
+				if (m == pos) continue;
+			}
+			mhotSpot.push_back(pos);
+			i++;
+		}
+
 		for (int i = 0; i < mGemMaxNum; i += 2)
 		{
-
-			int x = ci::randInt(0, int32_t(mRandomRange.x - 1));
-			int y = ci::randInt(0, int32_t(mRandomRange.y - 1));
-			int z = ci::randInt(0, int32_t(mRandomRange.z - 1));
+			
+			int spotnum = i%mhotSpot.size();
+			int x = mhotSpot[spotnum].x * Field::CHUNK_SIZE-1  + ci::randInt(0, int32_t(Field::CHUNK_SIZE - 1));
+			int y = mhotSpot[spotnum].y * Field::CHUNK_SIZE-1 + ci::randInt(0, int32_t(Field::CHUNK_SIZE - 1));
+			int z = mhotSpot[spotnum].z * Field::CHUNK_SIZE-1 + ci::randInt(0, int32_t(Field::CHUNK_SIZE - 1));
 			Gem::GemType type = Game::Gem::GemType(ci::randInt(0, Game::Gem::GemType::Coal + 1));
 
 
@@ -419,5 +435,11 @@ namespace Game
 	void cGemManager::IdSortGemStone()
 	{
 		std::sort(mGemStone.begin(), mGemStone.end(), [&](const std::shared_ptr<Gem::cGemStone> a, const std::shared_ptr<Gem::cGemStone> b) { return a->getId() < b->getId(); });
+	}
+
+	void cGemManager::breakGemStone()
+	{
+		//if(mGemMaxNum > mGemStone)
+
 	}
 }
