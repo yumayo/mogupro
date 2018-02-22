@@ -11,6 +11,7 @@
 #include"Game/cGemManager.h"
 #include"Game\cPlayerManager.h"
 #include"Game\Gem\cFragmentGem.h"
+#include"Resource\cImageManager.h"
 namespace Game
 {
 namespace Weapons
@@ -29,9 +30,11 @@ namespace Weapons
 			mPlayerId = playerid;
 			if (mTeamNum == 0) {
 				mDefaultcolor = ci::ColorA(1, 0, 0, 1);
+				mTextureKey = "bombred";
 			}
 			else {
 				mDefaultcolor = ci::ColorA(0, 0, 1, 1);
+				mTextureKey = "bombblue";
 			}
 			
 		}
@@ -161,7 +164,7 @@ namespace Weapons
 			rb.addWorld();
 			rb.setSpeed(mSpeed);
 			rb.setFriction(1.0f);
-			mesh = Resource::cObjectManager::getInstance()->findObject("sphere.obj");
+			mesh = Resource::cObjectManager::getInstance()->findObject(mTextureKey + ".obj");
 			light = cLightManager::getInstance()->addPointLight(mPos, ci::vec3(0, 1, 0), 1.f);
 			mExprosionLength = 8.f*mScale.x;
 			mAroundLightLength = (mExprosionLength / 2.f) - 0.5f;
@@ -187,10 +190,11 @@ namespace Weapons
 		}
 		void cLightBomb::draw()
 		{
+			ci::gl::ScopedTextureBind tex(Resource::IMAGE["in_game/"+mTextureKey+".png"]);
 			ci::gl::pushModelView();
-			ci::gl::translate(mPos);
+			ci::gl::translate(mPos + ci::vec3(0, -mDrawscale.y*2.f, 0));
+			ci::gl::scale(mDrawscale / 30.f);
 			ci::gl::color(ci::ColorA(light->color.r, light->color.g, light->color.b));
-			ci::gl::scale(mDrawscale);
 			ci::gl::draw(mesh);
 			ci::gl::popModelView();
 			//STRM->drawShere(mPos, mDrawscale, ci::vec3(0, 0, 0), ci::ColorA(light->color.r, light->color.g, light->color.b), 100);

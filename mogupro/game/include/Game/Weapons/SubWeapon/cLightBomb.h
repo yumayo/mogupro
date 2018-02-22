@@ -20,6 +20,7 @@ namespace Game
 				Collision::cRigidBody rb;
 				Collision::cAABBCollider aabb;
 				int mTeamNum;
+				std::string mTextureKey;
 				ci::gl::VboMeshRef mesh;
 			public://í êMä÷åW
 				void dmageToPlayer(const int playerid);

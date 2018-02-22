@@ -1,6 +1,8 @@
 #include <Game/Capsule/cLightBombCapsule.h>
 #include<Game/cStrategyManager.h>
 #include<cinder/Rand.h>
+#include"Resource\cObjectManager.h"
+#include"Resource\cImageManager.h"
 namespace Game
 {
 namespace Capsule
@@ -25,6 +27,7 @@ void cLightBombCapsule::setup(const ci::vec3 pos, const Game::Weapons::SubWeapon
 	mLightSinAngle = ci::randFloat(2.f*M_PI);
 	mLightRadius = mLightMaxRadius * (((1.f - mLightRate) / 2.f) + mLightRate / 2.f*sin(mLightSinAngle));
 	mLight = cLightManager::getInstance()->addPointLight(mPos, ci::vec3(hsv.r, hsv.g, hsv.b), mLightRadius);
+	mesh = Resource::cObjectManager::getInstance()->findObject("capsule.obj");
 }
 
 void cLightBombCapsule::update(const float & delta_time)
@@ -46,11 +49,21 @@ void cLightBombCapsule::update(const float & delta_time)
 }
 void cLightBombCapsule::draw()
 {
-	STRM->drawCube(mPos, mScale, mRotate, ci::ColorA(1, 0, 0, 1));
+	ci::gl::ScopedTextureBind tex(Resource::IMAGE["in_game/capsule.png"]);
+	ci::gl::pushModelView();
+	ci::gl::translate(mPos + ci::vec3(0, 0, 0));
+	ci::gl::rotate(mRotate.y, ci::vec3(1, 0, 0));
+	ci::gl::rotate(mRotate.y, ci::vec3(0, 1, 0));
+	ci::gl::translate(ci::vec3(0, -mScale.y/2.f, 0));
+	ci::gl::color(ci::ColorA(1,0,0,1));
+	ci::gl::scale(mScale*(1.f / 64.f));
+	ci::gl::draw(mesh);
+	ci::gl::popModelView();
+	//STRM->drawCube(mPos, mScale, mRotate, ci::ColorA(1, 0, 0, 1));
 }
 bool cLightBombCapsule::deleteThis()
 {
-	return count > 60;
+	return count > 30;
 }
 }
 }

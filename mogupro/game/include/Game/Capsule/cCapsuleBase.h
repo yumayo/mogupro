@@ -31,6 +31,7 @@ protected:
 	ci::vec3 mPos;
 	ci::vec3 mScale;
 	ci::vec3 mRotate;
+	ci::gl::VboMeshRef mesh;
 	ci::AxisAlignedBox mAABB;
 	Game::Weapons::SubWeapon::SubWeaponType mType;
 	Game::Light::PointLightHandle mLight;

@@ -4,6 +4,8 @@
 #include <ModeSelect/cDrawFunc.h>
 #include <ModeSelect/cSelectCard.h>
 #include <Sound/cIntroLoopableBGM.h>
+#include<Node\node.h>
+#include<Node\action.hpp>
 namespace Scene
 {
 namespace Member
@@ -32,6 +34,7 @@ private:
 	void shiftTitle();
 	void shiftLocalBattle();
 	void shiftTutorial();
+	void desideScene();
 	void updateBackGround(float t);
 	int MSelectScene = 0;
 	void drawButton();
@@ -45,6 +48,8 @@ private:
 	float aroowtranceY = 0.0f;
 	float EaseReturn(const float t,const float s,const float e);
 	std::vector<std::string> iconnames;
+	Utility::hardptr<Node::node>root;
+	bool isfading = true;
 	Sound::cIntroLoopableBGM introloopBGM;
 };
 }

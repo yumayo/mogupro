@@ -7,6 +7,8 @@
 #include"Sound/Wav.h"
 #include"Sound\Stereophonic.h"
 #include<Particle/cParticleManager.h>
+#include"Resource\cObjectManager.h"
+#include"Resource\cImageManager.h"
 namespace Game
 {
 namespace Weapons
@@ -38,7 +40,7 @@ void cWeaponCapsule::setup()
 	rb.setSpeed(mSpeed);
 	rb.setFriction(1.0f);
 	aabb.setSize(mScale);
-	mesh = Resource::cObjectManager::getInstance()->findObject("sphere.obj");
+	mesh = Resource::cObjectManager::getInstance()->findObject("capsule.obj");
 	Sound::StereophonicManager::getInstance()->add("lightbombthrow" + std::to_string(mObjectId),ci::app::getAssetPath("SE/SubWeapon/lightbombthrow.wav").string(), mPos);
 }
 void cWeaponCapsule::update(const float & delta_time)
@@ -50,15 +52,21 @@ void cWeaponCapsule::updateCollisionAfterUpdate(const float & delta_time)
 	
 	mPos = aabb.getPosition();
 	mSpeed = rb.getSpeed();
+	mRotate += mSpeed*delta_time;
 	HitLand();
 	
 }
 void cWeaponCapsule::draw()
 {
+	ci::gl::ScopedTextureBind tex(Resource::IMAGE["in_game/capsule.png"]);
 	ci::gl::pushModelView();
-	ci::gl::translate(mPos);
-	ci::gl::color(ci::ColorA(1,1,1));
-	ci::gl::scale(mDrawScale);
+	ci::gl::translate(mPos + ci::vec3(0, 0, 0));
+	ci::gl::rotate(mRotate.x, ci::vec3(1, 0, 0));
+	ci::gl::rotate(mRotate.y, ci::vec3(0, 1, 0));
+	ci::gl::rotate(mRotate.z, ci::vec3(0, 0, 1));
+	ci::gl::translate(ci::vec3(0, -mDrawScale.y, 0));
+	ci::gl::color(ci::ColorA(1, 0, 0, 1));
+	ci::gl::scale(mDrawScale*(1.f / 32.f));
 	ci::gl::draw(mesh);
 	ci::gl::popModelView();
 }

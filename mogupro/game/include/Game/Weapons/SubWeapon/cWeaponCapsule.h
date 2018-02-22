@@ -35,6 +35,8 @@ private:
 	ci::vec3 mPos;
 	ci::vec3 mScale = ci::vec3(0.5);
 	ci::vec3 mSpeed;
+	ci::vec3 mRotate = ci::vec3(0);
+	float rotatez = 0.0f;
 	int mTeamNum;
 	ci::gl::VboMeshRef mesh;
 	ci::vec3 mDrawScale;
