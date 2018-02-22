@@ -17,6 +17,16 @@ public:
 	void update(float deltaTime);
 	void draw();
 	hardptr<Node::node> mRoot;
+	int animationTime;
+	float time;
+	enum AnimationType
+	{
+		NONE,
+		BEGIN,
+		END
+	};
+	AnimationType type;
+	ci::vec2 firePosition;
 };
 
 class Star
@@ -81,6 +91,8 @@ private:
 	int mPrevSelectTag;
 	std::vector<std::function<void()>> outRoomFunc;
 	std::vector<std::function<void()>> inRoomFunc;
+	bool canSendInRoom;
+	bool canStartUpdateServer;
 
 	bool mBeginAnimation;
 	bool mIsEndAnimation;
