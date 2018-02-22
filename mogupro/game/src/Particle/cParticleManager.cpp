@@ -246,9 +246,10 @@ cParticle::~cParticle()
 void cParticle::update( const float& delta_time, const float& gravity )
 {
     mPrevPosition = mPosition;
-    mPosition += mVec;
+    float d = 60 * delta_time ;
+    mPosition += mVec * d;
 
-    mVec.y -= gravity;
+    mVec.y -= gravity * d;
 
     alphaUpdate( delta_time );
 
