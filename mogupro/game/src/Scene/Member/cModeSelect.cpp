@@ -82,7 +82,7 @@ void cModeSelect::update(float t)
 	updateArrow(t);
 	introloopBGM.update(t);
 	selectIcon();
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_RETURN)) {
+	if (ENV->pushKey(ci::app::KeyEvent::KEY_RETURN)|| ENV->isPadPush(ENV->BUTTON_2)) {
 		desideScene();
 	}
 	root->entry_update(t);
@@ -147,7 +147,7 @@ void cModeSelect::selectIcon()
 {
 	if (isfading)return;
 
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_LEFT)) {
+	if (ENV->pushKey(ci::app::KeyEvent::KEY_LEFT)||ENV->getPadAxisPushMinus(0)) {
 		Resource::cSoundManager::getInstance()->findSe("ModeSelect/cursor.wav").setGain(0.4f);
 		Resource::cSoundManager::getInstance()->findSe("ModeSelect/cursor.wav").play();
 		for (auto& it : mSelectCards) {
@@ -157,7 +157,7 @@ void cModeSelect::selectIcon()
 		if (MSelectScene == 4)MSelectScene = 0;
 		return;
 	}
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_RIGHT)) {
+	if (ENV->pushKey(ci::app::KeyEvent::KEY_RIGHT) || ENV->getPadAxisPushPlus(0)) {
 		Resource::cSoundManager::getInstance()->findSe("ModeSelect/cursor.wav").setGain(0.4f);
 		Resource::cSoundManager::getInstance()->findSe("ModeSelect/cursor.wav").play();
 		for (auto& it : mSelectCards) {
