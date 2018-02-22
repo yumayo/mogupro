@@ -40,14 +40,10 @@ DrillUI::DrillUI(ci::vec2 pos, ci::vec2 moveVec, std::string name)
 
 	hardptr<Node::Renderer::sprite> plate;
 
-	if (pos.x < 0)
-		plate = Node::Renderer::sprite::create(Resource::IMAGE["matching/drillUI.png"]);
-	else
-		plate = Node::Renderer::sprite::create(Resource::IMAGE["matching/drillUI2.png"]);
+	plate = Node::Renderer::sprite::create(Resource::IMAGE["matching/drillUI.png"]);
 
 	plate->set_position(ci::vec2(0, 0));
 	plate->set_scale(glm::vec2(1.6f, 1.0f));
-	mRoot->add_child(plate);
 
 	auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
 	f->set_color(ci::Color(0,0,0));
@@ -55,8 +51,6 @@ DrillUI::DrillUI(ci::vec2 pos, ci::vec2 moveVec, std::string name)
 	f->set_position(ci::vec2(0, 0));
 	f->set_schedule_update();
 	f->set_scale(glm::vec2(1, -1));
-	
-
 	auto fire = Node::Renderer::sprite::create(Resource::IMAGE["matching/fire1.png"]);
 	fire->set_tag(10);
 	if (pos.x < 0)
@@ -69,6 +63,7 @@ DrillUI::DrillUI(ci::vec2 pos, ci::vec2 moveVec, std::string name)
 		mRoot->set_rotation(M_PI);
 		f->set_rotation(M_PI);
 	}
+	mRoot->add_child(plate);
 	mRoot->add_child(f);
 	fire->set_position(firePosition);
 	mRoot->add_child(fire);
@@ -588,10 +583,10 @@ namespace Scene
 				{
 					if (eveTeamMember->mTeamNum == 0)
 						drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 140 - 130 * teamCount[0]),
-							ci::vec2(-390, 140 - 160 * teamCount[0]), eveTeamMember->mNameStr));
+							ci::vec2(-390, 140 - 160 * teamCount[0]), u8"‚à‚®‚ç" + std::to_string(eveTeamMember->mPlayerID)));
 					else if (eveTeamMember->mTeamNum == 1)
 						drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 140 - 130 * teamCount[1]),
-							ci::vec2(390, 140 - 160 * teamCount[1]), eveTeamMember->mNameStr));
+							ci::vec2(390, 140 - 160 * teamCount[1]), u8"‚à‚®‚ç" + std::to_string(eveTeamMember->mPlayerID)));
 					teamCount[eveTeamMember->mTeamNum]++;
 					++count;
 				}	
