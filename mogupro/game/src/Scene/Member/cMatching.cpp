@@ -41,9 +41,9 @@ DrillUI::DrillUI(ci::vec2 pos, ci::vec2 moveVec, std::string name)
 	hardptr<Node::Renderer::sprite> plate;
 
 	if (pos.x < 0)
-		plate = Node::Renderer::sprite::create(Resource::IMAGE["matching/DrillUI.png"]);
+		plate = Node::Renderer::sprite::create(Resource::IMAGE["matching/drillUI.png"]);
 	else
-		plate = Node::Renderer::sprite::create(Resource::IMAGE["matching/DrillUI2.png"]);
+		plate = Node::Renderer::sprite::create(Resource::IMAGE["matching/drillUI2.png"]);
 
 	plate->set_position(ci::vec2(0, 0));
 	plate->set_scale(glm::vec2(1.6f, 1.0f));
