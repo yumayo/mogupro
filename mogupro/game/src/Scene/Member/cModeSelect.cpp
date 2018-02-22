@@ -82,6 +82,8 @@ void cModeSelect::shutDown()
 }
 void cModeSelect::update(float t)
 {
+	if (watching == false)
+	{
 	for (auto& it : mSelectCards) {
 		it->update(t);
 	}
@@ -94,14 +96,12 @@ void cModeSelect::update(float t)
 		desideScene();
 	}
 	root->entry_update(t);
-
-	if (watching == false)
-	{
 		if (ENV->pushKey(ci::app::KeyEvent::KEY_a))
 		{
 			watching = true;
 			Network::cUDPClientManager::getInstance()->open();
 			cUDPClientManager::getInstance()->connect(Resource::JSON["server.json"]["ip"].asString());
+			fase = WatchFase::NONE;
 		}
 	}
 
@@ -128,7 +128,7 @@ void cModeSelect::update(float t)
 					continue;
 				}
 				cUDPClientManager::getInstance()->send(new cReqWantTeamIn(0));
-				fase == WatchFase::WAIT;
+				fase = WatchFase::WAIT;
 			}
 		}
 
@@ -140,7 +140,6 @@ void cModeSelect::update(float t)
 				if (resWantTeamIn->mFlag == 1)
 				Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum = resWantTeamIn->mTeamNum;;
 			}
-			int count = 0;
 			while (auto eveTeamMember = m->EveTeamMember.get())
 			{
 				cMatchingMemberManager::getInstance()->addPlayerDatas(
