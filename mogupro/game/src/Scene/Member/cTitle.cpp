@@ -159,10 +159,6 @@ void cTitle::update( float deltaTime )
 			};
 		}
 		else if (ENV->pushKey(cinder::app::KeyEvent::KEY_0)) {
-			fadeout->onStateOut = [] {cSceneManager::getInstance()->shift<Scene::Member::cModeSelect>(); };
-		}
-		else if (ENV->pushKey())
-		{
 			fadeout->onStateOut = [] {
 				Network::cUDPClientManager::getInstance()->open();
 				Network::cUDPServerManager::getInstance()->open();
@@ -170,6 +166,10 @@ void cTitle::update( float deltaTime )
 				Game::cGameManager::getInstance()->setTime(0.0F);
 				cSceneManager::getInstance()->shift<Scene::Member::cGameMain>();
 			};
+		}
+		else if (ENV->pushKey())
+		{
+			fadeout->onStateOut = [] {cSceneManager::getInstance()->shift<Scene::Member::cModeSelect>(); };
 		}
 	}
 }

@@ -113,7 +113,7 @@ public:
 		playerSphere.setCenter(pos);
 		playerSphere.setRadius(2.0F);
 
-		light->reAttachPositionWithRadius(pos, lightRadius);
+		light->reAttachPositionWithRadius(tumePos, lightRadius);
 	}
 	void addLightPower( float powerByOnesecond )
 	{
@@ -550,7 +550,7 @@ void cLightSaber::update( const float& delta_time )
 }
 void cLightSaber::draw( )
 {
-	debugDrawFunc( );
+	//debugDrawFunc( );
 	
 	{
 		gl::ScopedModelMatrix scp;
