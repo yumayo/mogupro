@@ -224,7 +224,7 @@ namespace Game
 					.textureType(Particle::ParticleTextureType::SPARK)
 					.colors(gemcolors)
 					.convergePoint(Game::cStrategyManager::getInstance()->getCannons()[Game::cPlayerManager::getInstance()->getPlayers()[mPlayerId]->getWhichTeam()]->getReStorePos())
-					.speed(1.5f)
+					.speed(0.3f)
 					.swellEndTime(0.1f)
 					.swellWaitTime(30.0f)
 					.easeTime(60.0f)

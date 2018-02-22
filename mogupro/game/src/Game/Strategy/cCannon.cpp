@@ -44,6 +44,9 @@ namespace Game
 				mColor = ci::ColorA(0, 0, 1, 1);
 				mCannonName = "cannon_blue";
 			}
+			///////////////////////
+			GEM_MAXNUM = 100;
+			//////////////////////
 		}
 		cCannon::~cCannon()
 		{
@@ -123,7 +126,7 @@ namespace Game
 				.textureType(Particle::ParticleTextureType::SPARK)
 				.colors(color)
 				.convergePoint(mGemStorePos)
-				.speed(0.5f)
+				.speed(0.1f)
 				.swellEndTime(0.1f)
 				.swellWaitTime(30.0f)
 				.easeTime(60.0f)

@@ -20,7 +20,7 @@ namespace Game
 			cCannon(const ci::vec3 pos, const ci::vec3 scale, const ci::vec3 Foundationpos, const ci::vec3 Foundationscale, const ci::vec3 Foundationpos2, const ci::vec3 Foundationscale2,const ci::vec3 storepos,ci::vec3 hitpos, ci::vec3 hitscale,const Game::Player::Team team);
 			~cCannon();
 
-			static const int GEM_MAXNUM = 100;
+			int GEM_MAXNUM;
 
 			void draw();
 			void update(const float& delta_time);

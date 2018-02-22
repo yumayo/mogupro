@@ -40,7 +40,13 @@ void cWeaponCapsule::setup()
 	rb.setSpeed(mSpeed);
 	rb.setFriction(1.0f);
 	aabb.setSize(mScale);
-	mesh = Resource::cObjectManager::getInstance()->findObject("capsule.obj");
+	if (mType == Game::Weapons::SubWeapon::SubWeaponType::LIGHT_BOMB) {
+		mesh = Resource::cObjectManager::getInstance()->findObject("capsulered.obj");
+	}
+	else {
+		mesh = Resource::cObjectManager::getInstance()->findObject("capsuleblue.obj");
+	}
+	
 	Sound::StereophonicManager::getInstance()->add("lightbombthrow" + std::to_string(mObjectId),ci::app::getAssetPath("SE/SubWeapon/lightbombthrow.wav").string(), mPos);
 }
 void cWeaponCapsule::update(const float & delta_time)

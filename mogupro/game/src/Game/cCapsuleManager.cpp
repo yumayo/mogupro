@@ -52,7 +52,7 @@ void cCapsuleManager::update(const float & deltatime)
 {
 	for (auto& itr : mCapsules) {
 
-		itr.second->setCanAction(glm::distance2(Game::cPlayerManager::getInstance()->getActivePlayer()->getPos(), itr.second->getPos()) < 30.f);
+		itr.second->setCanAction(glm::distance(Game::cPlayerManager::getInstance()->getActivePlayer()->getPos(), itr.second->getPos()) < 10.f);
 
 		if (itr.second->getCanAction()) {
 			itr.second->update(deltatime);

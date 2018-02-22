@@ -27,7 +27,7 @@ void cLightBombCapsule::setup(const ci::vec3 pos, const Game::Weapons::SubWeapon
 	mLightSinAngle = ci::randFloat(2.f*M_PI);
 	mLightRadius = mLightMaxRadius * (((1.f - mLightRate) / 2.f) + mLightRate / 2.f*sin(mLightSinAngle));
 	mLight = cLightManager::getInstance()->addPointLight(mPos, ci::vec3(hsv.r, hsv.g, hsv.b), mLightRadius);
-	mesh = Resource::cObjectManager::getInstance()->findObject("capsule.obj");
+	mesh = Resource::cObjectManager::getInstance()->findObject("capsulered.obj");
 }
 
 void cLightBombCapsule::update(const float & delta_time)
