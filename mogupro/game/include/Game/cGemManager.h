@@ -38,6 +38,7 @@ namespace Game
 		void      create();
 		void      buildMesh();
 		void      clearMesh();
+		void      Repop();
 
 		std::vector<std::shared_ptr<Gem::cGemStone>>         getGemStones() { return mGemStone; }
 		std::vector<std::shared_ptr<Gem::cFragmentGem>>      getFragmentGems() { return mFragmentGems; }
@@ -46,7 +47,6 @@ namespace Game
 		std::shared_ptr<Gem::cFragmentGem>                   getFragmentGem(int id);
 		void                                                 deleteFragmentGem(int id);
 		void                                                 deleteFragmentGems(std::vector<std::shared_ptr<Gem::cFragmentGem>> gems);
-		void                                                 cGemManager::breakGemStone();
 
 	private:
 
@@ -73,6 +73,9 @@ namespace Game
 		const int            mCreateFGemNum = 5;
 		const float          mVisibleRange = 30;
 		int                  mFragGemIDCount = 0;
+		int                  mGemStoneIDCount = 0;
+		bool                 isMeshReload = false;
+		bool                 Repoped = true;
 
 		std::vector<ci::vec3> mhotSpot;
 
