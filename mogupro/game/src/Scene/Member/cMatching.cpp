@@ -16,7 +16,7 @@
 #include <cinder/Rand.h>
 #include <Scene/Member/cTitle.h>
 #include <Resource/cSoundManager.h>
-
+#include <Sound/Wav.h>
 using namespace Network;
 using namespace Network::Packet::Event;
 using namespace Network::Packet::Request;
@@ -32,11 +32,11 @@ DrillUI::DrillUI(ci::vec2 pos, ci::vec2 moveVec, std::string name)
 	mRoot = Node::node::create();
 	mRoot->set_schedule_update();
 	mRoot->set_position(pos);
-	mRoot->run_action(sequence::create(ease<ci::EaseOutCirc>::create(
-		move_to::create(3.0F, ci::vec3(moveVec.x, moveVec.y, 0))),
+	mRoot->run_action(sequence::create(ease<ci::EaseOutCubic>::create(
+		move_to::create(2.0F, ci::vec3(moveVec.x, moveVec.y, 0))),
 		call_func::create([this] {
 	
-		})));
+		})));//“ü‚é‚Æ‚±‚ë
 
 	hardptr<Node::Renderer::sprite> plate;
 
@@ -69,7 +69,7 @@ DrillUI::DrillUI(ci::vec2 pos, ci::vec2 moveVec, std::string name)
 	mRoot->add_child(fire);
 	animationTime = 0;
 	type = AnimationType::BEGIN;
-	time = 3.0f;
+	time = 2.0f;
 }
 
 void DrillUI::update(float deltaTime)
@@ -189,6 +189,10 @@ namespace Scene
 
 			Network::cUDPClientManager::getInstance()->open();
 			cUDPClientManager::getInstance()->connect(Resource::JSON["server.json"]["ip"].asString());
+			auto bgm = Sound::Wav(cinder::app::getAssetDirectories().front().string() + "/BGM/modeselect.wav");
+			introloopBGM.create(bgm.data(), bgm.size(), 22.130F, 78.594F);
+			introloopBGM.gain(0.15F);
+			introloopBGM.play();
 		}
 
 		void cMatching::registerFunc()
@@ -229,12 +233,9 @@ namespace Scene
 				for (auto& m : drillUI1Ps)
 				{
 					ci::vec2 pos = m.mRoot->get_position();
-					m.mRoot->run_action(sequence::create(move_to::create(3.5F, ci::vec3(-2000, pos.y, 0)),
-						ease<ci::EaseOutCirc>::create(move_to::create(4.0F, ci::vec3(-250, pos.y, 0))),
-						ease<ci::EaseOutCirc>::create(move_to::create(randTime[c][0], ci::vec3(randPos[c][0], pos.y, 0))),
-						ease<ci::EaseOutCirc>::create(move_to::create(randTime[c][1], ci::vec3(randPos[c][1], pos.y, 0))),
-						ease<ci::EaseOutCirc>::create(move_to::create(randTime[c][2], ci::vec3(randPos[c][2], pos.y, 0)))));
-					m.time = 7.5f;
+					m.mRoot->run_action(sequence::create(move_to::create(2.0F, ci::vec3(-2000, pos.y, 0)),
+						ease<ci::EaseOutCubic>::create(move_to::create(1.0F, ci::vec3(-235, pos.y, 0)))));
+					m.time = 3.f;
 					m.type = DrillUI::AnimationType::END;
 					c++;
 				}
@@ -242,24 +243,29 @@ namespace Scene
 				for (auto& m : drillUI2Ps)
 				{
 					ci::vec2 pos = m.mRoot->get_position();
-					m.mRoot->run_action(sequence::create(move_to::create(3.5F, ci::vec3(2000, pos.y, 0)),
-						ease<ci::EaseOutCirc>::create(move_to::create(4.0F, ci::vec3(250, pos.y, 0))),
-						ease<ci::EaseOutCirc>::create(move_to::create(randTime[c][0], ci::vec3(-randPos[c][0], pos.y, 0))),
-						ease<ci::EaseOutCirc>::create(move_to::create(randTime[c][1], ci::vec3(-randPos[c][1], pos.y, 0))),
-						ease<ci::EaseOutCirc>::create(move_to::create(randTime[c][2], ci::vec3(-randPos[c][2], pos.y, 0)))));
-					m.time = 7.5f;
+					m.mRoot->run_action(sequence::create(move_to::create(2.0F, ci::vec3(2000, pos.y, 0)),
+						ease<ci::EaseOutCubic>::create(move_to::create(1.0F, ci::vec3(235, pos.y, 0)))));
+					m.time = 3.f;
 					m.type = DrillUI::AnimationType::END;
 					c++;
 				}
 			}),
-				delay::create(7.5f),
+
+
+				delay::create(3.0),
+				call_func::create([this] {
+				flag = true;
+			}),
+				delay::create(1.0),
 				//ƒqƒr“ü‚ê‚é‚P
 				call_func::create([this] {
+				
 				Resource::SE["Matching/h.wav"].play();
 				auto h = Node::Renderer::sprite::create(Resource::IMAGE["matching/h1.png"]);
 				h->set_schedule_update();
 				h->set_position(ci::vec2(-200, 400));
 				mMemberRoot->add_child(h);
+				introloopBGM.stop();
 			}),
 				delay::create(1.2f),
 				//ƒqƒr“ü‚ê‚é‚Q
@@ -313,15 +319,21 @@ namespace Scene
 
 		void cMatching::shutDown()
 		{
-
+			introloopBGM.stop();
 		}
 
 		void cMatching::update(float deltaTime)
 		{
+			if (flag) {
+				CAMERA->shakeCamera2D(50.f, 3.0F);
+				flag = false;
+			}
+
 			if (sceneChange == true)return;
 			mRoot->entry_update(deltaTime);
 			mMemberRoot->entry_update(deltaTime);
-			
+			introloopBGM.update(deltaTime);
+		
 			for (auto& m : stars)
 				m.update(deltaTime);
 
@@ -452,7 +464,7 @@ namespace Scene
 			mAddMember = false;
 			if (mClassState == ClassState::NOT)return;
 
-			if (ENV->pushKey(ci::app::KeyEvent::KEY_RETURN) || ENV->isPadPush(0) && mCanSend)
+			if (ENV->pushKey(ci::app::KeyEvent::KEY_RETURN) || ENV->isPadPush(ENV->BUTTON_2) && mCanSend)
 			{
 				if (mClassState == ClassState::MASTER)
 				{

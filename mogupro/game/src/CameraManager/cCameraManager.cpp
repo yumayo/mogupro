@@ -12,6 +12,12 @@ void cCameraManager::shakeCamera( const float & scatter, const float & seconds )
     this->seconds = seconds;
 }
 
+void cCameraManager::shakeCamera2D(const float & scatter, const float & seconds)
+{
+	scatter2D = scatter;
+	seconds2D = seconds;
+}
+
 void cCameraManager::setup( ) {
     camera.setAspectRatio( ci::app::getWindowAspectRatio( ) );
     camera.lookAt( refPosition, ci::vec3( 0 ), ci::vec3( 0, 1, 0 ) );
@@ -23,6 +29,9 @@ void cCameraManager::setup( ) {
     camera_2d.setOrtho( -size.x / 2, size.x / 2, -size.y / 2, size.y / 2, 0.125F, 1000.0F );
     camera_2d.lookAt( ci::vec3( 0, 0, 500.0F ), ci::vec3( 0, 0, 0.0F ), ci::vec3( 0, 1, 0 ) );
 	camera_angle.y = -0.25f;
+	my_scatter2D = ci::vec2(0.0f);
+	scatter2D = 0.0f;
+	seconds2D = 0.0f;
 }
 
 //慣性つきカメラ移動
@@ -45,18 +54,21 @@ void cCameraManager::MovingCamera( )
 }
 void cCameraManager::ScatterCamera( )
 {
-	my_scatter = ci::vec3(0);
-    if ( seconds < 0 )return;
-    std::random_device rd;
-    std::mt19937 mt( rd( ) );
-    std::uniform_real_distribution<float> random_x( -scatter, scatter );
-	std::uniform_real_distribution<float> random_y( -scatter, scatter);
-	std::uniform_real_distribution<float> random_z( -scatter, scatter );
-    float buf_x = random_x( mt );
-	float buf_y = random_y(mt);
-	float buf_z = random_z( mt );
-    my_scatter = ci::vec3( buf_x, buf_y, buf_z);
-
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	{
+		my_scatter = ci::vec3(0);
+		if (seconds < 0)return;
+		std::uniform_real_distribution<float> random_x(-scatter, scatter);
+		std::uniform_real_distribution<float> random_y(-scatter, scatter);
+		std::uniform_real_distribution<float> random_z(-scatter, scatter);
+		float buf_x = random_x(mt);
+		float buf_y = random_y(mt);
+		float buf_z = random_z(mt);
+		my_scatter = ci::vec3(buf_x, buf_y, buf_z);
+	}
+	
+	
 }
 void cCameraManager::setCameraAngle( ci::vec2 const & angle )
 {
@@ -65,13 +77,29 @@ void cCameraManager::setCameraAngle( ci::vec2 const & angle )
 							   std::max( camera_angle.y, -float( M_PI / 2 ) + 0.01f ) );
 	camera_angle.x = std::fmod( camera_angle.x, M_PI * 2.0 );
 }
+
+void cCameraManager::ScatterCamera2D()
+{
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	{
+		my_scatter2D = ci::vec2(0);
+		if (seconds2D < 0)return;
+		std::uniform_real_distribution<float> random_x(-scatter2D, scatter2D);
+		std::uniform_real_distribution<float> random_y(-scatter2D, scatter2D);
+		float buf_x = random_x(mt);
+		float buf_y = random_y(mt);
+		my_scatter2D = ci::vec2(buf_x, buf_y);
+	}
+}
+
 void cCameraManager::update(const float& delta_time) {
 
 	//ブレるカメラの秒数をデルタタイムで引く
 	seconds -= delta_time;
-
+	seconds2D -= delta_time;
 	ScatterCamera();
-
+	ScatterCamera2D();
 	if (scheduleUpdate)
 	{
 		looking_point.x = camera_far * sin(camera_angle.x) * cos(camera_angle.y);
@@ -107,6 +135,7 @@ void cCameraManager::update(const float& delta_time) {
 	else if (camera_mode == CAMERA_MODE::FPS) {
 		camera.lookAt(origin + my_scatter, target + my_scatter, up);
 	}
+	camera_2d.lookAt(ci::vec3(my_scatter2D.x, my_scatter2D.y, 500.0F), ci::vec3(my_scatter2D.x, my_scatter2D.y, 0.0F), ci::vec3(0, 1, 0));
 }
 
 void cCameraManager::bind3D( )

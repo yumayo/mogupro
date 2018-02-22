@@ -158,7 +158,7 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	//ƒJƒƒ‰ˆÚ“®
 	if (!active_player->isDead()) {
 		if (!getActivePlayer()->isDrilling()) {
-			CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.1f), ENV->getPadAxis(3)*(-0.1f)));
+			CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.01f), ENV->getPadAxis(3)*(-0.01f)));
 		}
 		else {
 			CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(0)*(-0.1f), ENV->getPadAxis(1)*(-0.1f)));

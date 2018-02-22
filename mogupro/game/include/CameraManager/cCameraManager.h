@@ -41,11 +41,13 @@ private:
 	CAMERA_MODE camera_mode;
 
     ci::vec3 my_scatter;
+	ci::vec2 my_scatter2D;
     //揺れる幅
     float scatter;
+	float scatter2D=0.0f;
     //揺れる秒数
     float seconds;
-
+	float seconds2D = 0.0f;
     //カメラの対象からの遠さ
     float camera_far;
 
@@ -59,7 +61,7 @@ private:
 
     //ブレる動作
     void ScatterCamera( );
-
+	void ScatterCamera2D();
 	bool scheduleUpdate = true;
 public:
 	void setScheduleUpdate(bool value) { scheduleUpdate = value; }
@@ -138,6 +140,7 @@ public:
     //カメラを揺らす関数
     //scattar =　ブレ幅、　seconds　＝　秒数
     void shakeCamera( const float& scatter, const float& seconds );
+	void shakeCamera2D(const float& scatter, const float& seconds);
     void setup( );
     void update( const float& delta_time );
     void bind3D( );

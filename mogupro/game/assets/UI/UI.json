@@ -122,8 +122,8 @@
     "FadePlateIn": {
       "UIType": "CollisionUI",
       "TexturePath": "Tutorial/GameChange.png",
-        "Pos": [ -900, 500 ],
-      "Size": [ 1700,1000],
+        "Pos": [ -2000, 2000 ],
+      "Size": [ 6000,6000],
       "Color" :  [0,0,0,1],
         "EaseIn": [
             { "UIState": "Color","Change": [0,0,0,0],"EasingType": "Liner","Frame": 1}

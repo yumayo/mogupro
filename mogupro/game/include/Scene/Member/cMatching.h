@@ -6,7 +6,7 @@
 #include <Node/renderer.hpp>
 #include <Utility/TriMeshAnimation.h>
 #include <cinder/gl/Fbo.h>
-
+#include <Sound/cIntroLoopableBGM.h>
 class DrillUI
 {
 public:
@@ -68,7 +68,7 @@ private:
 		CLIENT,
 		NOT
 	};
-
+	bool flag = false;
 	ClassState mClassState;
 	ClassState mWaitClassState;
 	enum class PhaseState
@@ -77,7 +77,7 @@ private:
 		IN_ROOM,
 		BEGIN_GAME
 	};
-
+	Sound::cIntroLoopableBGM introloopBGM;
 	PhaseState mPhaseState;
 
 	bool mCanSend;
