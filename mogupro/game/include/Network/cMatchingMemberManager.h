@@ -61,6 +61,8 @@ public:
     int mPlayerID = 0;
 	int mPlayerTeamNum = 0;
 	std::string mPlayerName = "moguraNull";
+	std::string mNameStrs[6];
+
 private:
 	int teamCount[2];
 	int playerCount = 0;

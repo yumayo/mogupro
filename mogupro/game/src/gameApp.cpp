@@ -88,4 +88,4 @@ void gameApp::cleanup()
 	ENV->cleanup( );
 	Scene::cSceneManager::removeInstance( );
 }
-CINDER_APP( gameApp, cinder::app::RendererGl, [ ] ( cinder::app::App::AppBase::Settings* s ) { s->setWindowSize( 1600, 900 ); } )
+CINDER_APP(gameApp, cinder::app::RendererGl, [](cinder::app::App::AppBase::Settings* s) { s->setWindowSize(1600, 900); s->setFullScreen(); })

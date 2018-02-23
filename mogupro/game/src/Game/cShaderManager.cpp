@@ -10,7 +10,7 @@ namespace Game
 {
 void cShaderManager::setup( )
 {
-	mUseShadow = false;
+	mUseShadow = true;
 	mUseAllLight = false;
 
 	int scale = 4096;

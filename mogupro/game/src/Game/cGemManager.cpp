@@ -7,6 +7,7 @@
 #include <Game/Field/FieldData.h>
 #include <Game/cGameManager.h>
 #include <Sound/Stereophonic.h>
+#include <Game/cShaderManager.h>
 namespace Game
 {
 
@@ -46,6 +47,8 @@ namespace Game
 		{
 			mGemStone[i]->draw(false);
 		}
+		cShaderManager::getInstance()->uniformUpdate();
+
 		{
 			ci::gl::ScopedBlendAdditive add;
 			//欠片
@@ -136,7 +139,7 @@ namespace Game
 
 	void cGemManager::update(float deltaTime)
 	{
-		DistanceSortGemStone();
+		//DistanceSortGemStone();
 		//ジェム点滅用タイム
 		mTime += deltaTime * mLightingSpeed;
 		/*if (isMeshReload)
@@ -144,7 +147,8 @@ namespace Game
 			IdSortGemStone();
 			isMeshReload = false;
 		}
-		Repop();*/
+		*/
+		Repop();
 	};
 
 
@@ -448,12 +452,12 @@ namespace Game
 
 	void cGemManager::Repop()
 	{
-		if (Game::cGameManager::getInstance()->getLeftBattleTimef() <= 290.0f)
+		if (Game::cGameManager::getInstance()->getLeftBattleTimef() <= 150.0f)
 		{
 			if (int(Game::cGameManager::getInstance()->getLeftBattleTimef()) % 5 == 0)
 			{
 				if (Repoped) return;
-				if (mGemStone.size() >= 200) return;
+				if (mGemStone.size() >= 300) return;
 				for (int i = 0; i < 5; i++)
 				{
 					int spotnum = mGemStone.size() % mhotSpot.size();

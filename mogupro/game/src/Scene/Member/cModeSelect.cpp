@@ -112,7 +112,7 @@ void cModeSelect::update(float t)
 		
 		if (fase == WatchFase::NONE)
 		{
-			cUDPClientManager::getInstance()->send(new cReqInRoomWatching(100));
+			cUDPClientManager::getInstance()->send(new cReqInRoomWatching(100),true);
 			fase = WatchFase::BEIGN;
 		}
 
@@ -124,10 +124,10 @@ void cModeSelect::update(float t)
 			{
 				if (resInRoom->mFlag = false)
 				{
-					cUDPClientManager::getInstance()->send(new cReqInRoom(100));
+					cUDPClientManager::getInstance()->send(new cReqInRoom(100),true);
 					continue;
 				}
-				cUDPClientManager::getInstance()->send(new cReqWantTeamIn(0));
+				cUDPClientManager::getInstance()->send(new cReqWantTeamIn(0),true);
 				fase = WatchFase::WAIT;
 			}
 		}

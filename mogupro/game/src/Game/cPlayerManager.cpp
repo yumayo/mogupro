@@ -167,10 +167,10 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	//カメラ移動
 	if (!active_player->isDead()) {
 		if (!getActivePlayer()->isDrilling()) {
-			CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
+			CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.025f), ENV->getPadAxis(3)*(-0.025f)));
 		}
 		else {
-			CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(0)*(-0.05f), ENV->getPadAxis(1)*(-0.05f)));
+			CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(0)*(-0.025f), ENV->getPadAxis(1)*(-0.025f)));
 		}
 	}
 	// ターゲットがいたらプレイヤーは動けません。
@@ -179,7 +179,7 @@ void Game::cPlayerManager::playerMove(const float & delta_time)
 	//プレイヤーが死んでいたらカメラ以外操作不能
 	if (active_player->isDead())return;
 
-	CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.05f), ENV->getPadAxis(3)*(-0.05f)));
+	CAMERA->addCameraAngle(ci::vec2(ENV->getPadAxis(4)*(-0.025f), ENV->getPadAxis(3)*(-0.025f)));
 	
 	//大砲にジェムを入れる
 	auto cannon = cStrategyManager::getInstance()->getCannons()[static_cast<Player::Team>(active_player->getWhichTeam())];

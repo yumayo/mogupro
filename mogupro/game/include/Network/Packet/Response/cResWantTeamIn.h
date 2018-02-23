@@ -13,11 +13,12 @@ class cResWantTeamIn : public cPacketBase<cResWantTeamIn, PacketId::RES_WANT_TEA
 {
 public:
     cResWantTeamIn( );
-	cResWantTeamIn(char flag, char teamNum);
+	cResWantTeamIn(char flag, char teamNum,char playerID);
     void packetImport( cNetworkHandle networkHandle, ubyte2 transferredBytes, char const* const data ) override;
     ubyte2 packetExport( char* const data ) override;
 	char mFlag;
 	char mTeamNum;
+	char mPlayerID;
 };
 }
 }

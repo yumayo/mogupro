@@ -9,6 +9,14 @@ cMatchingMemberManager::cMatchingMemberManager( )
 
 	mEmptyRedTeamIds = { { 0, false }, { 1, false }, { 2, false } };
 	mEmptyBlueTeamIds = { { 4, false }, { 5, false }, { 6, false } };
+
+	mNameStrs[0] = u8"もぐ太";
+	mNameStrs[1] = u8"もぐ美";
+	mNameStrs[2] = u8"卍もぐ卍";
+	mNameStrs[3] = u8"もぐ助";
+	mNameStrs[4] = u8"もぐぽよ";
+	mNameStrs[5] = u8"もぐシェイク";
+
 }
 
 cMatchingMemberManager::~cMatchingMemberManager( )
@@ -18,7 +26,7 @@ cMatchingMemberManager::~cMatchingMemberManager( )
 
 bool cMatchingMemberManager::addRoomMembers(Network::cNetworkHandle addMember)
 {
-	if ((int)mPlayerDatas.size() > 6)return false;
+	if ((int)mPlayerDatas.size() > 8)return false;
 
 	for each(auto member in mPlayerDatas)
 	{

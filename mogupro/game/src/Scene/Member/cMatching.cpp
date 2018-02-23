@@ -482,13 +482,18 @@ namespace Scene
 					mTeamNum = resWantTeamIn->mTeamNum;
 				Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum = mTeamNum;
 				mCanSend = true;
+
+				int num = resWantTeamIn->mPlayerID;
+
+				if (num >= 4)
+					num -= 1;
 					if (resWantTeamIn->mTeamNum == 0)
 						drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 140 - 130 * teamCount[0]),
-							ci::vec2(-390, 140 - 130 * teamCount[0]), "You"));
+							ci::vec2(-390, 140 - 130 * teamCount[0]), cMatchingMemberManager::getInstance()->mNameStrs[num]+ "(You)"));
 
 					else if (resWantTeamIn->mTeamNum == 1)
 						drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 140 - 160 * teamCount[1]),
-							ci::vec2(390, 140 - 160 * teamCount[1]), "You"));
+							ci::vec2(390, 140 - 160 * teamCount[1]), cMatchingMemberManager::getInstance()->mNameStrs[num] + "(You)"));
 					teamCount[mTeamNum]++;
 			}
 			//TODO : 参加した場合とTeamが変更された場合は分けるべき
@@ -500,12 +505,17 @@ namespace Scene
 				
 				if (eveTeamMember->mPlayerID != 3 && eveTeamMember->mPlayerID != 7)
 				{
+					int num = eveTeamMember->mPlayerID;
+
+					if (num >= 4)
+						num -= 1;
+
 					if (eveTeamMember->mTeamNum == 0)
 						drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 140 - 130 * teamCount[0]),
-							ci::vec2(-390, 140 - 160 * teamCount[0]), u8"もぐら" + std::to_string(eveTeamMember->mPlayerID)));
+							ci::vec2(-390, 140 - 160 * teamCount[0]), cMatchingMemberManager::getInstance()->mNameStrs[num]));
 					else if (eveTeamMember->mTeamNum == 1)
 						drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 140 - 130 * teamCount[1]),
-							ci::vec2(390, 140 - 160 * teamCount[1]), u8"もぐら" + std::to_string(eveTeamMember->mPlayerID)));
+							ci::vec2(390, 140 - 160 * teamCount[1]), cMatchingMemberManager::getInstance()->mNameStrs[num]));
 					teamCount[eveTeamMember->mTeamNum]++;
 					++count;
 				}	
@@ -518,7 +528,7 @@ namespace Scene
 			auto backView = Node::Renderer::sprite::create(Resource::IMAGE["matching/nightSky.png"]);
 			backView->set_tag(1);
 			backView->set_position(ci::vec2(0, 0));
-			backView->set_scale(ci::vec2(1.0f, -1.0f));
+			backView->set_scale(ci::vec2(2.0f, -1.5f));
 			mRoot->add_child(backView);
 			mSelectTag = 0;
 			{
@@ -538,16 +548,11 @@ namespace Scene
 
 			auto startPlate = Node::Renderer::sprite::create(Resource::IMAGE["matching/gamestart.png"]);
 			startPlate->set_schedule_update();
-			//startPlate->set_scale(glm::vec2(1, -1));
+			startPlate->set_scale(glm::vec2(1, -1));
 			startPlate->set_tag(0);
 			startPlate->set_position(ci::vec2(500, -250));
 			mRoot->add_child(startPlate);
-			{
-				auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 42);
-				f->set_text(u8"ゲーム開始");
-				f->set_scale(glm::vec2(1, -1));
-				startPlate->add_child(f);
-			}
+
 			mRoot->get_child_by_tag(mSelectTag)->run_action(
 				repeat_forever::create(
 					sequence::create(
@@ -569,10 +574,12 @@ namespace Scene
 			if (mBeginAnimation != true)
 			{
 				mBackRoot->entry_render(cinder::mat4());
-				for (auto& m : stars)
-					m.draw();
+				
 				mRoot->entry_render(cinder::mat4());
 				
+				for (auto& m : stars)
+					m.draw();
+
 				for (auto& m : drillUI1Ps)
 					m.draw();
 				for (auto& m : drillUI2Ps)
