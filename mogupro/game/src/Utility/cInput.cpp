@@ -130,7 +130,8 @@ float cInputAll::getPadAxis( const int & pad_num )
 	if ( !usePadAxis ) return 0.0F;
 	if (blockPadDrillButton)
 	{
-		if (pad_num == 2) return 0.0F;
+		// 移動キー、掘るAxisのみブロック。
+		if (pad_num < 3) return 0.0F;
 	}
 	if ( pad_stick_axis_value.find( pad_num ) == pad_stick_axis_value.cend( ) )
 		return 0.0f;
@@ -147,7 +148,8 @@ bool cInputAll::getPadAxisPushPlus(const int & pad_num)
 	if (!usePadAxis) return false;
 	if (blockPadDrillButton)
 	{
-		if (pad_num == 2) return false;
+		// 移動キー、掘るAxisのみブロック。
+		if (pad_num < 3) return false;
 	}
 
 	//キーが無ければ初期化
@@ -171,7 +173,8 @@ bool cInputAll::getPadAxisPullPlus(const int & pad_num)
 	if (!usePadAxis) return false;
 	if (blockPadDrillButton)
 	{
-		if (pad_num == 2) return false;
+		// 移動キー、掘るAxisのみブロック。
+		if (pad_num < 3) return false;
 	}
 
 	//キーが無ければ初期化
@@ -196,7 +199,8 @@ bool cInputAll::getPadAxisPressPlus(const int & pad_num)
 	if (!usePadAxis) return false;
 	if (blockPadDrillButton)
 	{
-		if (pad_num == 2) return false;
+		// 移動キー、掘るAxisのみブロック。
+		if (pad_num < 3) return false;
 	}
 
 	//キーが無ければ初期化
@@ -221,7 +225,8 @@ bool cInputAll::getPadAxisPushMinus(const int & pad_num)
 	if (!usePadAxis) return false;
 	if (blockPadDrillButton)
 	{
-		if (pad_num == 2) return false;
+		// 移動キー、掘るAxisのみブロック。
+		if (pad_num < 3) return false;
 	}
 
 	//キーがプラスと被らないように１０を足す
@@ -247,7 +252,8 @@ bool cInputAll::getPadAxisPullMinus(const int & pad_num)
 	if (!usePadAxis) return false;
 	if (blockPadDrillButton)
 	{
-		if (pad_num == 2) return false;
+		// 移動キー、掘るAxisのみブロック。
+		if (pad_num < 3) return false;
 	}
 
 	//キーがプラスと被らないように１０を足す
@@ -274,7 +280,8 @@ bool cInputAll::getPadAxisPressMinus(const int & pad_num)
 	if (!usePadAxis) return false;
 	if (blockPadDrillButton)
 	{
-		if (pad_num == 2) return false;
+		// 移動キー、掘るAxisのみブロック。
+		if (pad_num < 3) return false;
 	}
 
 	//キーがプラスと被らないように１０を足す
