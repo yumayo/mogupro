@@ -15,7 +15,7 @@ public:
     ubyte2 packetExport( char* const data ) override;
 	cNetworkHandle networkHandle;
 	ubyte1 playerId;
-	ubyte1 power;
+	ubyte2 power;
 	ubyte1 playerOrQuarry;
 };
 }

@@ -16,7 +16,7 @@ public:
     cNetworkHandle networkHandle;
 	ubyte1 playerOrQuarry;
 	ubyte1 playerId;
-	ubyte1 power;
+	ubyte2 power;
 };
 }
 }

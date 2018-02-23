@@ -265,7 +265,7 @@ void cClientAdapter::sendRespawn( )
 	p->playerId = cPlayerManager::getInstance( )->getActivePlayerId( );
 	cUDPClientManager::getInstance( )->send( p );
 }
-void cClientAdapter::sendAddCannonPower( Network::ubyte1 power, Network::ubyte1 playerOrQuarry)
+void cClientAdapter::sendAddCannonPower( Network::ubyte2 power, Network::ubyte1 playerOrQuarry)
 {
 	auto p = new cReqAddCannonPower( );
 	p->playerOrQuarry = playerOrQuarry;
