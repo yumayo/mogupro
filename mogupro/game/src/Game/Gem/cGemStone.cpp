@@ -1,6 +1,7 @@
 #include <Game/Gem/cGemStone.h>
 #include <Utility/cTimeMeasurement.h>
 #include <Game/cLightManager.h>
+#include <Game/cShaderManager.h>
 
 namespace Game
 {
@@ -13,6 +14,7 @@ namespace Game
 			setColorAs();
 			setNomals();
 			mPointLightHandle = cLightManager::getInstance( )->addPointLight( mPosition, ci::vec3( mColor.r, mColor.g, mColor.b ), 2.0F );
+			pointLightIds.emplace_back(mPointLightHandle->getId());
 		};
 		cGemStone::~cGemStone()
 		{
@@ -26,13 +28,14 @@ namespace Game
 		}
 
 
-		void cGemStone::draw()
+		void cGemStone::draw(bool isFbo)
 		{
 			if (!mIsActive) return;
+			cShaderManager::getInstance()->uniformUpdate( pointLightIds, lineLightIds, spotLightIds );
 			ci::gl::pushModelMatrix();
-			ci::gl::color(ci::Color(mColor));
+			ci::gl::color(ci::ColorA(mColor));
 			ci::gl::translate(mPosition);
-			ci::gl::scale(ci::vec3(2));
+			ci::gl::scale(ci::vec3(2.0));
 			Resource::cFbxManager::getInstance()->draw("Gemstone3");
 			ci::gl::color(ci::ColorA(1, 1, 1, 1));
 			ci::gl::popModelMatrix();

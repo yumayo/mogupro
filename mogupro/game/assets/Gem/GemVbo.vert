@@ -16,7 +16,7 @@ void main( void ) {
 	dis = distance(playerPos,ciPosition.xyz);
 	gl_Position	= ciModelViewProjection * ciPosition;
 	vec4 color = ciColor;
-    color.a = sin((color.a + deltaTime) * 3.14159265 * 2 ) * 0.25 + 0.75;
-	color.a =  color.a * min(float(visibleRange / dis), 1.0f);
+    color.a = sin((color.a + deltaTime) * 3.14159265 * 2 ) * 0.25+ 0.75;
+	//color.a =  color.a * min(float(visibleRange / dis), 1.0f);
     vColor = color;
 }
