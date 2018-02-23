@@ -98,10 +98,10 @@ void cGameMain::setup( )
 		names[o.playerID] = o.nameStr;
     }
 	teams[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum;
-	if (Network::cMatchingMemberManager::getInstance()->mPlayerName != "moguraNull")
-	{
-		names[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerName;
-	}
+	//if (Network::cMatchingMemberManager::getInstance()->mPlayerName != "moguraNull")
+	//{
+	//	names[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerName;
+	//}
 
     Game::cPlayerManager::getInstance( )->setup( Game::Field::RESPAWN_POINT, 8U, active_player_id, teams, names);
 

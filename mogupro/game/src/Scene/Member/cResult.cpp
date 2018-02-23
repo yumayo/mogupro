@@ -923,10 +923,10 @@ hardptr<Node::node> cResult::createScoreBar(std::string playerName, int pointDat
 	death->set_anchor_point(vec2(1, 0.5F));
 	death->set_position(vec2(546, 33));
 
-	auto name = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 36));
+	auto name = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 30));
 	name->set_text(playerName);
 	name->set_anchor_point(vec2(0.5F));
-	name->set_position(vec2(124, 33 + 3));
+	name->set_position(vec2(120, 33 + 3));
 
 	return scr;
 }
