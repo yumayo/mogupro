@@ -4,6 +4,7 @@
 #include <Network/cUDPManager.h>
 #include <Utility/cString.h>
 #include <Game/cClientAdapter.h>
+#include <cinder/gl/Texture.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -25,7 +26,10 @@ cUnderGround::~cUnderGround()
 
 void cUnderGround::setup()
 {
-    TEX->set( "blocks", "blocks.png" );
+	auto format = cinder::gl::Texture::Format();
+	format.setMinFilter(GL_NEAREST);
+	format.setMagFilter(GL_NEAREST);
+	blocks = cinder::gl::Texture::create( cinder::loadImage(cinder::app::loadAsset( "blocks.png" )), format);
 
     mChunkHolder = new cChunkHolder( this );
 
@@ -56,18 +60,14 @@ void cUnderGround::draw()
 {
     //std::lock_guard<decltype( mMainMutex )> lock( mMainMutex );
 
-    auto texture = TEX->get( "blocks" );
-    if ( !texture )
-        return;
-
     using namespace ci::gl;
     auto ctx = context();
 
-    Rectf texRect = texture->getAreaTexCoords( Area( vec2( 0 ), texture->getSize() ) );
+    Rectf texRect = blocks->getAreaTexCoords( Area( vec2( 0 ), blocks->getSize() ) );
 
     ScopedVao vaoScp( ctx->getDrawTextureVao() );
     ScopedBuffer vboScp( ctx->getDrawTextureVbo() );
-    ScopedTextureBind texBindScope( texture );
+    ScopedTextureBind texBindScope(blocks);
 
     ChunkMap& chunks = mChunkHolder->getChunks();
     for ( auto& chunk : chunks )

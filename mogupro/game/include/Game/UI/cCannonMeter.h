@@ -23,6 +23,7 @@ public:
 	softptr<Node::node> player2;
 	softptr<Node::node> player3;
 	int power = 0;
+	int GEM_MAX_NUM;
 };
 }
 }

@@ -101,6 +101,7 @@ void cGameMain::setup( )
 	ENV->disablePadButton();
 	ENV->disableMouseButton();
 	ENV->disablePadAxis();
+	ENV->setBlockPadDrillButton( true );
 	
 	Game::cUIManager::getInstance( )->disable( );
 
@@ -256,7 +257,7 @@ void cGameMain::draw( )
 		Game::cMapObjectManager::getInstance( )->draw( );
 		Game::cSubWeaponManager::getInstance( )->draw( );
 		Game::cCapsuleManager::getInstance( )->draw( );
-		Resource::cFbxManager::getInstance( )->testDraw( );
+		//Resource::cFbxManager::getInstance( )->testDraw( );
 		skydome.draw( );
 		Game::cPlayerManager::getInstance( )->draw( );
 

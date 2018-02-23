@@ -15,12 +15,15 @@
 #include <Game/cPlayerManager.h>
 #include <Sound/Wav.h>
 #include <Scene/Member/cResult.h>
+#include <Resource/cJsonManager.h>
 using namespace cinder;
 using namespace Node::Action;
 namespace Game
 {
 cGameManager::cGameManager( )
 {
+	GEM_MAX_NUM = Resource::JSON["jem.json"]["maxNum"].asInt();
+
 	gameTime = 60.0F * 5.0F;
 
 	root = Node::node::create( );
@@ -146,6 +149,7 @@ cGameManager::cGameManager( )
 			CAMERA->setCameraMode(CameraManager::FPS);
 		}
 		ENV->setMouseControl( true );
+		ENV->enablePadAxis();
 		auto ready = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 128 ) );
 		ready->set_text( u8"ready" );
 		ready->set_position( root->get_content_size( ) / 2.0F );
@@ -157,7 +161,7 @@ cGameManager::cGameManager( )
 	};
 	battle->join( battle_end, [ this ] ( auto n )
 	{
-		return ( n->time > gameTime) || redCannonPower >= 100 || blueCannonPower >= 100;
+		return ( n->time > gameTime) || redCannonPower >= GEM_MAX_NUM || blueCannonPower >= GEM_MAX_NUM;
 	} );
 	battle->onStateIn = [ this ] ( auto m )
 	{
@@ -167,6 +171,7 @@ cGameManager::cGameManager( )
 		ENV->enablePadAxis( );
 		ENV->enablePadButton( );
 		ENV->enableMouseButton( );
+		ENV->setBlockPadDrillButton(false);
 		cUIManager::getInstance( )->enable( );
 
 		auto go = root->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 128 ) );

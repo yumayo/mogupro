@@ -1,6 +1,7 @@
 #include <Game/UI/cCannonMeter.h>
 #include <Node/renderer.hpp>
 #include <Resource/cImageManager.h>
+#include <Resource/cJsonManager.h>
 using namespace cinder;
 namespace Game
 {
@@ -8,6 +9,8 @@ namespace UI
 {
 bool cCannonMeter::init( cinder::vec2 contentSize, Player::Team playerTeam, Player::Team myTeam )
 {
+	GEM_MAX_NUM = Resource::JSON["jem.json"]["maxNum"].asInt();
+
 	this->myTeam = myTeam;
 	this->playerTeam = playerTeam;
 
@@ -93,7 +96,7 @@ void cCannonMeter::addPower( int value )
 {
 	power += value;
 
-	float scale = std::min( 1.0F, power / 100.0F );
+	float scale = std::min( 1.0F, power / (float)GEM_MAX_NUM);
 	meter->remove_all_actions( );
 	meter->run_action( Node::Action::ease<EaseOutCubic>::create( Node::Action::scale_to::create( 1.5F, vec2( 1.0F, scale ) ) ) );
 

@@ -7,7 +7,7 @@
 #include <mutex>
 #include <atomic>
 #include <boost/lockfree/queue.hpp>
-
+#include <cinder/gl/Texture.h>
 namespace Game
 {
 namespace Field
@@ -54,6 +54,8 @@ private: // Member
     std::vector<std::thread> mChunkLoadThreads;
     std::mutex mMainMutex;
     std::atomic<bool> mIsRunning{ true };
+
+	cinder::gl::TextureRef blocks;
 
 };
 }

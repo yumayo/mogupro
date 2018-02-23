@@ -128,6 +128,10 @@ void cInputAll::setMouseCursorAvtive(bool flag)
 float cInputAll::getPadAxis( const int & pad_num )
 {
 	if ( !usePadAxis ) return 0.0F;
+	if (blockPadDrillButton)
+	{
+		if (pad_num == 2) return 0.0F;
+	}
 	if ( pad_stick_axis_value.find( pad_num ) == pad_stick_axis_value.cend( ) )
 		return 0.0f;
 
@@ -140,6 +144,12 @@ float cInputAll::getPadAxis( const int & pad_num )
 
 bool cInputAll::getPadAxisPushPlus(const int & pad_num)
 {
+	if (!usePadAxis) return false;
+	if (blockPadDrillButton)
+	{
+		if (pad_num == 2) return false;
+	}
+
 	//キーが無ければ初期化
 	if (pad_axis_value_buf.count(pad_num) == 0) {
 		pad_axis_value_buf[pad_num] = 0.0f;
@@ -158,6 +168,12 @@ bool cInputAll::getPadAxisPushPlus(const int & pad_num)
 
 bool cInputAll::getPadAxisPullPlus(const int & pad_num)
 {
+	if (!usePadAxis) return false;
+	if (blockPadDrillButton)
+	{
+		if (pad_num == 2) return false;
+	}
+
 	//キーが無ければ初期化
 	if (pad_axis_value_buf.count(pad_num) == 0) {
 		pad_axis_value_buf[pad_num] = 0.0f;
@@ -177,6 +193,12 @@ bool cInputAll::getPadAxisPullPlus(const int & pad_num)
 
 bool cInputAll::getPadAxisPressPlus(const int & pad_num)
 {
+	if (!usePadAxis) return false;
+	if (blockPadDrillButton)
+	{
+		if (pad_num == 2) return false;
+	}
+
 	//キーが無ければ初期化
 	if (pad_axis_value_buf.count(pad_num) == 0) {
 		pad_axis_value_buf[pad_num] = 0.0f;
@@ -196,6 +218,12 @@ bool cInputAll::getPadAxisPressPlus(const int & pad_num)
 
 bool cInputAll::getPadAxisPushMinus(const int & pad_num)
 {
+	if (!usePadAxis) return false;
+	if (blockPadDrillButton)
+	{
+		if (pad_num == 2) return false;
+	}
+
 	//キーがプラスと被らないように１０を足す
 	int buf = pad_num + 10;
 	//キーが無ければ初期化
@@ -216,6 +244,12 @@ bool cInputAll::getPadAxisPushMinus(const int & pad_num)
 
 bool cInputAll::getPadAxisPullMinus(const int & pad_num)
 {
+	if (!usePadAxis) return false;
+	if (blockPadDrillButton)
+	{
+		if (pad_num == 2) return false;
+	}
+
 	//キーがプラスと被らないように１０を足す
 	int buf = pad_num + 10;
 	//キーが無ければ初期化
@@ -237,6 +271,12 @@ bool cInputAll::getPadAxisPullMinus(const int & pad_num)
 
 bool cInputAll::getPadAxisPressMinus(const int & pad_num)
 {
+	if (!usePadAxis) return false;
+	if (blockPadDrillButton)
+	{
+		if (pad_num == 2) return false;
+	}
+
 	//キーがプラスと被らないように１０を足す
 	int buf = pad_num + 10;
 	//キーが無ければ初期化

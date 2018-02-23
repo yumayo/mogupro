@@ -45,7 +45,7 @@ namespace Game
 				mCannonName = "cannon_blue";
 			}
 			///////////////////////
-			GEM_MAXNUM = 100;
+			GEM_MAXNUM = Resource::JSON["jem.json"]["maxNum"].asInt();
 			//////////////////////
 		}
 		cCannon::~cCannon()

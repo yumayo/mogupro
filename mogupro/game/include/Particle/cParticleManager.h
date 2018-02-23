@@ -5,6 +5,7 @@
 #include <Game/Light/cPointLightParam.h>
 #include <Utility/cSingletonAble.h>
 #include <Particle/Easing/EaseType.h>
+#include <cinder/gl/GlslProg.h>
 
 namespace Particle
 {
@@ -263,6 +264,8 @@ private:
     std::list<std::shared_ptr<cParticleHolder>> mParticleHolders;
 
     glm::quat mBuilbordRotate;
+
+	cinder::gl::GlslProgRef glsl;
 
 };
 }

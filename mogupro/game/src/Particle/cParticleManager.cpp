@@ -471,12 +471,12 @@ void cParticleHolder::update( const float& delta_time )
 void cParticleHolder::draw( const glm::quat& rotation )
 {
     gl::pushModelView();
-    gl::ScopedBlendAlpha blend;
+    //gl::ScopedBlendAlpha blend;
 
     // テクスチャがある描画
     if ( mTextureName != "" )
     {
-        gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().color().texture() ) );
+        gl::ScopedGlslProg glsl( gl::getStockShader( gl::ShaderDef().texture().color() ) );
 
         auto texture = TEX->get( mTextureName );
         if ( !texture ) return;
@@ -726,6 +726,8 @@ cParticleManager::~cParticleManager()
 
 void cParticleManager::setup()
 {
+	glsl = gl::GlslProg::create(app::loadAsset("Shader/particle.vert"), app::loadAsset("Shader/particle.frag"));
+
     gl::enableAlphaBlending( true );
 }
 
@@ -746,21 +748,13 @@ void cParticleManager::update( const float& delta_time )
 
 void cParticleManager::draw()
 {
-    gl::disableDepthWrite();
-
-    auto ctx = gl::context();
-    bool is_culling_change = ctx->getBoolState( GL_CULL_FACE );
-
-    if ( is_culling_change == false )
-        gl::enableFaceCulling( true );
-
+	gl::ScopedDepthTest depthTest(true);
+	gl::ScopedDepthWrite depthWrite( false );
+	gl::ScopedFaceCulling culling(true);
+	//gl::ScopedGlslProg scopedGlsl(glsl);
+	gl::ScopedBlendAdditive blend;
     for ( auto& it : mParticleHolders )
         it->draw( mBuilbordRotate );
-
-    if ( is_culling_change == false )
-        gl::enableFaceCulling( false );
-
-    gl::enableDepthWrite();
 }
 
 void cParticleManager::create( const ParticleParam& param )

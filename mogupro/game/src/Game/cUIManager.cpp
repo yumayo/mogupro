@@ -17,6 +17,7 @@
 #include <Game/UI/cTargetCannon.h>
 #include <Game/UI/cTimer.h>
 #include <cinder/Rand.h>
+#include <Resource/cJsonManager.h>
 //Weapons::SubWeapon::SubWeaponType
 using namespace Node::Action;
 using namespace ci;
@@ -49,12 +50,28 @@ void cUIManager::awake( )
 }
 void cUIManager::setup( )
 {
+	if (cPlayerManager::getInstance()->isActivePlayerWatching())
+	{
+		auto alp = mRoot->add_child( Node::Renderer::sprite::create( Resource::IMAGE["gameMainUI/moji_alpha.png"] ) );
+		alp->run_action( Node::Action::repeat_forever::create( sequence::create( fade_in::create( 1.0F ), fade_out::create( 1.0F ) ) ) );
+		alp->set_anchor_point( vec2(0) );
+		auto hon = mRoot->add_child(Node::Renderer::sprite::create(Resource::IMAGE["gameMainUI/moji_hontai.png"]));
+		hon->set_anchor_point(vec2(0));
+	}
+
 	auto playerTeamId = ( Player::Team )cPlayerManager::getInstance( )->getActivePlayerTeamId( );
 	mRedTeamCannonMeter = mRoot->add_child( UI::cCannonMeter::create( mRoot->get_content_size( ), playerTeamId, Player::Team::Red ) );
 	mBlueTeamCannonMeter = mRoot->add_child( UI::cCannonMeter::create( mRoot->get_content_size( ), playerTeamId, Player::Team::Blue ) );
 
 	// 観戦者以外は敵のUIを小さくします。
-	if (!cPlayerManager::getInstance()->isActivePlayerWatching())
+	if (cPlayerManager::getInstance()->isActivePlayerWatching())
+	{
+		//mRedTeamCannonMeter->set_position(mRedTeamCannonMeter->get_position() + vec2(0, -200));
+		//mBlueTeamCannonMeter->set_position(mBlueTeamCannonMeter->get_position() + vec2( 0, -200 ) );
+		mRedTeamCannonMeter->set_scale(vec2(0.75F));
+		mBlueTeamCannonMeter->set_scale(vec2(0.75F));
+	}
+	else
 	{
 		mRedTeamCannonMeter->set_scale(vec2(playerTeamId == Player::Team::Red ? 1.0F : 0.75F));
 		mBlueTeamCannonMeter->set_scale(vec2(playerTeamId == Player::Team::Blue ? 1.0F : 0.75F));
@@ -181,7 +198,7 @@ void cUIManager::update( float delta )
 
 	//プレイヤーがダメージを受けた時の画面の周りの光
 	int player_hp = cPlayerManager::getInstance( )->getActivePlayer( )->getStatus( ).hp;
-	mPlayerScreenEffect->get_child_by_name( "player_screen_effect" )->set_color( ci::ColorA( 1, 1, 1, 1 - ( player_hp / 100 ) ) );
+	mPlayerScreenEffect->get_child_by_name( "player_screen_effect" )->set_color( ci::ColorA( 1, 1, 1, 1 - ( player_hp / 100) ) );
 
 }
 void cUIManager::draw( )

@@ -46,6 +46,7 @@ public:
 	bool isEnabledPadButton();
 	void disablePadAxis( );
 	void enablePadAxis( );
+	void setBlockPadDrillButton( bool value ) { this->blockPadDrillButton = value; }
 	ci::vec2 getMouseVec( );
 	ci::vec2 getMousePos( );
 	POINT mouse_cursor;
@@ -211,6 +212,7 @@ private:
 	State padState;
 	std::map<int, float> pad_stick_axis_value;
 	bool usePadAxis = true;
+	bool blockPadDrillButton = false;
 
 	//前のフレームと今のフレームのマウスのベクトル
 	ci::vec2 mouse_vec;

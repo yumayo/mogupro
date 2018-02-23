@@ -536,7 +536,7 @@ namespace Scene
 			if (mClassState != ClassState::MASTER)
 				return;
 
-			auto startPlate = Node::Renderer::sprite::create(Resource::IMAGE["matching/greenUI2.png"]);
+			auto startPlate = Node::Renderer::sprite::create(Resource::IMAGE["matching/gamestart.png"]);
 			startPlate->set_schedule_update();
 			//startPlate->set_scale(glm::vec2(1, -1));
 			startPlate->set_tag(0);

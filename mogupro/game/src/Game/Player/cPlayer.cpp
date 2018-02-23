@@ -274,7 +274,7 @@ void Game::Player::cPlayer::gemsUpdate(const float& delta_time)
 			if (getgems.size() > 1) {
 				GemManager->getFragmentGem(gem_id_buf)->setVisible(false);
 			}
-			it->setPos(mCollider.getPosition() - (normalized_player_vec * ci::vec3(0.3f)) + ci::vec3(0,0.1f,0));
+			it->setPos(mCollider.getPosition() - (normalized_player_vec * ci::vec3(0.3f)) + ci::vec3(0,0.2f,0));
 		}
 	}
 }

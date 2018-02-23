@@ -18,6 +18,7 @@ public:
 	void update( float delta );
 	void draw( );
 private:
+	int GEM_MAX_NUM;
 	float delta = 0.0F;
 	float allUserloadFinishedTime = std::numeric_limits<float>::max( );
 	float battleStartTime = std::numeric_limits<float>::max( );
