@@ -816,6 +816,11 @@ void cResult::shutDown()
 	Resource::BGM["result/win.wav"].stop();
 	Resource::BGM["result/lose.wav"].stop();
 	Resource::BGM["result/cannon_power.wav"].stop();
+
+	ENV->enableKeyButton();
+	ENV->enableMouseButton();
+	ENV->enablePadButton();
+	ENV->enablePadAxis();
 }
 void cResult::resize()
 {

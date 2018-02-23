@@ -223,10 +223,6 @@ cGameManager::cGameManager( )
 	};
 	result->onStateIn = [ this ] ( auto m )
 	{
-		ENV->enableKeyButton( );
-		ENV->enableMouseButton( );
-		ENV->enablePadButton( );
-		ENV->enablePadAxis( );
 		root->get_child_by_name( "battle_end_fader" )->run_action( Node::Action::sequence::create( Node::Action::fade_out::create( 1.0F ), Node::Action::remove_self::create( ) ) );
 		Scene::cSceneManager::getInstance()->add<Scene::Member::cResult>( );
 	};
