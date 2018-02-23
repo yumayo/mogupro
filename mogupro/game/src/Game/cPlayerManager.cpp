@@ -21,20 +21,20 @@ void Game::cPlayerManager::receiveAddCannonPower(int playerId)
 		players[playerId]->getgems.clear();
 	}
 }
-void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
+void Game::cPlayerManager::playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams, std::vector<std::string> const& names)
 {
 	//生成
 	for (int i = 0; i < player_number; i++) {
 		//通信で代入
 		if (i == active_player_id) {
-			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, true, 0, 0, static_cast<Game::Player::Team>(teams[i])));
+			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, true, 0, 0, static_cast<Game::Player::Team>(teams[i]), names[i]));
 			//アクティブユーザに代入
 			active_player = players[i];
 			this->active_player_id = active_player_id;
 			this->active_player_team_id = teams[i];
 		}
 		else {
-			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, false, 0, 0, static_cast<Game::Player::Team>(teams[i])));
+			players.push_back(std::make_shared<Player::cPlayer>(positions[i], i, false, 0, 0, static_cast<Game::Player::Team>(teams[i]), names[i]));
 		}
 	}
 }
@@ -479,9 +479,9 @@ void Game::cPlayerManager::cameraAfterUpdate( const float & delta_time )
 		it->cameraAfterUpdate( delta_time );
 	}
 }
-void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams)
+void Game::cPlayerManager::setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams, std::vector<std::string> const& names)
 {
-	playerInstance(positions, player_number, active_player_id, teams);
+	playerInstance(positions, player_number, active_player_id, teams, names);
 	//ポジションの参照とカメラのズームを設定
 	for (auto& it : players) {
 		it->setup();

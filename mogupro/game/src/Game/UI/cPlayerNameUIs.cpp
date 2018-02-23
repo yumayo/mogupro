@@ -21,11 +21,11 @@ bool cPlayerNameUIs::init( int team )
 		auto pos2D = CAMERA->getCamera( ).worldToScreen( it->getPos( ) + ci::vec3( 0, aabb.getSize( ).y / 2.0F, 0 ), cinder::app::getWindowWidth( ), cinder::app::getWindowHeight( ) );
 		l->set_position( pos2D + ci::vec2( 5 ) );
 		l->set_tag( it->getPlayerId( ) );
-		l->set_text( u8"‚à‚®‚ç" + std::to_string( it->getPlayerId( ) ) );
+		l->set_text( it->playerName );
 		l->set_color( ci::ColorA( 0, 0, 0, 1 ) );
 
 		auto instance = l->add_child( Node::Renderer::label::create( "AMEMUCHIGOTHIC-06.ttf", 32.0F ) );
-		instance->set_text( u8"‚à‚®‚ç" + std::to_string( it->getPlayerId( ) ) );
+		instance->set_text(it->playerName);
 		instance->set_position( ci::vec2( -5 ) );
 	}
 	set_schedule_update( );

@@ -289,11 +289,12 @@ Game::Player::cPlayer::cPlayer(
 	const bool& is_active_user,
 	const int& main_weapon_id,
 	const int& sub_weapon_id,
-	const Game::Player::Team& team)
+	const Game::Player::Team& team,
+	const std::string& name)
 	: cObjectBase(pos), start_position(pos),
 	mCollider(mPos, DEFAULT_SIZE ),
 	mRigidbody(mCollider),team(team),player_id(id),damaged_id(id),
-	active_user(is_active_user)
+	active_user(is_active_user), playerName(name)
 {
 	size = DEFAULT_SIZE;
 	color = ci::vec4(1);

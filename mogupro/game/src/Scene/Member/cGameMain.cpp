@@ -70,13 +70,25 @@ void cGameMain::setup( )
 	teams.emplace_back( Game::Player::Blue );
 	teams.emplace_back( Game::Player::Blue );
 	teams.emplace_back( Game::Player::Blue );
+	std::vector<std::string> names;
+	names.emplace_back(u8"名無しもぐ");
+	names.emplace_back(u8"名無しもぐ");
+	names.emplace_back(u8"名無しもぐ");
+	names.emplace_back(u8"名無しもぐ");
+	names.emplace_back(u8"名無しもぐ");
+	names.emplace_back(u8"名無しもぐ");
+	names.emplace_back(u8"名無しもぐ");
+	names.emplace_back(u8"名無しもぐ");
     for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
     {
         teams[o.playerID] = o.teamNum;
+		names[o.playerID] = o.nameStr;
     }
 	teams[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum;
+	names[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerName;
 
-    Game::cPlayerManager::getInstance( )->setup( Game::Field::RESPAWN_POINT, 8U, active_player_id, teams);
+
+    Game::cPlayerManager::getInstance( )->setup( Game::Field::RESPAWN_POINT, 8U, active_player_id, teams, names);
 
 	// ////////プレイヤーが揃った後に、キャノンにはプレイヤーの使用している全ライトを適応させる。
 	Game::cStrategyManager::getInstance()->lightSetup();

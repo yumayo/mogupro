@@ -22,7 +22,7 @@ private:
 	int watching_target_player_id = -1;
 
     bool mouse_on = false;
-    void playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams);
+    void playerInstance(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams, std::vector<std::string> const& names);
 	ci::vec3 playerNormalMoveKey(const float& delta_time);
 	ci::vec3 playerNormalMovePad(const float& delta_time);
 	void playerDrillMove(const float& delta_time);
@@ -90,7 +90,7 @@ public:
 	void receiveAddCannonPower(int playerId);
 	// カメラの更新後に呼ぶアップデート
 	void cameraAfterUpdate( const float& delta_time );
-    void setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams);
+    void setup(std::vector<ci::vec3> positions, const int& player_number, const int& active_player_id, std::vector<int> teams, std::vector<std::string> const& names);
     void update( const float& delta_time );
     void draw();
 };

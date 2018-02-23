@@ -362,7 +362,7 @@ void cResult::setup()
 		bool win = gm->winTeam() == Game::Player::Red;
 		for (int i = 0; i < 3; ++i)
 		{
-			redPlayerName.emplace_back(createPlayerName( i ));
+			redPlayerName.emplace_back(Game::cPlayerManager::getInstance()->getPlayer(i)->playerName);
 		}
 		auto& n = win ? winBoard : loseBoard;
 		n = rootUI->add_child(createScoreBoard(
@@ -381,7 +381,7 @@ void cResult::setup()
 		bool win = gm->winTeam() == Game::Player::Blue;
 		for (int i = 4; i < 7; ++i)
 		{
-			bluePlayerName.emplace_back(createPlayerName(i));
+			bluePlayerName.emplace_back(Game::cPlayerManager::getInstance()->getPlayer(i)->playerName);
 		}
 		auto& n = win ? winBoard : loseBoard;
 		n = rootUI->add_child(createScoreBoard(
@@ -699,7 +699,7 @@ void cResult::setup()
 
 	win_lose->join(bar, [](auto n)
 	{
-		return n->time > 2.0F;
+		return n->time > 6.0F;
 	});
 
 	bar->onStateIn = [this](auto n)
@@ -712,7 +712,7 @@ void cResult::setup()
 
 			hardptr<Node::node> activePlayerScoreBar;
 
-			auto playerName = createPlayerName(id);
+			auto playerName = Game::cPlayerManager::getInstance()->getActivePlayer()->playerName;
 			switch (Game::cPlayerManager::getInstance()->getActivePlayerTeamId())
 			{
 			case Game::Player::Red:
@@ -915,16 +915,12 @@ hardptr<Node::node> cResult::createScoreBar(std::string playerName, int pointDat
 	death->set_anchor_point(vec2(1, 0.5F));
 	death->set_position(vec2(546, 33));
 
-	auto name = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 46));
+	auto name = scr->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 36));
 	name->set_text(playerName);
 	name->set_anchor_point(vec2(0.5F));
-	name->set_position(vec2(113, 33 + 3));
+	name->set_position(vec2(124, 33 + 3));
 
 	return scr;
-}
-std::string cResult::createPlayerName(int playerId)
-{
-	return u8"‚à‚®‚ç" + std::to_string(playerId);
 }
 }
 }
