@@ -12,7 +12,7 @@ class DrillUI
 public:
 
 	DrillUI();
-	DrillUI(ci::vec2 pos, ci::vec2 moveVec, std::string name);
+	DrillUI(ci::vec2 pos,ci::vec2 fontPos, ci::vec2 moveVec, std::string name);
 
 	void update(float deltaTime);
 	void draw();

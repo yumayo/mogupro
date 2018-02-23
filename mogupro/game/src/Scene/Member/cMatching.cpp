@@ -25,7 +25,7 @@ using namespace Node::Action;
 
 DrillUI::DrillUI() { }
 
-DrillUI::DrillUI(ci::vec2 pos, ci::vec2 moveVec, std::string name)
+DrillUI::DrillUI(ci::vec2 pos, ci::vec2 fontPos, ci::vec2 moveVec, std::string name)
 {
 	using namespace Node;
 	using namespace Node::Action;
@@ -48,7 +48,7 @@ DrillUI::DrillUI(ci::vec2 pos, ci::vec2 moveVec, std::string name)
 	auto f = Node::Renderer::label::create("sawarabi-gothic-medium.ttf", 32);
 	f->set_color(ci::Color(0,0,0));
 	f->set_text(u8"" + name);
-	f->set_position(ci::vec2(0, 0));
+	f->set_position(fontPos);
 	f->set_schedule_update();
 	f->set_scale(glm::vec2(1, -1));
 	auto fire = Node::Renderer::sprite::create(Resource::IMAGE["matching/fire1.png"]);
@@ -234,7 +234,7 @@ namespace Scene
 				{
 					ci::vec2 pos = m.mRoot->get_position();
 					m.mRoot->run_action(sequence::create(move_to::create(2.0F, ci::vec3(-2000, pos.y, 0)),
-						ease<ci::EaseOutCubic>::create(move_to::create(1.0F, ci::vec3(-235, pos.y, 0)))));
+						ease<ci::EaseOutCubic>::create(move_to::create(1.0F, ci::vec3(-240, pos.y, 0)))));
 					m.time = 3.f;
 					m.type = DrillUI::AnimationType::END;
 					c++;
@@ -244,7 +244,7 @@ namespace Scene
 				{
 					ci::vec2 pos = m.mRoot->get_position();
 					m.mRoot->run_action(sequence::create(move_to::create(2.0F, ci::vec3(2000, pos.y, 0)),
-						ease<ci::EaseOutCubic>::create(move_to::create(1.0F, ci::vec3(235, pos.y, 0)))));
+						ease<ci::EaseOutCubic>::create(move_to::create(1.0F, ci::vec3(240, pos.y, 0)))));
 					m.time = 3.f;
 					m.type = DrillUI::AnimationType::END;
 					c++;
@@ -325,7 +325,7 @@ namespace Scene
 		void cMatching::update(float deltaTime)
 		{
 			if (flag) {
-				CAMERA->shakeCamera2D(50.f, 3.0F);
+				CAMERA->shakeCamera2D(50.f, 3.5F);
 				flag = false;
 			}
 
@@ -488,11 +488,11 @@ namespace Scene
 				if (num >= 4)
 					num -= 1;
 					if (resWantTeamIn->mTeamNum == 0)
-						drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 140 - 130 * teamCount[0]),
+						drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 140 - 130 * teamCount[0]), ci::vec2(0,-2),
 							ci::vec2(-390, 140 - 130 * teamCount[0]), cMatchingMemberManager::getInstance()->mNameStrs[num]+ "(You)"));
 
 					else if (resWantTeamIn->mTeamNum == 1)
-						drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 140 - 160 * teamCount[1]),
+						drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 140 - 160 * teamCount[1]), ci::vec2(0, -2),
 							ci::vec2(390, 140 - 160 * teamCount[1]), cMatchingMemberManager::getInstance()->mNameStrs[num] + "(You)"));
 					teamCount[mTeamNum]++;
 			}
@@ -511,10 +511,10 @@ namespace Scene
 						num -= 1;
 
 					if (eveTeamMember->mTeamNum == 0)
-						drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 140 - 130 * teamCount[0]),
+						drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 140 - 130 * teamCount[0]), ci::vec2(0, 0),
 							ci::vec2(-390, 140 - 160 * teamCount[0]), cMatchingMemberManager::getInstance()->mNameStrs[num]));
 					else if (eveTeamMember->mTeamNum == 1)
-						drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 140 - 130 * teamCount[1]),
+						drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 140 - 130 * teamCount[1]), ci::vec2(0, 0),
 							ci::vec2(390, 140 - 160 * teamCount[1]), cMatchingMemberManager::getInstance()->mNameStrs[num]));
 					teamCount[eveTeamMember->mTeamNum]++;
 					++count;
@@ -550,7 +550,7 @@ namespace Scene
 			startPlate->set_schedule_update();
 			startPlate->set_scale(glm::vec2(1, -1));
 			startPlate->set_tag(0);
-			startPlate->set_position(ci::vec2(500, -250));
+			startPlate->set_position(ci::vec2(600, -350));
 			mRoot->add_child(startPlate);
 
 			mRoot->get_child_by_tag(mSelectTag)->run_action(
