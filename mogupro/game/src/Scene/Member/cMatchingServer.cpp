@@ -38,7 +38,10 @@ namespace Scene
 		}
 		void cMatchingServer::shutDown()
 		{
-
+			Game::cServerAdapter::getInstance()->removeInstance();
+			cMatchingMemberManager::removeInstance();
+			cUDPServerManager::getInstance()->close();
+			cUDPServerManager::removeInstance();
 		}
 
 		void cMatchingServer::update(float deltaTime)

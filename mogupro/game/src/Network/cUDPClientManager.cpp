@@ -65,8 +65,9 @@ void cUDPClientManager::updateSend( )
 	if ( !mConnectServerHandle )
 	{
 		close( );
-		MES_ERR( "送信ハンドルが未定義です。",
-				 [ ] { Scene::cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( ); } );
+
+		// 送信ハンドルが未定義です。
+		Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
 	}
 
 	auto& handle = mConnectServerHandle;
@@ -120,8 +121,8 @@ void cUDPClientManager::connection( )
         if ( mConnectSecond < cinder::app::getElapsedSeconds( ) )
         {
             close( );
-            MES_ERR( "サーバーからの応答がありません。",
-                     [ ] { Scene::cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( ); } );
+			// サーバーからの応答なし。
+			Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
         }
     }
 }
@@ -133,15 +134,15 @@ void cUDPClientManager::ping( )
 
 		mServerTime = p->time;
     }
-    if (mConnectServerHandle.ipAddress != Network::getLocalIpAddressHost())
+    //if (mConnectServerHandle.ipAddress != Network::getLocalIpAddressHost())
     {
 		if (!mStopClose)
 		{
 			if (mCloseSecond < cinder::app::getElapsedSeconds())
 			{
 				close();
-				MES_ERR("サーバーとの接続が切れました。",
-					[] { Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>(); });
+				// サーバーからの接続切れ。
+				Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
 			}
 		}
     }
