@@ -32,6 +32,13 @@ cTitle::~cTitle( )
 void cTitle::setup( )
 {
 	ENV->setMouseControl(false);
+	ENV->enableKeyButton();
+	ENV->enableMouseButton();
+	ENV->enablePadAxis();
+	ENV->enablePadButton();
+
+	Network::cUDPClientManager::removeInstance();
+	Network::cUDPServerManager::removeInstance();
 
 	STATE_GENERATE(sMac, init);
 	STATE_GENERATE(sMac, fadein);
