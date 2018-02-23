@@ -79,14 +79,29 @@ void cGameMain::setup( )
 	names.emplace_back(u8"–¼–³‚µ‚à‚®");
 	names.emplace_back(u8"–¼–³‚µ‚à‚®");
 	names.emplace_back(u8"–¼–³‚µ‚à‚®");
+	{
+		int i = 0;
+		for (auto& o :
+			Network::cMatchingMemberManager::getInstance()->mNameStrs)
+		{
+			names[i] = o;
+			if (i == 2)
+			{
+				i += 1;
+			}
+			i += 1;
+		}
+	}
     for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
     {
         teams[o.playerID] = o.teamNum;
 		names[o.playerID] = o.nameStr;
     }
 	teams[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum;
-	names[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerName;
-
+	if (Network::cMatchingMemberManager::getInstance()->mPlayerName != "moguraNull")
+	{
+		names[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerName;
+	}
 
     Game::cPlayerManager::getInstance( )->setup( Game::Field::RESPAWN_POINT, 8U, active_player_id, teams, names);
 
