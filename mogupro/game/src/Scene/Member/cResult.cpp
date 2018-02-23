@@ -443,12 +443,12 @@ void cResult::setup()
 		tarNode->set_position_3d(vec3(0, 0, 0));
 		tarNode->run_action(move_by::create(10.0F, vec3(0, 0, -2)));
 		{
-			auto const NUM = std::max(gm->getResult().second, 1);
+			auto const NUM = std::max(gm->getResult().second / 20, 1);
 			float const ONE_TIME = 4.8F / NUM;
 			bluePowerRoot->run_action(repeat_times::create(sequence::create(call_func::create([this, bluePowerRoot, ONE_TIME] {bluePowerRoot->add_child(createPowerTorus(ONE_TIME))->set_color(ColorA(0, 0, 1)); }), delay::create(ONE_TIME)), NUM));
 		}
 		{
-			auto const NUM = std::max(gm->getResult().first, 1);
+			auto const NUM = std::max(gm->getResult().first / 20, 1);
 			float const ONE_TIME = 4.8F / NUM;
 			redPowerRoot->run_action(sequence::create(repeat_times::create(sequence::create(call_func::create([this, redPowerRoot, ONE_TIME] {redPowerRoot->add_child(createPowerTorus(ONE_TIME))->set_color(ColorA(1, 0, 0)); }), delay::create(ONE_TIME)), NUM),
 				call_func::create([this, power_in, burst, sky]
@@ -479,12 +479,12 @@ void cResult::setup()
 		tarNode->set_position_3d(vec3(0, 0, 0));
 		tarNode->run_action(move_by::create(10.0F, vec3(0, 0, -2)));
 		{
-			auto const NUM = std::max(gm->getResult().first, 1);
+			auto const NUM = std::max(gm->getResult().first / 20, 1);
 			float const ONE_TIME = 4.8F / NUM;
 			redPowerRoot->run_action(repeat_times::create(sequence::create(call_func::create([this, bluePowerRoot, ONE_TIME] {bluePowerRoot->add_child(createPowerTorus(ONE_TIME))->set_color(ColorA(0, 0, 1)); }), delay::create(ONE_TIME)), NUM));
 		}
 		{
-			auto const NUM = std::max(gm->getResult().second, 1);
+			auto const NUM = std::max(gm->getResult().second / 20, 1);
 			float const ONE_TIME = 4.8F / NUM;
 			bluePowerRoot->run_action(sequence::create(repeat_times::create(sequence::create(call_func::create([this, bluePowerRoot, ONE_TIME] {bluePowerRoot->add_child(createPowerTorus(ONE_TIME))->set_color(ColorA(0, 0, 1)); }), delay::create(ONE_TIME)), NUM),
 				call_func::create([this, power_in, burst, sky]
@@ -692,7 +692,7 @@ void cResult::setup()
 				scaler->run_action(ease<ci::EaseOutCubic>::create(fade_out::create(1.0F)));
 				scaler->run_action(ease<ci::EaseOutCubic>::create( scale_by::create(1.0F, vec2( 1.0F ) )));
 				scaler->set_position(rootUI->get_content_size() * vec2(0.5F));
-			}), ease<ci::EaseInBack>::create( move_by::create(1.0F, vec2(0.0F, -1000.0F)) ) ));
+			}), delay::create( 4.0F ), ease<ci::EaseInBack>::create(move_by::create(1.0F, vec2(0.0F, -1000.0F)))));
 			logo->set_position(rootUI->get_content_size() * vec2(0.5F));
 		}
 	};
