@@ -131,6 +131,7 @@ namespace Scene
 
 		void cTutorial::shutDown()
 		{
+			Resource::cSoundManager::getInstance()->findBgm("トロピカル無職.wav").stop();
 			Network::cUDPClientManager::removeInstance();
 			Network::cUDPServerManager::removeInstance();
 			Game::cDebugManager::removeInstance();
@@ -202,7 +203,6 @@ namespace Scene
 				Resource::cFbxManager::getInstance()->testUpdate(deltaTime);
 				if (ENV->pushKey(cinder::app::KeyEvent::KEY_F5))
 				{
-					Resource::cSoundManager::getInstance()->findBgm("トロピカル無職.wav").stop();
 					cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
 				}
 			}

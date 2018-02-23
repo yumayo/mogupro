@@ -7,12 +7,13 @@
 #include <Scene/Member/cTitle.h>
 #include <Node/action.hpp>
 #include <Network/IpHost.h>
+#include <Network/cUDPServerManager.h>
 namespace Network
 {
 cUDPClientManager::cUDPClientManager( )
     : mCloseSecond( std::numeric_limits<float>::max( ) )
     , mRoot( Node::node::create( ) )
-    , mConnectSecond( std::numeric_limits<float>::max( ) )
+    //, mConnectSecond( std::numeric_limits<float>::max( ) )
 	, mSequenceId( 0U )
 	, mIsConnected(false)
 	, mServerTime( )
@@ -34,9 +35,29 @@ bool cUDPClientManager::isConnected( )
 }
 void cUDPClientManager::connect( std::string const& ipAddress )
 {
-	mConnectServerHandle = cNetworkHandle( ipAddress, 25565 );
-	send( new Packet::Request::cReqConnect( ), false );
-	mConnectSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
+	mConnectServerHandle = cNetworkHandle(ipAddress, 25565);
+	send(new Packet::Request::cReqConnect(), false);
+	for (int i = 0; i < 10; ++i)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		update(0.1F);
+		if (ipAddress == Network::getLocalIpAddressHost())
+		{
+			cUDPServerManager::getInstance()->update(0.1F);
+		}
+		connection();
+		if (isConnected())
+		{
+			break;
+		}
+	}
+	if (!isConnected())
+	{
+		close();
+		// サーバーからの応答なし。
+		Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
+	}
+	//mConnectSecond = cinder::app::getElapsedSeconds( ) + PING_HOLD_SECOND;
 }
 void cUDPClientManager::connectOfflineServer( )
 {
@@ -95,7 +116,6 @@ void cUDPClientManager::updateRecv( )
 		mPackets.onReceive( chunk );
     }
 
-    connection( );
     ping( );
 }
 void cUDPClientManager::connection( )
@@ -116,15 +136,15 @@ void cUDPClientManager::connection( )
         act->set_name( "ping" );
         mRoot->run_action( act );
     }
-    if ( !isConnected( ) )
-    {
-        if ( mConnectSecond < cinder::app::getElapsedSeconds( ) )
-        {
-            close( );
-			// サーバーからの応答なし。
-			Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
-        }
-    }
+   // if ( !isConnected( ) )
+   // {
+   //     if ( mConnectSecond < cinder::app::getElapsedSeconds( ) )
+   //     {
+   //         close( );
+			//// サーバーからの応答なし。
+			//Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
+   //     }
+   // }
 }
 void cUDPClientManager::ping( )
 {

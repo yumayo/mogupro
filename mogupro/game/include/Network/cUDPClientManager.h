@@ -69,7 +69,8 @@ private:
 
     // サーバーに接続できたかを保証します。
     // 5秒以上応答がない場合は切断します。
-    float mConnectSecond;
+	// 強制的に待ちます。
+    //float mConnectSecond;
 
 	float mServerTime;
 

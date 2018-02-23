@@ -7,6 +7,7 @@
 #include <Scene/Member/cBegin.h>
 #include <Utility/cScheduler.h>
 #include <Resource/cJsonManager.h>
+#include <Scene/Member/cTitle.h>
 class gameApp : public cinder::app::App
 {
 private:
@@ -59,29 +60,44 @@ void gameApp::mouseDrag( cinder::app::MouseEvent event )
 }
 void gameApp::update( )
 {
-	float elapsedSeconds = cinder::app::getElapsedSeconds( );
-    float delta = elapsedSeconds - prevSeconds;
-    prevSeconds = elapsedSeconds;
+	// ‘S‚Ä‚Ì—áŠO‹zŽûB
+	try
+	{
+		float elapsedSeconds = cinder::app::getElapsedSeconds();
+		float delta = elapsedSeconds - prevSeconds;
+		prevSeconds = elapsedSeconds;
 
-	ENV->preUpdate( delta );
+		ENV->preUpdate(delta);
 
-	Scene::cSceneManager::getInstance( )->update( delta );
-	CAMERA->update( delta );
-	Utility::cScheduler::getInstance( )->update( delta );
+		Scene::cSceneManager::getInstance()->update(delta);
+		CAMERA->update(delta);
+		Utility::cScheduler::getInstance()->update(delta);
+	}
+	catch (...)
+	{
+		Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
+	}
 }
 void gameApp::draw( )
 {
-	cinder::gl::clear( cinder::Color( 0, 0, 0 ) );
+	try
+	{
+		cinder::gl::clear(cinder::Color(0, 0, 0));
 
-    CAMERA->bind3D( );
-	Scene::cSceneManager::getInstance( )->draw( );
-    CAMERA->unBind3D( );
+		CAMERA->bind3D();
+		Scene::cSceneManager::getInstance()->draw();
+		CAMERA->unBind3D();
 
-    CAMERA->bind2D( );
-	Scene::cSceneManager::getInstance( )->draw2D( );
-    CAMERA->unBind2D( );
+		CAMERA->bind2D();
+		Scene::cSceneManager::getInstance()->draw2D();
+		CAMERA->unBind2D();
 
-    ENV->flashInput( );
+		ENV->flashInput();
+	}
+	catch (...)
+	{
+		Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
+	}
 }
 void gameApp::cleanup()
 {
