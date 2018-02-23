@@ -67,7 +67,7 @@ void cUseWeaponCapsel::updateCollisionAfterUpdate(const float & delta_time)
 	ci::Colorf hsv = ci::hsvToRgb(ci::vec3(h, 1.0f, 1.f));
 	light->color = hsv;
 
-	if (!ENV->pressKey(ci::app::KeyEvent::KEY_g)) {
+	if (!(ENV->pressKey(ci::app::KeyEvent::KEY_g) || ENV->isPadPress(4))) {
 		createSubWeapon();
 		mIsdelete = true;
 		return;

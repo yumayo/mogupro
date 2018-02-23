@@ -36,7 +36,7 @@ void cUseQuarry::setup(const int playerid) {
 void cUseQuarry::update(const float& delta_time) {
 	calcPos(mLength, mPlayerId);
 	mScale = ci::vec3(3, 3, 3);
-	if (!ENV->pressKey(ci::app::KeyEvent::KEY_g)) {
+	if (!(ENV->pressKey(ci::app::KeyEvent::KEY_g) || ENV->isPadPress(4))) {
 		createSubWeapon();
 		mIsdelete = true;
 	}
