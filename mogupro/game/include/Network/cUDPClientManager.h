@@ -32,6 +32,7 @@ public:
     void connect( std::string const& ipAddress );
     void connectOfflineServer( );
     void update( float delta );
+	void setDontClose( bool value );
 	float const& getServerTime( );
 	inline cUDPManager* const getUDPManager( )
 	{
@@ -71,5 +72,7 @@ private:
     float mConnectSecond;
 
 	float mServerTime;
+
+	bool mStopClose = false;
 };
 }

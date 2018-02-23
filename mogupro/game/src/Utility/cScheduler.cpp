@@ -44,6 +44,7 @@ void cScheduler::update( float delta )
 			if ((*it).use_count() == 1L)
 			{
 				mRoot->remove_action_by_tag(**it);
+				mIdGen.removeId(**it);
 				mHandles.erase(it++);
 			}
 			else ++it;
@@ -62,6 +63,7 @@ void cScheduler::update( float delta )
 				auto& target = mUpdateMethods[targetSecond];
 				auto f = target.finalize;
 				if (f) f();
+				mIdGen.removeId(*(*it).first);
 				mUpdateMethodHandles.erase(it++);
 				mUpdateMethods.erase(targetSecond);
 			}

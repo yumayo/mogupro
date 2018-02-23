@@ -14,9 +14,9 @@ using byte2 = short;
 using byte4 = int;
 constexpr ubyte2 PACKET_MAX_BYTE = 4096U;
 using cBuffer = std::array<char, PACKET_MAX_BYTE>;
-constexpr float PING_HOLD_SECOND = 60.0F;
-constexpr ubyte1 RELIABLE_COUNT = 4U; // 信頼性を保証するための回数。
-constexpr double RELIABLE_HOLD_SECOND = 8.0;
+constexpr float PING_HOLD_SECOND = 8.0F;
+constexpr ubyte1 RELIABLE_COUNT = 12U; // 信頼性を保証するための回数。
+constexpr double RELIABLE_HOLD_SECOND = 2.0;
 #define PACKET_TEMPLATE_BEGIN // pmakeで置き換えのためにおいている。
 #define PACKET_TEMPLATE_END
 class cPacketBuffer

@@ -333,6 +333,9 @@ void cResult::setup()
 		Network::cUDPClientManager::getInstance()->send(new Network::Packet::Request::cReqGameEnd());
 	}
 
+	// リザルトは長いのでサーバーからの応答がなくても自動で切断させません。
+	Network::cUDPClientManager::getInstance()->setDontClose(true);
+
 	root = Node::node::create();
 	root->set_schedule_update();
 	root->set_content_size(app::getWindowSize());

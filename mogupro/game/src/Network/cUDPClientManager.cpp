@@ -52,6 +52,10 @@ void cUDPClientManager::update( float delta )
     updateSend( );
     mRoot->entry_update( delta );
 }
+void cUDPClientManager::setDontClose(bool value)
+{
+	mStopClose = value;
+}
 float const & cUDPClientManager::getServerTime( )
 {
 	return mServerTime;
@@ -104,7 +108,7 @@ void cUDPClientManager::connection( )
 		mServerTime = p->time;
 
         using namespace Node::Action;
-        auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( [ this ]
+        auto act = repeat_forever::create( sequence::create( delay::create( 0.25F ), call_func::create( [ this ]
         {
 			send( new Packet::Request::cReqPing( ) );
         } ) ) );
@@ -131,12 +135,15 @@ void cUDPClientManager::ping( )
     }
     if (mConnectServerHandle.ipAddress != Network::getLocalIpAddressHost())
     {
-        if (mCloseSecond < cinder::app::getElapsedSeconds())
-        {
-            close();
-            MES_ERR( "サーバーとの接続が切れました。",
-                     [ ] { Scene::cSceneManager::getInstance( )->shift<Scene::Member::cTitle>( ); } );
-        }
+		if (!mStopClose)
+		{
+			if (mCloseSecond < cinder::app::getElapsedSeconds())
+			{
+				close();
+				MES_ERR("サーバーとの接続が切れました。",
+					[] { Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>(); });
+			}
+		}
     }
 }
 void cUDPClientManager::sendDataBufferAdd( cPacketBuffer const & packetBuffer, bool reliable )

@@ -26,6 +26,7 @@ void cSceneManager::update(float delta)
 	}
 	catch (SceneAllDeleted const&)
 	{
+		// nothing
 	}
 
 	try
@@ -47,7 +48,7 @@ void cSceneManager::update(float delta)
 	}
 	catch (SceneAllDeleted const&)
 	{
-		this->update(delta);
+		// nothing
 	}
 }
 cSceneBase & cSceneManager::getDontDestroyOnLoad( )

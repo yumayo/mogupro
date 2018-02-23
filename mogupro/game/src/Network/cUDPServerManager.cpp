@@ -121,7 +121,7 @@ void cUDPServerManager::updateRecv( )
 
 				// pingコルーチンを走らせる。
 				using namespace Node::Action;
-				auto act = repeat_forever::create( sequence::create( delay::create( 1.5F ), call_func::create( 
+				auto act = repeat_forever::create( sequence::create( delay::create( 0.25F ), call_func::create( 
 					[networkHandle = chunk.networkHandle, this]
 				{
 					auto p = new Packet::Event::cEvePing( );
