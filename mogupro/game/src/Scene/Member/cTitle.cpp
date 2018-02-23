@@ -15,6 +15,7 @@
 #include <Game/Player/cPlayer.h>
 #include <Sound/Wav.h>
 #include <Scene/Member/cModeSelect.h>
+#include "../../Kuriko/Scenes/SceneTitle.h"
 using namespace cinder;
 using namespace Node::Action;
 namespace Scene
@@ -23,7 +24,6 @@ namespace Member
 {
 cTitle::cTitle( )
 {
-
 }
 cTitle::~cTitle( )
 {
@@ -36,6 +36,8 @@ void cTitle::setup( )
 	ENV->enableMouseButton();
 	ENV->enablePadAxis();
 	ENV->enablePadButton();
+
+	kurikoTitle = std::make_shared<User::SceneTitle>();
 
 	Network::cUDPClientManager::removeInstance();
 	Network::cUDPServerManager::removeInstance();
@@ -57,25 +59,34 @@ void cTitle::setup( )
 		root->set_scale(cinder::vec2(1, -1));
 		root->set_position(root->get_content_size() * cinder::vec2(-0.5F, 0.5F));
 
-		auto backGround = root->add_child(Node::Renderer::sprite::create(Resource::IMAGE["title/background.png"]));
-		backGround->set_anchor_point( vec2(0) );
-
 		auto contetnts = root->add_child(Node::node::create());
 		contetnts->set_content_size(app::getWindowSize() - ivec2(100, 100));
 		contetnts->set_position(ivec2(100, 100) / 2);
 
-		auto logo = contetnts->add_child(Node::Renderer::sprite::create(Resource::IMAGE["title/logo.png"]));
-		logo->set_anchor_point(vec2(0.0F));
-		logo->set_position(vec2(0.0F));
+		kurikoTitle->on_cross_se_play = [this, contetnts]
+		{
+			//auto backGround = root->add_child(Node::Renderer::sprite::create(Resource::IMAGE["title/background.png"]));
+			//backGround->set_anchor_point( vec2(0) );
 
-		auto pushanybutton = contetnts->add_child(Node::Renderer::sprite::create(Resource::IMAGE["title/pushanybutton.png"]));
-		pushanybutton->set_anchor_point(vec2(1, 1));
-		pushanybutton->set_position(contetnts->get_content_size());
+			//auto logo = contetnts->add_child(Node::Renderer::sprite::create(Resource::IMAGE["title/logo.png"]));
+			//logo->set_anchor_point(vec2(0.0F));
+			//logo->set_position(vec2(0.0F));
 
-		auto version = contetnts->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 32.0F));
-		version->set_anchor_point(vec2(0, 1));
-		version->set_position(contetnts->get_content_size() * vec2(0, 1));
-		version->set_text("ver0.4.0");
+			auto pushanybutton = contetnts->add_child(Node::Renderer::sprite::create(Resource::IMAGE["title/pushanybutton.png"]));
+			pushanybutton->set_anchor_point(vec2(1, 1));
+			pushanybutton->set_color( ColorA(1, 1, 1, 0) );
+			pushanybutton->run_action(fade_in::create(1.0F));
+			pushanybutton->set_position(contetnts->get_content_size());
+
+			auto version = contetnts->add_child(Node::Renderer::label::create("AMEMUCHIGOTHIC-06.ttf", 32.0F));
+			version->set_anchor_point(vec2(0, 1));
+			version->set_position(contetnts->get_content_size() * vec2(0, 1));
+			version->set_color(ColorA(1, 1, 1, 0));
+			version->run_action( fade_in::create( 1.0F ) );
+			version->set_text("ver1.0.0");
+
+			kurikoTitle->on_cross_se_play = nullptr;
+		};
 
 		fader = root->add_child( Node::Renderer::rect::create( root->get_content_size( ) ) );
 		fader->set_color( ColorA( 0, 0, 0, 1 ) );
@@ -84,8 +95,8 @@ void cTitle::setup( )
 
 		auto bgm = Sound::Wav(cinder::app::getAssetDirectories().front().string() + "/BGM/title/background.wav");
 		introloopBGM.create(bgm.data(), bgm.size(), 0.0F, 60.0F + 18.59638F);
-		introloopBGM.gain(0.0F);
-		introloopBGM.fadein(1.0F, 0.3F);
+		introloopBGM.gain(0.3F);
+		introloopBGM.play();
 
 		CAMERA->setup();
 	};
@@ -181,12 +192,15 @@ void cTitle::update( float deltaTime )
 			fadeout->onStateOut = [] {cSceneManager::getInstance()->shift<Scene::Member::cModeSelect>(); };
 		}
 	}
+
+	kurikoTitle->update();
 }
 void cTitle::draw( )
 {
 }
 void cTitle::draw2D( )
 {
+	kurikoTitle->draw();
 	root->entry_render( cinder::mat4( ) );
 }
 }

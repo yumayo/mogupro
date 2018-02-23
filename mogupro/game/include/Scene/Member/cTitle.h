@@ -4,6 +4,10 @@
 #include <Utility/cFont.h>
 #include <Sound/cIntroLoopableBGM.h>
 #include <Utility/cStateMachineBehaviour.h>
+namespace User
+{
+class SceneTitle;
+}
 namespace Scene
 {
 namespace Member
@@ -15,6 +19,7 @@ class cTitle final : public cSceneBase
 	Sound::cIntroLoopableBGM introloopBGM;
 	Utility::cStateMachineBehaviour sMac;
 	Utility::softptr<Utility::cStateNode> fadeout;
+	std::shared_ptr<::User::SceneTitle> kurikoTitle;
 public:
     cTitle( );
     ~cTitle( );
