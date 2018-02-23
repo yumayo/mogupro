@@ -29,7 +29,7 @@ namespace Game
 			~cGemStone();
 
 			void         setUp();
-			void         draw();
+			void         draw(bool isFbo);
 			void         drawFbo();
 			void         update();
 

@@ -3,10 +3,10 @@
 uniform mat4	ciModelViewProjection;
 in vec4			ciPosition;
 in vec2			ciTexCoord0;
-in vec3         ciColor;
+in vec4         ciColor;
 out vec4        oPosition;
 out vec2		TexCoord0;
-out vec3        oColor;		
+out vec4        oColor;		
 
 
 void main( void ) {

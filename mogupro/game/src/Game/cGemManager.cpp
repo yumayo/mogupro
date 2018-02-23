@@ -40,17 +40,19 @@ namespace Game
 		ci::gl::ScopedBuffer vboScp(ctx->getDrawTextureVbo());
 
 		size_t VisibleRange = 5;
-
+		
 		//原石
 		for (size_t i = 0; i < mGemStone.size(); i++)
 		{
-			mGemStone[i]->draw();
+			mGemStone[i]->draw(false);
 		}
-
-		//欠片
-		for (size_t i = 0; i < mFragmentGems.size(); i++)
 		{
-			mFragmentGems[i]->draw();
+			ci::gl::ScopedBlendAdditive add;
+			//欠片
+			for (size_t i = 0; i < mFragmentGems.size(); i++)
+			{
+				mFragmentGems[i]->draw();
+			}
 		}
 		ci::gl::color(ci::Color(1, 1, 1));
 	};
@@ -76,10 +78,10 @@ namespace Game
 			mVboShader->uniform("visibleRange", mVisibleRange);
 			mVboShader->uniform("playerPos", Game::cPlayerManager::getInstance()->getActivePlayer()->getPos());
 			ci::gl::clear(ci::ColorA(0, 0, 0, 0));
-
+			
 			for (size_t i = 0; i < mGemStone.size(); i++)
 			{
-				mGemStone[i]->draw();
+				mGemStone[i]->draw(true);
 			}
 			ci::gl::color(ci::Color(1, 1, 1));
 
@@ -214,7 +216,7 @@ namespace Game
 			}
 
 			//点滅のばらつき出す用
-			color.a = cinder::randFloat(0, 1);
+			color.a = cinder::randFloat(0.0f, 1.0f);
 
 			mGemStone.push_back(std::make_shared<Gem::cGemStone>(
 				                                                 i,
@@ -446,12 +448,13 @@ namespace Game
 
 	void cGemManager::Repop()
 	{
-		if (Game::cGameManager::getInstance()->getLeftBattleTimef() < 150.0f)
+		if (Game::cGameManager::getInstance()->getLeftBattleTimef() <= 290.0f)
 		{
-			if (int(Game::cGameManager::getInstance()->getLeftBattleTimef()) % 10 == 0)
+			if (int(Game::cGameManager::getInstance()->getLeftBattleTimef()) % 5 == 0)
 			{
 				if (Repoped) return;
-				for (int i = 0; i < 15; i++)
+				if (mGemStone.size() >= 200) return;
+				for (int i = 0; i < 5; i++)
 				{
 					int spotnum = mGemStone.size() % mhotSpot.size();
 					int x = mhotSpot[spotnum].x * Field::CHUNK_SIZE - 1 + ci::randInt(0, int32_t(Field::CHUNK_SIZE - 1));
@@ -481,7 +484,7 @@ namespace Game
 					}
 
 					//点滅のばらつき出す用
-					color.a = cinder::randFloat(0, 1);
+					color.a = cinder::randFloat(0.0f, 1.0f);
 
 					mGemStone.push_back(std::make_shared<Gem::cGemStone>(
 						mGemStoneIDCount,
