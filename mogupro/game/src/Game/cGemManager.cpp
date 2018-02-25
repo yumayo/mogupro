@@ -452,13 +452,18 @@ namespace Game
 
 	void cGemManager::Repop()
 	{
-		if (Game::cGameManager::getInstance()->getLeftBattleTimef() <= 150.0f)
+		if (Game::cGameManager::getInstance()->getLeftBattleTimef() <= 240.0f)
 		{
 			if (int(Game::cGameManager::getInstance()->getLeftBattleTimef()) % 5 == 0)
 			{
 				if (Repoped) return;
-				if (mGemStone.size() >= 300) return;
-				for (int i = 0; i < 5; i++)
+				int activeGemCount = 0;
+				for (auto& g : mGemStone)
+				{
+					activeGemCount += g->isActive();
+				}
+				if (activeGemCount >= 100) return;
+				for (int i = 0; i < 3; i++)
 				{
 					int spotnum = mGemStone.size() % mhotSpot.size();
 					int x = mhotSpot[spotnum].x * Field::CHUNK_SIZE - 1 + ci::randInt(0, int32_t(Field::CHUNK_SIZE - 1));

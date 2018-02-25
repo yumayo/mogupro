@@ -61,8 +61,6 @@ void gameApp::mouseDrag( cinder::app::MouseEvent event )
 void gameApp::update( )
 {
 	// ‘S‚Ä‚Ì—áŠO‹zŽûB
-	try
-	{
 		float elapsedSeconds = cinder::app::getElapsedSeconds();
 		float delta = elapsedSeconds - prevSeconds;
 		prevSeconds = elapsedSeconds;
@@ -72,16 +70,9 @@ void gameApp::update( )
 		Scene::cSceneManager::getInstance()->update(delta);
 		CAMERA->update(delta);
 		Utility::cScheduler::getInstance()->update(delta);
-	}
-	catch (...)
-	{
-		Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
-	}
 }
 void gameApp::draw( )
 {
-	try
-	{
 		cinder::gl::clear(cinder::Color(0, 0, 0));
 
 		CAMERA->bind3D();
@@ -93,11 +84,6 @@ void gameApp::draw( )
 		CAMERA->unBind2D();
 
 		ENV->flashInput();
-	}
-	catch (...)
-	{
-		Scene::cSceneManager::getInstance()->shift<Scene::Member::cTitle>();
-	}
 }
 void gameApp::cleanup()
 {

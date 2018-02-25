@@ -95,7 +95,7 @@ void cGameMain::setup( )
     for ( auto& o : Network::cMatchingMemberManager::getInstance( )->mPlayerDatas )
     {
         teams[o.playerID] = o.teamNum;
-		names[o.playerID] = o.nameStr;
+		//names[o.playerID] = o.nameStr;
     }
 	teams[active_player_id] = Network::cMatchingMemberManager::getInstance()->mPlayerTeamNum;
 	//if (Network::cMatchingMemberManager::getInstance()->mPlayerName != "moguraNull")

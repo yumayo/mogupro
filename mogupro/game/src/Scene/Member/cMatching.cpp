@@ -487,13 +487,13 @@ namespace Scene
 
 				if (num >= 4)
 					num -= 1;
-					if (resWantTeamIn->mTeamNum == 0)
-						drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 140 - 130 * teamCount[0]), ci::vec2(0,-2),
-							ci::vec2(-390, 140 - 130 * teamCount[0]), cMatchingMemberManager::getInstance()->mNameStrs[num]+ "(You)"));
+					if (resWantTeamIn->mTeamNum == 0 && drillUI1Ps.size() < 3)
+						drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 140 - 160 * teamCount[0]), ci::vec2(0, -6),
+							ci::vec2(-390, 140 - 160 * teamCount[0]), cMatchingMemberManager::getInstance()->mNameStrs[num]+ "(you)"));
 
-					else if (resWantTeamIn->mTeamNum == 1)
-						drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 140 - 160 * teamCount[1]), ci::vec2(0, -2),
-							ci::vec2(390, 140 - 160 * teamCount[1]), cMatchingMemberManager::getInstance()->mNameStrs[num] + "(You)"));
+					else if (resWantTeamIn->mTeamNum == 1 && drillUI2Ps.size() < 3)
+						drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 140 - 160 * teamCount[1]), ci::vec2(0, 6),
+							ci::vec2(390, 140 - 160 * teamCount[1]), cMatchingMemberManager::getInstance()->mNameStrs[num] + "(you)"));
 					teamCount[mTeamNum]++;
 			}
 			//TODO : ŽQ‰Á‚µ‚½ê‡‚ÆTeam‚ª•ÏX‚³‚ê‚½ê‡‚Í•ª‚¯‚é‚×‚«
@@ -510,11 +510,11 @@ namespace Scene
 					if (num >= 4)
 						num -= 1;
 
-					if (eveTeamMember->mTeamNum == 0)
-						drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 140 - 130 * teamCount[0]), ci::vec2(0, 0),
+					if (eveTeamMember->mTeamNum == 0 && drillUI1Ps.size() < 3)
+						drillUI1Ps.push_back(DrillUI(ci::vec2(-1000, 140 - 160 * teamCount[0]), ci::vec2(0, 0),
 							ci::vec2(-390, 140 - 160 * teamCount[0]), cMatchingMemberManager::getInstance()->mNameStrs[num]));
-					else if (eveTeamMember->mTeamNum == 1)
-						drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 140 - 130 * teamCount[1]), ci::vec2(0, 0),
+					else if (eveTeamMember->mTeamNum == 1 && drillUI2Ps.size() < 3)
+						drillUI2Ps.push_back(DrillUI(ci::vec2(1000, 140 - 160 * teamCount[1]), ci::vec2(0, 0),
 							ci::vec2(390, 140 - 160 * teamCount[1]), cMatchingMemberManager::getInstance()->mNameStrs[num]));
 					teamCount[eveTeamMember->mTeamNum]++;
 					++count;

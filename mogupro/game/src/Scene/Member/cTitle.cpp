@@ -16,6 +16,8 @@
 #include <Sound/Wav.h>
 #include <Scene/Member/cModeSelect.h>
 #include "../../Kuriko/Scenes/SceneTitle.h"
+#include <Game/cClientAdapter.h>
+#include <Game/cServerAdapter.h>
 using namespace cinder;
 using namespace Node::Action;
 namespace Scene
@@ -41,6 +43,9 @@ void cTitle::setup( )
 
 	Network::cUDPClientManager::removeInstance();
 	Network::cUDPServerManager::removeInstance();
+	Network::cMatchingMemberManager::removeInstance();
+	Game::cClientAdapter::removeInstance();
+	Game::cServerAdapter::removeInstance();
 
 	STATE_GENERATE(sMac, init);
 	STATE_GENERATE(sMac, fadein);

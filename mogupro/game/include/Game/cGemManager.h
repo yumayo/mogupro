@@ -70,7 +70,7 @@ namespace Game
 		unsigned long        mSeed;
 		float                mTime;
 		float                mLightingSpeed;
-		const int            mCreateFGemNum = 5;
+		const int            mCreateFGemNum = 4;
 		const float          mVisibleRange = 30;
 		int                  mFragGemIDCount = 0;
 		int                  mGemStoneIDCount = 0;

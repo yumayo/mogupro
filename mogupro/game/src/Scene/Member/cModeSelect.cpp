@@ -82,8 +82,7 @@ void cModeSelect::shutDown()
 }
 void cModeSelect::update(float t)
 {
-	if (watching == false)
-	{
+	
 	for (auto& it : mSelectCards) {
 		it->update(t);
 	}
@@ -92,10 +91,17 @@ void cModeSelect::update(float t)
 	updateArrow(t);
 	introloopBGM.update(t);
 	selectIcon();
-	if (ENV->pushKey(ci::app::KeyEvent::KEY_RETURN)|| ENV->isPadPush(ENV->BUTTON_2)) {
-		desideScene();
-	}
+	if (watching == false)
+		if (ENV->pushKey(ci::app::KeyEvent::KEY_RETURN)|| ENV->isPadPush(ENV->BUTTON_2))
+		{
+			desideScene();
+		}
+
 	root->entry_update(t);
+
+	if (watching == false)
+	{
+
 		if (ENV->pushKey(ci::app::KeyEvent::KEY_a))
 		{
 			watching = true;
